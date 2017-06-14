@@ -1,0 +1,141 @@
+/*charte graphisque djepva
+--orange: #E74106;
+--vert:#00AAA9; 
+--vertpale:#B8DEDE;
+*/
+
+body { 
+	background-color: white; 
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:100%; 
+	margin:0;
+	padding:0;
+}
+h1.bandeau{
+	width:auto;
+	margin:0em; 
+    padding:0.5em 0 0 3.5em; 
+    /*box-shadow: 0px 2px 5px 0px grey;*/
+	font-size:1.5em;
+    font-weight: bold;
+	background: SteelBlue url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;
+    /*border-bottom: 1px solid black;*/
+	color:white;
+}
+h1 a {
+	text-decoration: none;
+	color:white;
+}
+h1 a:hover {
+	color:#edf3f8;
+}
+.retour_boussole {
+	float:right; width:1.5em; 
+	margin:0.5em 0.5em;
+}
+.statut {
+	font-size:0.9em;
+	text-align:right;
+	margin-bottom:1em;
+	/*border-bottom:1px solid black;*/
+	background-color:#b6cee2;
+}
+h2 {
+	margin:1em;
+	/*border:1px dotted grey;*/
+}
+.container{
+	margin:1em;
+}
+table {
+	border-collapse: collapse;/*background-color: #FFF;*/
+}
+table, th, td {
+	border: 1px solid black;
+    padding: 0.5em;
+	margin:2em auto;
+	border-collapse: collapse !important;
+}
+th{
+  background-color:#b6cee2;
+}
+tr:nth-child(odd){
+  background-color:#edf3f8;
+}
+fieldset {
+	margin:auto 10px; 
+}
+form { 
+	/*background-color: #FFF; */
+	width:95%; 
+	margin:0em auto 1em auto;
+}
+/*input[type=text], input[type=email],input[list], textarea, select { 
+	width: auto; 
+}*/
+.detail input[type=text], .detail input[type=email], .detail  input[list], .detail textarea, .detail select { 
+	width: 18em; 
+}
+.detail input.date { 
+	width: 8em; 
+}
+#editeur{
+  width: 18em;
+  height: 12em;
+  border: 1px solid grey;
+  padding: 0.2em;
+  overflow: auto;
+  font-size:90%;
+}
+select.age { 
+	width: auto; 
+}
+label { 
+	display:inline-block; vertical-align: top;
+}
+.detail label { 
+	width:15em;
+}
+
+.col{
+	display: inline-block; 
+	width:48%; min-width:33em;
+	padding: 5px; 
+	border:1px solid #FFF;  vertical-align: top;
+} 
+.lab {
+	margin-top:5px;
+}
+.button {
+	text-align:center;
+	margin-top:1em;
+}
+.liste_territoire{
+	text-align:right;
+    float:right;
+    width:30em;
+	/*margin:0 1em 0 auto;
+    border:1px dotted grey;*/
+}
+.soustitre {
+	text-align:center;
+	width:90%;
+	margin:2% auto 0 auto;
+    font-size:1.1em;
+}
+table#sortable th{
+	padding-left:1.2em;
+	background-image: url("../img/updown.png");
+    background-size: 0.7em 0.7em;
+    background-position: 0.2em 0.6em;
+    background-repeat: no-repeat;
+}
+table#sortable tr:nth-child(even){
+  background-color:#edf3f8;
+}
+pre{
+ background:#eee;
+ padding:1em;
+ margin-top:3em;
+ white-space : pre-wrap;
+}

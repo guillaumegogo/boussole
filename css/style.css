@@ -1,0 +1,354 @@
+﻿/*charte graphisque djepva
+--orange: #E74106;
+--vert:#00AAA9; 
+--vertpale:#B8DEDE;
+*/
+
+*{
+	/*explications : https://www.alsacreations.com/astuce/lire/22-Commentfixerunpiedaubasdelapage.html*/
+	-moz-box-sizing: border-box; 
+	box-sizing: border-box; 
+}
+html, body {
+	height: 100%;
+	margin:0; padding:0;
+}
+body {
+	background: linear-gradient(to bottom right, white, GhostWhite);
+	/*background-color: white; */
+	font-family:"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:120%;
+}
+#main{
+	min-height:100%;
+	margin:0 auto;
+	/*padding-bottom:2em;*/
+	position:relative;
+}
+form { 
+	width:100%;
+	margin:auto;
+    border:none;
+    /*background-color: white;*/
+}
+table {
+	border-collapse: collapse; background-color: white;
+}
+table, th, td {
+	border: 1px solid black;
+    padding: 0.5em;
+	margin:2em auto;
+}
+fieldset {
+    margin: auto;
+    /*border: none;*/
+}
+legend {
+    white-space: normal;
+}
+label { 
+	display:inline-block; width:30em; 
+	vertical-align: top;
+}
+
+/*header*/
+.bandeau{
+	width:auto;
+	margin:0; 
+    padding:0.5em 10% 0 3em; 
+    border-bottom: 0.2em solid #E74106;
+	font-size:1.5em;
+    font-weight: bold;
+	background: #00AAA9 url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;
+
+	/*background: #00AAA9 url("http://www.gogo.fr/boussole/img/compass-icon2.png") no-repeat 0.2em 0.2em;*/
+}
+.bandeau a {
+	text-decoration: none;
+	/*color:black;*/
+	color:white;
+}
+.bandeau a:hover {
+	color:#495858;
+}
+.soustitre {
+	text-align:center;
+	width:90%;
+	margin:5% auto 0 auto;
+    font-size:1.1em;
+    /*font-style:italic;
+    font-family:'Linux Libertine','Georgia','Times',serif;*/
+}
+
+/*front*/
+form.joli{
+    /*box-shadow: 0px 2px 5px 0px grey;*/
+    padding:0;
+	margin-top:5%;
+}
+form.vert{
+	background-color: #00AAA9;
+	/*background: linear-gradient(to bottom right, #00c4c2, #009190);*/
+}
+.avertissement{
+	color:red;
+	text-align:center;
+}
+.lienenbas{
+	font-size:small; text-align:center; margin:1em auto;
+}
+
+/*accueil*/
+form.accueil{
+	text-align:center;
+	/*margin-top:3em;*/
+    /*height:10em;*/
+	min-height:8%;
+	padding-top:1em;
+}
+fieldset.accueil_choix_ville {
+    margin:4% auto; 
+	border: none;
+	color:white;
+	font-weight:bold;
+}
+fieldset.accueil_choix_ville label {
+    width:6em;
+}
+fieldset.accueil_choix_ville input[type=text], select {
+	max-width:40%;
+}
+/*fieldset.accueil_choix_ville input[type=submit] {
+	background-color: #B8DEDE;
+	border: none;
+	color: black;
+	text-align: center;
+	display: inline-block;
+	border-radius: 5px;
+	font-size:0.9em;
+	box-shadow: 0px 2px 5px 0px grey;
+}*/
+fieldset.accueil_choix_besoin {
+    margin-top:1em;  border: none;
+	color:white;
+}
+fieldset.accueil_choix_besoin div{
+    text-align:center;
+}
+div.boutonsbesoin {
+    margin:2em auto 1em auto;
+}
+div.boutonsbesoin input{
+    background-color: white;
+    color: #E74106;
+	font-weight:bold;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	box-shadow: 0px 2px 5px 0px grey;
+	margin:0 1em 1em 0;
+}
+div.boutonsbesoin input:disabled{
+	opacity: 0.2;
+	box-shadow: none;
+	font-weight:normal;
+}
+.div123{
+	width:90%; margin:5% auto 0 auto; 
+	text-align:center; 
+	font-size:0.8em;
+}
+.block123{
+	display:inline-block; margin-right:1em; margin-bottom:1em;
+	width:30%; min-width:20em;
+	vertical-align:middle; 
+	height:100%; padding:2em;
+    /*background: linear-gradient(to bottom right, white, #EEE);*/ 
+	background-color: #B8DEDE;
+	box-shadow: 0px 2px 5px 0px grey;
+}
+.block123 img{
+	width:32px;
+	float:left;
+	margin-right:1em;
+}
+.lab {
+	margin-top:1em;
+}
+label.label_long{
+	width:25em; 
+}
+input.rattrap_long{
+	margin-left:30.4em;
+}
+
+/*formulaire*/
+form.formulaire{
+    padding-bottom:0.5em; 
+	clear:both;
+	margin-top:3%; 
+	width:95%
+}
+fieldset.formulaire {
+	background-color: white; 
+	font-size:0.9em;
+	text-align:center;
+	/*border:none;
+	box-shadow: 0px 2px 5px 0px grey;*/
+}
+div.centreformulaire {
+	display:inline-block; 
+	margin:auto; text-align:left;
+}
+fieldset.formulaire legend {
+    /*margin-top:-0.5em;*/
+    background-color:white; 
+	padding:0 1em;
+}
+input[type=text], input[type=email],input[list], textarea, select { 
+	width: 250px; 
+}
+input.date { 
+	width: auto; 
+}
+select.age { 
+	width: auto; 
+}
+.aide {
+	float:right;
+}
+.aide img {
+	width:16px;
+}
+
+/*resultat*/
+form.resultat{
+    padding-bottom:0.5em;
+	clear:both;
+	margin-top:3%; 
+	width:95%
+}
+fieldset.resultat {
+/*	background-color: white;
+	font-size:0.9em;
+	border:none;*/
+}
+fieldset.resultat legend {
+    /*margin-top:-0.5em;*/
+    background-color:white;
+	padding:0 1em;
+}
+.resultat_offre{
+	display:inline-block; 
+    width:25%; min-width:18em;
+    padding:1em; 
+    vertical-align:top;
+	background-color:#B8DEDE; 
+	margin:0 1% 1% 0;
+    /*border:1px solid black; */
+    box-shadow: 0px 2px 5px 0px grey;
+}
+.resultat_offre a, .resultat_offre a:link{
+	color:black;
+}
+.resultat_offre a:visited{
+	color:#00AAA9;
+}
+.coeur{
+	float:right; margin-top:-0.7em;
+}
+.colonnes{
+	-webkit-column-width: 14em; /* Chrome, Safari, Opera */
+    -moz-column-width: 14em; /* Firefox */
+    column-width: 14em;
+	font-size:0.9em;
+}
+.enbasadroite{
+	margin:1em 1em 0em 0em;
+	text-align:right;
+}
+
+/* présentation offre */
+table.offre{
+	width:100%;
+    margin-top:1em;
+    border-color:grey;
+	font-size:0.8em;
+}
+table.offre tr,td{
+	padding:0.5em;
+    border:none;
+}
+table.offre tr:nth-child(odd){
+  background-color:#F5F5F5;
+}
+.resume {
+	margin-top:3em;
+}
+.pluspetit{
+	font-size:0.9em;
+}
+.map{
+position: relative;
+}
+.map iframe{
+float:right;
+padding:auto;
+width: 30%;
+margin:0 5%;
+min-width: 20em;
+height: 20em;
+border:none;/*
+position: absolute;
+top: 0;
+left: 0;
+width="400" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"*/
+}
+
+/* bandeau alpha */
+body:after{
+  content: "αlpha";
+  position: fixed;
+  width: 150px;
+  height: 25px;
+  background: red; /*#EE8E4A;*/
+  top: 22px;
+  right: -35px;
+  text-align: center;
+  font-size: 1em;
+  font-family: sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;
+  line-height: 27px;
+  -ms-transform:rotate(45deg);
+  -webkit-transform:rotate(45deg);
+  transform:rotate(45deg);
+  box-shadow: 0px 2px 5px 0px grey;
+}
+/* pour le dev */
+.version{ 
+	text-align:right; margin-right:3%; 
+	font-size:small; color:red;
+}
+
+footer {
+    background-color:#B8DEDE; 
+    position: absolute; 
+    bottom: 0; width:100%; /*left: 0; right: 0;*/
+    padding-top:0.5em;
+    padding-bottom:0.5em;
+	text-align:center;
+    font-size:0.7em;
+	/*padding:1em 0.5em 0.5em 0.5em;*/
+	/*height:1.1em;*/
+}
+
+/*
+marianne : https://upload.wikimedia.org/wikipedia/fr/thumb/3/38/Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg/100px-Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg.png
+float:right;
+baackground-color:white;
+*/
