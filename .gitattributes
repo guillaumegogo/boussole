@@ -1,4 +1,5 @@
 # Auto detect text files and perform LF normalization
 $ cat .gitattributes
 *.inc linguist-vendored
+*jquery* linguist-vendored
 *.php linguist-language=PHP
