@@ -1,6 +1,6 @@
 <?php
-require('../secret/connect.php');
-include('../inc/functions.php');
+require('secret/connect.php');
+include('inc/functions.php');
 session_start();
 
 //********* verif des droits

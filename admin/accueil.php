@@ -1,6 +1,6 @@
 <?php
-require('../secret/connect.php');
-include('../inc/functions.php');
+require('secret/connect.php');
+include('inc/functions.php');
 session_start();
 
 //********* en attendant une vraie gestion de droits... :)
@@ -9,15 +9,15 @@ if (!isset($_SESSION['user_id'])) {
 		switch ($_GET["user_id"]) {
 			case "1":
 				$_SESSION['user_id'] = 1; $_SESSION['user_statut'] = "administrateur"; $_SESSION['territoire_id'] = 0; 
-				$_SESSION['user_droits'] = array('territoire' => '1',  'professionnel' => '1', 'offre' => '1', 'theme' => '1', 'utilisateur' => '1', 'demande' => '1');
+				$_SESSION['user_droits'] = array('territoire' => '1',  'professionnel' => '1', 'offre' => '1', 'theme' => '1', 'utilisateur' => '1', 'demande' => '1', 'stats' => '1', 'critere' => '1');
 				break;
 			case "2":
 				$_SESSION['user_id'] = 2; $_SESSION['user_statut'] = "animateur territorial"; $_SESSION['territoire_id'] = 1;
-				$_SESSION['user_droits'] = array('territoire' => '1',  'professionnel' => '1', 'offre' => '1', 'theme' => '0', 'utilisateur' => '1', 'demande' => '1');
+				$_SESSION['user_droits'] = array('territoire' => '1',  'professionnel' => '1', 'offre' => '1', 'theme' => '0', 'utilisateur' => '1', 'demande' => '1', 'stats' => '1', 'stats' => '1', 'critere' => '0');
 				break;
 			case "3": //attention, l'utilisateur 3 (pro) n'a pas le même lien d'accès aux professionnels (cf. plus bas)
 				$_SESSION['user_id'] = 3; $_SESSION['user_statut'] = "professionnel"; $_SESSION['user_pro_id'] = 1;
-				$_SESSION['user_droits'] = array('territoire' => '0',  'professionnel' => '1', 'offre' => '1', 'theme' => '0', 'utilisateur' => '0', 'demande' => '1');
+				$_SESSION['user_droits'] = array('territoire' => '0',  'professionnel' => '1', 'offre' => '1', 'theme' => '0', 'utilisateur' => '0', 'demande' => '1', 'stats' => '1', 'stats' => '1', 'critere' => '0');
 				break;
 			default:
 				 header('Location: index.php');
@@ -52,25 +52,37 @@ if ($_SESSION['user_statut'] == "administrateur"){  //**** todo : à étendre au
 	$result = mysqli_query($conn, $sql);
 	$row_dmd = mysqli_fetch_assoc($result);
 	$nb_dmd = "";
-	if ($row_dmd["nb"]) $nb_dmd = "(".$row_dmd["nb"]." nouvelles)";
+	if ($row_dmd["nb"]==1) {
+		$nb_dmd = "(".$row_dmd["nb"]." nouvelle)";
+	}else if ($row_dmd["nb"]>1) {
+		$nb_dmd = "(".$row_dmd["nb"]." nouvelles)";
+	}
 }
 
 //******* construction des listes de lien
-$liens_gauche ="";
-if ($_SESSION['user_droits']['territoire']) { $liens_gauche .= "<li><a href=\"territoire.php\">Territoires</a></li>"; }
+$liens_activite ="";
+if ($_SESSION['user_droits']['demande']) { $liens_activite .= "<li><a href=\"demande_liste.php\">Demandes reçues</a> ".$nb_dmd."</li>"; }
+if ($_SESSION['user_droits']['stats']) { $liens_activite .= "<li>Statistiques</li>"; }
+if ($liens_activite) $liens_activite = "<b>Activité</b><ul style=\"line-height:2em;\">".$liens_activite."</ul>";
+
+$liens_admin = "";
 if ($_SESSION['user_droits']['professionnel']) { 
 	if (isset($_SESSION['user_pro_id'])){
-		$liens_gauche .= "<li><a href=\"professionnel_detail.php?id=".$_SESSION['user_pro_id']."\">Mes détails</a></li>"; //lien professionnel_detail des utilisateurs "professionnels"
+		$liens_admin .= "<li><a href=\"professionnel_detail.php?id=".$_SESSION['user_pro_id']."\">Mes détails</a></li>"; //lien professionnel_detail des utilisateurs "professionnels"
 	} else {
-		$liens_gauche .= "<li><a href=\"professionnel_liste.php\">Professionnels</a></li>";
+		$liens_admin .= "<li><a href=\"professionnel_liste.php\">Professionnels</a></li>";
 	}
 }
-if ($_SESSION['user_droits']['offre']) { $liens_gauche .= "<li><a href=\"offre_liste.php\">Offres de service</a></li>"; }
-if ($_SESSION['user_droits']['theme']) { $liens_gauche .= "<li><a href=\"theme.php\">Thèmes et sous-thèmes</a></li>"; } 
-if ($_SESSION['user_droits']['utilisateur']) { $liens_gauche .= "<li>Utilisateurs</li>"; } //<li>&empty; <a href=\"utilisateur_liste.php\">Utilisateurs</a></li>
+if ($_SESSION['user_droits']['offre']) { $liens_admin .= "<li><a href=\"offre_liste.php\">Offres de service</a></li>"; }
+if ($_SESSION['user_droits']['utilisateur']) { $liens_admin .= "<li>Utilisateurs</li>"; } //<li>&empty; <a href=\"utilisateur_liste.php\">Utilisateurs</a></li>
+if ($liens_admin) $liens_admin = "<b>Administration</b><ul style=\"line-height:2em;\">".$liens_admin."</ul>";
 
-$liens_droite ="";
-if ($_SESSION['user_droits']['demande']) { $liens_droite .= "<li><a href=\"demande_liste.php\">Demandes reçues</a> ".$nb_dmd."</li>"; }
+$liens_reference ="";
+if ($_SESSION['user_droits']['territoire']) { $liens_reference .= "<li><a href=\"territoire.php\">Territoires</a></li>"; }
+if ($_SESSION['user_droits']['theme']) { $liens_reference .= "<li><a href=\"theme.php\">Thèmes et sous-thèmes</a></li>"; } 
+if ($_SESSION['user_droits']['critere']) { $liens_reference .= "<li>Critères</li>"; }
+if ($liens_reference) $liens_reference = "<b>Données de référence</b><ul style=\"line-height:2em;\">".$liens_reference."</ul>";
+
 ?>
 
 <!DOCTYPE html>
@@ -92,19 +104,17 @@ if ($_SESSION['user_droits']['demande']) { $liens_droite .= "<li><a href=\"deman
 <?php echo $select_territoire; ?>
 
 <h2>Modules disponibles</h2>
-	<div style="width:70%; margin:auto;">
-		<div style="display:inline-block; min-width:25em; vertical-align:top;">
-			<b>Administration</b>
-			<ul style="line-height:2em;">
-				<?php echo $liens_gauche; ?>
-			</ul>
+	<div style="width:100%; text-align:center;">
+		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+			<?php echo $liens_activite; ?>
 		</div>
 		
-		<div style="display:inline-block; min-width:25em; vertical-align:top;">
-			<b>Activité</b> 
-			<ul style="line-height:2em;">
-				<?php echo $liens_droite; ?>
-			</ul>
+		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+			<?php echo $liens_admin; ?>
+		</div>
+		
+		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+			<?php echo $liens_reference; ?>
 		</div>
 	</div>
 </div>

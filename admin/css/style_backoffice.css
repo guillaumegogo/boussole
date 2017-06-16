@@ -76,7 +76,7 @@ form {
 .detail input[type=text], .detail input[type=email], .detail  input[list], .detail textarea, .detail select { 
 	width: 18em; 
 }
-.detail input.date { 
+.detail input[type=text].datepick { 
 	width: 8em; 
 }
 #editeur{

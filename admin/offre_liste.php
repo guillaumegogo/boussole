@@ -1,6 +1,6 @@
 <?php
-require('../secret/connect.php');
-include('../inc/functions.php');
+require('secret/connect.php');
+include('inc/functions.php');
 session_start();
 
 //********* verif des droits
@@ -14,7 +14,15 @@ include('inc/select_territoires.php');
 $flag_actif = (isset($_GET['actif']) && $_GET['actif']=="non") ? 0 : 1;
 
 //******** liste des offres de service
-$sql = "SELECT id_offre, nom_offre, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, theme_offre, zone_selection_villes, nom_pro, `competence_geo`, `id_competence_geo` FROM `bsl_offre` JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel WHERE actif_offre='".$flag_actif."' ";
+$sql = "SELECT id_offre, nom_offre, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme, zone_selection_villes, nom_pro, `competence_geo`, `id_competence_geo`, nom_departement, nom_region, nom_territoire  
+	FROM `bsl_offre` 
+	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel
+	JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme 
+	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`bsl_theme`.id_theme_pere
+	LEFT JOIN `bsl__departement` ON `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
+	LEFT JOIN `bsl__region` ON `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
+	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
+	WHERE actif_offre='".$flag_actif."' ";
 if (isset($_SESSION['territoire_id']) && $_SESSION['territoire_id']) {
 	$sql .= "AND `competence_geo`=\"territoire\" AND `id_competence_geo`= ".$_SESSION['territoire_id'];
 }
@@ -27,8 +35,20 @@ if (mysqli_num_rows($result) > 0) {
     $tableau = "<table id=\"sortable\"><thead><tr><th>Nom</th><!--<th>Début</th>--><th>Fin de validité</th><th>Thème</th><th>Pro</th><th>Zone</th></tr></thead><tbody>";
 
     while($row = mysqli_fetch_assoc($result)) {
-		$zone = $row["zone_selection_villes"] ? "sélection de villes" : $row["competence_geo"];
-		$tableau .= "<tr><td><a href=\"offre_detail.php?id=". $row["id_offre"]."\">". $row["nom_offre"]. "</a></td><!--<td>" . $row["date_debut"]. "</td>--><td>" . $row["date_fin"]. "</td><td>" . $row["theme_offre"]. "</td><td>" . $row["nom_pro"]. "</td><td>" . $zone. "</td></tr>";
+		//affichage de la compétence géo du pro (si pas sélection de villes)
+		if ($row["zone_selection_villes"]) {
+			$zone = "sélection de villes";
+		} else {
+			switch ($row["competence_geo"]) {
+				case "territoire":
+					$zone = "territoire (".$row["nom_territoire"].")"; break;
+				case "departemental":
+					$zone = "département (".$row["nom_departement"].")"; break;
+				case "regional":
+					$zone = "région (".$row["nom_region"].")"; break;
+			}
+		}
+		$tableau .= "<tr><td><a href=\"offre_detail.php?id=". $row["id_offre"]."\">". $row["nom_offre"]. "</a></td><!--<td>" . $row["date_debut"]. "</td>--><td>" . $row["date_fin"]. "</td><td>" . $row["libelle_theme"]. "</td><td>" . $row["nom_pro"]. "</td><td>" . $zone. "</td></tr>";
     }
     $tableau .= "</tbody></table>";
 

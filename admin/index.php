@@ -1,5 +1,5 @@
 <?php
-require('../secret/connect.php');
+require('secret/connect.php');
 
 //********* valeur de sessions
 session_start();

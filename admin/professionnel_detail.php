@@ -1,6 +1,6 @@
 <?php
-require('../secret/connect.php');
-include('../inc/functions.php');
+require('secret/connect.php');
+include('inc/functions.php');
 session_start();
 
 //********* verif des droits
@@ -219,8 +219,9 @@ while($rowt = mysqli_fetch_assoc($result)) {
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
+	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="../img/compass-icon.png" />
+	<link rel="stylesheet" href="css/style_backoffice.css" />
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
@@ -260,7 +261,6 @@ function displayGeo(that) {
 	}
 }
 </script>
-	<title>Boussole des jeunes</title>
 </head>
 
 <body>

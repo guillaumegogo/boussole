@@ -1,7 +1,7 @@
 <?php
 //todo : travailler la prise en compte des territoires 
-require('../secret/connect.php');
-include('../inc/functions.php');
+require('secret/connect.php');
+include('inc/functions.php');
 session_start();
 
 //********* verif des droits
@@ -12,7 +12,9 @@ $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
 	$row = mysqli_fetch_assoc($result);
 		
-if (isset($_SESSION['user_pro_id']) && isset($_GET["id"]) && $_SESSION['user_pro_id']!=$_GET["id"]) header('Location: accueil.php'); //si tu es un professionnel qui essaie de voir une autre fiche, tu retournes à l'accueil*/
+if (isset($_SESSION['user_pro_id']) && isset($_GET["id"]) && $_SESSION['user_pro_id']!=$_GET["id"]) header('Location: accueil.php'); //si tu es un professionnel qui essaie de voir une autre fiche, tu retournes à l'accueil
+
+if (isset($_SESSION['user_pro_id']) && $_SESSION['user_pro_id']!=$row['id_professionnel']) header('Location: accueil.php'); //si tu es un professionnel qui essaie de voir une offre qui n'est pas la tienne, tu retournes à l'accueil*/
 
 //********* variables
 $last_id = null;
@@ -23,8 +25,9 @@ $geo = "";
 
 //********** si post du formulaire interne
 if (isset($_POST["maj_id"])) {
+	
 	//requête d'ajout (on récupère les données de contact du pro sélectionné)
-	if (!$_POST["maj_id"]) {		
+	if (!$_POST["maj_id"]) {
 		$req= "INSERT INTO `bsl_offre`(`nom_offre`, `description_offre`, `debut_offre`, `fin_offre`, `id_professionnel`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `user_derniere_modif`) 
 		SELECT \"".$_POST["nom"]."\",\"".mysqli_real_escape_string ($conn, $_POST["desc"])."\",\"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\",\"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\",\"".$_POST["pro"]."\",`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`,\"".$_SESSION["user_id"]."\"
 		FROM `bsl_professionnel`
@@ -36,9 +39,16 @@ if (isset($_POST["maj_id"])) {
 	//requête de modification
 	}else{
 		$last_id=$_POST["maj_id"];
+		$code_postal=substr($_POST["commune"], -5);
+		$ville=substr($_POST["commune"],0,-6);
+		$sql = "SELECT code_insee FROM `bsl__ville` WHERE code_postal='".$code_postal."' AND nom_ville LIKE '".$ville."'";
+		$result = mysqli_query($conn, $sql);
+		if (mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
+			$code_insee = $row['code_insee'];
+		}
 		
-		//******** todo : code_insee_offre + connecter theme et sous theme à la table theme
-		$req= "UPDATE `bsl_offre` SET `nom_offre` = \"".$_POST["nom"]."\", `description_offre` = \"".mysqli_real_escape_string ($conn, $_POST["desc"])."\", `debut_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\", `fin_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\", `theme_offre` = \"".$_POST["theme"]."\", `sous_theme_offre` = \"".$_POST["sous_theme"]."\", `adresse_offre` = \"".$_POST["adresse"]."\",`code_postal_offre`=\"".$_POST["code_postal"]."\",`ville_offre`=\"".$_POST["ville"]."\", `courriel_offre` = \"".$_POST["courriel"]."\", `telephone_offre` = \"".$_POST["tel"]."\", `site_web_offre` = \"".$_POST["site"]."\", `delai_offre` = \"".$_POST["delai"]."\", `zone_selection_villes` = \"".$_POST["zone"]."\", `actif_offre` = \"".$_POST["actif"]."\",`user_derniere_modif`=\"".$_SESSION["user_id"]."\" WHERE `id_offre` = ".$last_id;
+		$req= "UPDATE `bsl_offre` SET `nom_offre` = \"".$_POST["nom"]."\", `description_offre` = \"".mysqli_real_escape_string ($conn, $_POST["desc"])."\", `debut_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\", `fin_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\", `id_sous_theme` = \"".$_POST["sous_theme"]."\", `adresse_offre` = \"".$_POST["adresse"]."\",`code_postal_offre`=\"".$code_postal."\",`ville_offre`=\"".$ville."\",`code_insee_offre`=\"".$code_insee."\", `courriel_offre` = \"".$_POST["courriel"]."\", `telephone_offre` = \"".$_POST["tel"]."\", `site_web_offre` = \"".$_POST["site"]."\", `delai_offre` = \"".$_POST["delai"]."\", `zone_selection_villes` = \"".$_POST["zone"]."\", `actif_offre` = \"".$_POST["actif"]."\",`user_derniere_modif`=\"".$_SESSION["user_id"]."\" WHERE `id_offre` = ".$last_id;
 		$result = mysqli_query($conn, $req);
 		
 		if(isset($_POST["maj_criteres"])){
@@ -132,15 +142,17 @@ if (isset($_POST["maj_id"])) {
 	}
 }
 
-//********** affichage de l'offre (soit celle en paramètre, soit celle qui vient d'être créée/mise à jour)
+//********** récupération de l'id de l'offre (soit celle en paramètre, soit celle qui vient d'être créée/mise à jour)
 $id_offre = $last_id;
 if(isset($_GET["id"])){
 	$id_offre = $_GET["id"];
 }
+//********** affichage de l'offre
 if(isset($id_offre)) {
-	$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_offre`, `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `bsl_professionnel`.id_professionnel, `nom_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, competence_geo,  nom_departement, nom_region, nom_territoire 
+	$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `id_sous_theme`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `bsl_professionnel`.id_professionnel, `nom_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, competence_geo, id_theme_pere, nom_departement, nom_region, nom_territoire 
 	FROM `bsl_offre` 
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
+	JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme
 	LEFT JOIN `bsl__departement` ON `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl__region` ON `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
@@ -149,19 +161,15 @@ if(isset($id_offre)) {
 	if (mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
 		
-		//********* verif des droits - A REMETTRE EN HAUT DANS LA MESURE DU POSSIBLE
-		if (isset($_SESSION['user_pro_id']) && $_SESSION['user_pro_id']!=$row['id_professionnel']) header('Location: accueil.php'); //si tu es un professionnel qui essaie de voir une offre qui n'est pas la tienne, tu retournes à l'accueil
-		
 		//affichage de la compétence géo du pro (si pas sélection de villes)
 		if (!$row["zone_selection_villes"]) {
-			$geo = $row["competence_geo"];
 			switch ($row["competence_geo"]) {
 				case "territoire":
-					$geo .= " ".$row["nom_territoire"]; break;
+					$geo = $row["competence_geo"]." ".$row["nom_territoire"]; break;
 				case "departemental":
-					$geo .= " ".$row["nom_departement"]; break;
+					$geo = $row["competence_geo"]." ".$row["nom_departement"]; break;
 				case "regional":
-					$geo .= " ".$row["nom_region"]; break;
+					$geo = $row["competence_geo"]." ".$row["nom_region"]; break;
 			}
 		}
 		
@@ -171,7 +179,36 @@ if(isset($id_offre)) {
 			$criteres[$row2["nom_critere"]][$row2["valeur_critere"]]=1;
 		}
     }
-//sinon récupération de la liste des professionnels en fonction des droits de l'user
+	
+	//********* liste déroulante des thèmes du pro
+	$select_theme = "";
+	$sqlt = "SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` 
+		FROM `bsl_theme` 
+		JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` 
+		WHERE `actif_theme` = 1 AND `id_theme_pere` IS NULL AND `bsl_professionnel_themes`.`id_professionnel`=\"".$row["id_professionnel"]."\" ";
+	$result = mysqli_query($conn, $sqlt);
+	while($rowt = mysqli_fetch_assoc($result)) {
+		$select_theme .= "<option value=\"".$rowt['id_theme']."\" ";
+		if ($rowt['id_theme']==$row['id_theme_pere']) { $select_theme .= " selected "; }
+		$select_theme .= ">".$rowt['libelle_theme']."</option>";
+	}
+	//********* liste déroulante des sous-thèmes des thèmes du pro
+	$select_sstheme = "";
+	$sqlst = "SELECT `bsl_theme`.`id_theme`, `libelle_theme` 
+		FROM `bsl_theme` 
+		WHERE `actif_theme` = 1 AND `id_theme_pere` IN (SELECT `bsl_theme`.`id_theme` FROM `bsl_theme` JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` WHERE `id_theme_pere` IS NULL AND `bsl_professionnel_themes`.`id_professionnel`=\"".$row["id_professionnel"]."\" )";
+	$result = mysqli_query($conn, $sqlst);
+	while($rowt = mysqli_fetch_assoc($result)) {
+		$select_sstheme .= "<option value=\"".$rowt['id_theme']."\" ";
+		if ($rowt['id_theme']==$row['id_sous_theme']) { $select_sstheme .= " selected "; }
+		$select_sstheme .= ">".$rowt['libelle_theme']."</option>";
+	}
+	//********* liste des villes du pro
+	$select_villes_pro = "";
+	$sqlv = " ";
+	//...
+	
+//********** sinon écran de création simple : récupération de la liste des professionnels en fonction des droits du user
 }else{
 	$sql = "SELECT id_professionnel, nom_pro FROM `bsl_professionnel` WHERE 1 "; //todo limiter en fonction du user_statut
 	if (isset($_SESSION['territoire_id']) && $_SESSION['territoire_id']) { 
@@ -195,15 +232,19 @@ if(isset($id_offre)) {
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
+	<title>Boussole des jeunes</title>
     <link rel="icon" type="image/png" href="../img/compass-icon.png" />
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="css/style_backoffice.css" />
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
+	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
-	<title>Boussole des jeunes</title>
-<script type="text/javascript">
+	<script type="text/javascript">
+//******** jquery
+//fonction autocomplete commune
 $( function() {
 	var listeVilles = [<?php include('../inc/villes_index.inc');?>];
 	$( "#villes" ).autocomplete({
@@ -220,7 +261,7 @@ $( function() {
 			}) );
 		}
 	});
-} );
+});
 $(function() {
 	$('#list1').filterByText($('#textbox'));
 });
@@ -230,7 +271,12 @@ function checkall(){
 		sel.options[i].selected=true;
 	}
 }
+$(document).ready(function() {     
+	$.datepicker.setDefaults($.datepicker.regional["fr"]);
+	$('.datepick').datepicker({ dateFormat: "dd/mm/yy"});
+});
 
+//******* javascript
 /*montrer ou non la liste des villes*/
 function cacheVilles() {
     var x = document.getElementById('liste_villes');
@@ -265,7 +311,6 @@ function htmleditor() {
   document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
 }
 </script>
-
 </head>
 
 <body>
@@ -301,27 +346,30 @@ function htmleditor() {
 		</div>
 		<div class="lab">
 			<label for="du">Dates de validité :</label>
-			<input type="text" name="du" size="10" class="date" value="<?php if ($id_offre) { echo $row["date_debut"]; } ?>" /> 
-			au <input type="text" name="au" size="10" class="date" value="<?php if ($id_offre) { echo $row["date_fin"]; } ?>"/> 
+			<input type="text" name="du" size="10" class="datepick" value="<?php if ($id_offre) { echo $row["date_debut"]; } else echo date("d/m/Y");?>" />
+			au <input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) { echo $row["date_fin"]; } else echo date("d/m/Y", strtotime("+1 year"));?>"/> 
 		</div>
-<?php if ($id_offre) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. 
-//todo : connecter les deux listes à la table theme + autorisation du pro ?>
+<?php //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche
+if ($id_offre) { 
+?>
 		<div class="lab">  
 			<label for="theme">Thème :</label>
 			<select name="theme">
+				<?php echo $select_theme; ?><!--
 				<option value="" >A choisir</option>
 				<option value="emploi" <?php if ($id_offre) {if ($row["theme_offre"]=="emploi") { echo "selected"; }} ?> >Emploi</option>
 				<option value="logement" <?php if ($id_offre) {if ($row["theme_offre"]=="logement") { echo "selected"; }} ?> >Logement</option>
-				<option value="">...</option> 
+				<option value="">...</option> -->
 			</select> 
 		</div>
 		<div class="lab">
-			<label for="sous_theme"><abbr title="La liste des sous-thèmes devra dépendre du thème choisi.">Sous-thème(s)</abbr> :</label>
+			<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème(s)</abbr> :</label>
 			<select name="sous_theme">
+				<?php echo $select_sstheme; ?><!--
 				<option value="" >A choisir</option>
 				<option value="techniques" <?php if ($id_offre) {if ($row["sous_theme_offre"]=="techniques") { echo "selected"; }} ?> >Rendre ma recherche d'emploi plus efficace par la maitrise des techniques</option>
 				<option value="information" <?php if ($id_offre) {if ($row["sous_theme_offre"]=="information") { echo "selected"; }} ?> >Être informé sur les salons, forums, évènements et actualités utiles à ma recherche d'emploi.</option>
-				<option value="">...</option> 
+				<option value="">...</option>  -->
 			</select> 
 		</div>
 <?php } ?>
@@ -342,19 +390,19 @@ if(isset($id_offre)) {
 			<label for="adresse">Adresse :</label>
 			<input type="text" name="adresse" value="<?php if ($id_offre) { echo $row["adresse_offre"]; } ?>" />
 		</div>
-		<!--<div class="lab">
+		<div class="lab">
 			<label for="code_postal">Commune :</label>
 			<input type="text" name="commune" id="villes" value="<?php if ($id_offre) { echo $row["ville_offre"]." ".$row["code_postal_offre"]; } ?>" /> 
-		</div>-->
-<!--***************** cp et ville à remplacer par commune, au dessus -->
+		</div>
+<!--***************** cp et ville à remplacer par commune, au dessus
 		<div class="lab">
 			<label for="code_postal">Code postal :</label>
-			<input type="text" name="code_postal" value="<?php if ($id_offre) { echo $row["code_postal_offre"]; } ?>" maxlength="5" style="width:5em"/> <abbr title="Le code postal devra permettre de générer une liste de villes possibles, pour une meilleure géolocalisation.">&#9888;</abbr> <!--<input type="submit" name="villes_code_postal" value="Lister les villes" />-->
+			<input type="text" name="code_postal" value="<?php if ($id_offre) { echo $row["code_postal_offre"]; } ?>" maxlength="5" style="width:5em"/> <abbr title="Le code postal devra permettre de générer une liste de villes possibles, pour une meilleure géolocalisation.">&#9888;</abbr> <!--<input type="submit" name="villes_code_postal" value="Lister les villes" />
 		</div>
 		<div class="lab">
 			<label for="ville">Ville :</label>
 			<input type="text" name="ville" value="<?php if ($id_offre) { echo $row["ville_offre"]; } ?>" />
-		</div>
+		</div> -->
 		<div class="lab">
 			<label for="courriel">Courriel :</label>
 			<input type="email" name="courriel" value="<?php if ($id_offre) { echo $row["courriel_offre"]; } ?>"/>
@@ -457,7 +505,8 @@ if ($_SESSION['user_statut']==1) {
 <?php 
 //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. 
 if ($id_offre) { 
-	if ($row["theme_offre"]=="emploi") { 
+	// si theme de l'offre = emploi
+	if ($row["id_theme_pere"]=="1") { 
 ?>
 <fieldset>
 	<legend>Sélection des critères correspondant à l'offre de service</legend>
@@ -637,7 +686,8 @@ echo $t;
 	</div>
 </fieldset>
 <?php 
-	} else if ($row["theme_offre"]=="logement") {
+	// si theme = logement
+	} else if ($row["id_theme_pere"]=="2") { 
 ?>
 ...
 <?php
@@ -654,7 +704,7 @@ echo $t;
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r(@$_POST);echo "<br/>"; echo @$req;echo "<br/>";  print_r(@$row);echo "<br/>";print_r(@$criteres); echo @$sql;echo "</pre>"; 
+	echo "<pre>";print_r(@$_POST);echo "<br/>"; echo @$req;echo "<br/>";  print_r(@$row);echo "<br/>";print_r(@$criteres); echo @$sql."<br/>".@$sqlt."<br/>".@$sqlst;echo "</pre>"; 
 }
 ?>
 </body>
