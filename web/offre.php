@@ -1,9 +1,4 @@
 <?php
-/************************ todo 24/5/2017 : 
-- envoi du mail avec une coche 
-- mettre en forme l'affichage de la liste des critères
-****************************************/
-
 include('secret/connect.php');
 include('inc/functions.php');
 
@@ -48,8 +43,11 @@ function liste_criteres($separateur){
 
 //********* requête de récup de l'offre pour affichage
 if(isset($id_offre)) {
-	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_offre`, `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `nom_pro`  
-	FROM `bsl_offre` JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
+	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `nom_pro`  
+	FROM `bsl_offre` 
+	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
+	JOIN `bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`bsl_offre`.id_sous_theme
+	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`theme_fils`.id_theme_pere
 	WHERE `id_offre`=".$id_offre;
 	$result = mysqli_query($conn, $sql);
 	if (mysqli_num_rows($result) > 0) {
@@ -137,11 +135,8 @@ if(isset($id_offre)) {
 			<td style="padding:0.5em;"><?php echo $row["theme_offre"]; ?></td>
 		</tr>
 		<tr>
-			<td style="padding:0.5em;">Sous-thème(s)</td>
-			<td style="padding:0.5em;"><?php //**************** todo : lier à la base de données
-if ($row["sous_theme_offre"]=="techniques") { echo "Rendre ma recherche d'emploi plus efficace par la maitrise des techniques"; }
-if ($row["sous_theme_offre"]=="information") { echo "Être informé sur les salons, forums, évènements et actualités utiles à ma recherche d'emploi"; }
-			?></td>
+			<td style="padding:0.5em;">Sous-thème</td>
+			<td style="padding:0.5em;"><?php echo $row["sous_theme_offre"]; ?></td>
 		</tr>
 	</table>
 </fieldset>
@@ -176,7 +171,7 @@ if ($row["sous_theme_offre"]=="information") { echo "Être informé sur les salo
 			<button type="submit">Je demande à être contacté·e</button>
 			<br/> 
 			<!--en vue de tests--> 
-			<div style="font-size:small; color:red;">(le temps des tests : <input type="checkbox" name="envoi_mail" value="1" > envoyer effectivement un mail qui sera <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>)</div>
+			<div style="font-size:small; color:red;">(<input type="checkbox" name="envoi_mail" value="1" > test : envoyer effectivement le mail prévu pour le professionnel, <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>)</div>
 			</select> 
 		</div>
 

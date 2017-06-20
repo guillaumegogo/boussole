@@ -12,12 +12,12 @@ session_unset();
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width" />
 	<link rel="stylesheet" href="css/style_backoffice.css" />
-	<link rel="icon" type="image/png" href="../img/compass-icon.png" />
+	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title>Boussole des jeunes</title>
 </head>
 
 <body>
-<a href="../" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
+<a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
 <h1 class="bandeau">Administration de la boussole des jeunes</h1>
 
 <div class="container">

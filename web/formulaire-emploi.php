@@ -1,7 +1,7 @@
-<form action="<?php if (isset($etape)) { if ($etape=="3") {echo "resultat.php"; } else { echo "formulaire.php"; } } ?>" method="post" class="joli formulaire">
+<form action="formulaire.php" method="post" class="joli formulaire">
 
 <?php
-if (!isset($etape) || $etape=="1") {
+if ($etape=="1") {
 ?>
 	
 	<fieldset class="formulaire">
@@ -14,15 +14,8 @@ if (!isset($etape) || $etape=="1") {
 			<div class="lab">
 				<label class="label_long" for="age">Je suis âgé·e de :</label>
 				<select name="age" class="age">
-<?php
-	for ($i = 16; $i <= 30; $i++) {
-		$t .= "<option value=\"".$i."\"";
-		if ($i==18) $t .= " selected ";
-		$t .= ">".$i."</option>";
-	}
-	echo $t;
-?>
-			</select> ans
+					<option value="16">16</option><option value="17">17</option><option value="18" selected >18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
+				</select> ans
 			</div>
 
 			<div class="lab">
@@ -42,12 +35,6 @@ if (!isset($etape) || $etape=="1") {
 				<input type="radio" name="jesais" value="oui"> Oui
 				<input type="radio" name="jesais" value="non"> Non<br>
 			</div>
-			
-			<!--<div class="lab">
-				<label class="label_long" for="ville_recherche">Je cherche un emploi vers :</label>
-				<input type="text" name="ville_recherche" value="<?php if (isset($_SESSION["ville_habitee"])) echo $_SESSION["ville_habitee"]; ?>"/>
-			</div>
-			-->
 			
 			<div style="margin-top:2em;"><button type="submit" style="float:right" >Je continue</button></div>
 		</div>
@@ -134,6 +121,7 @@ if (!isset($etape) || $etape=="1") {
 		<div class="aide"><img src="img/ci_help.png" title="Ici des explications."></div>
 
 		<div class="centreformulaire">
+			<input type="hidden" name="etape" value="fin">
 			<div class="lab">
 				<label class="label_long" for="type_emploi[]">Je cherche un emploi de type :</label>
 				<div style="display:inline-table;">

@@ -17,8 +17,8 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif']=="non") ? 0 : 1;
 $sql = "SELECT id_offre, nom_offre, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme, zone_selection_villes, nom_pro, `competence_geo`, `id_competence_geo`, nom_departement, nom_region, nom_territoire  
 	FROM `bsl_offre` 
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel
-	JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme 
-	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`bsl_theme`.id_theme_pere
+	LEFT JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme 
+	LEFT JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`bsl_theme`.id_theme_pere
 	LEFT JOIN `bsl__departement` ON `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl__region` ON `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
@@ -65,7 +65,7 @@ $lien_desactives = ($flag_actif) ? "<a href=\"offre_liste.php?actif=non\">Liste 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style_backoffice.css" />
-    <link rel="icon" type="image/png" href="../img/compass-icon.png" />
+    <link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css" />
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>

@@ -1,5 +1,4 @@
 <?php
-//todo : travailler la prise en compte des territoires 
 require('secret/connect.php');
 include('inc/functions.php');
 session_start();
@@ -41,6 +40,7 @@ if (isset($_POST["maj_id"])) {
 		$last_id=$_POST["maj_id"];
 		$code_postal=substr($_POST["commune"], -5);
 		$ville=substr($_POST["commune"],0,-6);
+		$code_insee="";
 		$sql = "SELECT code_insee FROM `bsl__ville` WHERE code_postal='".$code_postal."' AND nom_ville LIKE '".$ville."'";
 		$result = mysqli_query($conn, $sql);
 		if (mysqli_num_rows($result) > 0) {
@@ -149,10 +149,10 @@ if(isset($_GET["id"])){
 }
 //********** affichage de l'offre
 if(isset($id_offre)) {
-	$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `id_sous_theme`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `bsl_professionnel`.id_professionnel, `nom_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, competence_geo, id_theme_pere, nom_departement, nom_region, nom_territoire 
+	$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `id_sous_theme`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `bsl_professionnel`.id_professionnel, `nom_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, competence_geo, id_theme_pere, nom_departement, nom_region, nom_territoire, id_competence_geo 
 	FROM `bsl_offre` 
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
-	JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme
+	LEFT JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme
 	LEFT JOIN `bsl__departement` ON `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl__region` ON `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
@@ -161,53 +161,100 @@ if(isset($id_offre)) {
 	if (mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
 		
-		//affichage de la compétence géo du pro (si pas sélection de villes)
-		if (!$row["zone_selection_villes"]) {
-			switch ($row["competence_geo"]) {
-				case "territoire":
-					$geo = $row["competence_geo"]." ".$row["nom_territoire"]; break;
-				case "departemental":
-					$geo = $row["competence_geo"]." ".$row["nom_departement"]; break;
-				case "regional":
-					$geo = $row["competence_geo"]." ".$row["nom_region"]; break;
-			}
+		//affichage de la compétence géo du pro 
+		switch ($row["competence_geo"]) {
+			case "territoire":
+				$geo = $row["competence_geo"]." ".$row["nom_territoire"]; break;
+			case "departemental":
+				$geo = $row["competence_geo"]." ".$row["nom_departement"]; break;
+			case "regional":
+				$geo = $row["competence_geo"]." ".$row["nom_region"]; break;
+			case "national":
+				$geo = $row["competence_geo"]; break;
 		}
 		
+		//affichage des critères de l'offre (selected dans listes déroulantes)
 		$sql2 = "SELECT * FROM `bsl_offre_criteres` where id_offre=".$id_offre;
 		$result2 = mysqli_query($conn, $sql2);
 		while ($row2 = mysqli_fetch_assoc($result2)) {
 			$criteres[$row2["nom_critere"]][$row2["valeur_critere"]]=1;
 		}
-    }
-	
-	//********* liste déroulante des thèmes du pro
+	}
+
+	//********* liste déroulante des thèmes / sous-thèmes du pro
 	$select_theme = "";
-	$sqlt = "SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` 
+	if (!$row['id_theme_pere']) { $select_theme = "<option value=\"\">A choisir</option>"; }
+	$select_sous_theme = "";
+	if (!$row['id_sous_theme']) { $select_sous_theme = "<option value=\"\">A choisir</option>"; }
+	$tab_select_soustheme = array ();
+	
+	$sqlt = "SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel`, `id_theme_pere` 
 		FROM `bsl_theme` 
-		JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` 
-		WHERE `actif_theme` = 1 AND `id_theme_pere` IS NULL AND `bsl_professionnel_themes`.`id_professionnel`=\"".$row["id_professionnel"]."\" ";
+		LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` 
+		WHERE `actif_theme` = 1 AND (id_professionnel IS NULL OR id_professionnel= \"".$row['id_professionnel']."\")";
 	$result = mysqli_query($conn, $sqlt);
 	while($rowt = mysqli_fetch_assoc($result)) {
-		$select_theme .= "<option value=\"".$rowt['id_theme']."\" ";
-		if ($rowt['id_theme']==$row['id_theme_pere']) { $select_theme .= " selected "; }
-		$select_theme .= ">".$rowt['libelle_theme']."</option>";
+		//liste des thèmes
+		if (!isset($rowt['id_theme_pere'])){
+			if ($rowt['id_professionnel']==$row['id_professionnel']){
+				$select_theme .= "<option value=\"".$rowt['id_theme']."\" ";
+				if ($rowt['id_theme']==$row['id_theme_pere']) { $select_theme .= " selected "; }
+				$select_theme .= ">".$rowt['libelle_theme']."</option>";
+			}
+			$tab_select_soustheme[$rowt['id_theme']]="";
+		//liste des sous-thèmes (par défaut les sous-thèmes du thème-père sélectionné)
+		}else {
+			if ($rowt['id_theme_pere']==$row['id_theme_pere']){
+				$select_sous_theme .= "<option value=\"".$rowt['id_theme']."\" ";
+				if ($rowt['id_theme']==$row['id_sous_theme']) { $select_sous_theme .= " selected "; }
+				$select_sous_theme .= ">".$rowt['libelle_theme']."</option>";
+			}
+			//tableau des listes pour fonction javascript ci-dessous
+			if(isset($tab_select_soustheme[$rowt['id_theme_pere']])) {
+				$tab_select_soustheme[$rowt['id_theme_pere']].="<option value='".$rowt['id_theme']."'>".$rowt['libelle_theme']."</option>";
+			}
+		}
 	}
-	//********* liste déroulante des sous-thèmes des thèmes du pro
-	$select_sstheme = "";
-	$sqlst = "SELECT `bsl_theme`.`id_theme`, `libelle_theme` 
-		FROM `bsl_theme` 
-		WHERE `actif_theme` = 1 AND `id_theme_pere` IN (SELECT `bsl_theme`.`id_theme` FROM `bsl_theme` JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` WHERE `id_theme_pere` IS NULL AND `bsl_professionnel_themes`.`id_professionnel`=\"".$row["id_professionnel"]."\" )";
-	$result = mysqli_query($conn, $sqlst);
-	while($rowt = mysqli_fetch_assoc($result)) {
-		$select_sstheme .= "<option value=\"".$rowt['id_theme']."\" ";
-		if ($rowt['id_theme']==$row['id_sous_theme']) { $select_sstheme .= " selected "; }
-		$select_sstheme .= ">".$rowt['libelle_theme']."</option>";
-	}
-	//********* liste des villes du pro
-	$select_villes_pro = "";
-	$sqlv = " ";
-	//...
 	
+	//*********** liste des villes accessibles au pro
+	$liste_villes_pro = "";
+	$sqlv = "SELECT `bsl__ville`.`code_insee`, MIN(`bsl__ville`.`code_postal`) as cp, `bsl__ville`.`nom_ville` 
+				FROM `bsl__ville` ";
+	switch ($row["competence_geo"]) {
+		case "territoire":
+			$sqlv .= " JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.code_insee=`bsl__ville`.code_insee
+			WHERE id_territoire=\"".$row["id_competence_geo"]."\""; break;
+		case "departemental":
+			$sqlv .= " WHERE SUBSTR(`bsl__ville`.code_insee,1,2)=\"".$row["id_competence_geo"]."\""; break;
+		case "regional":
+			$sqlv .= " JOIN `bsl__departement` ON SUBSTR(`bsl__ville`.code_insee,1,2)=`bsl__departement`.id_departement AND id_region=\"".$row["id_competence_geo"]."\""; break;
+		case "national":
+			$sqlv .= ""; break;
+	}
+	$sqlv .= "GROUP BY `bsl__ville`.`code_insee`, `bsl__ville`.`nom_ville`
+				ORDER BY nom_ville";
+	$result = mysqli_query($conn, $sqlv);
+	if (mysqli_num_rows($result) > 0) {
+		while($rowv = mysqli_fetch_assoc($result)) {
+			$liste_villes_pro .= "<option value=\"".$rowv["code_insee"]."\">".$rowv["nom_ville"]." ".$rowv["cp"]. "</option>";
+		}
+	}
+	
+	//*********** liste des villes liées à l'offre
+	$liste2 = "";
+	if ($row["zone_selection_villes"]) { 
+		$sqlv2 = "SELECT * FROM `bsl_offre_criteres` 
+		JOIN bsl__ville ON valeur_critere=code_insee 
+		WHERE `nom_critere` LIKE 'villes' AND id_offre=".$id_offre." 
+		ORDER BY nom_ville";
+		$result = mysqli_query($conn, $sqlv2);
+		if (mysqli_num_rows($result) > 0) {
+			while($rowv2 = mysqli_fetch_assoc($result)) {
+				$liste2 .= "<option value=\"".$rowv2["code_insee"]."\">".$rowv2["nom_ville"]." ".$rowv2["code_postal"]. "</option>";
+			}
+		}
+	}
+
 //********** sinon écran de création simple : récupération de la liste des professionnels en fonction des droits du user
 }else{
 	$sql = "SELECT id_professionnel, nom_pro FROM `bsl_professionnel` WHERE 1 "; //todo limiter en fonction du user_statut
@@ -233,7 +280,7 @@ if(isset($id_offre)) {
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Boussole des jeunes</title>
-    <link rel="icon" type="image/png" href="../img/compass-icon.png" />
+    <link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 	<link rel="stylesheet" href="css/style_backoffice.css" />
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
@@ -246,7 +293,7 @@ if(isset($id_offre)) {
 //******** jquery
 //fonction autocomplete commune
 $( function() {
-	var listeVilles = [<?php include('../inc/villes_index.inc');?>];
+	var listeVilles = [<?php include('inc/villes_index.inc');?>];
 	$( "#villes" ).autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -310,6 +357,19 @@ function commande(nom, argument) {
 function htmleditor() {
   document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
 }
+
+function choixTheme(that){
+  var x = that.value;
+  var tab = [];
+<?php
+if (isset($tab_select_soustheme)){
+	foreach ($tab_select_soustheme as $key => $value) {
+		echo "tab[".$key ."] = \"".$value."\";\r\n";
+	}
+}
+?>
+  document.getElementById("select_sous_themes").innerHTML = tab[x];
+}
 </script>
 </head>
 
@@ -354,22 +414,14 @@ if ($id_offre) {
 ?>
 		<div class="lab">  
 			<label for="theme">Thème :</label>
-			<select name="theme">
-				<?php echo $select_theme; ?><!--
-				<option value="" >A choisir</option>
-				<option value="emploi" <?php if ($id_offre) {if ($row["theme_offre"]=="emploi") { echo "selected"; }} ?> >Emploi</option>
-				<option value="logement" <?php if ($id_offre) {if ($row["theme_offre"]=="logement") { echo "selected"; }} ?> >Logement</option>
-				<option value="">...</option> -->
+			<select id="select_themes" name="theme" onchange="choixTheme(this)">
+				<?php echo $select_theme; ?>
 			</select> 
 		</div>
 		<div class="lab">
 			<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème(s)</abbr> :</label>
-			<select name="sous_theme">
-				<?php echo $select_sstheme; ?><!--
-				<option value="" >A choisir</option>
-				<option value="techniques" <?php if ($id_offre) {if ($row["sous_theme_offre"]=="techniques") { echo "selected"; }} ?> >Rendre ma recherche d'emploi plus efficace par la maitrise des techniques</option>
-				<option value="information" <?php if ($id_offre) {if ($row["sous_theme_offre"]=="information") { echo "selected"; }} ?> >Être informé sur les salons, forums, évènements et actualités utiles à ma recherche d'emploi.</option>
-				<option value="">...</option>  -->
+			<select id="select_sous_themes" name="sous_theme">
+				<?php echo $select_sous_theme; ?>
 			</select> 
 		</div>
 <?php } ?>
@@ -428,11 +480,11 @@ if(isset($id_offre)) {
 			<label for="zone">Zone concernée :</label>
 			<div style="display:inline-block;">
 				<input type="radio" name="zone" value="0" <?php if ($id_offre) {if (!$row["zone_selection_villes"]) { echo "checked"; }} else { echo "checked"; } ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence géographique du pro <?php echo "<small>(".$geo.")</small>"; ?><br/>
-				<input type="radio" name="zone" value="1" <?php if ($id_offre) {if ($row["zone_selection_villes"]) { echo "checked"; }} ?>  onchange="document.getElementById('div_liste_villes').style.display = 'block';" > Sélection de villes
+				<input type="radio" name="zone" value="1" <?php if ($id_offre) {if ($row["zone_selection_villes"]) { echo "checked"; }} ?>  onchange="document.getElementById('div_liste_villes').style.display = 'block';" > Sélection de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
 			</div>
 		</div>
 		<div class="lab" id="div_liste_villes"  style="display:<?php if ($id_offre) {if ($row["zone_selection_villes"]) { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>">
-			<label for="villes">Villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr> :</label>
+			<!--<label for="villes">Villes  :</label>
 			<select name="villes[]" multiple size=10 >
 			<?php 
 			//********* liste des villes liées au pro, le cas échéant
@@ -451,34 +503,15 @@ if(isset($id_offre)) {
 			*/
 			//en attendant la gestion des territoires
 			//include('tmp_liste_villes_territoire_reims.inc'); 
-			?> 
+			?> -->
 			
-<!--********************** compétence villes => désactivé 
-			<div id="liste_villes" style="width:100%; vertical-align: middle; height: 100%; display:<?php if ($id_professionnel) {if ($row["competence_geo"]=="villes") { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>;">
+<!--********************** compétence villes => désactivé -->
+			<!--<div id="liste_villes" style="width:100%; vertical-align: middle; height: 100%; display:<?php if ($id_professionnel) {if ($row["competence_geo"]=="villes") { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>;">-->
 				<div style="margin-bottom:1em;">Filtre : <input id="textbox" value="nom de ville, code postal ou département..." type="text" style="width:20em;" onFocus="javascript:this.value='';"></div>
 				
 				<div style="display:inline-block; vertical-align:top;">		
 					<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
-<?php 
-/*
-if ($_SESSION['user_statut']==1) { 
-	include('inc/villes_options_insee.inc'); 
-} else { 
-	//********* liste des villes liées au territoire
-	$liste1 = "";
-	$sql = "SELECT `bsl__ville`.`code_insee`, `bsl__ville`.`code_postal`, `bsl__ville`.`nom_ville` 
-		FROM `bsl__ville` JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`code_insee`=`bsl__ville`.`code_insee` 
-		WHERE `id_territoire`=".$_SESSION['territoire_id']."
-		ORDER BY nom_ville";
-	$result = mysqli_query($conn, $sql);
-	if (mysqli_num_rows($result) > 0) {
-		while($row = mysqli_fetch_assoc($result)) {
-			$liste1 .= "<option value=\"".$row["code_insee"]."\">".$row["nom_ville"]." ".$row["code_postal"]. "</option>";
-		}
-	}
-	echo $liste1;
-}*/
-?>
+						<?php echo $liste_villes_pro ; ?>
 					</select>
 				</div>
 
@@ -491,7 +524,7 @@ if ($_SESSION['user_statut']==1) {
 				<div style="display:inline-block;  vertical-align:top;">
 					<select name="list2[]" id="list2" MULTIPLE SIZE="10" style=" min-width:14em;"><?php echo $liste2;?></select>
 				</div>
-			</div> ************************** -->
+			</div> 
 			</select>
 		</div>
 		<div class="lab">
@@ -704,7 +737,7 @@ echo $t;
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r(@$_POST);echo "<br/>"; echo @$req;echo "<br/>";  print_r(@$row);echo "<br/>";print_r(@$criteres); echo @$sql."<br/>".@$sqlt."<br/>".@$sqlst;echo "</pre>"; 
+	echo "<pre>";print_r(@$_POST);echo "<br/>"; echo @$req;echo "<br/>";  print_r(@$row);echo "<br/>";print_r(@$criteres); print_r(@$tab_select_soustheme); echo @$sql."<br/>".@$sqlt."<br/>".@$sqlst."<br/>".@$sqlv."<br/>".@$sqlv2."</pre>"; 
 }
 ?>
 </body>

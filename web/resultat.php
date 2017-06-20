@@ -1,9 +1,4 @@
 <?php
-/************************ todo 24/5/2017 : 
-- remonter besoin/thème/sousthème en BD
-- trier les offres par proximité géographique (nécessaite d'importer latitude/longitude en BD)
-****************************************/
-
 include('secret/connect.php');
 include('inc/functions.php');
 
@@ -13,39 +8,22 @@ session_cache_limiter('private_no_expire');
 
 //********* valeur de sessions
 session_start();
-if (isset($_POST["temps_plein"])) { $_SESSION['temps_plein'] = securite_bdd($conn, $_POST["temps_plein"]); }
-if (isset($_POST["experience"])) { $_SESSION['experience'] = securite_bdd($conn, $_POST["experience"]); }
-//pas de securite_bdd() pour ces 3 là car ce sont des tableaux - on passe la fonction plus bas
-if (isset($_POST["secteur"])) { $_SESSION['secteur'] = $_POST["secteur"]; }
-if (isset($_POST["type_emploi"])) { $_SESSION['type_emploi'] = $_POST["type_emploi"]; }
-if (isset($_POST["inscription"])) { $_SESSION['inscription'] = $_POST["inscription"]; }
 
-//********* conversion besoin/thème
-$theme = null;
-$tab_besoins = ["Trouver un emploi" => "emploi"];
-if (isset($tab_besoins[$_SESSION["besoin"]])) $theme = $tab_besoins[$_SESSION["besoin"]];
+$soustheme_encours = "";
+$affichage="";
+$aucune_offre="";
 
-$soustheme=null;
-$soustheme_tab = ["techniques" => "Rendre ma recherche d'emploi plus efficace par la maitrise des techniques", "information" => "Être informé sur les salons, forums, évènements et actualités utiles à ma recherche d'emploi"];
-
-//************ message
-if (!isset($_SESSION['ville_habitee'])) {
-    $message = "J'habite je ne sais où et je ne sais quoi. <a href=\"index.php\">Recommence</a>.";
-    
+//************ si accès direct à la page, renvoi vers l'accueil
+if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
+	header('Location: index.php');
 } else {    
-    if (!isset($_SESSION['besoin'])) {
-        $message = "J'habite à ".$_SESSION['ville_habitee']." et je sais pas trop où j'ai cliqué.";
-     
-    } else {    
-        $message = "J'habite à <b>".$_SESSION['ville_habitee']."</b> et je souhaite <b>".strtolower ($_SESSION['besoin'])."</b>.";
-    }
+	$message = "J'habite à <b>".$_SESSION['ville_habitee']."</b> et je souhaite <b>".strtolower ($_SESSION['besoin'])."</b>.";
 }
 
-//***************** liste des critères
+//***************** liste des critères (valeurs de session affichées à l'écran)
 $txt_criteres=null;
 foreach($_SESSION as $index=>$valeur){
-	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "sexe", "europeen", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
-	
+	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "sexe", "europeen", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription"); 
 	if(in_array($index, $tab_criteres_a_afficher)){
 		$txt = str_replace("_", " ", $index)." : ";
 		if(is_array($valeur)){
@@ -57,14 +35,16 @@ foreach($_SESSION as $index=>$valeur){
 		}
 		$txt_criteres .= $txt.'<br/>';
 	}
-} 
+}
 
 //************ construction de LA requête
-$sql = "SELECT * FROM (
-	SELECT `bsl_offre`.*,
+//todo zone_selection_villes & villes...
+$sql = "SELECT t.*, `bsl_theme`.libelle_theme AS `sous_theme_offre`, `theme_pere`.libelle_theme AS `theme_offre` 
+	FROM ( SELECT `bsl_offre`.*,   /*********** on remonte la liste des critères */
 		GROUP_CONCAT( if(nom_critere= 'age_min', valeur_critere, NULL ) separator '|') age_min, 
 		GROUP_CONCAT( if(nom_critere= 'age_max', valeur_critere, NULL ) separator '|') age_max, 
 		GROUP_CONCAT( if(nom_critere= 'villes', valeur_critere, NULL ) separator '|') villes, 
+		GROUP_CONCAT( if(nom_critere= 'sexe', valeur_critere, NULL ) separator '|') sexe, 
 		GROUP_CONCAT( if(nom_critere= 'jesais', valeur_critere, NULL ) separator '|') jesais, 
 		GROUP_CONCAT( if(nom_critere= 'situation', valeur_critere, NULL ) separator '|') situation, 
 		GROUP_CONCAT( if(nom_critere= 'europeen', valeur_critere, NULL ) separator '|') europeen, 
@@ -82,9 +62,29 @@ $sql = "SELECT * FROM (
 	WHERE `bsl_offre`.actif_offre=1 
 	GROUP BY bsl_offre_criteres.id_offre
 ) as t
-WHERE t.debut_offre <= CURDATE() AND t.fin_offre >= CURDATE() AND t.theme_offre='".$theme."' AND (t.zone_selection_villes='0' OR t.villes LIKE '%".$_SESSION["code_insee"]."%') AND t.age_min <= ".$_SESSION["age"]." AND t.age_max >= ".$_SESSION["age"]."
+JOIN `bsl_theme` ON `bsl_theme`.id_theme=`t`.id_sous_theme
+JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`bsl_theme`.id_theme_pere
+LEFT JOIN `bsl_professionnel` ON t.zone_selection_villes=0 AND `bsl_professionnel`.id_professionnel=`t`.id_professionnel /* s'il n'y a pas une liste de villes propre à l'offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d'où les jointures en dessous ↓ */
+LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.competence_geo='territoire' AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
+LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire`
+LEFT JOIN `bsl__departement` ON `bsl_professionnel`.competence_geo='departemental' AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
+LEFT JOIN `bsl__region` ON `bsl_professionnel`.competence_geo='regional' AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
+LEFT JOIN `bsl__departement` as `bsl__departement_region` ON `bsl__departement_region`.`id_region`=`bsl__region`.`id_region`
+	
+WHERE t.debut_offre <= CURDATE() AND t.fin_offre >= CURDATE() 
+AND `bsl_professionnel`.actif_pro=1
+AND `theme_pere`.libelle_theme='".$_SESSION['besoin']."' 
+AND ((t.zone_selection_villes=1 AND t.villes LIKE '%".$_SESSION["code_insee"]."%') /* soit il y a une liste de villes au niveau de l'offre */
+	OR (t.zone_selection_villes=0 AND ( /* sinon il faut chercher dans la zone de compétence du pro */
+		`bsl_professionnel`.competence_geo='national'
+		OR `bsl_territoire_villes`.code_insee='".$_SESSION['code_insee']."'
+		OR `bsl__departement`.id_departement=SUBSTR('".$_SESSION['code_insee']."',1,2) 
+		OR `bsl__departement_region`.id_departement=SUBSTR('".$_SESSION['code_insee']."',1,2)
+	)))
+AND t.age_min <= ".$_SESSION["age"]." AND t.age_max >= ".$_SESSION["age"]."
 AND t.situation LIKE '%".$_SESSION["situation"]."%' AND t.etudes LIKE '%".$_SESSION["etudes"]."%' AND t.diplome LIKE '%".$_SESSION["diplome"]."%'  AND t.temps_plein LIKE '%".$_SESSION["temps_plein"]."%'
-"; //todo zone_selection_villes & villes...
+"; 
+if (isset($_SESSION["sexe"])) $sql .= " AND t.sexe LIKE '%".$_SESSION["sexe"]."%'";
 if (isset($_SESSION["jesais"])) $sql .= " AND t.jesais LIKE '%".$_SESSION["jesais"]."%'";
 if (isset($_SESSION["europeen"])) $sql .= " AND t.europeen LIKE '%".$_SESSION["europeen"]."%'";
 if (isset($_SESSION["handicap"])) $sql .= " AND t.handicap LIKE '%".$_SESSION["handicap"]."%'";
@@ -111,7 +111,7 @@ if (isset($_SESSION['inscription'])){
 	}
 	$sql .= " AND (". $boutdesql. " FALSE)";
 }
-$sql .= " ORDER BY sous_theme_offre";
+$sql .= " ORDER BY id_sous_theme";
 
 $result = mysqli_query($conn, $sql);
 $nb_offres = mysqli_num_rows($result);
@@ -121,6 +121,35 @@ if ($nb_offres>1) {
 	$msg="Une offre correspond à ta recherche.";
 }else{
 	$msg="Aucune offre ne correspond à ta recherche.";
+}
+
+if ($nb_offres > 0) {
+	while($row = mysqli_fetch_assoc($result)) {        
+
+		//*********** séparation par sous thèmes
+		if ($row["sous_theme_offre"]!=$soustheme_encours){
+			if ($soustheme_encours) $affichage .= "</fieldset>"; /*tweak */
+			$soustheme_encours=$row["sous_theme_offre"];            
+			$affichage .= "<fieldset class=\"resultat\"><legend>".$soustheme_encours."</legend>\n<div style=\"width:100%; margin:auto;\" />";     
+		}
+
+		//*********** affichage des offres 
+		/*$affichage .= "<div class=\"resultat_offre\"><div class=\"coeur\">&#9825;</div><b><a href=\"offre.php?id=".$row["id_offre"]."\">".$row["nom_offre"]."</a></b><br/><small>";
+		$affichage .= (strlen($row["description_offre"]) > 50 ) ? substr($row["description_offre"],0,strpos($row["description_offre"]," ",50))."..." : $row["description_offre"] ; 
+		$affichage .= "</small></div>";*/
+		
+		$affichage .= "<div class=\"resultat_offre\"><div class=\"coeur\">&#9825;</div><a href=\"offre.php?id=".$row["id_offre"]."\"><b>".$row["nom_offre"]."</b><br/><small>";
+		$affichage .= (strlen($row["description_offre"]) > 50 ) ? substr($row["description_offre"],0,strpos($row["description_offre"]," ",50))."..." : $row["description_offre"] ; 
+		$affichage .= "</small></a></div>";
+	}
+	$affichage .= "</fieldset>";
+}
+
+if ($nb_offres > 0) {
+	$titre_criteres = "<p onclick='masqueCriteres()'>".$message."<span id=\"fleche_criteres\">&#9661;</span></p>";
+	$aucune_offre = "<a href=\"#\">Aucune offre ne m'intéresse</a>";
+}else{
+	$titre_criteres = "<p>".$message."</p>";
 }
 ?>
 
@@ -156,8 +185,8 @@ function masqueCriteres(){
 <fieldset class="resultat">
 	<legend>Rappel de mes informations</legend>
 	<div>
-		<p onclick='masqueCriteres()'><?php echo $message; ?> <span id="fleche_criteres">&#9661;</span></p>
-		<div id="criteres" style="display:none;">
+		<?php echo $titre_criteres; ?>
+		<div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
 			<div class="colonnes">
 				<?php echo $txt_criteres; ?>  <abbr title="A mettre en forme...">&#9888;</abbr>
 			</div>
@@ -171,42 +200,15 @@ function masqueCriteres(){
 
 <form class="joli resultat" style="margin-top:1%;">
 <?php
-if ($nb_offres > 0) {
-	$affichage="";
-    while($row = mysqli_fetch_assoc($result)) {        
-        
-//*********** séparation par sous thèmes
-        if ($row["sous_theme_offre"]!=$soustheme){
-            if ($soustheme) $affichage .= "</fieldset>"; /*tweak */
-			$soustheme=$row["sous_theme_offre"];
-            $tmp = $soustheme;
-            if (isset($soustheme_tab[$soustheme]))
-                $tmp = $soustheme_tab[$soustheme];
-            
-            $affichage .= "<fieldset class=\"resultat\"><legend>".$tmp."</legend>
-            <div style=\"width:100%; margin:auto;\" />";     
-        }
-
-//*********** affichage des offres 
-        $affichage .= "<div class=\"resultat_offre\"><div class=\"coeur\">&#9825;</div><b><a href=\"offre.php?id=".$row["id_offre"]."\">".$row["nom_offre"]."</a></b><br/><small>";
-
-        if(strlen($row["description_offre"]) > 50 ){
-			$affichage .= substr($row["description_offre"],0,strpos($row["description_offre"]," ",50))."...";
-		}else {
-			$affichage .= $row["description_offre"];
-		}
-        $affichage .= "</small></div>";
-
-    }
-	$affichage .= "</fieldset>";
 	echo $affichage;
-}
 ?>
 	</fieldset>
 </form>
 
 <div class="lienenbas">
-	<a href="#">Aucune offre ne m'intéresse</a>
+<?php
+	echo $aucune_offre;
+?>
 </div>
 
 <div style="height:2em;">&nbsp;</div>  <!--tweak css-->

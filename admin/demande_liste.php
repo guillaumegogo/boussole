@@ -55,7 +55,7 @@ $lien_traites = ($flag_traite) ? "<a href=\"demande_liste.php\">Liste des demand
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style_backoffice.css" />
-    <link rel="icon" type="image/png" href="../img/compass-icon.png" />
+    <link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css" />
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>

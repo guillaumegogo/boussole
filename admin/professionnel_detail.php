@@ -30,7 +30,7 @@ if (isset($_POST["maj_id"])) {
 	$code_insee = "";
 	$themes = "";
 	$code_postal=substr($_POST["commune"], -5);
-	$ville=substr($_POST["commune"],0,-6);	
+	$ville=substr($_POST["commune"],0,-6);
 	$sql = "SELECT code_insee FROM `bsl__ville` WHERE code_postal='".$code_postal."' AND nom_ville LIKE '".$ville."'";
 	$result = mysqli_query($conn, $sql);
 	if (mysqli_num_rows($result) > 0) {
@@ -206,7 +206,7 @@ $sqlt = "SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel`
 	FROM `bsl_theme` 
 	LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` 
 		AND `bsl_professionnel_themes`.`id_professionnel`=\"".$id_professionnel."\" 
-	WHERE `id_theme_pere` IS NULL ";
+	WHERE actif_theme=1 AND `id_theme_pere` IS NULL ";
 $result = mysqli_query($conn, $sqlt);
 while($rowt = mysqli_fetch_assoc($result)) {
 	$select_theme .= "<option value=\"".$rowt['id_theme']."\" ";
@@ -220,7 +220,7 @@ while($rowt = mysqli_fetch_assoc($result)) {
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="../img/compass-icon.png" />
+	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/style_backoffice.css" />
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
@@ -228,7 +228,7 @@ while($rowt = mysqli_fetch_assoc($result)) {
 	<script type="text/javascript">
 //fonction autocomplete commune
 $( function() {
-	var listeVilles = [<?php include('../inc/villes_index.inc');?>];
+	var listeVilles = [<?php include('inc/villes_index.inc');?>];
 	$( "#villes" ).autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -294,8 +294,6 @@ function displayGeo(that) {
 			<label for="theme[]">Thème(s) :</label>
 			<select name="theme[]" multiple size="2">
 				<?php echo $select_theme; ?>
-				<!--<option value="emploi" <?php if ($id_professionnel) {if (in_array("emploi", explode(';',$row["theme_pro"]))) { echo "selected"; }} ?> >Emploi</option>
-				<option value="logement" <?php if ($id_professionnel) {if (in_array("logement", explode(';',$row["theme_pro"]))) { echo "selected"; }} ?> >Logement</option>-->
 			</select> 
 		</div>
 		<div class="lab">
