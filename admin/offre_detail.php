@@ -59,8 +59,8 @@ if (isset($_POST["maj_id"])) {
 			if($_POST["maj_criteres"]=="emploi"){
 
 				$req2 = "INSERT INTO `bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES (".$last_id.", \"age_min\", \"".$_POST['age_min']."\"),  (".$last_id.", \"age_max\", \"".$_POST['age_max']."\")";
-				if (isset($_POST['villes'])){
-					foreach ($_POST['villes'] as $selected_option) {
+				if (isset($_POST['list2'])){
+					foreach ($_POST['list2'] as $selected_option) {
 						$req2 .= ", (".$last_id.", \"villes\", \"".$selected_option."\")";
 					}
 				}
@@ -79,9 +79,9 @@ if (isset($_POST["maj_id"])) {
 						$req2 .= ", (".$last_id.", \"situation\", \"".$selected_option."\")";
 					}
 				}
-				if (isset($_POST['europeen'])){
-					foreach ($_POST['europeen'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"europeen\", \"".$selected_option."\")";
+				if (isset($_POST['nationalite'])){
+					foreach ($_POST['nationalite'] as $selected_option) {
+						$req2 .= ", (".$last_id.", \"nationalite\", \"".$selected_option."\")";
 					}
 				}
 				if (isset($_POST['permis'])){
@@ -313,7 +313,7 @@ $(function() {
 	$('#list1').filterByText($('#textbox'));
 });
 function checkall(){
-	var sel= document.getElementById('list2') 
+	var sel= document.getElementById('list2'); 
 	for(i=0;i<sel.options.length;i++){
 		sel.options[i].selected=true;
 	}
@@ -377,17 +377,18 @@ if (isset($tab_select_soustheme)){
 <h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div> 
 
+<div class="container">
 <h2><?php if ($id_offre) { echo "Modification"; } else { echo "Ajout"; } ?> d'une offre de service</h2>
 <?php echo $msg; ?>
 
-<form method="post" class="detail" onsubmit='htmleditor()'>
+<form method="post" class="detail" onsubmit='checkall(); htmleditor()'>
 
 <input type="hidden" name="maj_id" value="<?php echo $id_offre; ?>">
 
 <fieldset>
 	<legend>Détail de l'offre de service</legend>
 
-    <div class="col">
+    <div class="deux_colonnes">
 		<div class="lab">
 			<label for="nom">Nom de l'offre de service :</label>
 			<input type="text" name="nom" value="<?php if ($id_offre) { echo $row["nom_offre"]; } ?>"/>
@@ -426,9 +427,9 @@ if ($id_offre) {
 		</div>
 <?php } ?>
 	</div>
-    <div class="col">
+    <div class="deux_colonnes">
 		<div class="lab">
-		<label for="pro">Professionnel :</label>
+			<label for="pro">Professionnel :</label>
 <?php //si création d'une offre de service -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
 if(isset($id_offre)) { 
 			echo"<input type=\"text\" name=\"pro\" value=\"".$row["nom_pro"]."\" disabled/>";
@@ -507,32 +508,30 @@ if(isset($id_offre)) {
 			
 <!--********************** compétence villes => désactivé -->
 			<!--<div id="liste_villes" style="width:100%; vertical-align: middle; height: 100%; display:<?php if ($id_professionnel) {if ($row["competence_geo"]=="villes") { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>;">-->
-				<div style="margin-bottom:1em;">Filtre : <input id="textbox" value="nom de ville, code postal ou département..." type="text" style="width:20em;" onFocus="javascript:this.value='';"></div>
+			<div style="margin-bottom:1em;">Filtre : <input id="textbox" value="nom de ville, code postal ou département..." type="text" style="width:20em;" onFocus="javascript:this.value='';"></div>
+			
+			<div style="display:inline-block; vertical-align:top;">		
+				<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
+					<?php echo $liste_villes_pro ; ?>
+				</select>
+			</div>
+
+			<div style="display:inline-block; margin-top:1em; vertical-align: top;">
+				<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="right" VALUE="&gt;&gt;" ONCLICK="moveSelectedOptions(this.form['list1'],this.form['list2'],true)">
 				
-				<div style="display:inline-block; vertical-align:top;">		
-					<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
-						<?php echo $liste_villes_pro ; ?>
-					</select>
-				</div>
+				<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;" ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
+			</div>
 
-				<div style="display:inline-block; margin-top:1em; vertical-align: top;">
-					<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="right" VALUE="&gt;&gt;" ONCLICK="moveSelectedOptions(this.form['list1'],this.form['list2'],true)">
-					
-					<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;" ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
-				</div>
-
-				<div style="display:inline-block;  vertical-align:top;">
-					<select name="list2[]" id="list2" MULTIPLE SIZE="10" style=" min-width:14em;"><?php echo $liste2;?></select>
-				</div>
-			</div> 
-			</select>
+			<div style="display:inline-block;  vertical-align:top;">
+				<select name="list2[]" id="list2" MULTIPLE SIZE="10" style=" min-width:14em;"><?php echo $liste2;?></select>
+			</div>
 		</div>
 		<div class="lab">
 			<label for="actif">Offre active :</label>
 			<input type="radio" name="actif" value="1" <?php if ($id_offre) {if ($row["actif_offre"]=="1") { echo "checked"; }} else echo "checked";  ?>> Oui <input type="radio" name="actif" value="0" <?php if ($id_offre) {if ($row["actif_offre"]=="0") { echo "checked"; }} ?>> Non
 		</div>
-<?php } ?>
 	</div>
+<?php } ?>
 </fieldset>
 
 <?php 
@@ -542,9 +541,9 @@ if ($id_offre) {
 	if ($row["id_theme_pere"]=="1") { 
 ?>
 <fieldset>
-	<legend>Sélection des critères correspondant à l'offre de service</legend>
+	<legend>Liste des critères de l'offre de service</legend>
 	<input type="hidden" name="maj_criteres" value="emploi">
-	<div class="col">
+	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="age_min">Age :</label>
 			de <select name="age_min" class="age">
@@ -588,7 +587,7 @@ echo $t;
 			<label for="situation[]">Situation :</label>
 			<select name="situation[]" multiple  size="10">
 				<option value="sans activite"  <?php if (isset($criteres["situation"]["sans activite"])) { echo "selected"; } ?>>Sans activité</option>
-				<option value="collegien"  <?php if (isset($criteres["situation"]["collegien"])) { echo "selected"; } ?>>Collégien</option>
+				<option value="collegien"  <?php if (isset($criteres["situation"]["collegien"])) { echo "selected"; } ?>>collégien</option>
 				<option value="lyceen"  <?php if (isset($criteres["situation"]["lyceen"])) { echo "selected"; } ?>>Lycéen</option>
 				<option value="etudiant"  <?php if (isset($criteres["situation"]["etudiant"])) { echo "selected"; } ?>>Etudiant</option>
 				<option value="stagiaire form pro"  <?php if (isset($criteres["situation"]["stagiaire form pro"])) { echo "selected"; } ?>>Stagiaire form pro</option>
@@ -600,10 +599,11 @@ echo $t;
 			</select>
 		</div>
 		<div class="lab">
-			<label for="europeen[]">Européen (UE) :</label>
-			<select name="europeen[]" multiple size="2">
-				<option value="oui" <?php if (isset($criteres["europeen"]["oui"])) { echo "selected"; } ?>>Oui</option>
-				<option value="non" <?php if (isset($criteres["europeen"]["non"])) { echo "selected"; } ?>>Non</option> 
+			<label for="nationalite[]">Nationalité :</label>
+			<select name="nationalite[]" multiple size="3">
+				<option value="francais" <?php if (isset($criteres["nationalite"]["francais"])) { echo "selected"; } ?>>Français</option>
+				<option value="europeen" <?php if (isset($criteres["nationalite"]["europeen"])) { echo "selected"; } ?>>Européen</option> 
+				<option value="hors-ue" <?php if (isset($criteres["nationalite"]["hors-ue"])) { echo "selected"; } ?>>Hors-UE</option> 
 			</select>
 		</div>
 		<div class="lab">
@@ -630,10 +630,10 @@ echo $t;
 		<div class="lab">
 			<label for="type_emploi[]">Type d'emploi :</label>
 			<select name="type_emploi[]" multiple size="4">
-				<option value="job ete" <?php if (isset($criteres["type_emploi"]["job ete"])) { echo "selected"; } ?>>Job d'été ou saisonnier</option>
-				<option value="job etudiant" <?php if (isset($criteres["type_emploi"]["job etudiant"])) { echo "selected"; } ?>>Job étudiant</option>
-				<option value="emploi durable" <?php if (isset($criteres["type_emploi"]["emploi durable"])) { echo "selected"; } ?>>Emploi "durable"</option>
-				<option value="emploi formation" <?php if (isset($criteres["type_emploi"]["emploi formation"])) { echo "selected"; } ?>>Emploi avec une formation</option>
+				<option value="ete" <?php if (isset($criteres["type_emploi"]["ete"])) { echo "selected"; } ?>>Job d'été ou saisonnier</option>
+				<option value="etudiant" <?php if (isset($criteres["type_emploi"]["etudiant"])) { echo "selected"; } ?>>Job étudiant</option>
+				<option value="durable" <?php if (isset($criteres["type_emploi"]["durable"])) { echo "selected"; } ?>>Emploi "durable"</option>
+				<option value="formation" <?php if (isset($criteres["type_emploi"]["formation"])) { echo "selected"; } ?>>Emploi avec une formation</option>
 			</select>
 		</div>
 		<div class="lab">
@@ -644,10 +644,11 @@ echo $t;
 			</select>
 		</div>
 	</div>
-	<div class="col">
+	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="etudes[]">Dernières études :</label>
 			<select name="etudes[]" multiple size="6">
+				<option value="aucune" <?php if (isset($criteres["etudes"]["aucune"])) { echo "selected"; } ?>>Aucune</option>
 				<option value="college" <?php if (isset($criteres["etudes"]["college"])) { echo "selected"; } ?>>Collège</option>
 				<option value="lycee" <?php if (isset($criteres["etudes"]["lycee"])) { echo "selected"; } ?>>Lycée</option>
 				<option value="etudes superieures" <?php if (isset($criteres["etudes"]["etudes superieures"])) { echo "selected"; } ?>>Etudes supérieures</option>
@@ -659,6 +660,7 @@ echo $t;
 		<div class="lab">
 			<label for="diplome[]">Diplôme :</label>
 			<select name="diplome[]" multiple size="10">
+				<option value="aucun" <?php if (isset($criteres["diplome"]["aucun"])) { echo "selected"; } ?>>Aucun</option>
 				<option value="brevet" <?php if (isset($criteres["diplome"]["brevet"])) { echo "selected"; } ?>>Brevet des collèges</option>
 				<option value="cap" <?php if (isset($criteres["diplome"]["cap"])) { echo "selected"; } ?>>CAP</option>
 				<option value="bep" <?php if (isset($criteres["diplome"]["bep"])) { echo "selected"; } ?>>BEP</option>
@@ -728,12 +730,13 @@ echo $t;
 } 
 ?>
 	
-<div class="button">
-	<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
-	<input type="reset" value="Reset">
-	<input type="submit" value="Enregistrer">
-</div>
+	<div class="button">
+		<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
+		<input type="reset" value="Reset">
+		<input type="submit" value="Enregistrer">
+	</div>
 </form>
+</div>
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {

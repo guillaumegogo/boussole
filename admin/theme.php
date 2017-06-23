@@ -10,7 +10,7 @@ if (!in_array($_SESSION['user_statut'], array("administrateur"))) header('Locati
 $msg = "";
 $libelle_theme_choisi = "";
 
-$id_theme_choisi = 0;
+$id_theme_choisi = 1;
 if (isset($_POST['choix_theme'])) $id_theme_choisi = $_POST['choix_theme'];
 
 //********** mise à jour/création du theme
@@ -25,6 +25,18 @@ if (isset($_POST["submit_meta"])) {
 				$rresult=mysqli_query($conn, $rreq);
 			}
 		}
+		if ($result) { 
+			$msg = "<div class=\"soustitre\">Modification bien enregistrée.</div>";
+		}
+	}
+}
+
+//********** mise à jour/création du theme
+if (isset($_POST["submit_nouveau_sous_theme"])) {
+	$id_theme_choisi = $_POST["maj_id_theme"];
+	if ($id_theme_choisi) {
+		$req= "INSERT INTO `bsl_theme` (`libelle_theme`, `id_theme_pere`, `actif_theme`) VALUES ( \"".$_POST["libelle_nouveau_sous_theme"]."\", '".$id_theme_choisi."', '0')";
+		$result=mysqli_query($conn, $req);
 		if ($result) { 
 			$msg = "<div class=\"soustitre\">Modification bien enregistrée.</div>";
 		}
@@ -110,30 +122,41 @@ if ($id_theme_choisi) {
 if ($id_theme_choisi) {
 ?>
 <form method="post"  class="detail">
-	<fieldset style="margin-bottom:2em;">
+	<fieldset style="margin-bottom:1em;">
 	<legend>Gérer le theme</legend>
-		<div class="col">
+		<div class="deux_colonnes" style="width:auto; min-width:auto;">
 			<div class="lab">
-				<label for="libelle_theme">Libellé :</label>
+				<label for="libelle_theme" class="court">Libellé :</label>
 				<input type="text" name="libelle_theme" value="<?php echo $libelle_theme_choisi; ?>">
 			</div>
 			<div class="lab">
-				<label for="actif">Actif :</label>
+				<label for="actif" class="court">Actif :</label>
 				<input type="radio" name="actif" value="1" <?php if ($actif_theme_choisi=="1") { echo "checked"; } ?>> Oui 
 				<input type="radio" name="actif" value="0" <?php if ($actif_theme_choisi=="0") { echo "checked"; } ?>> Non
+				
 			</div>
 			<input type="hidden" name="maj_id_theme" value="<?php echo $id_theme_choisi; ?>">
 		</div>
-	</fieldset>
-	<fieldset>
-	<legend>Sous-thèmes</legend>
-<?php echo $tableau; ?>
-
+		<input type="submit" style="display:inline-block; vertical-align:bottom;" name="submit_theme" value="Valider">
 	</fieldset>
 	
-	<div class="button">
-		<input type="submit" name="submit_meta" value="Valider">
-	</div>
+	<fieldset style="margin-bottom:1em;">
+	<legend>Liste des sous-thèmes</legend>
+		<?php echo $tableau; ?>
+		<input type="submit" style="display:block; margin:0 auto;" name="submit_meta" value="Valider">
+	</fieldset>
+	
+	
+	<fieldset>
+	<legend>Ajouter un sous-thème</legend>
+		<div class="deux_colonnes" style="width:auto; min-width:auto;">
+			<div class="lab">
+				<label for="libelle_nouveau_sous_theme" class="court">Libellé :</label>
+				<input type="text" name="libelle_nouveau_sous_theme" value="">
+			</div>
+		</div>
+		<input type="submit" style="display:inline-block; vertical-align:bottom;" name="submit_nouveau_sous_theme" value="Valider">
+	</fieldset>
 	
 </form>
 

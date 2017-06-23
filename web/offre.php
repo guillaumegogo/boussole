@@ -23,7 +23,7 @@ $fullurl = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?id=" . $
 //********* fonction de présentation des critères du jeune
 function liste_criteres($separateur){
 	$txt_criteres=null;
-	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "europeen", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
+	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "nationalite", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
 	
 	foreach($_SESSION as $index=>$valeur){
 		if(in_array($index, $tab_criteres_a_afficher)){
@@ -254,7 +254,7 @@ if (!$row["zone_selection_villes"]) {
 <?php print_r($_POST); echo "<br/>"; print_r($_SESSION);echo "\r\n".$sql;
 if (isset($sql_dmd)) { echo "\r\n".$sql_dmd; } ?>
 -->
-<?php include('inc/footer.inc'); ?>
+<?php include('inc/footer.inc.php'); ?>
 </div>
 </body>
 </html>

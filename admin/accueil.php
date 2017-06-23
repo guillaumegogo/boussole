@@ -74,7 +74,7 @@ if ($_SESSION['user_droits']['professionnel']) {
 	}
 }
 if ($_SESSION['user_droits']['offre']) { $liens_admin .= "<li><a href=\"offre_liste.php\">Offres de service</a></li>"; }
-if ($_SESSION['user_droits']['utilisateur']) { $liens_admin .= "<li>Utilisateurs</li>"; } //<li>&empty; <a href=\"utilisateur_liste.php\">Utilisateurs</a></li>
+if ($_SESSION['user_droits']['utilisateur']) { $liens_admin .= "<li><a href=\"gestionnaire_liste.php\">Gestionnaires</a></li>"; }
 if ($liens_admin) $liens_admin = "<b>Administration</b><ul style=\"line-height:2em;\">".$liens_admin."</ul>";
 
 $liens_reference ="";
@@ -105,15 +105,15 @@ if ($liens_reference) $liens_reference = "<b>Données de référence</b><ul styl
 
 <h2>Modules disponibles</h2>
 	<div style="width:100%; text-align:center;">
-		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+		<div class="colonne_accueil">
 			<?php echo $liens_activite; ?>
 		</div>
 		
-		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+		<div class="colonne_accueil">
 			<?php echo $liens_admin; ?>
 		</div>
 		
-		<div style="display:inline-block; min-width:25em; vertical-align:top; text-align:left;">
+		<div class="derniere colonne_accueil">
 			<?php echo $liens_reference; ?>
 		</div>
 	</div>

@@ -16,7 +16,7 @@ html, body {
 body {
 	background: linear-gradient(to bottom right, white, GhostWhite);
 	/*background-color: white; */
-	font-family:"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:120%;
 }
 #main{

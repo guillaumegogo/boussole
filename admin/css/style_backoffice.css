@@ -1,12 +1,7 @@
-/*charte graphisque djepva
---orange: #E74106;
---vert:#00AAA9; 
---vertpale:#B8DEDE;
-*/
-
 body { 
 	background-color: white; 
-	font-family:Arial,Helvetica,sans-serif;
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	/*"Open Sans", "Helvetica Neue"*/
 	font-size:100%; 
 	margin:0;
 	padding:0;
@@ -15,11 +10,9 @@ h1.bandeau{
 	width:auto;
 	margin:0em; 
     padding:0.5em 0 0 3.5em; 
-    /*box-shadow: 0px 2px 5px 0px grey;*/
 	font-size:1.5em;
     font-weight: bold;
 	background: SteelBlue url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;
-    /*border-bottom: 1px solid black;*/
 	color:white;
 }
 h1 a {
@@ -37,15 +30,18 @@ h1 a:hover {
 	font-size:0.9em;
 	text-align:right;
 	margin-bottom:1em;
-	/*border-bottom:1px solid black;*/
 	background-color:#b6cee2;
 }
 h2 {
-	margin:1em;
-	/*border:1px dotted grey;*/
+	margin-left:0em;
 }
 .container{
 	margin:1em;
+}
+.liste_territoire{
+	text-align:right;
+    float:right;
+    width:20em;
 }
 table {
 	border-collapse: collapse;/*background-color: #FFF;*/
@@ -62,14 +58,53 @@ th{
 tr:nth-child(odd){
   background-color:#edf3f8;
 }
-fieldset {
-	margin:auto 10px; 
-}
 form { 
-	/*background-color: #FFF; */
-	width:95%; 
-	margin:0em auto 1em auto;
+	width:100%;
+	margin:0 auto;
 }
+fieldset {
+	margin:0 auto 2em auto;
+	padding:1em;
+	border:1px solid grey;
+}
+legend{
+	text-align:left;
+}
+
+.colonne_accueil{
+	display:inline-block; 
+	width:25%;
+	min-width:20em;
+	vertical-align:top; 
+	text-align:left;
+	height:100%;
+	margin-right:5%;
+	/*background:#FAFAFA;*/
+}
+.derniere{
+	margin-right:0;
+}
+
+.centre{ 
+	text-align:center;
+}
+.une_colonne{
+	display: block; 
+	width:60%;
+	min-width:33em;
+	margin:auto;
+	line-height: 140%;
+	margin-bottom:0.5em;
+} 
+.deux_colonnes{
+	display: inline-block; 
+	width:45%; 
+	min-width:33em;
+	vertical-align: top;
+	margin-right:1em;
+	margin-bottom:0.5em;
+} 
+
 /*input[type=text], input[type=email],input[list], textarea, select { 
 	width: auto; 
 }*/
@@ -91,31 +126,21 @@ select.age {
 	width: auto; 
 }
 label { 
-	display:inline-block; vertical-align: top;
+	display:inline-block; 
+	vertical-align: top;
 }
 .detail label { 
 	width:15em;
 }
-
-.col{
-	display: inline-block; 
-	width:48%; min-width:33em;
-	padding: 5px; 
-	border:1px solid #FFF;  vertical-align: top;
-} 
+label.court{ 
+	width:7em;
+}
 .lab {
-	margin-top:5px;
+	margin-top:0.5em;
 }
 .button {
 	text-align:center;
 	margin-top:1em;
-}
-.liste_territoire{
-	text-align:right;
-    float:right;
-    width:30em;
-	/*margin:0 1em 0 auto;
-    border:1px dotted grey;*/
 }
 .soustitre {
 	text-align:center;

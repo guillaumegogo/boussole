@@ -23,7 +23,7 @@ if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 //***************** liste des critères (valeurs de session affichées à l'écran)
 $txt_criteres=null;
 foreach($_SESSION as $index=>$valeur){
-	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "sexe", "europeen", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription"); 
+	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "sexe", "nationalite", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription"); 
 	if(in_array($index, $tab_criteres_a_afficher)){
 		$txt = str_replace("_", " ", $index)." : ";
 		if(is_array($valeur)){
@@ -47,7 +47,7 @@ $sql = "SELECT t.*, `bsl_theme`.libelle_theme AS `sous_theme_offre`, `theme_pere
 		GROUP_CONCAT( if(nom_critere= 'sexe', valeur_critere, NULL ) separator '|') sexe, 
 		GROUP_CONCAT( if(nom_critere= 'jesais', valeur_critere, NULL ) separator '|') jesais, 
 		GROUP_CONCAT( if(nom_critere= 'situation', valeur_critere, NULL ) separator '|') situation, 
-		GROUP_CONCAT( if(nom_critere= 'europeen', valeur_critere, NULL ) separator '|') europeen, 
+		GROUP_CONCAT( if(nom_critere= 'nationalite', valeur_critere, NULL ) separator '|') nationalite, 
 		GROUP_CONCAT( if(nom_critere= 'permis', valeur_critere, NULL ) separator '|') permis, 
 		GROUP_CONCAT( if(nom_critere= 'handicap', valeur_critere, NULL ) separator '|') handicap, 
 		GROUP_CONCAT( if(nom_critere= 'experience', valeur_critere, NULL ) separator '|') experience, 
@@ -64,8 +64,8 @@ $sql = "SELECT t.*, `bsl_theme`.libelle_theme AS `sous_theme_offre`, `theme_pere
 ) as t
 JOIN `bsl_theme` ON `bsl_theme`.id_theme=`t`.id_sous_theme
 JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`bsl_theme`.id_theme_pere
-LEFT JOIN `bsl_professionnel` ON t.zone_selection_villes=0 AND `bsl_professionnel`.id_professionnel=`t`.id_professionnel /* s'il n'y a pas une liste de villes propre à l'offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d'où les jointures en dessous ↓ */
-LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.competence_geo='territoire' AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
+JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`t`.id_professionnel /* s'il n'y a pas une liste de villes propre à l'offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d'où les jointures en dessous ↓ */
+LEFT JOIN `bsl_territoire` ON t.zone_selection_villes=0 AND `bsl_professionnel`.competence_geo='territoire' AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
 LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire`
 LEFT JOIN `bsl__departement` ON `bsl_professionnel`.competence_geo='departemental' AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 LEFT JOIN `bsl__region` ON `bsl_professionnel`.competence_geo='regional' AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
@@ -86,7 +86,7 @@ AND t.situation LIKE '%".$_SESSION["situation"]."%' AND t.etudes LIKE '%".$_SESS
 "; 
 if (isset($_SESSION["sexe"])) $sql .= " AND t.sexe LIKE '%".$_SESSION["sexe"]."%'";
 if (isset($_SESSION["jesais"])) $sql .= " AND t.jesais LIKE '%".$_SESSION["jesais"]."%'";
-if (isset($_SESSION["europeen"])) $sql .= " AND t.europeen LIKE '%".$_SESSION["europeen"]."%'";
+if (isset($_SESSION["nationalite"])) $sql .= " AND t.nationalite LIKE '%".$_SESSION["nationalite"]."%'";
 if (isset($_SESSION["handicap"])) $sql .= " AND t.handicap LIKE '%".$_SESSION["handicap"]."%'";
 if (isset($_SESSION["permis"])) $sql .= " AND t.permis LIKE '%".$_SESSION["permis"]."%'";
 if (isset($_SESSION["experience"])) $sql .= " AND t.experience LIKE '%".$_SESSION["experience"]."%'";
@@ -111,7 +111,7 @@ if (isset($_SESSION['inscription'])){
 	}
 	$sql .= " AND (". $boutdesql. " FALSE)";
 }
-$sql .= " ORDER BY id_sous_theme";
+$sql .= " ORDER BY `bsl_theme`.ordre_theme";
 
 $result = mysqli_query($conn, $sql);
 $nb_offres = mysqli_num_rows($result);
@@ -217,7 +217,7 @@ function masqueCriteres(){
 <?php echo $sql."<br/>"; print_r($_POST); echo "<br/>"; print_r($_SESSION); ?>
 -->
 
-<?php include('inc/footer.inc'); ?>
+<?php include('inc/footer.inc.php'); ?>
 </div>
 </body>
 </html>

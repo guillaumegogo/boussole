@@ -267,17 +267,18 @@ function displayGeo(that) {
 <h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div> 
 
+<div class="container">
 <h2><?php echo $soustitre; ?></h2>
 
 <?php echo $msg; ?>
 
-<form method="post" class="detail" onsubmit='checkall()'>
+<form method="post" class="detail">
 
 <input type="hidden" name="maj_id" value="<?php echo $id_professionnel; ?>">
 <fieldset>
 	<legend>Détail du professionnel</legend>
 
-	<div class="col">
+	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="nom">Nom du professionnel :</label>
 			<input type="text" name="nom" value="<?php if ($id_professionnel) { echo $row["nom_pro"]; } ?>"/>
@@ -302,7 +303,7 @@ function displayGeo(that) {
 			</select> 
 		</div>
 	</div>
-	<div class="col">
+	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="adresse">Adresse :</label>
 			<input type="text" name="adresse"  value="<?php if ($id_professionnel) { echo $row["adresse_pro"]; } ?>"/>
@@ -352,6 +353,7 @@ function displayGeo(that) {
 	<input type="submit" value="Enregistrer">
 </div>
 </form>
+</div>
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {

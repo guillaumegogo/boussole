@@ -1,3 +1,24 @@
+<?php
+//********* description du formulaire
+$tab=array();
+$tab["age"] = array("type" => "age", "min" => 16, "max" => 30, "defaut" => 18);
+$tab["nationalite"] = array("type" => "radio", "francais" => "français", "europeen" => "européen", "hors-ue" => "hors-UE");
+$tab["sexe"] = array("type" => "radio", "f" => "une femme", "h" => "un homme");
+$tab["jesais"] = array("type" => "radio", "oui" => "Oui", "non" => "Non");
+
+$tab["situation"] = array("type" => "select", "sans activite" => "Sans activité",  "collegien" => "Collégien",  "lyceen" => "Lycéen",  "etudiant" => "Etudiant",  "stagiaire form pro" => "Stagiaire form pro",  "apprenti" => "Apprenti",  "salarie" => "Salarié",  "independant" => "Indépendant",  "auto entrepreneur" => "Auto entrepreneur",  "autre" => "Autre");
+$tab["etudes"] = array("type" => "select", "aucune" => "Aucune", "college" => "Collège", "lycee" => "Lycée", "etudes superieures" => "Etudes supérieures", "aprentissage" => "Apprentissage", "formation professionnelle" => "Formation professionnelle", "etranger" => "Etudes à l'étranger");
+$tab["diplome"] = array("type" => "select", "aucun" => "Aucun", "brevet" => "Brevet des collèges", "cap" => "CAP", "bep" => "BEP", "bac general" => "Baccalauréat général", "bac pro" =>"Baccalauréat professionnel", "bts dut" => "BTS / DUT", "licence" =>"Licence", "master" =>"Master", "doctorat" => "Doctorat", "etranger" => "Diplôme étranger");
+$tab["permis"] = array("type" => "radio", "oui" => "Oui", "non" => "Non");
+$tab["handicap"] = array("type" => "radio", "oui" => "Oui", "non" => "Non", "" => "Je ne sais pas");
+
+$tab["type_emploi"] = array("type" => "checkbox", "ete" => "Job d'été ou saisonnier", "etudiant" => "Job étudiant", "durable" => "Emploi \"durable\"", "formation" => "Emploi avec une formation");
+$tab["temps_plein"] = array("type" => "select", "oui" => "Oui", "non" => "Non, à temps partiel", "" => "Je suis flexible");
+$tab["secteur"] = array("type" => "multiple", "size"=>6, "Agriculture" => "Agriculture","Agroalimentaire - Alimentation" => "Agroalimentaire - Alimentation","Animaux" => "Animaux","Architecture - Aménagement intérieur" => "Architecture - Aménagement intérieur","Artisanat - Métiers d\'art" => "Artisanat - Métiers d'art","Banque - Finance - Assurance" => "Banque - Finance - Assurance","Bâtiment - Travaux publics" => "Bâtiment - Travaux publics","Biologie - Chimie" => "Biologie - Chimie","Commerce - Immobilier" => "Commerce - Immobilier","Communication - Information" => "Communication - Information","Culture - Spectacle" => "Culture - Spectacle","Défense - Sécurité - Secours" => "Défense - Sécurité - Secours","Droit" => "Droit","Edition - Imprimerie - Livre" => "Edition - Imprimerie - Livre","Electronique - Informatique" => "Electronique - Informatique","Enseignement - Formation" => "Enseignement - Formation","Environnement - Nature - Nettoyage" => "Environnement - Nature - Nettoyage","Gestion - Audit - Ressources humaines" => "Gestion - Audit - Ressources humaines","Hôtellerie - Restauration - Tourisme" => "Hôtellerie - Restauration - Tourisme","Humanitaire" => "Humanitaire","Industrie - Matériaux" => "Industrie - Matériaux","Lettres - Sciences humaines" => "Lettres - Sciences humaines","Mécanique - Maintenance" => "Mécanique - Maintenance","Numérique - Multimédia - Audiovisuel" => "Numérique - Multimédia - Audiovisuel","Santé" => "Santé","Sciences - Maths - Physique" => "Sciences - Maths - Physique","Secrétariat - Accueil" => "Secrétariat - Accueil","Social - Services à la personne" => "Social - Services à la personne","Soins - Esthétique - Coiffure" => "Soins - Esthétique - Coiffure","Sport - Animation" => "Sport - Animation","Transport - Logistique" => "Transport - Logistique");
+$tab["experience"] = array("type" => "radio", "oui" => "Oui", "non" => "Non");
+$tab["inscription"] = array("type" => "checkbox", "pole emploi" => "Pôle emploi", "cap emploi" => "Cap emploi", "mission locale" => "Mission locale", "apec" => "APEC (cadres)");
+?>
+
 <form action="formulaire.php" method="post" class="joli formulaire">
 
 <?php
@@ -13,30 +34,25 @@ if ($etape=="1") {
 			
 			<div class="lab">
 				<label class="label_long" for="age">Je suis âgé·e de :</label>
-				<select name="age" class="age">
-					<option value="16">16</option><option value="17">17</option><option value="18" selected >18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
-				</select> ans
+				<?php echo affiche_formulaire("age", $tab); ?>
 			</div>
 
 			<div class="lab">
-				<label class="label_long" for="europeen">J'ai la nationalité d'un pays de l'Union européenne :</label>
-				<input type="radio" name="europeen" value="oui"> Oui
-				<input type="radio" name="europeen" value="non"> Non<br>
+				<label class="label_long" for="nationalite">Je suis citoyen :</label>
+				<?php echo affiche_formulaire("nationalite", $tab); ?>
 			</div>
 			
 			<div class="lab">
 				<label class="label_long" for="sexe">Je suis :</label>
-				<input type="radio" name="sexe" value="h"> Un homme
-				<input type="radio" name="sexe" value="f"> Une femme
+				<?php echo affiche_formulaire("sexe", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="jesais">Je sais ce que je veux faire :</label>
-				<input type="radio" name="jesais" value="oui"> Oui
-				<input type="radio" name="jesais" value="non"> Non<br>
+				<?php echo affiche_formulaire("jesais", $tab); ?>
 			</div>
 			
-			<div style="margin-top:2em;"><button type="submit" style="float:right" >Je continue</button></div>
+			<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
 		</div>
 		
 	</fieldset>
@@ -52,63 +68,34 @@ if ($etape=="1") {
 			<input type="hidden" name="etape"  value="3">
 			
 			<div class="lab">
-				<label class="label_long" for="situation">Quelle est ma situation aujourd'hui  ?</label>
-				<select name="situation">
-					<option value="sans activite" >Sans activité</option>
-					<option value="collegien" >Collégien</option>
-					<option value="lyceen">Lycéen</option>
-					<option value="etudiant">Etudiant</option>
-					<option value="stagiaire form pro">Stagiaire form pro</option>
-					<option value="apprenti">Apprenti</option>
-					<option value="salarie">Salarié</option>
-					<option value="independant">Indépendant</option>
-					<option value="auto entrepreneur">Auto entrepreneur</option>
-					<option value="autre">Autre</option>
-				</select>
+				<label class="label_long" for="situation">Quelle est ma situation aujourd'hui ?</label>
+				<?php echo affiche_formulaire("situation", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="etudes">Quelles sont les dernières études que j'ai suivies ?</label>
-				<select name="etudes">
-					<option value="college" >Collège</option>
-					<option value="lycee" >Lycée</option>
-					<option value="etudes superieures" >Etudes supérieures</option>
-					<option value="aprentissage" >Apprentissage</option>
-					<option value="formation professionnelle" >Formation professionnelle</option>
-					<option value="etranger" >Etudes à l'étranger</option>
-				</select>
+				<?php echo affiche_formulaire("etudes", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="diplome">Quel est le diplôme le plus élevé que j'ai obtenu ?</label>
-				<select name="diplome">
-					<option value="brevet" >Brevet des collèges</option>
-					<option value="cap" >CAP</option>
-					<option value="bep" >BEP</option>
-					<option value="bac general" >Baccalauréat général</option>
-					<option value="bac pro">Baccalauréat professionnel</option>
-					<option value="bts dut" >BTS / DUT</option>
-					<option value="licence">Licence</option>
-					<option value="master">Master</option>
-					<option value="doctorat" >Doctorat</option>
-					<option value="etranger" >Diplôme étranger</option>
-				</select>
+				<?php echo affiche_formulaire("diplome", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="permis">Ai-je le permis de conduire (B) ?</label>
-				<input type="radio" name="permis" value="oui"> Oui
-				<input type="radio" name="permis" value="non"> Non
+				<?php echo affiche_formulaire("permis", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="handicap">Suis-je en situation de handicap ?</label>
-				<input type="radio" name="handicap" value="oui"> Oui
-				<input type="radio" name="handicap" value="non"> Non
-				<input type="radio" name="handicap" value=""> Je ne sais pas
+				<?php echo affiche_formulaire("handicap", $tab); ?>
 			</div>
 		
-			<div style="margin-top:2em;"><input type="button" value="Retour" onclick="history.go(-1)" style="float:left"> <button type="submit" style="float:right">Je continue</button></div>
+			<div style="margin-top:2em;">
+				<input type="button" value="Retour" onclick="history.go(-1)" style="float:left"> 
+				<button type="submit" style="float:right">Je continue</button>
+			</div>
 		</div>
 	</fieldset>
 	
@@ -124,77 +111,33 @@ if ($etape=="1") {
 			<input type="hidden" name="etape" value="fin">
 			<div class="lab">
 				<label class="label_long" for="type_emploi[]">Je cherche un emploi de type :</label>
-				<div style="display:inline-table;">
-					<input type="checkbox" name="type_emploi[]" value="job ete"> Job d'été ou saisonnier<br/>
-					<input type="checkbox" name="type_emploi[]" value="job etudiant" > Job étudiant<br/>
-					<input type="checkbox" name="type_emploi[]" value="job ete" > Emploi "durable"<br/>
-					<input type="checkbox" name="type_emploi[]" value="job etudiant" > Emploi avec une formation
-				</div>
+				<?php echo affiche_formulaire("type_emploi", $tab); ?>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="temps_plein">Je souhaite un travail à temps plein :</label>
-				<select name="temps_plein">
-					<option value="oui" >Oui</option>
-					<option value="non" >Non, à temps partiel</option>
-					<option value="flexible" >Je suis flexible</option>
-				</select>
+				<?php echo affiche_formulaire("temps_plein", $tab); ?>
 			</div>
 
 			<div class="lab">
-				<label class="label_long" for="secteur[]">Quel secteur d'activité ou métier m'intéresse ?<br/><small>(Choix multiple possible)</small></label>
-				<select name="secteur[]" multiple size=6>
-				<option value="Agriculture" >Agriculture</option>
-				<option value="Agroalimentaire - Alimentation" >Agroalimentaire - Alimentation</option>
-				<option value="Animaux" >Animaux</option>
-				<option value="Architecture - Aménagement intérieur" >Architecture - Aménagement intérieur</option>
-				<option value="Artisanat - Métiers d\'art" >Artisanat - Métiers d'art</option>
-				<option value="Banque - Finance - Assurance" >Banque - Finance - Assurance</option>
-				<option value="Bâtiment - Travaux publics" >Bâtiment - Travaux publics</option>
-				<option value="Biologie - Chimie" >Biologie - Chimie</option>
-				<option value="Commerce - Immobilier" >Commerce - Immobilier</option>
-				<option value="Communication - Information" >Communication - Information</option>
-				<option value="Culture - Spectacle" >Culture - Spectacle</option>
-				<option value="Défense - Sécurité - Secours" >Défense - Sécurité - Secours</option>
-				<option value="Droit" >Droit</option>
-				<option value="Edition - Imprimerie - Livre" >Edition - Imprimerie - Livre</option>
-				<option value="Electronique - Informatique" >Electronique - Informatique</option>
-				<option value="Enseignement - Formation" >Enseignement - Formation</option>
-				<option value="Environnement - Nature - Nettoyage" >Environnement - Nature - Nettoyage</option>
-				<option value="Gestion - Audit - Ressources humaines" >Gestion - Audit - Ressources humaines</option>
-				<option value="Hôtellerie - Restauration - Tourisme" >Hôtellerie - Restauration - Tourisme</option>
-				<option value="Humanitaire" >Humanitaire</option>
-				<option value="Industrie - Matériaux" >Industrie - Matériaux</option>
-				<option value="Lettres - Sciences humaines" >Lettres - Sciences humaines</option>
-				<option value="Mécanique - Maintenance" >Mécanique - Maintenance</option>
-				<option value="Numérique - Multimédia - Audiovisuel" >Numérique - Multimédia - Audiovisuel</option>
-				<option value="Santé" >Santé</option>
-				<option value="Sciences - Maths - Physique" >Sciences - Maths - Physique</option>
-				<option value="Secrétariat - Accueil" >Secrétariat - Accueil</option>
-				<option value="Social - Services à la personne" >Social - Services à la personne</option>
-				<option value="Soins - Esthétique - Coiffure" >Soins - Esthétique - Coiffure</option>
-				<option value="Sport - Animation" >Sport - Animation</option>
-				<option value="Transport - Logistique" >Transport - Logistique</option>
-				</select>
+				<label class="label_long" for="secteur[]">Quel secteur d'activité ou métier m'intéresse ?<br/><span style="font-size:0.7em">(Choix multiple possible)</span></label>
+				<?php echo affiche_formulaire("secteur", $tab); ?>
 			</div>
 			
 			<div class="lab">
 				<label class="label_long" for="experience">J'ai déjà une expérience en emploi :</label>
-				<input type="radio" name="experience" value="oui"> Oui
-				<input type="radio" name="experience" value="non"> Non
+				<?php echo affiche_formulaire("experience", $tab); ?>
 			</div>
 
 			<div class="lab">
-				<label class="label_long" for="inscription[">Je suis déjà inscrit auprès de :</label>
-				<div style="display:inline-table;">
-					<input type="checkbox" name="inscription[]" value="pole emploi" > Pôle emploi<br/>
-					<input type="checkbox" name="inscription[]" value="cap emploi"  > Cap emploi<br/>
-					<input type="checkbox" name="inscription[]" value="mission locale"  > Mission locale<br/>
-					<input type="checkbox" name="inscription[]" value="apec"  > APEC
-				</div>
+				<label class="label_long" for="inscription[]">Je suis déjà inscrit auprès de :</label>
+				<?php echo affiche_formulaire("inscription", $tab); ?>
 			</div>		
 		
-			<div style="margin-top:2em;"><input type="button" value="Retour" onclick="history.go(-1)" style="float:left"> <button type="submit" style="float:right">Je continue</button></div>
+			<div style="margin-top:2em;">
+				<input type="button" value="Retour" onclick="history.go(-1)" style="float:left"> 
+				<button type="submit" style="float:right">Je continue</button>
+			</div>
 		</div>
 	</fieldset>
 	

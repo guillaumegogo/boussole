@@ -2,7 +2,7 @@
 include('secret/connect.php');
 include('inc/functions.php');
 
-$version="Version DEV du 20 juin 2017";
+$version="Version du 20 juin 2017";
 
 //********* permet de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
@@ -156,7 +156,7 @@ if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 <!--
 <?php print_r($_SESSION); echo "<br/>".$sql; ?>
 -->
-<?php include('inc/footer.inc'); ?>
+<?php include('inc/footer.inc.php'); ?>
 </div>
 </body>
 </html>

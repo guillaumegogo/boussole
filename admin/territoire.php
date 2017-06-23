@@ -115,22 +115,23 @@ if (isset($_SESSION["territoire_id"])) {
 <h2>Gestion des territoires</h2>
 <?php echo $msg; ?>
 
-<form method="post" onsubmit='checkall()'>
-	<fieldset style="margin-bottom:2em;">
-	<legend><?php if ($_SESSION['territoire_id']) { echo "Renommer le"; } else { echo "Créer un nouveau"; } ?> territoire</legend>
-		<div>
+<form method="post" class="detail" onsubmit='checkall()'>
+	<fieldset class="centre">
+	<legend><?php echo ($_SESSION['territoire_id']) ? "Modification du" : "Création d'un nouveau"; ?> territoire</legend>
+		<div class="une_colonne">
+			<label for="libelle_territoire" class="court">Libellé :</label>
 			<input type="text" name="libelle_territoire" value="<?php echo $nom_territoire_choisi; ?>">
 			<input type="hidden" name="maj_id_territoire" value="<?php echo $_SESSION['territoire_id']; ?>">
-			<input type="submit" name="submit_meta" value="Valider">
 		</div>
+		<input type="submit" name="submit_meta" value="Valider">
 	</fieldset>
 
 <?php if ($_SESSION['territoire_id']){ ?>
 
-	<fieldset>
+	<fieldset class="centre">
 	<legend>Sélection des villes du territoire</legend>
 
-		<div style="width:100%; clear:both; display: inline-block; vertical-align: middle; height: 100%;">
+		<div style="width:auto; text-align:left; clear:both; display: inline-block; vertical-align: middle; height: 100%;">
 			<div style="margin-bottom:1em;">Filtre : <input id="textbox" placeholder="nom de ville, code postal ou département..." type="text" style="width:20em;"></div>
 			
 			<div style="display:inline-block; vertical-align:top;">		
@@ -147,7 +148,7 @@ if (isset($_SESSION["territoire_id"])) {
 				<select name="list2[]" id="list2" MULTIPLE SIZE="20" style=" min-width:20em;"><?php echo $liste2;?></select>
 			</div>
 			
-			<input style="display:block; margin-top:1em; text-align:right;" type="submit" name="submit_villes" value="Enregistrer le périmètre du territoire">
+			<input style="display:block; margin:2em auto 0 auto;" type="submit" name="submit_villes" value="Enregistrer le périmètre du territoire">
 		</div>
 	</fieldset>
 
