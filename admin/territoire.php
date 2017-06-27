@@ -5,6 +5,7 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');
+if (!$_SESSION['user_droits']['territoire']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
 
 //********* variables
 $msg = "";
@@ -25,7 +26,7 @@ if (isset($_POST["submit_meta"])) {
 	}
 }
 
-include('inc/select_territoires.php');
+include('inc/select_territoires.inc.php');
 
 //********** mise à jour des villes
 if (isset($_POST["submit_villes"])) {

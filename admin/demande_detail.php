@@ -5,6 +5,7 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');
+//todo
 
 //********* variables
 $id_demande = null;
@@ -56,7 +57,7 @@ if (mysqli_num_rows($result) > 0) {
 	<th>N° demande</th><td><?php echo $row["id_demande"]; ?></td>
 </tr>
 <tr>
-	<th>Date demande</th><td><?php echo date_format(date_create($row["date_demande"]), 'd-m-Y à H\hi'); ?></td>
+	<th>Date demande</th><td><?php echo date_format(date_create($row["date_demande"]), 'd/m/Y à H\hi'); ?></td>
 </tr>
 <tr>
 	<th>Coordonnées du demandeur</th><td><?php 
@@ -80,7 +81,7 @@ if (mysqli_num_rows($result) > 0) {
 	<th>Traité</th><td>
 <?php
     if ($row["date_traitement"]) {
-        $traite="Traité le ".date_format(date_create($row["date_traitement"]), 'd-m-Y à H\hi')."<br/>Commentaire : ".$row["commentaire"];
+        $traite="Traité le ".date_format(date_create($row["date_traitement"]), 'd/m/Y à H\hi')."<br/>Commentaire : ".$row["commentaire"];
     } else {
         $traite="<form method=\"post\" class=\"detail\"><input type=\"hidden\" name=\"id_traite\" value=\"".$id_demande."\" /><textarea name=\"commentaire\"   style=\"width:100%\"  rows=\"5\" placeholder=\"Conditions et suites données à l'échange (...)\"></textarea> <input type=\"submit\" value=\"Marquer comme traité\"></form> ";  
     }

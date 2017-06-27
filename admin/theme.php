@@ -5,8 +5,9 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');
-if (!in_array($_SESSION['user_statut'], array("administrateur"))) header('Location: accueil.php'); //si pas admin ou... ?
+if (!$_SESSION['user_droits']['theme']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
 
+//********* variable
 $msg = "";
 $libelle_theme_choisi = "";
 

@@ -5,10 +5,11 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');
+if (!$_SESSION['user_droits']['demande']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
 
 //********* territoire sélectionné
 if (isset($_POST["choix_territoire"])) { $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]); }
-include('inc/select_territoires.php');
+include('inc/select_territoires.inc.php');
 
 //********page des demandes traitées ou à traiter ?
 $flag_traite = (isset($_GET['etat']) && $_GET['etat']=="traite") ? 1 : 0;
@@ -36,8 +37,8 @@ if (mysqli_num_rows($result) > 0) {
     $tableau = "<table id=\"sortable\"><thead><tr><th>Date de la demande</th><th>Coordonnées</th><th>Offre de service</th><th>Professionnel</th>".$titretraite."</tr></thead><tbody>";
     
     while($row = mysqli_fetch_assoc($result)) {
-        $traitele = ($flag_traite) ? "<td>" . date_format(date_create($row["date_traitement"]), 'd-m-Y à H\hi'). "</td>" : "";        
-		$tableau .= "<tr><td><a href=\"demande_detail.php?id=". $row["id_demande"]."\">" . date_format(date_create($row["date_demande"]), 'd-m-Y à H\hi'). "</td><td>" . $row["contact_jeune"]. "</td><td>" . $row["nom_offre"]. "</td><td>" . $row["nom_pro"]. "</td>" . $traitele . "</tr>";
+        $traitele = ($flag_traite) ? "<td>" . date_format(date_create($row["date_traitement"]), 'd/m/Y à H\hi'). "</td>" : "";        
+		$tableau .= "<tr><td><a href=\"demande_detail.php?id=". $row["id_demande"]."\">" . date_format(date_create($row["date_demande"]), 'd/m/Y à H\hi'). "</td><td>" . $row["contact_jeune"]. "</td><td>" . $row["nom_offre"]. "</td><td>" . $row["nom_pro"]. "</td>" . $traitele . "</tr>";
     }
     $tableau .= "</tbody></table>";
     

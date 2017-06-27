@@ -5,15 +5,15 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //1. doit être connecté 
-if ($_SESSION['user_statut'] != "administrateur" && isset($_GET["id"])) { //2. si tu n'es pas un admin, ton territoire_id ou ton user_pro_id doit correspondre à celui du pro
-	if (isset($_SESSION['user_pro_id'])) {
-		if ($_SESSION['user_pro_id']!=$_GET["id"]) header('Location: accueil.php');
-	}else{
-		$sql = "SELECT competence_geo, id_competence_geo FROM `bsl_professionnel` 
+if ($_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
+	if($_SESSION['territoire_id']){
+		$sql = "SELECT competence_geo, id_competence_geo FROM `bsl_professionnel`
 		WHERE competence_geo=\"territoire\" AND id_competence_geo=\"".$_SESSION['territoire_id']."\" AND id_professionnel=".$_GET["id"];
 		$result = mysqli_query($conn, $sql);
-		if (mysqli_num_rows($result) == 0) { header('Location: accueil.php'); }
+		if (mysqli_num_rows($result) == 0) { header('Location: professionnel_liste.php'); }
 	}
+}else{ //autrement, le seul cas possible est la consultation de ses propres infos
+	$_GET["id"] = $_SESSION['user_pro_id'];
 }
 
 //********* variables
@@ -101,32 +101,30 @@ if(isset($id_professionnel)) {
 	
 	if (mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
+	}else{
+		$msg = "<div class=\"soustitre\">Ce professionnel est inconnu.</div>";
 	}
 }
 
 $soustitre = ($id_professionnel) ? "Modification d'un professionnel" : "Ajout d'un professionnel";
 
 //************************* génération des listes des compétences géographiques
+$affiche_listes_geo = ""; 
+
 $liste_competence_geo ="<option value=\"\">A choisir</option>";
+$tabgeo = array ("territoire"=>"Territoire");
+if ($_SESSION['user_statut']=="administrateur") {
+	$tabgeo += array("national"=>"National", "regional"=>"Régional", "departemental"=>"Départemental");
+}
+foreach ($tabgeo as $key => $value) {
+	$liste_competence_geo .="<option value=\"".$key."\" ";
+	if ($id_professionnel) {if ($row["competence_geo"]==$key) { $liste_competence_geo .=" selected "; }} 
+	$liste_competence_geo .=">".$value."</option>";
+}
+
 $select_region = "";
 $select_dep = "";
 $choix_territoire = "";
-$affiche_listes_geo = ""; 
-
-$tabgeo = array ( 
-	array("national", "National", array("administrateur")),
-	array("regional", "Régional", array("administrateur")), 
-	array("departemental", "Départemental", array("administrateur")), 
-	array("territoire", "Territoire", array("administrateur", "animateur territorial", "professionnel"))
-);
-foreach ($tabgeo as $row_tabgeo) {
-	if (in_array($_SESSION['user_statut'], $row_tabgeo[2])) { //si l'utilisateur a les droits
-		$liste_competence_geo .="<option value=\"".$row_tabgeo[0]."\" ";
-		if ($id_professionnel) {if ($row["competence_geo"]==$row_tabgeo[0]) { $liste_competence_geo .=" selected "; }} 
-		$liste_competence_geo .=">".$row_tabgeo[1]."</option>";
-	}
-}
-
 if ($_SESSION['user_statut']=="administrateur") { // choix accessibles uniquement aux admins
 	//liste déroulante des régions
 	$sql = "SELECT * FROM `bsl__region` WHERE 1 ";
@@ -143,7 +141,7 @@ if ($_SESSION['user_statut']=="administrateur") { // choix accessibles uniquemen
 	}
 	$choix_region = "<select name=\"liste_regions\" id=\"liste_regions\" style=\"display:";
 	if ($id_professionnel) {if ($row["competence_geo"]=="regional") { $choix_region .= "block\""; } else { $choix_region .= "none\""; }} else { $choix_region .= "none\""; }
-	$choix_region .= "\">".$select_region."</select>";
+	$choix_region .= " >".$select_region."</select>";
 
 	//liste déroulante des départements
 	$sql = "SELECT `id_departement`, `nom_departement` FROM `bsl__departement` WHERE 1 ";
@@ -299,7 +297,8 @@ function displayGeo(that) {
 		</div>
 		<div class="lab">
 			<label for="actif">Actif :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {if ($row["actif_pro"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui <input type="radio" name="actif" value="0" <?php if ($id_professionnel) {if ($row["actif_pro"]=="0") { echo "checked"; }} ?>> Non
+			<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {if ($row["actif_pro"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
+			<input type="radio" name="actif" value="0" <?php if ($id_professionnel) {if ($row["actif_pro"]=="0") { echo "checked"; }} ?>> Non
 			</select> 
 		</div>
 	</div>
@@ -336,7 +335,7 @@ function displayGeo(that) {
 		<div class="lab">
 			<label for="competence_geo">Compétence géographique :</label>
 			<div style="display:inline-block;">
-				<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;" <?php if (!in_array($_SESSION['user_statut'], array("administrateur","animateur territorial"))) echo "disabled"; ?>>
+				<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;" <?php //if (!in_array($_SESSION['user_statut'], array("administrateur","animateur territorial"))) echo "disabled"; ?>>
 					<?php echo $liste_competence_geo; ?>
 				</select>
 				

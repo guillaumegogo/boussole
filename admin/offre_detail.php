@@ -5,7 +5,8 @@ session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');
-/*$sql = "SELECT `id_offre` FROM `bsl_offre` JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
+/*todo
+$sql = "SELECT `id_offre` FROM `bsl_offre` JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
 WHERE id_offre=".$id_offre;
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
