@@ -77,7 +77,8 @@ if(isset($_POST["coordonnees"])){
 	//*********** requête de création de la demande
 	$sql_dmd = "INSERT INTO `bsl_demande`(`date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NOW(), ?, ?, ?, ?)";
 	$stmt = mysqli_prepare($conn, $sql_dmd);
-	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $_POST["coordonnees"], $_SESSION['code_insee'], liste_criteres(','));
+	$liste=liste_criteres(',');
+	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $_POST["coordonnees"], $_SESSION['code_insee'], $liste);
 	$result_dmd = mysqli_stmt_execute($stmt);
 
 	//*********** envoi de mail si demandé
@@ -88,7 +89,7 @@ if(isset($_POST["coordonnees"])){
 			$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row["nom_offre"]."</b>.</p>
 			<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>
 			<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>
-			<p>Merci de prévenir de la suite données à la demande dans l'<a href=\"http://www.gogo.fr/boussole/admin/demande_liste.php\">espace de gestion de la Boussole</a>.
+			<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://www.gogo.fr/boussole/admin/demande_liste.php\">espace de gestion de la Boussole</a>.
 			<p>Ce mail aurait du être envoyé à ".$row["courriel_offre"]."</p></html>";
 			$headers  = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";

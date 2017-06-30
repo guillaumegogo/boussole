@@ -78,7 +78,7 @@ $lien_desactives = ($flag_actif) ? "<a href=\"utilisateur_liste.php?actif=non\">
 <div class="container">
 	<?php echo $select_territoire; ?>
 
-	<h2>Liste des utilisateurs</h2>
+	<h2>Liste des utilisateurs <span style="color:red">Module non fonctionnel</span></h2>
 
 	<?php echo $tableau; ?>
 
