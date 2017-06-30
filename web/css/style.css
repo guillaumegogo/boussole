@@ -14,8 +14,8 @@ html, body {
 	margin:0; padding:0;
 }
 body {
-	background: linear-gradient(to bottom right, white, GhostWhite);
-	/*background-color: white; */
+	/*background: linear-gradient(to bottom right, white, GhostWhite); */
+	background-color: white;
 	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:120%;
 }
@@ -54,28 +54,41 @@ label {
 /*header*/
 .bandeau{
 	width:auto;
-	margin:0; 
-    padding:0.5em 10% 0 3em; 
-    border-bottom: 0.2em solid #E74106;
+	margin:0 0 2em 0; 
+    padding:0.3em 10% 0 0.3em;
+    border-bottom: 1px solid #E74106;
 	font-size:1.5em;
     font-weight: bold;
-	background: #00AAA9 url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;
-
-	/*background: #00AAA9 url("http://www.gogo.fr/boussole/img/compass-icon2.png") no-repeat 0.2em 0.2em;*/
+	background: white; /* vert : #00AAA9;*/
+	/*box-shadow: 0px 2px 5px 0px #E74106;
+    background: linear-gradient(to right, white, white 50%, #E74106);*/
+	/* icone boussole
+	padding-left:3em;
+	background: #00AAA9 url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;*/
 }
-.bandeau a {
+.titrebandeau {
+	width:6em;
+	color:#E74106;
+	background-color:white;
+	/*color:white;
+	background-color:#E74106;*/
+	margin-right:auto;
+	margin-bottom:-1.2em;
+	padding:0.1em;
+	line-height:0.9em;
+}
+.titrebandeau a {
 	text-decoration: none;
-	/*color:black;*/
-	color:white;
+	color:#E74106;
 }
-.bandeau a:hover {
-	color:#495858;
+.titrebandeau a:hover {
+	color:#b83404; /*#495858;*/
 }
 .soustitre {
 	text-align:center;
 	width:90%;
 	margin:5% auto 0 auto;
-    font-size:1.1em;
+    font-size:1.2em;
     /*font-style:italic;
     font-family:'Linux Libertine','Georgia','Times',serif;*/
 }
@@ -90,6 +103,10 @@ form.vert{
 	background-color: #00AAA9;
 	/*background: linear-gradient(to bottom right, #00c4c2, #009190);*/
 }
+form.vertpale{
+	background-color: #B8DEDE;
+	/*background: linear-gradient(to bottom right, #00c4c2, #009190);*/
+}
 .avertissement{
 	color:red;
 	text-align:center;
@@ -102,32 +119,36 @@ form.vert{
 form.accueil{
 	text-align:center;
 	/*margin-top:3em;*/
-    /*height:10em;*/
-	min-height:8%;
+    height:15%;
+	min-height:5em;
 	padding-top:1em;
+}
+form.accueil input[type=submit]{
+    background-color: white;
+    color: #E74106;
+	font-weight:bold;
+    border: none;
+	padding:0.2em 1em;
+	margin-left:1em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+	box-shadow: 0px 2px 5px 0px grey;
 }
 fieldset.accueil_choix_ville {
     margin:4% auto; 
 	border: none;
 	color:white;
 	font-weight:bold;
+	font-size:1em;
 }
 fieldset.accueil_choix_ville label {
     width:6em;
 }
-fieldset.accueil_choix_ville input[type=text], select {
+fieldset.accueil_choix_ville input[type=text] {
 	max-width:40%;
+	width:30em;
 }
-/*fieldset.accueil_choix_ville input[type=submit] {
-	background-color: #B8DEDE;
-	border: none;
-	color: black;
-	text-align: center;
-	display: inline-block;
-	border-radius: 5px;
-	font-size:0.9em;
-	box-shadow: 0px 2px 5px 0px grey;
-}*/
 fieldset.accueil_choix_besoin {
     margin-top:1em;  border: none;
 	color:white;
@@ -138,16 +159,16 @@ fieldset.accueil_choix_besoin div{
 div.boutonsbesoin {
     margin:2em auto 1em auto;
 }
-div.boutonsbesoin input{
+div.boutonsbesoin input[type=submit]{
     background-color: white;
     color: #E74106;
 	font-weight:bold;
     border: none;
-    padding: 15px 32px;
+    padding: 1.2em;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+	font-size:1em;
 	box-shadow: 0px 2px 5px 0px grey;
 	margin:0 1em 1em 0;
 }
@@ -163,26 +184,18 @@ div.boutonsbesoin input:disabled{
 }
 .block123{
 	display:inline-block; margin-right:1em; margin-bottom:1em;
-	width:30%; min-width:20em;
+	width:30%; min-width:18em;
 	vertical-align:middle; 
 	height:100%; padding:2em;
-    /*background: linear-gradient(to bottom right, white, #EEE);*/ 
-	background-color: #B8DEDE;
-	box-shadow: 0px 2px 5px 0px grey;
+    background: linear-gradient(to bottom right, white, #EEE);
+	border:1px solid lightgrey;
+	/*background-color: #B8DEDE;
+	box-shadow: 0px 2px 5px 0px grey;*/ 
 }
 .block123 img{
 	width:32px;
 	float:left;
 	margin-right:1em;
-}
-.lab {
-	margin-top:1em;
-}
-label.label_long{
-	width:25em; 
-}
-input.rattrap_long{
-	margin-left:30.4em;
 }
 
 /*formulaire*/
@@ -190,7 +203,8 @@ form.formulaire{
     padding-bottom:0.5em; 
 	clear:both;
 	margin-top:3%; 
-	width:95%
+	width:80%;
+	min-width:18em;
 }
 fieldset.formulaire {
 	background-color: white; 
@@ -200,16 +214,27 @@ fieldset.formulaire {
 	box-shadow: 0px 2px 5px 0px grey;*/
 }
 div.centreformulaire {
-	display:inline-block; 
-	margin:auto; text-align:left;
+	width:80%;
+	min-width:18em;
+	margin:1em auto; 
+	text-align:left;
 }
 fieldset.formulaire legend {
     /*margin-top:-0.5em;*/
     background-color:white; 
+	text-align:left;
 	padding:0 1em;
 }
+.lab {
+	margin:1em 0;
+}
+label.label_long{
+	width: 50%;
+	min-width: 18em;
+	/*width:25em;*/ 
+}
 input[type=text], input[type=email],input[list], textarea, select { 
-	width: 250px; 
+	width: 20em; 
 }
 input.date { 
 	width: auto; 
@@ -226,15 +251,10 @@ select.age {
 
 /*resultat*/
 form.resultat{
-    padding-bottom:0.5em;
 	clear:both;
+	width:95%;
 	margin-top:3%; 
-	width:95%
-}
-fieldset.resultat {
-/*	background-color: white;
-	font-size:0.9em;
-	border:none;*/
+	padding-bottom:0.5em;
 }
 fieldset.resultat legend {
     /*margin-top:-0.5em;*/
@@ -243,10 +263,12 @@ fieldset.resultat legend {
 }
 .resultat_offre{
 	display:inline-block; 
-    width:30%; min-width:18em;
+    width:30%; 
+	min-width:16em;
+    height:8em; 
     vertical-align:top;
-	background-color:#B8DEDE; 
-	margin:0 1% 1% 0;
+	/*background-color:#B8DEDE; */
+	margin:1%;
     /*border:1px solid black; */
     box-shadow: 0px 2px 5px 0px grey;
 }
@@ -307,13 +329,44 @@ left: 0;
 width="400" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"*/
 }
 
+footer {
+    position: absolute; 
+    bottom: 0; width:100%; /*left: 0; right: 0;*/
+    font-size:0.7em;
+	/*padding:1em 0.5em 0.5em 0.5em;*/
+	/*height:1.1em;*/
+}
+.version{ 
+	text-align:right;
+	margin-right:1%; 
+	font-size:small; 
+	color:grey;
+}
+footer ul { 
+    background-color:#EEE; /*#B8DEDE;*/ 
+	margin:0;
+	text-align:center;
+    padding-top:0.5em;
+    padding-bottom:0.5em;
+}
+footer li { 
+	display:inline; 
+	padding:0 5%;
+}
+ul li:first-child{ 
+	padding-left:0; 
+}
+ul li:last-child{
+	padding-right:0; 
+}
+
 /* bandeau alpha */
 body:after{
   content: "αlpha";
   position: fixed;
   width: 150px;
   height: 25px;
-  background: red; /*#EE8E4A;*/
+  background: #E74106; /*#EE8E4A;*/
   top: 22px;
   right: -35px;
   text-align: center;
@@ -321,29 +374,12 @@ body:after{
   font-family: sans-serif;
   text-transform: uppercase;
   font-weight: bold;
-  color: #fff;
+  color: white;
   line-height: 27px;
   -ms-transform:rotate(45deg);
   -webkit-transform:rotate(45deg);
   transform:rotate(45deg);
   box-shadow: 0px 2px 5px 0px grey;
-}
-/* pour le dev */
-.version{ 
-	float:right; margin-right:3%; 
-	font-size:small; color:red;
-}
-
-footer {
-    background-color:#B8DEDE; 
-    position: absolute; 
-    bottom: 0; width:100%; /*left: 0; right: 0;*/
-    padding-top:0.5em;
-    padding-bottom:0.5em;
-	text-align:center;
-    font-size:0.7em;
-	/*padding:1em 0.5em 0.5em 0.5em;*/
-	/*height:1.1em;*/
 }
 
 /*

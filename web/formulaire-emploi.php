@@ -34,22 +34,22 @@ if ($etape=="1") {
 			
 			<div class="lab">
 				<label class="label_long" for="age">Je suis âgé·e de :</label>
-				<?php echo affiche_formulaire("age", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("age", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="nationalite">Je suis citoyen :</label>
-				<?php echo affiche_formulaire("nationalite", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("nationalite", $tab); ?></div>
 			</div>
 			
 			<div class="lab">
 				<label class="label_long" for="sexe">Je suis :</label>
-				<?php echo affiche_formulaire("sexe", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("sexe", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="jesais">Je sais ce que je veux faire :</label>
-				<?php echo affiche_formulaire("jesais", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("jesais", $tab); ?></div>
 			</div>
 			
 			<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
@@ -69,27 +69,27 @@ if ($etape=="1") {
 			
 			<div class="lab">
 				<label class="label_long" for="situation">Quelle est ma situation aujourd'hui ?</label>
-				<?php echo affiche_formulaire("situation", $tab); ?>
+				<div style="display:inline-block; padding:0;"><?php echo affiche_formulaire("situation", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="etudes">Quelles sont les dernières études que j'ai suivies ?</label>
-				<?php echo affiche_formulaire("etudes", $tab); ?>
+				<div style="display:inline-block; padding:0;"><?php echo affiche_formulaire("etudes", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="diplome">Quel est le diplôme le plus élevé que j'ai obtenu ?</label>
-				<?php echo affiche_formulaire("diplome", $tab); ?>
+				<div style="display:inline-block; padding:0;"><?php echo affiche_formulaire("diplome", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="permis">Ai-je le permis de conduire (B) ?</label>
-				<?php echo affiche_formulaire("permis", $tab); ?>
+				<div style="display:inline-block; padding:0;"><?php echo affiche_formulaire("permis", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="handicap">Suis-je en situation de handicap ?</label>
-				<?php echo affiche_formulaire("handicap", $tab); ?>
+				<div style="display:inline-block; padding:0;"><?php echo affiche_formulaire("handicap", $tab); ?></div>
 			</div>
 		
 			<div style="margin-top:2em;">
@@ -111,27 +111,27 @@ if ($etape=="1") {
 			<input type="hidden" name="etape" value="fin">
 			<div class="lab">
 				<label class="label_long" for="type_emploi[]">Je cherche un emploi de type :</label>
-				<?php echo affiche_formulaire("type_emploi", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("type_emploi", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="temps_plein">Je souhaite un travail à temps plein :</label>
-				<?php echo affiche_formulaire("temps_plein", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("temps_plein", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="secteur[]">Quel secteur d'activité ou métier m'intéresse ?<br/><span style="font-size:0.7em">(Choix multiple possible)</span></label>
-				<?php echo affiche_formulaire("secteur", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("secteur", $tab); ?></div>
 			</div>
 			
 			<div class="lab">
 				<label class="label_long" for="experience">J'ai déjà une expérience en emploi :</label>
-				<?php echo affiche_formulaire("experience", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("experience", $tab); ?></div>
 			</div>
 
 			<div class="lab">
 				<label class="label_long" for="inscription[]">Je suis déjà inscrit auprès de :</label>
-				<?php echo affiche_formulaire("inscription", $tab); ?>
+				<div style="display:inline-block;"><?php echo affiche_formulaire("inscription", $tab); ?></div>
 			</div>		
 		
 			<div style="margin-top:2em;">

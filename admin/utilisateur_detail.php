@@ -1,4 +1,7 @@
 <?php
+//http://php.net/manual/fr/function.password-hash.php
+//https://openclassrooms.com/courses/concevez-votre-site-web-avec-php-et-mysql/tp-creer-un-espace-membres
+
 require('secret/connect.php');
 include('inc/functions.php');
 session_start();
@@ -167,30 +170,34 @@ function displayAttache() {
 
 	<div class="une_colonne">
 		<div class="lab">
+			<label for="nom">Courriel :</label>
+			<input type="text" name="nom" value="<?php if ($id_utilisateur) { echo $row["email"]; } ?>"/> <abbr title="Le courriel sert de login.">&#9888;</abbr>
+		</div>
+		<div class="lab">
 			<label for="nom">Nom :</label>
 			<input type="text" name="nom" value="<?php if ($id_utilisateur) { echo $row["nom_utilisateur"]; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="type">Statut :</label>
-			<select name="type" <?php if ($id_utilisateur) { echo "disabled"; } ?> onchange="displayAttache();" >
+			<select name="type" <?php if (!$_SESSION['user_droits']['utilisateur']){ echo "disabled"; } ?> onchange="displayAttache();" >
 				<option value="" >A choisir</option>
 				<option value="1" <?php if ($id_utilisateur) {if ($row["id_statut"]=="1") { echo "selected"; }} ?>>Administrateur national</option>
 				<option value="2" <?php if ($id_utilisateur) {if ($row["id_statut"]=="2") { echo "selected"; }} ?>>Animateur territorial</option>
 				<option value="3" <?php if ($id_utilisateur) {if ($row["id_statut"]=="3") { echo "selected"; }} ?>>Professionnel</option>
 			</select>
 		</div>
-		<?php if ($id_utilisateur) { ?>
-		<div class="lab">
-			<label for="date">Date d'inscription :</label>
-			<input type="text" name="date" value="<?php echo date_format(date_create($row["date_inscription"]), 'd/m/Y'); ?>" disabled />
-		</div>
-		<?php } ?>
 		<div class="lab">
 			<label for="competence_geo">Attache :</label>
 			<select name="competence_geo" <?php if ($id_utilisateur) { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
 				<?php echo $liste_attache_metier; ?>
 			</select>
 		</div>
+		<?php if ($id_utilisateur) { ?>
+		<div class="lab">
+			<label for="date">Date d'inscription :</label>
+			<input type="text" name="date" class="datepick" value="<?php echo date_format(date_create($row["date_inscription"]), 'd/m/Y'); ?>" disabled />
+		</div>
+		<?php } ?>
 		<div class="lab">
 			<label for="actif">Actif :</label>
 			<input type="radio" name="actif" value="1" <?php if ($id_utilisateur) {if ($row["actif_utilisateur"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
@@ -231,7 +238,7 @@ function displayAttache() {
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>"; print_r(@$_POST); echo "<br/>"; print_r(@$row); echo "<br/>".@$req."<br/>".@$sqlt; echo "</pre>"; 
+	echo "<pre>";print_r(@$_SESSION); echo "<br/>"; print_r(@$_POST); echo "<br/>"; print_r(@$row); echo "<br/>".@$req."<br/>".@$sqlt; echo "</pre>"; 
 }
 ?>
 </body>

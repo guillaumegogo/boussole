@@ -1,7 +1,4 @@
 <?php
-//http://php.net/manual/fr/function.password-hash.php
-//https://openclassrooms.com/courses/concevez-votre-site-web-avec-php-et-mysql/tp-creer-un-espace-membres
-
 require('secret/connect.php');
 include('inc/functions.php');
 session_start();
@@ -33,7 +30,7 @@ $sql .= " ORDER BY `bsl_utilisateur`.`id_statut` ASC,`id_metier` ASC";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
-	$tableau= "<table id=\"sortable\"><thead> <tr><th>Nom</th><th>Email</th><th>Statut</th><th>Attache</th></tr></thead> <tbody> ";
+	$tableau= "<table id=\"sortable\"><thead> <tr><th>Nom</th><th>Courriel</th><th>Statut</th><th>Attache</th></tr></thead> <tbody> ";
 	
 	while($row = mysqli_fetch_assoc($result)) {
 		//attache = colonne "compétence géographique"

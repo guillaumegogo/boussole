@@ -1,8 +1,7 @@
 <?php
 include('secret/connect.php');
 include('inc/functions.php');
-
-$version="Version du 20 juin 2017";
+include('inc/variables.php');
 
 //********* permet de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
@@ -21,56 +20,81 @@ if (isset($_POST["ville_selectionnee"])) {
 	session_unset();  
 	
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
-	//$ville = format_insee(securite_bdd($conn, $_POST["ville_selectionnee"])); -> désactivé car le format est réalisé par la fonction JS
-	$ville = securite_bdd($conn, substr($_POST["ville_selectionnee"], 0, -6));
-	$cp = securite_bdd($conn, substr($_POST["ville_selectionnee"], -5));
-	$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
-		FROM `bsl__ville` 
-		WHERE nom_ville LIKE '".$ville."%' AND code_postal LIKE '".$cp."' 
-		GROUP BY `nom_ville`, `code_insee`";
+	//test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
+	if(is_numeric(substr($_POST["ville_selectionnee"], -3))){
+		$ville = substr($_POST["ville_selectionnee"], 0, -6);
+		$cp = substr($_POST["ville_selectionnee"], -5);
+		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
+			FROM `bsl__ville` 
+			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ?
+			GROUP BY `nom_ville`, `code_insee`";
+		$stmt = mysqli_prepare($conn, $sql);
+		mysqli_stmt_bind_param($stmt, 'ss', $ville, $cp);
+	}else{
+		$ville = format_insee($_POST["ville_selectionnee"])."%"; //conversion des accents, etc.
+		$cp="";
+		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
+			FROM `bsl__ville` 
+			WHERE `nom_ville` LIKE ?
+			GROUP BY `nom_ville`, `code_insee`";
+		$stmt = mysqli_prepare($conn, $sql);
+		mysqli_stmt_bind_param($stmt, 's', $ville);
+	}
 	
-	$result = mysqli_query($conn, $sql);
-	$nb_villes=mysqli_num_rows($result);
+	if (mysqli_stmt_execute($stmt)) {
+		mysqli_stmt_store_result($stmt);
+		$nb_villes=mysqli_stmt_num_rows($stmt);
 	
-	//********* si une seule ville, tout va bien
-	if ($nb_villes==1){
-		$row = mysqli_fetch_assoc($result);
-		$_SESSION['ville_habitee'] = $row['nom_ville'];
-		$_SESSION['code_insee'] = $row['code_insee'];
-		$_SESSION['code_postal'] = $cp;
-		
-		//********* affichage des thèmes disponibles en fonction de la ville choisie 
-		$affiche_boutons = "";
-		$sqlt = "SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
-			FROM `bsl_theme`
-			JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.id_theme=`bsl_theme`.id_theme
-			JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_professionnel_themes`.id_professionnel
-			LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.competence_geo=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
-			LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire`
-			LEFT JOIN `bsl__departement` ON `bsl_professionnel`.competence_geo=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
-			LEFT JOIN `bsl__region` ON `bsl_professionnel`.competence_geo=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
-			LEFT JOIN `bsl__departement` as `bsl__departement_region` ON `bsl__departement_region`.`id_region`=`bsl__region`.`id_region`
-			WHERE `bsl_theme`.actif_theme=1 AND `bsl_professionnel`.actif_pro=1 AND (`bsl_professionnel`.competence_geo=\"national\" OR code_insee=\"".$_SESSION['code_insee']."\" OR `bsl__departement`.id_departement=SUBSTR(\"".$_SESSION['code_insee']."\",1,2) OR `bsl__departement_region`.id_departement=SUBSTR(\"".$_SESSION['code_insee']."\",1,2))
-			UNION
-			SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
-			FROM `bsl_theme`
-			WHERE `id_theme_pere` IS NULL AND `actif_theme`=0";
-
+		if($nb_villes==0){
+			$message = "Nous ne trouvons pas de ville correspondante. Recommence s'il te plait.";
+		}else if($nb_villes>1){
+			$message = "Plusieurs villes correspondent à ta saisie. Recommence s'il te plait.";
+		}else {
+			mysqli_stmt_bind_result($stmt, $row['nom_ville'], $row['code_insee'], $row['codes_postaux']);
+			mysqli_stmt_fetch($stmt); //$row = mysqli_fetch_assoc($result);
+			$_SESSION['ville_habitee'] = $row['nom_ville'];
+			$_SESSION['code_insee'] = $row['code_insee'];
+			if ($cp) {
+				$_SESSION['code_postal'] = $cp;
+			}else{
+				$_SESSION['code_postal'] = $row['codes_postaux'];
+			}
+			
+			//********* affichage des thèmes disponibles en fonction de la ville choisie 
 //todo : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudra probablement descendre au niveau des offres pour une meilleure granularité. 
 /* on pourrait descendre à la granularité de l'offre, mais la requête serait encore plus complexe :
 (...) JOIN `bsl_offre` ON `bsl_offre`.id_professionnel=`bsl_professionnel`.id_professionnel
 JOIN `bsl_theme` as theme_offre ON bsl_offre.id_sous_theme=theme_offre.id_theme
 WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
 
-		$resultt = mysqli_query($conn, $sqlt);
-		while($rowt = mysqli_fetch_assoc($resultt)) {   
-			$affiche_boutons .= "<input type=\"submit\" value=\"".$rowt["libelle_theme"]."\" name=\"besoin\"".( ($rowt["actif_theme"])? "":"disabled" ).">";
-		}
+			$affiche_boutons = "";
+			$sqlt = "SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
+				FROM `bsl_theme`
+				JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.id_theme=`bsl_theme`.id_theme
+				JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_professionnel_themes`.id_professionnel
+				LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.competence_geo=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
+				LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire`
+				LEFT JOIN `bsl__departement` ON `bsl_professionnel`.competence_geo=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
+				LEFT JOIN `bsl__region` ON `bsl_professionnel`.competence_geo=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
+				LEFT JOIN `bsl__departement` as `bsl__departement_region` ON `bsl__departement_region`.`id_region`=`bsl__region`.`id_region`
+				WHERE `bsl_theme`.actif_theme=1 AND `bsl_professionnel`.actif_pro=1 AND (`bsl_professionnel`.competence_geo=\"national\" OR code_insee=? OR `bsl__departement`.id_departement=SUBSTR(?,1,2) OR `bsl__departement_region`.id_departement=SUBSTR(?,1,2))
+				UNION
+				SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
+				FROM `bsl_theme`
+				WHERE `id_theme_pere` IS NULL AND `actif_theme`=0";
+			$stmtt = mysqli_prepare($conn, $sqlt);
+			mysqli_stmt_bind_param($stmtt, 'sss', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee']);
+			if (mysqli_stmt_execute($stmtt)) {
+				mysqli_stmt_bind_result($stmtt, $rowt["id_theme"], $rowt["libelle_theme"], $rowt["actif_theme"]);
 
-	//********* sinon, pas bien
-	}else{
-		$message = "Nous ne trouvons pas de ville correspondante. Recommence s'il te plait.";
+				while (mysqli_stmt_fetch($stmtt)) {
+					$affiche_boutons .= "<input type=\"submit\" value=\"".$rowt["libelle_theme"]."\" name=\"besoin\"".( ($rowt["actif_theme"])? "":"disabled" ).">";
+				}
+			}
+			mysqli_stmt_close($stmtt);
+		}
 	}
+	mysqli_stmt_close($stmt);
 }
 ?>
 
@@ -86,29 +110,56 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	  <script>
   $( function() {
-    var listeVilles = [<?php include('inc/villes_index.inc');?>];
+    var listeVilles = [<?php include('inc/villes_index.inc.php');?>]; 
+    //adaptation fichier insee : pas d'accent, de tiret, d'apostrophe, etc.
+    var accentMap = {
+      "á": "a",
+      "â": "a",
+      "ç": "c",
+      "é": "e",
+      "è": "e",
+      "ê": "e",
+      "ë": "e",
+      "î": "i",
+      "ï": "i",
+      "ö": "o",
+      "ô": "o",
+      "ü": "u",
+      "û": "u",
+      "-": " ",
+      "'": " "
+    };
+    var normalize = function( term ) {
+      var ret = "";
+	  term = term.replace(/\bsaint/gi, "st");
+      for ( var i = 0; i < term.length; i++ ) {
+        ret += accentMap[ term.charAt(i) ] || term.charAt(i);
+      }
+      return ret;
+    };
     $( "#villes" ).autocomplete({
       minLength: 2,
       source: function( request, response ) {
-          //adaptation fichier insee
-          request.term = request.term.replace("-", " ");
-          request.term = request.term.replace(/^saint /gi, "St ");
           //recherche sur les premiers caractères de la ville ou sur le code postal
-          var matcher1 = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
+          var matcher1 = new RegExp( "^" + $.ui.autocomplete.escapeRegex( normalize(request.term) ), "i" );
           var matcher2 = new RegExp( " " + $.ui.autocomplete.escapeRegex( request.term ) + "[0-9]*$", "i" );
           response( $.grep( listeVilles, function( item ){
 			  return (matcher1.test( item ) || matcher2.test( item ));
           }) );
+      },
+      select: function(event, ui) {
+          $("#villes").val(ui.item.label);
+          $("#searchForm").submit();
       }
     });
   } );
   </script>
-	<title>Boussole des jeunes</title>
+	<title><?php echo $titredusite; ?></title>
 </head>
 
 <body><div id="main">
-<div class="bandeau"><a href="index.php">La boussole des jeunes</a></div>
-<div class="version"><?php echo $version; ?></div> 
+<div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
+
 <div class="soustitre">Rencontrer des professionnel·le·s <b>près de chez moi</b> qui <b>m'aident</b> dans mes recherches.</div>
 
 <?php
@@ -116,14 +167,14 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 if ($nb_villes!=1) {
 ?>
 
-<form class="joli accueil vert" method="post">
+<form class="joli accueil vert" method="post" id="searchForm">
 <fieldset class="accueil_choix_ville">
 <?php
 if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 ?>
 	<label for="ville_selectionnee">J'habite à</label>
-	<input type="text" id="villes" name="ville_selectionnee" onchange="this.form.submit()">
-	<input type="submit" value="Valider">
+	<input type="text" id="villes" name="ville_selectionnee" placeholder="Saisissez votre commune ou votre code postal"> <!--onchange="this.form.submit()"-->
+	<input type="submit" value="Démarrer">
 </fieldset>
 &nbsp;
 </form>

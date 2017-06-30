@@ -1,6 +1,9 @@
 <footer>
-	<a href="../admin/index.php" target="_blank" style="margin-right:10%;">Administration</a> 
-	<a href="mentions.php" style="margin-right:10%;">Mentions légales</a> 
-	<a href="#" style="margin-right:10%;">Contact</a> 
-	Un service proposé par le <a href="http://jeunes.gouv.fr" target="_blank">Ministère chargé de la Jeunesse</a>
+	<div class="version"><?php echo $version; ?></div>
+	<ul>
+		<li><a href="../admin/index.php" target="_blank">Administration</a> 
+		<li><a href="mentions.php">Mentions légales</a> 
+		<li><a href="#">Contact</a> 
+		<li>Un service proposé par le <a href="http://jeunes.gouv.fr" target="_blank">Ministère chargé de la Jeunesse</a>.
+	</ul>
 </footer>

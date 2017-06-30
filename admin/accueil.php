@@ -32,7 +32,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 //********** sélection territoire
-if (isset($_POST["choix_territoire"])) $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]); 
+if (isset($_POST["choix_territoire"])) {
+	$_SESSION['territoire_id'] = $_POST["choix_territoire"];
+}
 include('inc/select_territoires.inc.php');
 
 //********** accroche statut

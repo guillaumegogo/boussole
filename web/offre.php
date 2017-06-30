@@ -1,6 +1,7 @@
 <?php
 include('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
 //********* permet de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
@@ -9,76 +10,104 @@ session_cache_limiter('private_no_expire');
 //********* valeur de sessions
 session_start();
 
+//********* variables
+$resultat="";
+$envoi_mail = false;
+$adresse = "";
+$url = "";
+$courriel_offre = "";
+$zone = "";
+$row[] = array();
+
 //********* l'id de l'offre peut arriver en GET ou en POST selon d'où on vient
 $id_offre = null;
 if(isset($_POST["id_offre"])) { 
-	$id_offre = securite_bdd($conn, $_POST["id_offre"]); 
+	$id_offre = $_POST["id_offre"]; 
 } else if (isset($_GET["id"])) { 
-	$id_offre = securite_bdd($conn, $_GET["id"]); 
+	$id_offre = $_GET["id"]; 
 }
-$adresse = null;
-
 $fullurl = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?id=" . $id_offre;
-
-//********* fonction de présentation des critères du jeune
-function liste_criteres($separateur){
-	$txt_criteres=null;
-	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "nationalite", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
-	
-	foreach($_SESSION as $index=>$valeur){
-		if(in_array($index, $tab_criteres_a_afficher)){
-			$txt = str_replace("_", " ", $index)." : ";
-			if(is_array($valeur)){
-				foreach($valeur as $index2=>$valeur2)
-					$txt .= $valeur2." /";
-				$txt = substr($txt, 0, -1);
-			}else{
-				$txt .= $valeur;
-			}
-			$txt_criteres .= $txt.$separateur;
-		}
-	}
-	return $txt_criteres;
-}
 
 //********* requête de récup de l'offre pour affichage
 if(isset($id_offre)) {
-	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `actif_offre`, `nom_pro`  
+	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
 	FROM `bsl_offre` 
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
 	JOIN `bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`bsl_offre`.id_sous_theme
 	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`theme_fils`.id_theme_pere
-	WHERE `id_offre`=".$id_offre;
-	$result = mysqli_query($conn, $sql);
-	if (mysqli_num_rows($result) > 0) {
-		$row = mysqli_fetch_assoc($result);
-    }
-	$adresse = $row["adresse_offre"]." ".$row["code_postal_offre"]." ".$row["ville_offre"];
+	WHERE `actif_offre` = 1 AND `id_offre`= ? ";
+	$stmt = mysqli_prepare($conn, $sql);
+	mysqli_stmt_bind_param($stmt, 'i', $id_offre);
+	
+	if (mysqli_stmt_execute($stmt)) {
+		mysqli_stmt_store_result($stmt);
+		if (mysqli_stmt_num_rows($stmt) > 0) {
+			mysqli_stmt_bind_result($stmt, $row["nom_offre"], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
+			mysqli_stmt_fetch($stmt);
+		
+			//mise en forme des données :
+			$adresse = $row["adresse_offre"]." ".$row["code_postal_offre"]." ".$row["ville_offre"];
+			
+			$url=$row["site_web_offre"];
+			if (substr($url, 0, 3)=="www") {
+				$url = "http://".$url;
+			}
+			if (filter_var($url, FILTER_VALIDATE_URL)) {
+				$url .= "<a href=\"".$url."\" target=\"_blank\">".$url."</a>";
+			}
+			
+			$courriel_offre = $row["courriel_offre"];
+			if (filter_var($row["courriel_offre"], FILTER_VALIDATE_EMAIL)) {
+				$courriel_offre = "<a href=\"mailto:".$row["courriel_offre"]."\">".$row["courriel_offre"]."</a>";
+			}
+			
+			if (!$row["zone_selection_villes"]) { 
+				$zone = "Territoire"; 
+			} else { 
+				$zone = "Sélection de villes"; // TODO : pas fini !
+			}
+		}
+	}
+	mysqli_stmt_close($stmt);
 }
 
 //********* si demande de contact
 if(isset($_POST["coordonnees"])){
 	
 	//*********** requête de création de la demande
-	$sql_dmd = "INSERT INTO `bsl_demande`(`date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NOW(), ".$id_offre.",\"".securite_bdd($conn, $_POST["coordonnees"])."\",\"".$_SESSION['code_insee']."\",\"".liste_criteres(',')."\")";
-	$result_dmd = mysqli_query($conn, $sql_dmd);
+	$sql_dmd = "INSERT INTO `bsl_demande`(`date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NOW(), ?, ?, ?, ?)";
+	$stmt = mysqli_prepare($conn, $sql_dmd);
+	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $_POST["coordonnees"], $_SESSION['code_insee'], liste_criteres(','));
+	$result_dmd = mysqli_stmt_execute($stmt);
 
 	//*********** envoi de mail si demandé
-	$envoi_mail = false;
-	if(isset($_POST["envoi_mail"])){
-		$to = "guillaume.gogo@jeunesse-sports.gouv.fr"; //en prod il faudra mettre ici l'adresse du pro ie $row["courriel"]
-		$subject = "Une demande a été déposée sur la Boussole des jeunes";
-		$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row["nom_offre"]."</b>.</p>
-		<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>
-		<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>
-		<p>Merci de prévenir de la suite données à la demande dans l'<a href=\"http://www.gogo.fr/boussole/admin/demande_liste.php\">espace de gestion de la Boussole</a>.
-        <p>Ce mail aurait du être envoyé à ".$row["courriel_offre"]."</p></html>";
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
-		$headers .= 'To: boussole@yopmail.fr' . "\r\n";
-		$headers .= 'From: La Boussole des jeunes <boussole@gogo.fr>' . "\r\n";
-		$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-		$envoi_mail = mail($to, $subject, $message, $headers);
+	if($result_dmd){
+		if(isset($_POST["envoi_mail"])){
+			$to = "boussole@yopmail.fr"; //en prod il faudra mettre ici l'adresse du pro ie $row["courriel_offre"]
+			$subject = "Une demande a été déposée sur la Boussole des jeunes";
+			$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row["nom_offre"]."</b>.</p>
+			<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>
+			<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>
+			<p>Merci de prévenir de la suite données à la demande dans l'<a href=\"http://www.gogo.fr/boussole/admin/demande_liste.php\">espace de gestion de la Boussole</a>.
+			<p>Ce mail aurait du être envoyé à ".$row["courriel_offre"]."</p></html>";
+			$headers  = 'MIME-Version: 1.0' . "\r\n";
+			$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+			$headers .= 'From: La Boussole des jeunes <boussole@gogo.fr>' . "\r\n";
+			$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+			$envoi_mail = mail($to, $subject, $message, $headers);
+			
+			if ($envoi_mail){
+				//todo : critères à mettre mieux en forme
+				$resultat = "<p><img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> <b>Ta demande a bien été enregistrée et un courriel contenant les informations suivantes à été transmis à l'organisme proposant l'offre de service.</b></p>
+				<div style=\"width:90%; margin:auto; -webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size:0.8em;\">".liste_criteres('<br/>')."</div>";
+			}else{
+				$resultat="<p><img src=\"img/exclamation.png\" width=\"24px\"> Ta demande a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement ".$row["courriel_offre"].".</p>";
+			}
+		}else{
+			$resultat="<p><img src=\"img/exclamation.png\" width=\"24px\"> Ta demande a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement ".$row["courriel_offre"].".</p>";
+		}
+	}else{
+		$resultat="<p><img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.</p>";
 	}
 }
 ?>
@@ -90,11 +119,11 @@ if(isset($_POST["coordonnees"])){
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<title>Boussole des jeunes</title>
+	<title><?php echo $titredusite; ?></title>
 </head>
 
 <body><div id="main">
-<div class="bandeau"><a href="index.php">La boussole des jeunes</a></div>
+<div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
 
 <?php
 if(isset($id_offre)) {
@@ -145,29 +174,15 @@ if(isset($id_offre)) {
 	<legend>Demande de contact</legend>
 	<div class="pluspetit">
 <?php
-		if (isset($envoi_mail)) {
-			if ($envoi_mail) {
-?>
-		<p><img src="img/ok_circle.png" width="24px" style="margin-bottom:-0.3em;"> <b>Ta demande a bien été enregistrée et un courriel contenant les informations suivantes à été transmis à l'organisme proposant l'offre de service.</b></p>
-		
-		<div style="width:90%; margin:auto; -webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size:0.8em;">
-			<?php echo liste_criteres('<br/>'); ?><abbr title="A mettre en forme...">&#9888;</abbr> 
-		</div>
-		
-<?php
-			}else{
-?>
-		<p><img src="img/exclamation.png" width="24px"> Ta demande a bien été enregistrée mais aucun email complémentaire n'a été envoyé. <?php echo "Tu peux contacter directement ".$row["courriel_offre"]."."; ?></p>
-		
-<?php
-			}
+		if (isset($result_dmd)){
+			echo $resultat;
 		} else { 
 ?>
-		<p>Si je suis intéressé.e par cette offre, je laisse mon email ou mon numéro de téléphone portable pour être contacté·e par un conseiller d'ici <b><?php echo $row["delai_offre"]; ?> jours</b> maximum.</p>
+		<p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller d'ici <b><?php echo $row["delai_offre"]; ?> jours</b> maximum.</p>
 		
 		<div style="text-align:center; margin:1em auto;">
 			<input type="hidden" name="id_offre" value="<?php echo $id_offre;?>">
-			<input type="text" name="coordonnees" value="Mes coordonnées"/> 
+			<input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"/> 
 			<button type="submit">Je demande à être contacté·e</button>
 			<br/> 
 			<!--en vue de tests--> 
@@ -179,7 +194,6 @@ if(isset($id_offre)) {
 		}
 ?>
 	</div>
-	
 </fieldset>
 
 <fieldset class="demande_offre">
@@ -202,25 +216,11 @@ if(isset($id_offre)) {
 			</tr>
 			<tr>
 				<td>Site internet</td>
-				<td><?php 
-		$url=$row["site_web_offre"];
-		if (substr($url, 0, 3)=="www") $url = "http://".$url;
-		if (filter_var($url, FILTER_VALIDATE_URL)) {
-			echo "<a href=\"".$url."\" target=\"_blank\">".$url."</a>";
-		} else {
-			echo $url;
-		}
-				?></td>
+				<td><?php echo $url; ?></td>
 			</tr>
 			<tr>
 				<td>Courriel</td>
-				<td><?php 
-		if (filter_var($row["courriel_offre"], FILTER_VALIDATE_EMAIL)) {
-			echo "<a href=\"mailto:".$row["courriel_offre"]."\">".$row["courriel_offre"]."</a>";
-		} else {
-			echo $row["courriel_offre"];
-		}
-				?></td>
+				<td><?php echo $courriel_offre; ?></td>
 			</tr>
 			<tr>
 				<td>Téléphone</td>
@@ -228,13 +228,7 @@ if(isset($id_offre)) {
 			</tr>
 			<tr>
 				<td>Zone concernée</td>
-				<td><?php 
-if (!$row["zone_selection_villes"]) { 
-	echo "Territoire"; 
-} else { 
-	echo "Villes <abbr title=\"à lister\">&#9888;</abbr>"; 
-}
-				?></td>
+				<td><?php echo $zone; ?></td>
 			</tr>
 		</table>
 	</div>

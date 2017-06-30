@@ -1,6 +1,8 @@
 <?php
 include('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
+
 //********* permet de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
 session_cache_limiter('private_no_expire');
@@ -14,14 +16,15 @@ session_start();
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<title>Boussole des jeunes</title>
+	<title><?php echo $titredusite; ?></title>
 	<STYLE type="text/css">
 	p {text-align: justify;}
 	.containeur {width:95%; margin:auto;}
 	</STYLE>
 </head>
 <body><div id="main">
-<div class="bandeau"><a href="index.php">La boussole des jeunes</a></div>
+<div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
+
 <div class="containeur">
 	<h2>Mentions légales</h2>
 	<h3>Informations éditoriales</h3>
