@@ -26,4 +26,52 @@ function liste_criteres($separateur){
 	}
 	return $txt_criteres;
 }
-?>
+
+//******** présentation des questions du formulaire
+function affiche_formulaire($sujet, $tab){
+	$t ="";
+	if($tab[$sujet]["type"]=="radio"){
+		foreach($tab[$sujet] as $key => $value){
+			if ($key=="type") continue; //pour passer le "type"
+			$t .= "<input type=\"radio\" name=\"".$sujet."\" value=\"".$key."\" ";
+			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " checked ";
+			$t .= "> ".$value."\n";
+		}
+	}else if($tab[$sujet]["type"]=="checkbox"){
+		$t ="<div style=\"display:inline-table;\">";
+		foreach($tab[$sujet] as $key => $value){
+			if ($key=="type") continue;
+			$t .= "<input type=\"checkbox\" name=\"".$sujet."[]\" value=\"".$key."\" ";
+			if (isset($_SESSION[$sujet]) && in_array($key, $_SESSION[$sujet])) $t .= " checked ";
+			$t .= "> ".$value."</br>\n";
+		}
+	}else if($tab[$sujet]["type"]=="select"){
+		$t ="<select name=\"".$sujet."\">";
+		foreach($tab[$sujet] as $key => $value){
+			if ($key=="type") continue;
+			$t .= "<option value=\"".$key."\" ";
+			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " selected ";
+			$t .= "> ".$value."</option>\n";
+		}
+		$t .="</select>";
+	}else if($tab[$sujet]["type"]=="multiple"){
+		$t ="<select name=\"".$sujet."[]\" size=\"".$tab[$sujet]["size"]."\">";
+		foreach($tab[$sujet] as $key => $value){
+			if ($key=="type" || $key=="size") continue;
+			$t .= "<option value=\"".$key."\" ";
+			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " selected ";
+			$t .= "> ".$value."</option>\n";
+		}
+		$t .="</select>";
+	}else if($tab[$sujet]["type"]=="age"){
+		$t ="<select name=\"".$sujet."\" class=\"age\">";
+		for ($i = $tab[$sujet]["min"]; $i <= $tab[$sujet]["max"]; $i++) {
+			$t .= "<option value=\"".$i."\"";
+			if (isset($_SESSION['age']) && $i==$_SESSION['age']) $t .= " selected ";
+			else if ($i==$tab[$sujet]["defaut"]) $t .= " selected ";
+			$t .= ">".$i."</option>\n";
+		}
+		$t .= "</select> ans";
+	}
+	return $t;
+}

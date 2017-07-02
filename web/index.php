@@ -1,24 +1,24 @@
 <?php
+session_start();
+
 include('secret/connect.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
-//********* permet de revenir sur les formulaires sans recharger
+//********* censé permettre de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
 session_cache_limiter('private_no_expire');
 
-//********* valeur de sessions
-session_start();
-
-//********* variables
+//********* variables utilisées dans ce fichier
 $liste_villes_possibles = null;
 $nb_villes = 0;
+$themes = array();
 
 //********* l'utilisateur a relancé le formulaire
 if (isset($_POST["ville_selectionnee"])) {
 	//********* on efface les valeurs de session pour une recherche propre
 	session_unset();  
-	
+
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
 	//test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
 	if(is_numeric(substr($_POST["ville_selectionnee"], -3))){
@@ -40,18 +40,18 @@ if (isset($_POST["ville_selectionnee"])) {
 		$stmt = mysqli_prepare($conn, $sql);
 		mysqli_stmt_bind_param($stmt, 's', $ville);
 	}
-	
+
 	if (mysqli_stmt_execute($stmt)) {
 		mysqli_stmt_store_result($stmt);
 		$nb_villes=mysqli_stmt_num_rows($stmt);
-	
+
 		if($nb_villes==0){
 			$message = "Nous ne trouvons pas de ville correspondante. Recommence s'il te plait.";
 		}else if($nb_villes>1){
 			$message = "Plusieurs villes correspondent à ta saisie. Recommence s'il te plait.";
 		}else {
 			mysqli_stmt_bind_result($stmt, $row['nom_ville'], $row['code_insee'], $row['codes_postaux']);
-			mysqli_stmt_fetch($stmt); //$row = mysqli_fetch_assoc($result);
+			mysqli_stmt_fetch($stmt); 
 			$_SESSION['ville_habitee'] = $row['nom_ville'];
 			$_SESSION['code_insee'] = $row['code_insee'];
 			if ($cp) {
@@ -59,15 +59,8 @@ if (isset($_POST["ville_selectionnee"])) {
 			}else{
 				$_SESSION['code_postal'] = $row['codes_postaux'];
 			}
-			
-			//********* affichage des thèmes disponibles en fonction de la ville choisie 
-//todo : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudra probablement descendre au niveau des offres pour une meilleure granularité. 
-/* on pourrait descendre à la granularité de l'offre, mais la requête serait encore plus complexe :
-(...) JOIN `bsl_offre` ON `bsl_offre`.id_professionnel=`bsl_professionnel`.id_professionnel
-JOIN `bsl_theme` as theme_offre ON bsl_offre.id_sous_theme=theme_offre.id_theme
-WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
 
-			$affiche_boutons = "";
+			//********* affichage des thèmes disponibles en fonction de la ville choisie 
 			$sqlt = "SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
 				FROM `bsl_theme`
 				JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.id_theme=`bsl_theme`.id_theme
@@ -82,13 +75,19 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 				SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
 				FROM `bsl_theme`
 				WHERE `id_theme_pere` IS NULL AND `actif_theme`=0";
+//todo : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudra probablement descendre au niveau des offres pour une meilleure granularité. 
+/* on pourrait descendre à la granularité de l'offre, mais la requête serait encore plus complexe :
+(...) JOIN `bsl_offre` ON `bsl_offre`.id_professionnel=`bsl_professionnel`.id_professionnel
+JOIN `bsl_theme` as theme_offre ON bsl_offre.id_sous_theme=theme_offre.id_theme
+WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
+
 			$stmtt = mysqli_prepare($conn, $sqlt);
 			mysqli_stmt_bind_param($stmtt, 'sss', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee']);
 			if (mysqli_stmt_execute($stmtt)) {
-				mysqli_stmt_bind_result($stmtt, $rowt["id_theme"], $rowt["libelle_theme"], $rowt["actif_theme"]);
+				mysqli_stmt_bind_result($stmtt, $id_theme, $libelle_theme, $actif_theme);
 
 				while (mysqli_stmt_fetch($stmtt)) {
-					$affiche_boutons .= "<input type=\"submit\" value=\"".$rowt["libelle_theme"]."\" name=\"besoin\"".( ($rowt["actif_theme"])? "":"disabled" ).">";
+					$themes[] = array("libelle"=>$libelle_theme, "actif"=>$actif_theme);
 				}
 			}
 			mysqli_stmt_close($stmtt);
@@ -96,118 +95,6 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 	}
 	mysqli_stmt_close($stmt);
 }
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta name="viewport" content="width=device-width" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style.css" />
-    <link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
-	  <script>
-  $( function() {
-    var listeVilles = [<?php include('inc/villes_index.inc.php');?>]; 
-    //adaptation fichier insee : pas d'accent, de tiret, d'apostrophe, etc.
-    var accentMap = {
-      "á": "a",
-      "â": "a",
-      "ç": "c",
-      "é": "e",
-      "è": "e",
-      "ê": "e",
-      "ë": "e",
-      "î": "i",
-      "ï": "i",
-      "ö": "o",
-      "ô": "o",
-      "ü": "u",
-      "û": "u",
-      "-": " ",
-      "'": " "
-    };
-    var normalize = function( term ) {
-      var ret = "";
-	  term = term.replace(/\bsaint/gi, "st");
-      for ( var i = 0; i < term.length; i++ ) {
-        ret += accentMap[ term.charAt(i) ] || term.charAt(i);
-      }
-      return ret;
-    };
-    $( "#villes" ).autocomplete({
-      minLength: 2,
-      source: function( request, response ) {
-          //recherche sur les premiers caractères de la ville ou sur le code postal
-          var matcher1 = new RegExp( "^" + $.ui.autocomplete.escapeRegex( normalize(request.term) ), "i" );
-          var matcher2 = new RegExp( " " + $.ui.autocomplete.escapeRegex( request.term ) + "[0-9]*$", "i" );
-          response( $.grep( listeVilles, function( item ){
-			  return (matcher1.test( item ) || matcher2.test( item ));
-          }) );
-      },
-      select: function(event, ui) {
-          $("#villes").val(ui.item.label);
-          $("#searchForm").submit();
-      }
-    });
-  } );
-  </script>
-	<title><?php echo $titredusite; ?></title>
-</head>
-
-<body><div id="main">
-<div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
-
-<div class="soustitre">Rencontrer des professionnel·le·s <b>près de chez moi</b> qui <b>m'aident</b> dans mes recherches.</div>
-
-<?php
-//********* 1er affichage de la page (ou mauvaise saise)
-if ($nb_villes!=1) {
-?>
-
-<form class="joli accueil vert" method="post" id="searchForm">
-<fieldset class="accueil_choix_ville">
-<?php
-if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
-?>
-	<label for="ville_selectionnee">J'habite à</label>
-	<input type="text" id="villes" name="ville_selectionnee" placeholder="Saisissez votre commune ou votre code postal"> <!--onchange="this.form.submit()"-->
-	<input type="submit" value="Démarrer">
-</fieldset>
-&nbsp;
-</form>
-
-<?php
-//********* si une seule ville correspond
-}else{
-?>
-
-<form action="formulaire.php" class="joli accueil vert" method="post">
-<fieldset class="accueil_choix_besoin">
-    <div>J'habite à <b><?php echo $_SESSION['ville_habitee']; ?> (<?php echo $_SESSION['code_postal']; ?>)</b> et je souhaite... </div>
-    <div class="boutonsbesoin">
-        <?php echo $affiche_boutons; ?>
-    </div>
-</fieldset>
-</form>
-<?php
-}
-?>
-
-<div class="div123">
-	<div class="block123"><img src="img/ci_search.png">1. En 5 minutes je trouve le bon professionnel.</div>
-	<div class="block123"><img src="img/message.png">2. Je suis recontacté·e dans les jours qui suivent.</div>
-	<div class="block123"><img src="img/calendar.png">3. J'obtiens un rendez-vous et une réponse à mon besoin.</div>
-</div>
-
-<br/>
-<br/>
-<!--
-<?php print_r($_SESSION); echo "<br/>".$sql; ?>
--->
-<?php include('inc/footer.inc.php'); ?>
-</div>
-</body>
-</html>
+//view
+require 'view/index.tpl.php';

@@ -1,23 +1,22 @@
 <?php
+session_start();
+
 include('secret/connect.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
-//********* permet de revenir sur les formulaires sans recharger
+//********* censé permettre de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
-session_cache_limiter('private_no_expire'); 
+session_cache_limiter('private_no_expire');
 
-//********* valeur de sessions
-session_start();
-
-$soustheme_encours = "";
-$affichage="";
+//********* variables utilisées dans ce fichier
 $aucune_offre="";
+$offres = array();
 
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 	header('Location: index.php');
-} else {    
+} else {
 	$message = "J'habite à <b>".$_SESSION['ville_habitee']."</b> et je souhaite <b>".strtolower ($_SESSION['besoin'])."</b>.";
 }
 
@@ -170,26 +169,10 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 		}
 
 		if ($nb_offres > 0) {
-			mysqli_stmt_bind_result($stmt, $row['id_offre'], $row['nom_offre'], $row['description_offre'], $row['sous_theme_offre']);
+			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $sous_theme_offre);
 			while (mysqli_stmt_fetch($stmt)) {
-
-				//*********** séparation par sous thèmes
-				if ($row["sous_theme_offre"]!=$soustheme_encours){
-					if ($soustheme_encours) $affichage .= "</fieldset>"; /*tweak */
-					$soustheme_encours=$row["sous_theme_offre"];            
-					$affichage .= "<fieldset class=\"resultat\"><legend>".$soustheme_encours."</legend>\n<div style=\"width:100%; margin:auto;\" />";
-				}
-
-				//*********** affichage des offres 		
-				$affichage .= "<div class=\"resultat_offre\"><div class=\"coeur\">&#9825;</div><a href=\"offre.php?id=".$row["id_offre"]."\"><b>".$row["nom_offre"]."</b><br/><small>";
-				$desc = strip_tags($row["description_offre"]);
-				$affichage .= (strlen($desc) > 80 ) ? substr($desc,0,strpos($desc," ",80))."..." : $row["description_offre"] ; 
-				$affichage .= "</small></a></div>";
+				$offres[] = array("id"=>$id_offre, "titre"=>$nom_offre, "description"=>$description_offre, "sous_theme"=>$sous_theme_offre);
 			}
-			$affichage .= "</fieldset>";
-		}
-
-		if ($nb_offres > 0) {
 			$titre_criteres = "<p onclick='masqueCriteres()'>".$message."<span id=\"fleche_criteres\">&#9661;</span></p>";
 			$aucune_offre = "<a href=\"#\">Aucune offre ne m'intéresse</a>";
 		}else{
@@ -200,73 +183,6 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 	$msg="L'application a rencontré un problème technique. Merci de contacter l'administrateur du site via le formulaire avec le message d'erreur suivant : " . mysqli_error($conn);
 }
 mysqli_stmt_close($stmt);
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta name="viewport" content="width=device-width" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style.css" />
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<title><?php echo $titredusite; ?></title>
-	<script>
-function masqueCriteres(){
-	var x = document.getElementById('criteres');
-    var y = document.getElementById('fleche_criteres');
-	
-	if(x.style.display === 'none') {
-		x.style.display = 'block';
-		y.innerHTML = "&#9651;"; 
-	} else {
-		x.style.display = 'none';
-		y.innerHTML = "&#9661;"; 
-	}
-}
-	</script>
-</head>
-
-<body><div id="main">
-<div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
-<div class="soustitre" style="margin-top:3%"><?php echo $msg; ?></div>
-
-<form class="joli resultat">
-<fieldset class="resultat">
-	<legend>Rappel de mes informations</legend>
-	<div>
-		<?php echo $titre_criteres; ?>
-		<div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
-			<div class="colonnes">
-				<?php echo $txt_criteres; ?>  <abbr title="A mettre en forme...">&#9888;</abbr>
-			</div>
-			<div class="enbasadroite">
-				<a href="javascript:location.href='formulaire.php'">Revenir au formulaire</a>
-			</div>
-		</div>
-	</div>
-</fieldset>
-</form>
-
-<form class="joli resultat" style="margin-top:1%;">
-<?php
-	echo $affichage;
-?>
-	</fieldset>
-</form>
-
-<div class="lienenbas">
-<?php
-	echo $aucune_offre;
-?>
-</div>
-
-<div style="height:2em;">&nbsp;</div>  <!--tweak css-->
-
-<!--
-<?php echo $sql."<br/>"; print_r($_POST); echo "<br/>"; print_r($_SESSION); ?>
--->
-
-<?php include('inc/footer.inc.php'); ?>
-</div>
-</body>
-</html>
+//view
+require 'view/resultat.tpl.php';

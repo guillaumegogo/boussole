@@ -1,4 +1,4 @@
 <?php
-$titredusite="la&nbsp;boussole des&nbsp;jeunes";
+$titredusite="la boussole des jeunes";
 $version="Version du 30 juin 2017";
 ?>
