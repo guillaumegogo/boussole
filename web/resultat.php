@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include('secret/connect.php');
+require('secret/connect.php');
 include('inc/functions.php');
 include('inc/variables.php');
 

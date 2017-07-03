@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-include('secret/connect.php');
-include('inc/functions.php');
 include('inc/variables.php');
 
 //********* censé permettre de revenir sur les formulaires sans recharger

@@ -323,7 +323,12 @@ table.offre tr,td{
 	border:none;
 }
 table.offre tr:nth-child(odd){
-  background-color:#F5F5F5;
+	background-color:#F5F5F5;
+}
+.liste_criteres{
+	width:90%; margin:auto; 
+	-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; 
+	font-size:0.8em;
 }
 .resume {
 	margin-top:3em;
@@ -332,20 +337,20 @@ table.offre tr:nth-child(odd){
 	font-size:0.9em;
 }
 .map{
-position: relative;
+	
 }
 .map iframe{
-float:right;
-padding:auto;
-width: 30%;
-margin:0 5%;
-min-width: 20em;
-height: 20em;
-border:none;/*
-position: absolute;
-top: 0;
-left: 0;
-width="400" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"*/
+	float:right;
+	padding:auto;
+	width: 30%;
+	margin:0 5%;
+	min-width: 20em;
+	height: 20em;
+	border:none;/*
+	position: absolute;
+	top: 0;
+	left: 0;
+	width="400" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"*/
 }
 
 footer {
@@ -381,28 +386,32 @@ ul li:last-child{
 
 /* bandeau alpha */
 body:after{
-  content: "αlpha";
-  position: fixed;
-  width: 150px;
-  height: 25px;
-  background: #E74106; /*#EE8E4A;*/
-  top: 22px;
-  right: -35px;
-  text-align: center;
-  font-size: 1em;
-  font-family: sans-serif;
-  text-transform: uppercase;
-  font-weight: bold;
-  color: white;
-  line-height: 27px;
-  -ms-transform:rotate(45deg);
-  -webkit-transform:rotate(45deg);
-  transform:rotate(45deg);
-  box-shadow: 0px 2px 5px 0px grey;
+	content: "αlpha";
+	position: fixed;
+	width: 150px;
+	height: 25px;
+	background: #E74106; /*#EE8E4A;*/
+	top: 22px;
+	right: -35px;
+	text-align: center;
+	font-size: 1em;
+	font-family: sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: white;
+	line-height: 27px;
+	-ms-transform:rotate(45deg);
+	-webkit-transform:rotate(45deg);
+	transform:rotate(45deg);
+	box-shadow: 0px 2px 5px 0px grey;
 }
 
-.mentions {width:95%; margin:auto; padding-bottom:3em; font-size:small;}
-.mentions p {text-align: justify;}
+.mentions {
+	width:95%; margin:auto; padding-bottom:3em; font-size:small;
+}
+.mentions p {
+	text-align: justify;
+}
 
 /*
 marianne : https://upload.wikimedia.org/wikipedia/fr/thumb/3/38/Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg/100px-Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg.png

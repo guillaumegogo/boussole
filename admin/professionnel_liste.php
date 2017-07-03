@@ -1,7 +1,8 @@
 <?php
+session_start();
+
 require('secret/connect.php');
 include('inc/functions.php');
-session_start();
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //si pas connecté, retour à la page de connection

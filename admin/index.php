@@ -1,38 +1,22 @@
 <?php
-require('secret/connect.php');
-
-//********* valeur de sessions
 session_start();
 session_unset(); 
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<title>Boussole des jeunes</title>
-</head>
+require('secret/connect.php');
+include('inc/functions.php');
 
-<body>
-<a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
-<h1 class="bandeau">Administration de la boussole des jeunes</h1>
+/* gestion de l'authentification (todo) */
+//si post du formulaire interne
+if (isset($_POST['courriel']&&isset($_POST['motdepasseactuel'])) {
 
-<div class="container">
+	$sql = "SELECT `id_statut` FROM `bsl_utilisateur` 
+		WHERE `email`=".$_POST['courriel']." AND `motdepasse`=\"".password_hash($_POST["motdepasseactuel"], PASSWORD_DEFAULT)."\"";
+	$result = mysqli_query($conn, $sql);
+	if (!mysqli_num_rows($result)) {
+		$msg = 'Le mot de passe indiqué n\'est pas le bon.';
+	}else {//mdp actuel correct
+		$msg = 'Good !';
+}
 
-<h2>Connexion</h2>
-    
-	<div style="width:60%; margin:auto;">
-		<b>Se connecter en tant que</b>
-		<ul style="line-height:2em;">
-			<li><a href="accueil.php?user_id=1">Administrateur national</a></li>
-			<li><a href="accueil.php?user_id=2">Animateur territorial (Grand Reims)</a></li>
-			<li><a href="accueil.php?user_id=3">Professionnel (Mission locale de Reims)</a></li>
-		</ul>
-	</div>
-</div>
-
-</body>
-</html>
+//view
+require 'view/index.tpl.php';

@@ -15,15 +15,15 @@ $nb_villes = 0;
 $themes = array();
 
 //********* l'utilisateur a relancé le formulaire
-if (isset($_POST["ville_selectionnee"])) {
+if (isset($_POST['ville_selectionnee'])) {
 	//********* on efface les valeurs de session pour une recherche propre
 	session_unset();  
 
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
 	//test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
-	if(is_numeric(substr($_POST["ville_selectionnee"], -3))){
-		$ville = substr($_POST["ville_selectionnee"], 0, -6);
-		$cp = substr($_POST["ville_selectionnee"], -5);
+	if(is_numeric(substr($_POST['ville_selectionnee'], -3))){
+		$ville = substr($_POST['ville_selectionnee'], 0, -6);
+		$cp = substr($_POST['ville_selectionnee'], -5);
 		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
 			FROM `bsl__ville` 
 			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ?
@@ -31,8 +31,8 @@ if (isset($_POST["ville_selectionnee"])) {
 		$stmt = mysqli_prepare($conn, $sql);
 		mysqli_stmt_bind_param($stmt, 'ss', $ville, $cp);
 	}else{
-		$ville = format_insee($_POST["ville_selectionnee"])."%"; //conversion des accents, etc.
-		$cp="";
+		$ville = format_insee($_POST['ville_selectionnee']).'%'; //conversion des accents, etc.
+		$cp='';
 		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
 			FROM `bsl__ville` 
 			WHERE `nom_ville` LIKE ?
@@ -87,7 +87,7 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 				mysqli_stmt_bind_result($stmtt, $id_theme, $libelle_theme, $actif_theme);
 
 				while (mysqli_stmt_fetch($stmtt)) {
-					$themes[] = array("libelle"=>$libelle_theme, "actif"=>$actif_theme);
+					$themes[] = array('libelle'=>$libelle_theme, 'actif'=>$actif_theme);
 				}
 			}
 			mysqli_stmt_close($stmtt);
