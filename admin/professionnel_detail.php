@@ -1,8 +1,8 @@
 <?php
 session_start();
-
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //1. doit être connecté 
@@ -265,7 +265,7 @@ function displayGeo(that) {
 <div class="container">
 <h2><?=$soustitre; ?></h2>
 
-<div class="soustitre">;<?=$msg; ?></div>"
+<div class="soustitre"><?=$msg; ?></div>
 
 <form method="post" class="detail">
 

@@ -1,49 +1,13 @@
 <?php
 session_start();
-
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
-//********* en attendant une vraie gestion de droits... :) (droit=1 => accès à la page listant l'objet correspondant)
-if (!isset($_SESSION['user_id'])) {
-	if (isset($_GET['user_id'])) { 
-		switch ($_GET['user_id']) {
-			case '1':
-				$_SESSION['user_id'] = 1; $_SESSION['user_statut'] = 'administrateur'; $_SESSION['territoire_id'] = 0; 
-				$_SESSION['user_droits'] = array('territoire' => '1', 'professionnel' => '1', 'offre' => '1', 'theme' => '1', 'utilisateur' => '1', 'demande' => '1', 'critere' => '1');
-				break;
-			case '2':
-				$_SESSION['user_id'] = 2; $_SESSION['user_statut'] = 'animateur territorial'; $_SESSION['territoire_id'] = 1;
-				$_SESSION['user_droits'] = array('territoire' => '1', 'professionnel' => '1', 'offre' => '1', 'theme' => '0', 'utilisateur' => '1', 'demande' => '1', 'critere' => '0');
-				break;
-			case '3': //attention, l'utilisateur 3 (pro) n'a pas le même lien d'accès aux professionnels (cf. plus bas)
-				$_SESSION['user_id'] = 3; $_SESSION['user_statut'] = 'professionnel'; $_SESSION['user_pro_id'] = 1;
-				$_SESSION['user_droits'] = array('territoire' => '0', 'professionnel' => '0', 'offre' => '1', 'theme' => '0', 'utilisateur' => '0', 'demande' => '1', 'critere' => '0');
-				$sql = 'SELECT `nom_pro` FROM `bsl_professionnel` WHERE `id_professionnel`='.$_SESSION['user_pro_id']; 
-				$result = mysqli_query($conn, $sql);
-				$row = mysqli_fetch_assoc($result);
-				$_SESSION['user_nom_pro'] = $row['nom_pro'];
-				break;
-			default:
-				 header('Location: index.php');
-		}
-	}else{
-		header('Location: index.php');
-	}
-}
+//********* verif des droits
+if (!isset($_SESSION['user_id'])) header('Location: index.php');
 
-//********** sélection territoire
-if (isset($_POST['choix_territoire'])) {
-	$_SESSION['territoire_id'] = $_POST['choix_territoire'];
-}
-include('inc/select_territoires.inc.php');
-
-//********** accroche statut
-$_SESSION['accroche'] = 'Bonjour, vous êtes '.$_SESSION['user_statut'];
-if ($_SESSION['user_statut'] == 'animateur territorial') $_SESSION['accroche'] .= ' ('.$nom_territoire_choisi.')';
-if ($_SESSION['user_statut'] == 'professionnel') $_SESSION['accroche'] .= ' ('.$_SESSION['user_nom_pro'].')';
-
-//******** nb de demandes 
+//******** calcul du nb de demandes (todo : à adapter pour pros et animateurs)
 $nb_dmd = '';
 if ($_SESSION['user_statut'] == 'administrateur'){
 	$sql = 'SELECT count(`id_demande`) as nb FROM `bsl_demande` 
@@ -79,6 +43,12 @@ $liens_reference ='';
 if ($_SESSION['user_droits']['territoire']) { $liens_reference .= '<li><a href=\'territoire.php\'>Territoires</a></li>'; }
 if ($_SESSION['user_droits']['theme']) { $liens_reference .= '<li><a href=\'theme.php\'>Thèmes et sous-thèmes</a></li>'; } 
 if ($_SESSION['user_droits']['critere']) { $liens_reference .= '<li>Critères</li>'; }
+
+//********** sélection territoire
+if (isset($_POST['choix_territoire'])) {
+	$_SESSION['territoire_id'] = $_POST['choix_territoire'];
+}
+include('inc/select_territoires.inc.php');
 
 //view
 require 'view/accueil.tpl.php';

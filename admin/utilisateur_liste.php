@@ -1,8 +1,8 @@
 <?php
 session_start();
-
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //si pas connecté, retour à la page de connection
@@ -17,15 +17,15 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif']=='non') ? 0 : 1;
 
 //********* affichage liste résultats 
 //tous les utilisateurs actifs, du territoire le cas échéant
-$sql = 'SELECT `id_utilisateur`, `bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `libelle_statut`, `nom_pro`, `nom_territoire`
-FROM `bsl_utilisateur` 
-JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
-LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_utilisateur`.`id_metier`
-LEFT JOIN `bsl_professionnel` ON `bsl_professionnel`.`id_professionnel`=`bsl_utilisateur`.`id_metier`
-WHERE `actif_utilisateur`='.$flag_actif.' ';
+$sql = 'SELECT `id_utilisateur`, `bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `libelle_statut`, `nom_pro`, `nom_territoire` '
+	.' FROM `bsl_utilisateur` '
+	.' JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut` '
+	.' LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_utilisateur`.`id_metier` '
+	.' LEFT JOIN `bsl_professionnel` ON `bsl_professionnel`.`id_professionnel`=`bsl_utilisateur`.`id_metier` '
+	.' WHERE `actif_utilisateur`='.$flag_actif;
 if ($_SESSION['territoire_id']) {
-	$sql .= 'AND (`bsl_utilisateur`.`id_statut`=2 AND `id_metier`= '.$_SESSION['territoire_id'].') '
-		. 'OR (`bsl_utilisateur`.`id_statut`=3 AND `bsl_professionnel`.`competence_geo`="territoire" AND `id_competence_geo`='.$_SESSION['territoire_id'].')';
+	$sql .= ' AND (`bsl_utilisateur`.`id_statut`=2 AND `id_metier`= '.$_SESSION['territoire_id'].') '
+		. ' OR (`bsl_utilisateur`.`id_statut`=3 AND `bsl_professionnel`.`competence_geo`="territoire" AND `id_competence_geo`='.$_SESSION['territoire_id'].')';
 }
 $sql .= ' ORDER BY `bsl_utilisateur`.`id_statut` ASC,`id_metier` ASC';
 $result = mysqli_query($conn, $sql);
@@ -52,48 +52,6 @@ if (mysqli_num_rows($result) > 0) {
 
 //********** lien actifs/désactivés
 $lien_desactives = ($flag_actif) ? '<a href=\'utilisateur_liste.php?actif=non\'>Liste des utilisateurs désactivés</a>' : '<a href=\'utilisateur_liste.php\'>Liste des utilisateurs actifs</a>';
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />	
-	<link rel="stylesheet" href="css/jquery.dataTables.min.css" />
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function() {
-			$('#sortable').dataTable();
-		} );
-	</script>
-
-	<title>Boussole des jeunes</title>
-</head>
-
-<body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
-<div class="statut"><?php echo $_SESSION["accroche"]; ?> (<a href="index.php">déconnexion</a>)</div> 
-
-<div class="container">
-	<?php echo $select_territoire; ?>
-
-	<h2>Liste des utilisateurs</h2>
-
-	<?php echo $tableau; ?>
-
-	<div style="text-align:left"><?php echo $lien_desactives; ?></div>
-</div>
-
-<div class="button">
-	<input type="button" value="Ajouter un utilisateur" onclick="javascript:location.href='utilisateur_detail.php'">
-</div>
- 
-<?php 
-if ($ENVIRONNEMENT=='LOCAL') {
-	echo '<pre>'; echo @$sql; echo '</pre>'; 
-}
-?>
-</body>
-</html>
+//view
+require 'view/utilisateur_liste.tpl.php';

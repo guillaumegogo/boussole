@@ -1,8 +1,8 @@
 <?php
 session_start();
-
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php');

@@ -1,36 +1,58 @@
 <?php
+//********* pour repartir sur une nouvelle session propre...
 session_start();
 session_unset(); 
 
+//********* include...
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
-/* gestion de l'authentification (todo) */
-//si post du formulaire interne
-if (isset($_POST['courriel'])&&isset($_POST['motdepasseactuel'])) {
+$msg='';
 
-	$sql = 'SELECT * FROM `bsl_utilisateur` 
-		JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
-		WHERE `email` LIKE "'.$_POST['courriel'].'"';
-	$result = mysqli_query($conn, $sql);
-	if (mysqli_num_rows($result)) {
-		$row = mysqli_fetch_assoc($result);
-		if (password_verify($_POST['motdepasseactuel'], $row['motdepasse'])) {
-			//print_r($row);
-			//Array ( [id_utilisateur] => 1 [nom_utilisateur] => Guillaume Gogo [email] => guillaume.gogo@jeunesse-sports.gouv.fr [motdepasse] => $2y$10$zcq2/8TBlj4GXqab1f/xSemlE3Q6I31308WZPz9WPKnZAFFv3P9Fi [date_inscription] => 2017-06-23 [id_statut] => 1 [id_metier] => [actif_utilisateur] => 1 [libelle_statut] => administrateur [acces_territoire] => 1 [acces_professionnel] => 1 [acces_offre] => 1 [acces_theme] => 1 [acces_utilisateur] => 1 [acces_demande] => 1 [acces_stats] => 1 [acces_critere] => 1 ) 
+//authentification : post du formulaire interne
+if (isset($_POST['login'])&&isset($_POST['motdepasseactuel'])) {
+
+	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`'
+		. ' FROM `bsl_utilisateur` '
+		. ' JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`'
+		. ' LEFT JOIN  `bsl_territoire` ON `bsl_utilisateur`.`id_statut`=2 AND `id_metier`=`bsl_territoire`.`id_territoire`'
+		. ' LEFT JOIN  `bsl_professionnel` ON `bsl_utilisateur`.`id_statut`=3 AND `id_metier`=`bsl_professionnel`.`id_professionnel`'
+		. ' WHERE `email` LIKE ? ';
+	$stmt = mysqli_prepare($conn, $sql);
+	mysqli_stmt_bind_param($stmt, 's', $_POST['login']);	
+	
+	if (mysqli_stmt_execute($stmt)) {
+		mysqli_stmt_store_result($stmt);
+		if (mysqli_stmt_num_rows($stmt) > 0) {
+			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $motdepasse, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire);
+			mysqli_stmt_fetch($stmt);
 			
-			$_SESSION['user_id'] = $row['id_utilisateur']; 
-			$_SESSION['user_statut'] = $row['libelle_statut']; 
-			$_SESSION['user_nom'] = $row['nom_utilisateur']; 
-			if($_SESSION['user_statut']==2) $_SESSION['territoire_id'] = $row['id_metier'];
-			if($_SESSION['user_statut']==3) $_SESSION['user_pro_id'] = $row['id_metier'];
-			$_SESSION['user_droits'] = array('territoire' => $row['acces_territoire'], 'professionnel' => $row['acces_professionnel'], 'offre' => $row['acces_offre'], 'theme' => $row['acces_theme'], 'utilisateur' => $row['acces_utilisateur'], 'demande' => $row['acces_demande'], 'critere' => $row['acces_critere']);
-			header('Location: accueil.php');
-		}else{
-			$msg = 'Le mot de passe indiqué n\'est pas le bon.';
+			//verif du mot de passe saisi
+			if (password_verify($_POST['motdepasseactuel'], $motdepasse)) {
+				//********* (mise en session de la gestion de droits : 1 = accès à la page listant l'objet correspondant)
+				$_SESSION['user_id'] = $id_utilisateur; 
+				$_SESSION['user_statut'] = $libelle_statut; 
+				$_SESSION['user_nom'] = $nom_utilisateur; 
+				$_SESSION['territoire_id'] = 0;
+				if($id_statut==2) $_SESSION['territoire_id'] = $id_metier;
+				if($id_statut==3) $_SESSION['user_pro_id'] = $id_metier;
+				$_SESSION['user_droits'] = array('territoire' => $acces_territoire, 'professionnel' => $acces_professionnel, 'offre' => $acces_offre, 'theme' => $acces_theme, 'utilisateur' => $acces_utilisateur, 'demande' => $acces_demande, 'critere' => $acces_critere);
+				
+				//********** accroche statut
+				$_SESSION['accroche'] = 'Bonjour '.$_SESSION['user_nom'].', vous êtes '.$_SESSION['user_statut'];
+				if($id_statut==2) $_SESSION['accroche'] .= ' ('.$nom_territoire.')';
+				if($id_statut==3) $_SESSION['accroche'] .= ' ('.$nom_pro.')';
+				
+				header('Location: accueil.php');
+			}else{
+				$msg = 'Le mot de passe indiqué n\'est pas le bon.';
+			}
+		}else {
+			$msg = 'Cette adresse de courriel n\'est pas connu. Si le problème persiste contactez votre administrateur.';
 		}
-	}else {//mdp actuel correct
-		$msg = 'Ce courriel n\'est pas connu. Si le problème persiste contactez votre administrateur.';
+	}else {
+		$msg = $message_erreur_bd;
 	}
 }
 

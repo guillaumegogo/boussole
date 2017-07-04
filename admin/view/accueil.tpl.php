@@ -40,7 +40,7 @@
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>"; print_r(@$_POST); echo "<br/>"; echo @$req; echo "</pre>"; 
+	echo "<pre>"; print_r($_SESSION); echo "</pre>"; 
 }
 ?>
 </body>

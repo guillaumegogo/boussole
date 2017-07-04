@@ -1,12 +1,12 @@
 <?php
 session_start();
-
 require('secret/connect.php');
 include('inc/functions.php');
+include('inc/variables.php');
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //1. doit être connecté 
-/*
+/*todo
 if ($_SESSION['user_droits']['utilisateur']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
 		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_utilisateur` 
@@ -22,52 +22,77 @@ if ($_SESSION['user_droits']['utilisateur']){ // si on a les droits, on fait jus
 $last_id = null;
 $msg = '';
 $req = '';
-$row = [];
+$row = array();
 $attache = '';
 
 //si post du formulaire interne
 if (isset($_POST['maj_id'])) {
-
-	$maj_attache = "NULL";
-	if ($_POST["statut"]==2) $maj_attache=$_POST["attache"];
-	else if ($_POST["statut"]==3) $maj_attache=$_POST["attache_p"];
 			
 	//requête d'ajout
 	if (!$_POST["maj_id"]) {
+
+		$maj_attache = "NULL";
+		if (isset($_POST["statut"])){
+			if ($_POST["statut"]==2 && isset($_POST["attache"])) $maj_attache="\"".$_POST["attache"]."\"";
+			else if ($_POST["statut"]==3 && isset($_POST["attache_p"])) $maj_attache="\"".$_POST["attache_p"]."\"";
+		}
 		if($_POST["nouveaumotdepasse"]==$_POST["nouveaumotdepasse2"]){
 			
-			$req= "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"".$_POST["nom"]."\",\"".$_POST["courriel"]."\",\"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\",NOW(),\"".$_POST["statut"]."\",\"".$maj_attache."\")";
-			$result=mysqli_query($conn, $req);
-			$last_id=mysqli_insert_id($conn);
+			$req= "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"".$_POST["nom_utilisateur"]."\",\"".$_POST["courriel"]."\",\"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\",NOW(),\"".$_POST["statut"]."\",".$maj_attache.")";
 			
+			if ($result=mysqli_query($conn, $req)) {
+				$msg = 'Utilisateur bien créé.';
+				$last_id=mysqli_insert_id($conn);
+			}else{
+				$msg=$message_erreur_bd;
+			}
 		}else{
 			$msg = 'Les deux mots de passe ne correspondent pas.';
 		}
 
 	//requête de modification
 	}else{
+		//si pas de saisie des mots de passe (peut-être un confusing...)
 		if (!($_POST["nouveaumotdepasse"]||$_POST["nouveaumotdepasse2"]||$_POST["motdepasseactuel"])){
-			$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom"]."\", `email` = \"".$_POST["courriel"]."\", `id_statut` = \"".$_POST["statut"]."\", `id_metier` = \"".$maj_attache."\", `actif_utilisateur` = \"".$_POST["actif"]."\" WHERE `id_utilisateur` = ".$_POST["maj_id"];
-		}else{
-			if ($_POST["nouveaumotdepasse"]!=$_POST["nouveaumotdepasse2"]){
-				$msg = 'Les deux nouveaux mots de passe ne correspondent pas.';
+			$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom_utilisateur"]."\", `email` = \"".$_POST["courriel"]."\", `actif_utilisateur` = \"".$_POST["actif"]."\" WHERE `id_utilisateur` = ".$_POST["maj_id"];
+			if ($result=mysqli_query($conn, $req)) {
+				$msg = 'Utilisateur modifié (sans mot de passe).';
+				$last_id=$_POST["maj_id"];
 			}else{
-				$sql = "SELECT `id_statut` FROM `bsl_utilisateur` 
-					WHERE `id_utilisateur`=".$_POST["maj_id"]." AND `motdepasse`=\"".password_hash($_POST["motdepasseactuel"], PASSWORD_DEFAULT)."\"";
+				$msg=$message_erreur_bd;
+			}
+		//si saisie des mots de passe
+		}else{
+			if ($_POST["nouveaumotdepasse"]==$_POST["nouveaumotdepasse2"]){
+				
+				$sql = 'SELECT `motdepasse` FROM `bsl_utilisateur` WHERE `id_utilisateur`='.$_POST["maj_id"];
 				$result = mysqli_query($conn, $sql);
-				if (!mysqli_num_rows($result)) {
-					$msg = 'Le mot de passe indiqué n\'est pas le bon.';
+				
+				if (mysqli_num_rows($result)) {
+					$row = mysqli_fetch_assoc($result);
+					if (password_verify($_POST['motdepasseactuel'], $row['motdepasse'])) {
+						$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom_utilisateur"]."\", `email` = \"".$_POST["courriel"]."\", `actif_utilisateur` = \"".$_POST["actif"]."\", `motdepasse` = \"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\" WHERE `id_utilisateur` = ".$_POST["maj_id"]; 
+						//pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
+						if ($result=mysqli_query($conn, $req)) {
+							$msg = 'Utilisateur modifié (avec mot de passe).';
+							$last_id=$_POST["maj_id"];
+						}else{
+							$msg=$message_erreur_bd;
+						}
+					}else {//mdp actuel correct
+						$msg = 'Le mot de passe indiqué n\'est pas le bon.';
+					}
 				}else {//mdp actuel correct
-					$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom"]."\", `email` = \"".$_POST["courriel"]."\", `id_statut` = \"".$_POST["statut"]."\", `id_metier` = \"".$maj_attache."\", `actif_utilisateur` = \"".$_POST["actif"]."\", `motdepasse` = \"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\" WHERE `id_utilisateur` = ".$_POST["maj_id"];
-					$result=mysqli_query($conn, $req);
-					$last_id=$_POST["maj_id"];
+					$msg = 'Pas d\'utilisateur connu.';
 				}
+			}else{
+				$msg = 'Les mots de passe saisis ne correspondent pas.';
 			}
 		}
 	}
 	
 	if ($result) { 
-		$msg = "Modification bien enregistrée.";
+		if (!$msg) $msg = "Modification bien enregistrée.";
 	} else { 
 		if (!$msg) $msg = "Il y a eu un problème à l'enregistrement . Contactez l'administration centrale si le problème perdure.";
 	}
@@ -100,7 +125,7 @@ if(isset($id_utilisateur)) {
 
 $soustitre = ($id_utilisateur) ? "Modification d'un utilisateur" : "Ajout d'un utilisateur";
 
-//*********************
+//********************* listes
 $select_territoire = '<option value="" >A choisir</option>';
 $select_professionnel = '<option value="" >A choisir</option>';
 //si création, liste = liste du/des territoire(s) et des pros du/des territoire(s), avec tout en display none
@@ -166,7 +191,7 @@ function displayAttache(that) {
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div> 
 
 <div class="container">
-<h2><?php echo $soustitre; ?> <span style="color:red">//en cours de dev</span></h2>
+<h2><?php echo $soustitre; ?></h2>
 
 <div class="soustitre"><?=$msg; ?></div>
 
@@ -182,12 +207,12 @@ function displayAttache(that) {
 			<input type="text" name="courriel" placeholder="Le courriel sert de login" value="<?php if ($id_utilisateur) { echo $row["email"]; } ?>"/>
 		</div>
 		<div class="lab">
-			<label for="nom">Nom :</label>
-			<input type="text" name="nom" value="<?php if ($id_utilisateur) { echo $row["nom_utilisateur"]; } ?>"/>
+			<label for="nom_utilisateur">Nom :</label>
+			<input type="text" name="nom_utilisateur" value="<?php if ($id_utilisateur) { echo $row["nom_utilisateur"]; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="statut">Statut :</label>
-			<select name="statut" <?php if (!$_SESSION['user_droits']['utilisateur']){ echo "disabled"; } ?> onchange="displayAttache(this);" >
+			<select name="statut" <?php if ($id_utilisateur) { echo "disabled"; } ?> onchange="displayAttache(this);" >
 				<option value="" >A choisir</option>
 				<option value="1" <?php if ($id_utilisateur) {if ($row["id_statut"]=="1") { echo "selected"; }} ?>>Administrateur national</option>
 				<option value="2" <?php if ($id_utilisateur) {if ($row["id_statut"]=="2") { echo "selected"; }} ?>>Animateur territorial</option>
@@ -197,10 +222,10 @@ function displayAttache(that) {
 		<div class="lab">
 			<label for="attache">Attache :</label>
 			<div style="display:inline-block;">
-			<select name="attache" id="liste_territoires" <?php if (isset($row["id_statut"]) && $row["id_statut"]=="2") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
+			<select name="attache" id="liste_territoires" <?php if ($id_utilisateur && $row["id_statut"]=="2") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
 				<?php echo $select_territoire; ?>
 			</select> 
-			<select name="attache_p" id="liste_professionnels" <?php if (isset($row["id_statut"]) && $row["id_statut"]=="3") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
+			<select name="attache_p" id="liste_professionnels" <?php if ($id_utilisateur && $row["id_statut"]=="3") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
 				<?php echo $select_professionnel; ?>
 			</select></div>
 		</div>
