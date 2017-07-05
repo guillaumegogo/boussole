@@ -7,7 +7,7 @@ $tab["sexe"] = array("type" => "radio", "f" => "une femme", "h" => "un homme");
 $tab["jesais"] = array("type" => "radio", "oui" => "Oui", "non" => "Non");
 
 $tab["situation"] = array("type" => "select", "sans activite" => "Sans activité",  "collegien" => "Collégien",  "lyceen" => "Lycéen",  "etudiant" => "Etudiant",  "stagiaire form pro" => "Stagiaire form pro",  "apprenti" => "Apprenti",  "salarie" => "Salarié",  "independant" => "Indépendant",  "auto entrepreneur" => "Auto entrepreneur",  "autre" => "Autre");
-$tab["etudes"] = array("type" => "select", "aucune" => "Aucune", "college" => "Collège", "lycee" => "Lycée", "etudes superieures" => "Etudes supérieures", "aprentissage" => "Apprentissage", "formation professionnelle" => "Formation professionnelle", "etranger" => "Etudes à l'étranger");
+$tab["etudes"] = array("type" => "select", "defaut"=>"college", "aucune" => "Aucune", "college" => "Collège", "lycee" => "Lycée", "etudes superieures" => "Etudes supérieures", "aprentissage" => "Apprentissage", "formation professionnelle" => "Formation professionnelle", "etranger" => "Etudes à l'étranger");
 $tab["diplome"] = array("type" => "select", "aucun" => "Aucun", "brevet" => "Brevet des collèges", "cap" => "CAP", "bep" => "BEP", "bac general" => "Baccalauréat général", "bac pro" =>"Baccalauréat professionnel", "bts dut" => "BTS / DUT", "licence" =>"Licence", "master" =>"Master", "doctorat" => "Doctorat", "etranger" => "Diplôme étranger");
 $tab["permis"] = array("type" => "radio", "oui" => "Oui", "non" => "Non");
 $tab["handicap"] = array("type" => "radio", "oui" => "Oui", "non" => "Non", "" => "Je ne sais pas");

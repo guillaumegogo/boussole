@@ -155,6 +155,12 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 	}
 	call_user_func_array(array($stmt,'bind_param'),$query_params);
 	//******** fin de la manip...
+	
+	//******* pour debugage
+	$print_sql = $sql;
+	foreach($terms as $term){
+		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	}
 
 	if (mysqli_stmt_execute($stmt)) {
 		mysqli_stmt_store_result($stmt);

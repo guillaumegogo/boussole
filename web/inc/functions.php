@@ -47,10 +47,15 @@ function affiche_formulaire($sujet, $tab){
 		}
 	}else if($tab[$sujet]["type"]=="select"){
 		$t ="<select name=\"".$sujet."\">";
+		$defaut = "";
+		if(isset($tab[$sujet]["defaut"])) $defaut=$tab[$sujet]["defaut"];
 		foreach($tab[$sujet] as $key => $value){
 			if ($key=="type") continue;
+			if ($key=="defaut") continue;
 			$t .= "<option value=\"".$key."\" ";
-			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " selected ";
+			if (isset($_SESSION[$sujet])){
+				if($_SESSION[$sujet]==$key) $t .= " selected ";
+			}else if ($defaut==$key) $t .= " selected ";
 			$t .= "> ".$value."</option>\n";
 		}
 		$t .="</select>";
@@ -68,7 +73,7 @@ function affiche_formulaire($sujet, $tab){
 		for ($i = $tab[$sujet]["min"]; $i <= $tab[$sujet]["max"]; $i++) {
 			$t .= "<option value=\"".$i."\"";
 			if (isset($_SESSION['age']) && $i==$_SESSION['age']) $t .= " selected ";
-			else if ($i==$tab[$sujet]["defaut"]) $t .= " selected ";
+			else if ($tab[$sujet]["defaut"]==$i) $t .= " selected ";
 			$t .= ">".$i."</option>\n";
 		}
 		$t .= "</select> ans";
