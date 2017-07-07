@@ -25,11 +25,8 @@ $req = '';
 $row = array();
 $attache = '';
 
-//si post du formulaire interne
-if (isset($_POST['maj_id'])) {
-			
-	//requête d'ajout
-	if (!$_POST["maj_id"]) {
+if (isset($_POST['maj_id'])) { //si post du formulaire interne
+	if (!$_POST["maj_id"]) { //requête d'ajout
 
 		$maj_attache = "NULL";
 		if (isset($_POST["statut"])){
@@ -50,19 +47,16 @@ if (isset($_POST['maj_id'])) {
 			$msg = 'Les deux mots de passe ne correspondent pas.';
 		}
 
-	//requête de modification
-	}else{
-		//si pas de saisie des mots de passe (peut-être un confusing...)
-		if (!($_POST["nouveaumotdepasse"]||$_POST["nouveaumotdepasse2"]||$_POST["motdepasseactuel"])){
+	}else{ //requête de modification
+		if (!isset($_POST["nouveaumotdepasse"])){ //modif normale
 			$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom_utilisateur"]."\", `email` = \"".$_POST["courriel"]."\", `actif_utilisateur` = \"".$_POST["actif"]."\" WHERE `id_utilisateur` = ".$_POST["maj_id"];
 			if ($result=mysqli_query($conn, $req)) {
-				$msg = 'Utilisateur modifié (sans mot de passe).';
+				$msg = 'Utilisateur modifié.';
 				$last_id=$_POST["maj_id"];
 			}else{
 				$msg=$message_erreur_bd;
 			}
-		//si saisie des mots de passe
-		}else{
+		}else{ //modif mot de passe
 			if ($_POST["nouveaumotdepasse"]==$_POST["nouveaumotdepasse2"]){
 				
 				$sql = 'SELECT `motdepasse` FROM `bsl_utilisateur` WHERE `id_utilisateur`='.$_POST["maj_id"];
@@ -71,10 +65,10 @@ if (isset($_POST['maj_id'])) {
 				if (mysqli_num_rows($result)) {
 					$row = mysqli_fetch_assoc($result);
 					if (password_verify($_POST['motdepasseactuel'], $row['motdepasse'])) {
-						$req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"".$_POST["nom_utilisateur"]."\", `email` = \"".$_POST["courriel"]."\", `actif_utilisateur` = \"".$_POST["actif"]."\", `motdepasse` = \"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\" WHERE `id_utilisateur` = ".$_POST["maj_id"]; 
+						$req = "UPDATE `bsl_utilisateur` SET `motdepasse` = \"".password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT)."\" WHERE `id_utilisateur` = ".$_POST["maj_id"]; 
 						//pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
 						if ($result=mysqli_query($conn, $req)) {
-							$msg = 'Utilisateur modifié (avec mot de passe).';
+							$msg = 'Mot de passe modifié.';
 							$last_id=$_POST["maj_id"];
 						}else{
 							$msg=$message_erreur_bd;
@@ -82,15 +76,14 @@ if (isset($_POST['maj_id'])) {
 					}else {//mdp actuel correct
 						$msg = 'Le mot de passe indiqué n\'est pas le bon.';
 					}
-				}else {//mdp actuel correct
+				}else {
 					$msg = 'Pas d\'utilisateur connu.';
 				}
 			}else{
-				$msg = 'Les mots de passe saisis ne correspondent pas.';
+				$msg = 'Les nouveaux mots de passe saisis ne correspondent pas.';
 			}
 		}
-	}
-	
+	}	
 	if ($result) { 
 		if (!$msg) $msg = "Modification bien enregistrée.";
 	} else { 
@@ -160,119 +153,15 @@ while($row3 = mysqli_fetch_assoc($result)) {
 	}
 	$select_professionnel .= '>'.$row3['nom_pro'].'</option>';
 }
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-	<script type="text/javascript">
-//fonction affichage listes
-function displayAttache(that) {
-	var w = document.getElementById('liste_territoires');
-	var x = document.getElementById('liste_professionnels');
-	if (w != null) { w.style.display = 'none'; }
-	if (x != null) { x.style.display = 'none'; }
-	if (that.value == "2") {
-		w.style.display = "block";
-	} else if (that.value == "3") {
-		x.style.display = "block";
-	}
+//type de formulaire à afficher
+if (isset($_GET["do"]) && $_GET["do"]=="mdp") {
+	$vue = "motdepasse";
+}else if ($id_utilisateur) {
+	$vue = "modif";
+}else {
+	$vue = "creation";
 }
-</script>
-</head>
 
-<body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
-<div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div> 
-
-<div class="container">
-<h2><?php echo $soustitre; ?></h2>
-
-<div class="soustitre"><?=$msg; ?></div>
-
-<form method="post" class="detail">
-
-<input type="hidden" name="maj_id" value="<?php echo $id_utilisateur; ?>">
-<fieldset>
-	<legend>Détail de l'utilisateur</legend>
-
-	<div class="une_colonne">
-		<div class="lab">
-			<label for="courriel">Courriel <?php if ($id_utilisateur) { echo "(login)"; } ?> :</label>
-			<input type="text" name="courriel" placeholder="Le courriel sert de login" value="<?php if ($id_utilisateur) { echo $row["email"]; } ?>"/>
-		</div>
-		<div class="lab">
-			<label for="nom_utilisateur">Nom :</label>
-			<input type="text" name="nom_utilisateur" value="<?php if ($id_utilisateur) { echo $row["nom_utilisateur"]; } ?>"/>
-		</div>
-		<div class="lab">
-			<label for="statut">Statut :</label>
-			<select name="statut" <?php if ($id_utilisateur) { echo "disabled"; } ?> onchange="displayAttache(this);" >
-				<option value="" >A choisir</option>
-				<option value="1" <?php if ($id_utilisateur) {if ($row["id_statut"]=="1") { echo "selected"; }} ?>>Administrateur national</option>
-				<option value="2" <?php if ($id_utilisateur) {if ($row["id_statut"]=="2") { echo "selected"; }} ?>>Animateur territorial</option>
-				<option value="3" <?php if ($id_utilisateur) {if ($row["id_statut"]=="3") { echo "selected"; }} ?>>Professionnel</option>
-			</select>
-		</div>
-		<div class="lab">
-			<label for="attache">Attache :</label>
-			<div style="display:inline-block;">
-			<select name="attache" id="liste_territoires" <?php if ($id_utilisateur && $row["id_statut"]=="2") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
-				<?php echo $select_territoire; ?>
-			</select> 
-			<select name="attache_p" id="liste_professionnels" <?php if ($id_utilisateur && $row["id_statut"]=="3") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
-				<?php echo $select_professionnel; ?>
-			</select></div>
-		</div>
-		<?php if ($id_utilisateur) { ?>
-		<div class="lab">
-			<label for="date">Date d'inscription :</label>
-			<input type="text" name="date" class="datepick" value="<?php echo date_format(date_create($row["date_inscription"]), 'd/m/Y'); ?>" disabled />
-		</div>
-		<?php } ?>
-		<div class="lab">
-			<label for="actif">Actif :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_utilisateur) {if ($row["actif_utilisateur"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
-			<input type="radio" name="actif" value="0" <?php if ($id_utilisateur) {if ($row["actif_utilisateur"]=="0") { echo "checked"; }} ?>> Non
-			</select> 
-		</div>
-		
-		<div style="margin-top:2em;">
-			<?php if ($id_utilisateur) { ?>
-			<div class="lab">
-				<label for="motdepasseactuel">Mot de passe actuel :</label>
-				<input type="password" name="motdepasseactuel" />
-			</div>
-			<?php } ?>
-			<div class="lab">
-				<label for="nouveaumotdepasse"><?php echo ($id_utilisateur) ? "Nouveau mot de passe" : "Mot de passe" ; ?> :</label>
-				<input type="password" name="nouveaumotdepasse" />
-			</div>
-			<div class="lab">
-				<label for="nouveaumotdepasse2">Confirmez le mot de passe :</label>
-				<input type="password" name="nouveaumotdepasse2" />
-			</div>
-		</div>
-	</div>
-</fieldset>
-
-<div class="button">
-	<input type="button" value="Retour" onclick="javascript:location.href='utilisateur_liste.php'">
-	<input type="reset" value="Reset">
-	<input type="submit" value="Enregistrer">
-</div>
-</form>
-</div>
-
-<?php 
-if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r(@$_SESSION); echo "<br/>"; print_r(@$_POST); echo "<br/>"; print_r(@$row); echo "<br/>".@$req."<br/>".@$sqlt; echo "</pre>"; 
-}
-?>
-</body>
-</html>
+//view
+require 'view/utilisateur_detail.tpl.php';

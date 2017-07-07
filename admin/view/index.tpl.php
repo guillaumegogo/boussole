@@ -28,7 +28,7 @@
 				<label for="motdepasseactuel">Mot de passe :</label>
 				<input type="password" name="motdepasseactuel" />
 			</div>
-			<a href="#" style="display:block;font-size:small; margin:1em 0;">J'ai perdu mon mot de passe</a>
+			<a href="motdepasseoublie.php" style="display:block;font-size:small; margin:1em 0;">J'ai oublié mon mot de passe</a>.
 			<!--<input name="cookie" value="1" type="checkbox"> Garder ma session active-->
 			<input type="submit" value="Se connecter">
 		</div>

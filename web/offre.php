@@ -85,14 +85,14 @@ if(isset($_POST['coordonnees'])){
 		if(isset($_POST['envoi_mail'])){
 			$to = 'boussole@yopmail.fr'; //en prod il faudra mettre ici l'adresse du pro ie $row['courriel_offre']
 			$subject = 'Une demande a été déposée sur la Boussole des jeunes';
-			$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row['nom_offre']."</b>.</p>
-			<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>
-			<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>
-			<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://www.gogo.fr/boussole/admin/demande_liste.php\">espace de gestion de la Boussole</a>.
-			<p>Ce mail aurait du être envoyé à ".$row['courriel_offre']."</p></html>";
+			$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row['nom_offre']."</b>.</p>"
+			. "<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>"
+			. "<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>"
+			. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"".$url_admin."/demande_liste.php\">espace de gestion de la Boussole</a>."
+			. "<p>Ce mail aurait du être envoyé à ".$row['courriel_offre']."</p></html>";
 			$headers  = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
-			$headers .= 'From: La Boussole des jeunes <boussole@gogo.fr>' . "\r\n";
+			$headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
 			$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
 			$envoi_mail = mail($to, $subject, $message, $headers);
 
