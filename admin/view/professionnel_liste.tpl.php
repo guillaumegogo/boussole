@@ -29,7 +29,7 @@
 if (mysqli_num_rows($result) > 0) {
 ?>
 	<table id="sortable">
-	<thead> <tr><th>Nom</th><th>Type</th><th>Ville</th><th>Thème(s)</th><th>Compétence géographique</th></tr></thead> 
+	<thead> <tr><th>Nom</th><th>Type</th><th>Siège</th><th>Thème(s)</th><th><abbr title="Compétence géographique">Compétence</abbr></th></tr></thead> 
 	<tbody>
 	
 <?php while($row = mysqli_fetch_assoc($result)) {
@@ -37,11 +37,11 @@ if (mysqli_num_rows($result) > 0) {
 		$geo = $row['competence_geo'];
 		switch ($row['competence_geo']) {
 			case "territoire":
-				$geo .= " (".$row['nom_territoire'].")"; break;
+				$geo = $row['nom_territoire']; break;
 			case "departemental":
-				$geo .= " (".$row['nom_departement'].")"; break;
+				$geo = "dépt ".$row['nom_departement']; break;
 			case "regional":
-				$geo .= " (".$row['nom_region'].")"; break;
+				$geo = "région ".$row['nom_region']; break;
 		}
 ?>
 		<tr>

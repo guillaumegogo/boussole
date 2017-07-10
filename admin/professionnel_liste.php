@@ -17,7 +17,7 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif']=="non") ? 0 : 1;
 
 //********* affichage liste résultats 
 //tous les professionnel actifs, du territoire si choisi
-$sql = "SELECT `bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,GROUP_CONCAT(libelle_theme separator ', ') as themes, competence_geo,  nom_departement, nom_region, nom_territoire  
+$sql = "SELECT `bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,GROUP_CONCAT(libelle_theme_court separator ', ') as themes, competence_geo,  nom_departement, nom_region, nom_territoire  
 FROM `bsl_professionnel` 
 JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_professionnel`=`bsl_professionnel`.`id_professionnel`
 JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_professionnel_themes`.`id_theme`

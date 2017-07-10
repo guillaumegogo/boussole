@@ -6,7 +6,7 @@ include('inc/variables.php');
 
 //********* verif des droits
 if (!isset($_SESSION['user_id'])) header('Location: index.php'); //1. doit être connecté 
-if ($_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
+/*if (!$_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
 		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_professionnel`
 		WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_professionnel='.$_GET['id'];
@@ -15,7 +15,7 @@ if ($_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait j
 	}
 }else{ //autrement, le seul cas possible est la consultation de ses propres infos
 	$_GET['id'] = $_SESSION['user_pro_id'];
-}
+}*/
 
 //********* variables
 $last_id = null;
@@ -197,164 +197,19 @@ $affiche_listes_geo .= $choix_territoire;
 
 //********* liste déroulante des thèmes
 $select_theme = '';
-$sqlt = 'SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` 
-	FROM `bsl_theme` 
-	LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` 
-		AND `bsl_professionnel_themes`.`id_professionnel`='.$id_professionnel.' 
-	WHERE actif_theme=1 AND `id_theme_pere` IS NULL ';
+$sqlt = 'SELECT `bsl_theme`.`id_theme`, `libelle_theme` FROM `bsl_theme`';
+if ($id_professionnel) {
+	$sqlt = 'SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` FROM `bsl_theme`'
+		. ' LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` '
+		. ' AND `bsl_professionnel_themes`.`id_professionnel`='.$id_professionnel;
+}
+$sqlt .= ' WHERE actif_theme=1 AND `id_theme_pere` IS NULL';
 $result = mysqli_query($conn, $sqlt);
 while($rowt = mysqli_fetch_assoc($result)) {
 	$select_theme .= '<option value="'.$rowt['id_theme'].'" ';
-	if ($rowt['id_professionnel']) { $select_theme .= ' selected '; }
+	if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) { $select_theme .= ' selected '; }
 	$select_theme .= '>'.$rowt['libelle_theme'].'</option>';
 }
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<link rel="stylesheet" href="css/style_backoffice.css" />
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
-	<script type="text/javascript">
-//fonction autocomplete commune
-$( function() {
-	var listeVilles = [<?php include('inc/villes_index.inc');?>];
-	$( '#villes' ).autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-			//adaptation fichier insee
-			request.term = request.term.replace('-', ' ');
-			request.term = request.term.replace(/^saint /gi, 'St ');
-			//recherche sur les premiers caractères de la ville ou sur le code postal
-			var matcher1 = new RegExp( '^' + $.ui.autocomplete.escapeRegex( request.term ), 'i' );
-			var matcher2 = new RegExp( ' ' + $.ui.autocomplete.escapeRegex( request.term ) + '[0-9]*$', 'i' );
-			response( $.grep( listeVilles, function( item ){
-				return (matcher1.test( item ) || matcher2.test( item ));
-			}) );
-		}
-	});
-});
-//fonction affichage listes
-function displayGeo(that) {
-	var w = document.getElementById('liste_regions');
-	var x = document.getElementById('liste_departements');
-	var y = document.getElementById('liste_territoires');
-	if (w != null) { w.style.display = 'none'; }
-	if (x != null) { x.style.display = 'none'; }
-	if (y != null) { y.style.display = 'none'; }
-	if (that.value == 'regional') {
-		w.style.display = 'block';
-	} else if (that.value == 'departemental') {
-		x.style.display = 'block';
-	} else if (that.value == 'territoire') {
-		y.style.display = 'block';
-	}
-}
-</script>
-</head>
-
-<body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
-<div class="statut"><?= $_SESSION["accroche"] ?> (<a href="index.php">déconnexion</a>)</div> 
-
-<div class="container">
-<h2><?= $soustitre ?></h2>
-
-<div class="soustitre"><?= $msg ?></div>
-
-<form method="post" class="detail">
-
-<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
-<fieldset>
-	<legend>Détail du professionnel</legend>
-
-	<div class="deux_colonnes">
-		<div class="lab">
-			<label for="nom">Nom du professionnel :</label>
-			<input type="text" name="nom" value="<?php if ($id_professionnel) { echo $row['nom_pro']; } ?>"/>
-		</div>
-		<div class="lab">
-			<label for="type">Type :</label>
-			<input type="text" name="type" value="<?php if ($id_professionnel) { echo $row['type_pro']; } ?>"/>
-		</div>
-		<div class="lab">
-			<label for="desc">Description du professionnel :</label>
-			<textarea rows="5" name="desc"><?php if ($id_professionnel) { echo $row['description_pro']; } ?></textarea>
-		</div>
-		<div class="lab">
-			<label for="theme[]">Thème(s) :</label>
-			<select name="theme[]" multiple size="2">
-				<?= $select_theme ?>
-			</select> 
-		</div>
-		<div class="lab">
-			<label for="actif">Actif :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {if ($row['actif_pro']=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
-			<input type="radio" name="actif" value="0" <?php if ($id_professionnel) {if ($row['actif_pro']=="0") { echo "checked"; }} ?>> Non
-			</select> 
-		</div>
-	</div>
-	<div class="deux_colonnes">
-		<div class="lab">
-			<label for="adresse">Adresse :</label>
-			<input type="text" name="adresse"  value="<?php if ($id_professionnel) { echo $row['adresse_pro']; } ?>"/>
-		</div>
-		<div class="lab">
-			<label for="code_postal">Code postal :</label>
-			<input type="text" name="commune" id="villes" value="<?php if ($id_professionnel) { echo $row['ville_pro']." ".$row['code_postal_pro']; } ?>" /> 
-		</div>
-		<div class="lab">
-			<label for="courriel">Courriel :</label>
-			<input type="email" name="courriel" value="<?php if ($id_professionnel) { echo $row['courriel_pro']; } ?>" />
-		</div>
-		<div class="lab">
-			<label for="tel">Téléphone :</label>
-			<input type="text" name="tel"  value="<?php if ($id_professionnel) { echo $row['telephone_pro']; } ?>" />
-		</div>
-		<div class="lab">
-			<label for="site">Site internet :</label>
-			<input type="text" name="site"  value="<?php if ($id_professionnel) { echo $row['site_web_pro']; } ?>" />
-		</div>
-		<div class="lab">
-			<label for="delai">Délai garanti de réponse :</label>
-			<select name="delai">
-				<option value="2" <?php if ($id_professionnel) {if ($row['delai_pro']==2) { echo "selected"; }} ?>>2 jours</option>
-				<option value="3" <?php if ($id_professionnel) {if ($row['delai_pro']==3) { echo "selected"; }} ?>>3 jours</option>
-				<option value="5" <?php if ($id_professionnel) {if ($row['delai_pro']==5) { echo "selected"; }} ?>>5 jours</option>
-				<option value="7" <?php if ($id_professionnel) {if ($row['delai_pro']==7) { echo "selected"; }} ?>>7 jours</option>
-			</select> 
-		</div>
-		<div class="lab">
-			<label for="competence_geo">Compétence géographique :</label>
-			<div style="display:inline-block;">
-				<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;">
-					<?= $liste_competence_geo ?>
-				</select>
-				
-				<?= $affiche_listes_geo ?>
-			</div>
-		</div>
-		
-	</div>
-</fieldset>
-
-<div class="button">
-	<input type="button" value="Retour" onclick="javascript:location.href='professionnel_liste.php'">
-	<input type="reset" value="Reset">
-	<input type="submit" value="Enregistrer">
-</div>
-</form>
-</div>
-
-<?php 
-if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>"; print_r(@$_POST); echo "<br/>"; print_r(@$row); echo "<br/>".@$req."<br/>".@$sqlt; echo "</pre>"; 
-}
-?>
-</body>
-</html>
+//view
+require 'view/professionnel_detail.tpl.php';
