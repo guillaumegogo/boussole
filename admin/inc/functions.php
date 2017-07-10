@@ -30,9 +30,9 @@ function liste_villes($conn,$format){
 	$liste = null;
 	while($row = mysqli_fetch_assoc($result)) {
 		if ($format=="jq") {
-			$liste .= "\"".$row["nom_ville"]." ".$row["code_postal"]."\",";
+			$liste .= "\"".$row['nom_ville']." ".$row['code_postal']."\",";
 		}else if ($format=="select") {
-			$liste .= "<option value=\"".$row["nom_ville"]." ".$row["code_postal"]. "\">".$row["nom_ville"]." ".$row["code_postal"]. "</option>";
+			$liste .= "<option value=\"".$row['nom_ville']." ".$row['code_postal']. "\">".$row['nom_ville']." ".$row['code_postal']. "</option>";
 		}
 	}
 	return $liste;

@@ -16,7 +16,7 @@
 
 	<h2>Réinitialisation du mot de passe</h2>
 
-	<div class="soustitre"><?=$msg; ?></div>
+	<div class="soustitre"><?= $msg ?></div>
 
 	<form method="post" class="detail">
 <?php if($vue=='normal'){ ?>
@@ -30,7 +30,7 @@
 
 <?php } else if($vue=='reinit'){ ?>
 		<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
-			<input type="hidden" name="maj_id" value="<?=$id_utilisateur; ?>">
+			<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
 
 			<div class="lab">
 				<label for="nouveaumotdepasse">Nouveau mot de passe :</label>

@@ -105,7 +105,7 @@ if(isset($id_professionnel)) {
 
 $soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
 
-//************************* génération des listes des compétences géographiques
+//************************* génération des listes des compétences géographiques (régions, départements et/ou territoires )
 $affiche_listes_geo = ''; 
 
 $liste_competence_geo ='<option value=\'\'>A choisir</option>';
@@ -260,83 +260,83 @@ function displayGeo(that) {
 
 <body>
 <h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
-<div class="statut"><?=$_SESSION["accroche"]; ?> (<a href="index.php">déconnexion</a>)</div> 
+<div class="statut"><?= $_SESSION["accroche"] ?> (<a href="index.php">déconnexion</a>)</div> 
 
 <div class="container">
-<h2><?=$soustitre; ?></h2>
+<h2><?= $soustitre ?></h2>
 
-<div class="soustitre"><?=$msg; ?></div>
+<div class="soustitre"><?= $msg ?></div>
 
 <form method="post" class="detail">
 
-<input type="hidden" name="maj_id" value="<?=$id_professionnel; ?>">
+<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 <fieldset>
 	<legend>Détail du professionnel</legend>
 
 	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="nom">Nom du professionnel :</label>
-			<input type="text" name="nom" value="<?php if ($id_professionnel) { echo $row["nom_pro"]; } ?>"/>
+			<input type="text" name="nom" value="<?php if ($id_professionnel) { echo $row['nom_pro']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="type">Type :</label>
-			<input type="text" name="type" value="<?php if ($id_professionnel) { echo $row["type_pro"]; } ?>"/>
+			<input type="text" name="type" value="<?php if ($id_professionnel) { echo $row['type_pro']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="desc">Description du professionnel :</label>
-			<textarea rows="5" name="desc"><?php if ($id_professionnel) { echo $row["description_pro"]; } ?></textarea>
+			<textarea rows="5" name="desc"><?php if ($id_professionnel) { echo $row['description_pro']; } ?></textarea>
 		</div>
 		<div class="lab">
 			<label for="theme[]">Thème(s) :</label>
 			<select name="theme[]" multiple size="2">
-				<?=$select_theme; ?>
+				<?= $select_theme ?>
 			</select> 
 		</div>
 		<div class="lab">
 			<label for="actif">Actif :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {if ($row["actif_pro"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
-			<input type="radio" name="actif" value="0" <?php if ($id_professionnel) {if ($row["actif_pro"]=="0") { echo "checked"; }} ?>> Non
+			<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {if ($row['actif_pro']=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
+			<input type="radio" name="actif" value="0" <?php if ($id_professionnel) {if ($row['actif_pro']=="0") { echo "checked"; }} ?>> Non
 			</select> 
 		</div>
 	</div>
 	<div class="deux_colonnes">
 		<div class="lab">
 			<label for="adresse">Adresse :</label>
-			<input type="text" name="adresse"  value="<?php if ($id_professionnel) { echo $row["adresse_pro"]; } ?>"/>
+			<input type="text" name="adresse"  value="<?php if ($id_professionnel) { echo $row['adresse_pro']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="code_postal">Code postal :</label>
-			<input type="text" name="commune" id="villes" value="<?php if ($id_professionnel) { echo $row["ville_pro"]." ".$row["code_postal_pro"]; } ?>" /> 
+			<input type="text" name="commune" id="villes" value="<?php if ($id_professionnel) { echo $row['ville_pro']." ".$row['code_postal_pro']; } ?>" /> 
 		</div>
 		<div class="lab">
 			<label for="courriel">Courriel :</label>
-			<input type="email" name="courriel" value="<?php if ($id_professionnel) { echo $row["courriel_pro"]; } ?>" />
+			<input type="email" name="courriel" value="<?php if ($id_professionnel) { echo $row['courriel_pro']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="tel">Téléphone :</label>
-			<input type="text" name="tel"  value="<?php if ($id_professionnel) { echo $row["telephone_pro"]; } ?>" />
+			<input type="text" name="tel"  value="<?php if ($id_professionnel) { echo $row['telephone_pro']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="site">Site internet :</label>
-			<input type="text" name="site"  value="<?php if ($id_professionnel) { echo $row["site_web_pro"]; } ?>" />
+			<input type="text" name="site"  value="<?php if ($id_professionnel) { echo $row['site_web_pro']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="delai">Délai garanti de réponse :</label>
 			<select name="delai">
-				<option value="2" <?php if ($id_professionnel) {if ($row["delai_pro"]==2) { echo "selected"; }} ?>>2 jours</option>
-				<option value="3" <?php if ($id_professionnel) {if ($row["delai_pro"]==3) { echo "selected"; }} ?>>3 jours</option>
-				<option value="5" <?php if ($id_professionnel) {if ($row["delai_pro"]==5) { echo "selected"; }} ?>>5 jours</option>
-				<option value="7" <?php if ($id_professionnel) {if ($row["delai_pro"]==7) { echo "selected"; }} ?>>7 jours</option>
+				<option value="2" <?php if ($id_professionnel) {if ($row['delai_pro']==2) { echo "selected"; }} ?>>2 jours</option>
+				<option value="3" <?php if ($id_professionnel) {if ($row['delai_pro']==3) { echo "selected"; }} ?>>3 jours</option>
+				<option value="5" <?php if ($id_professionnel) {if ($row['delai_pro']==5) { echo "selected"; }} ?>>5 jours</option>
+				<option value="7" <?php if ($id_professionnel) {if ($row['delai_pro']==7) { echo "selected"; }} ?>>7 jours</option>
 			</select> 
 		</div>
 		<div class="lab">
 			<label for="competence_geo">Compétence géographique :</label>
 			<div style="display:inline-block;">
 				<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;">
-					<?=$liste_competence_geo; ?>
+					<?= $liste_competence_geo ?>
 				</select>
 				
-				<?=$affiche_listes_geo; //listes déroulantes (affichées ou pas) des régions, départements et territoires ?>
+				<?= $affiche_listes_geo ?>
 			</div>
 		</div>
 		

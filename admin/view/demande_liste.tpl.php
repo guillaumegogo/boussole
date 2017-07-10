@@ -34,11 +34,11 @@ if (mysqli_num_rows($result) > 0) {
 	while($row = mysqli_fetch_assoc($result)) {
 ?>
 		<tr>
-			<td><a href="demande_detail.php?id=<?=$row["id_demande"];?>><?=date_format(date_create($row["date_demande"]), 'd/m/Y à H\hi');?></td>
-			<td><?=$row["contact_jeune"];?></td>
-			<td><?=$row["nom_offre"];?></td>
-			<td><?=$row["nom_pro"];?></td>
-			<?php echo ($flag_traite) ? "<td>" . date_format(date_create($row["date_traitement"]), 'd/m/Y à H\hi'). "</td>" : ""; ?>
+			<td><a href="demande_detail.php?id=<?= $row['id_demande'] ?>><?= date_format(date_create($row['date_demande']), 'd/m/Y à H\hi') ?></td>
+			<td><?= $row['contact_jeune'] ?></td>
+			<td><?= $row['nom_offre'] ?></td>
+			<td><?= $row['nom_pro'] ?></td>
+			<?php echo ($flag_traite) ? "<td>" . date_format(date_create($row['date_traitement']), 'd/m/Y à H\hi'). "</td>" : ""; ?>
 		</tr>
 <?php
 	}

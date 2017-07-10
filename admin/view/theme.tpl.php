@@ -56,18 +56,18 @@ if ($id_theme_choisi) {
 		<table><thead><tr><th>Libellé</th><th>Ordre d'affichage</th><th>Actif</th></tr></thead><tbody>
 <?php 
 		while($row = mysqli_fetch_assoc($result_st)) {
-			if ($row["id_theme"]!=$id_theme_choisi) {
+			if ($row['id_theme']!=$id_theme_choisi) {
 ?>
 			<tr><td>
-				<input type="hidden" name="sthemes[<?=$i;?>][]" value="<?=$row["id_theme"]; ?>" />
-				<input type="text" name="sthemes[<?=$i;?>][]" value="<?=$row["libelle_theme"]; ?>" style="width:60em;"/>
+				<input type="hidden" name="sthemes[<?= $i ?>][]" value="<?= $row['id_theme'] ?>" />
+				<input type="text" name="sthemes[<?= $i ?>][]" value="<?= $row['libelle_theme'] ?>" style="width:60em;"/>
 			</td>
 			<td>
-				<input type="text" name="sthemes[<?=$i;?>][]" value="<?=$row["ordre_theme"]; ?>" style="width:3em"/>
+				<input type="text" name="sthemes[<?= $i ?>][]" value="<?= $row['ordre_theme'] ?>" style="width:3em"/>
 			</td>
 			<td>
-				<input type="radio" name="sthemes[<?=$i;?>][]" value="1" <?=($row["actif_theme"]==="1") ? "checked" : ""; ?>> Oui 
-				<input type="radio" name="sthemes[<?=$i;?>][]" value="0" <?=($row["actif_theme"]==="0") ? "checked" : ""; ?>> Non
+				<input type="radio" name="sthemes[<?= $i ?>][]" value="1" <?= ($row['actif_theme']==="1") ? "checked" : "" ?>> Oui 
+				<input type="radio" name="sthemes[<?= $i ?>][]" value="0" <?= ($row['actif_theme']==="0") ? "checked" : "" ?>> Non
 			</td></tr>
 <?php
 				$i++;

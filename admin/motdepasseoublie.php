@@ -70,7 +70,7 @@ if (isset($_POST['maj_id'])) {
 	$vue='reinit';
 	$id_utilisateur=$_POST['maj_id'];
 	if ($_POST["nouveaumotdepasse"]==$_POST["nouveaumotdepasse2"]){
-		$sql = "UPDATE `bsl_utilisateur` SET `motdepasse` = ? WHERE `id_utilisateur` = ?"; 
+		$sql = "UPDATE `bsl_utilisateur` SET `motdepasse` = ?, reinitialisation_mdp = NULL WHERE `id_utilisateur` = ?"; 
 		$stmt = mysqli_prepare($conn, $sql);
 		$m=password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT);
 		mysqli_stmt_bind_param($stmt, 'si', $m, $id_utilisateur);

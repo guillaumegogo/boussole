@@ -66,7 +66,7 @@ if (isset($_SESSION["territoire_id"])) {
 		$liste2 = "";
 		if (mysqli_num_rows($result) > 0) {
 			while($row = mysqli_fetch_assoc($result)) {
-				$liste2 .= "<option value=\"".$row["code_insee"]."\">".$row["nom_ville"]." ".$row["code_postal"]. "</option>";
+				$liste2 .= "<option value=\"".$row['code_insee']."\">".$row['nom_ville']." ".$row['code_postal']. "</option>";
 			}
 		}
 
@@ -76,7 +76,7 @@ if (isset($_SESSION["territoire_id"])) {
 		$result = mysqli_query($conn, $sql);
 		$liste1 = "";
 		while($row = mysqli_fetch_assoc($result)) {
-			$liste1 .= "<option value=\"".$row["code_insee"]."\">".$row["nom_ville"]." ".$row["code_postal"]. "</option>";
+			$liste1 .= "<option value=\"".$row['code_insee']."\">".$row['nom_ville']." ".$row['code_postal']. "</option>";
 		}*/
 	}
 }

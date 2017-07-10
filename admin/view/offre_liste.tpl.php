@@ -35,25 +35,25 @@ if (mysqli_num_rows($result) > 0) {
 <?php
 	while($row = mysqli_fetch_assoc($result)) {
 		//affichage de la compétence géo du pro (si pas sélection de villes)
-		if ($row["zone_selection_villes"]) {
+		if ($row['zone_selection_villes']) {
 			$zone = "sélection de villes";
 		} else {
-			switch ($row["competence_geo"]) {
+			switch ($row['competence_geo']) {
 				case "territoire":
-					$zone = "territoire (".$row["nom_territoire"].")"; break;
+					$zone = "territoire (".$row['nom_territoire'].")"; break;
 				case "departemental":
-					$zone = "département (".$row["nom_departement"].")"; break;
+					$zone = "département (".$row['nom_departement'].")"; break;
 				case "regional":
-					$zone = "région (".$row["nom_region"].")"; break;
+					$zone = "région (".$row['nom_region'].")"; break;
 			}
 		}
 ?>
 		<tr>
-			<td><a href="offre_detail.php?id=<?=$row["id_offre"];?>"><?=$row["nom_offre"];?></a></td>
-			<!--<td>" . $row["date_debut"]. "</td>--><td><?=$row["date_fin"];?></td>
-			<td><?=$row["libelle_theme"];?></td>
-			<td><?=$row["nom_pro"];?></td>
-			<td><?=$zone;?></td>
+			<td><a href="offre_detail.php?id=<?= $row['id_offre'] ?>"><?= $row['nom_offre'] ?></a></td>
+			<!--<td>" . $row['date_debut']. "</td>--><td><?= $row['date_fin'] ?></td>
+			<td><?= $row['libelle_theme'] ?></td>
+			<td><?= $row['nom_pro'] ?></td>
+			<td><?= $zone ?></td>
 		</tr>
 <?php
 	}

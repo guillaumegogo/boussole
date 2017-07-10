@@ -29,53 +29,53 @@ function displayAttache(that) {
 <div class="container">
 <h2><?php echo $soustitre; ?></h2>
 
-<div class="soustitre"><?=$msg; ?></div>
+<div class="soustitre"><?= $msg ?></div>
 
 <form method="post" class="detail">
 
-<input type="hidden" name="maj_id" value="<?=$id_utilisateur; ?>">
+<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
 <fieldset>
 	<legend>Détail de l'utilisateur</legend>
 
 	<div class="une_colonne">
 		<div class="lab">
 			<label for="courriel">Courriel <?php if ($vue!="creation") { echo "(login)"; } ?> :</label>
-			<input type="text" name="courriel" placeholder="Le courriel sert de login" value="<?php if ($id_utilisateur) { echo $row["email"]; } ?>" <?php if ($vue=="motdepasse") { echo "disabled"; } ?> />
+			<input type="text" name="courriel" placeholder="Le courriel sert de login" value="<?php if ($id_utilisateur) { echo $row['email']; } ?>" <?php if ($vue=="motdepasse") { echo "disabled"; } ?> />
 		</div>
 <?php if ($vue=="modif"||$vue=="creation") { ?>
 		<div class="lab">
 			<label for="nom_utilisateur">Nom :</label>
-			<input type="text" name="nom_utilisateur" value="<?php if ($id_utilisateur) { echo $row["nom_utilisateur"]; } ?>"/>
+			<input type="text" name="nom_utilisateur" value="<?php if ($id_utilisateur) { echo $row['nom_utilisateur']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="statut">Statut :</label>
 			<select name="statut" <?php if ($vue=="modif") { echo "disabled"; } ?> onchange="displayAttache(this);" >
 				<option value="" >A choisir</option>
-				<option value="1" <?php if ($id_utilisateur) {if ($row["id_statut"]=="1") { echo "selected"; }} ?>>Administrateur national</option>
-				<option value="2" <?php if ($id_utilisateur) {if ($row["id_statut"]=="2") { echo "selected"; }} ?>>Animateur territorial</option>
-				<option value="3" <?php if ($id_utilisateur) {if ($row["id_statut"]=="3") { echo "selected"; }} ?>>Professionnel</option>
+				<option value="1" <?php if ($id_utilisateur) {if ($row['id_statut']=="1") { echo "selected"; }} ?>>Administrateur national</option>
+				<option value="2" <?php if ($id_utilisateur) {if ($row['id_statut']=="2") { echo "selected"; }} ?>>Animateur territorial</option>
+				<option value="3" <?php if ($id_utilisateur) {if ($row['id_statut']=="3") { echo "selected"; }} ?>>Professionnel</option>
 			</select>
 		</div>
 		<div class="lab">
 			<label for="attache">Attache :</label>
 			<div style="display:inline-block;">
-			<select name="attache" id="liste_territoires" <?php if ($id_utilisateur && $row["id_statut"]=="2") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
+			<select name="attache" id="liste_territoires" <?php if ($id_utilisateur && $row['id_statut']=="2") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
 				<?php echo $select_territoire; ?>
 			</select> 
-			<select name="attache_p" id="liste_professionnels" <?php if ($id_utilisateur && $row["id_statut"]=="3") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
+			<select name="attache_p" id="liste_professionnels" <?php if ($id_utilisateur && $row['id_statut']=="3") { echo "disabled"; } else { echo "style=\"display:none\""; } ?>>
 				<?php echo $select_professionnel; ?>
 			</select></div>
 		</div>
 		<?php if ($vue=="modif") { ?>
 		<div class="lab">
 			<label for="date">Date d'inscription :</label>
-			<input type="text" name="date" class="datepick" value="<?php echo date_format(date_create($row["date_inscription"]), 'd/m/Y'); ?>" disabled />
+			<input type="text" name="date" class="datepick" value="<?php echo date_format(date_create($row['date_inscription']), 'd/m/Y'); ?>" disabled />
 		</div>
 		<?php } ?>
 		<div class="lab">
 			<label for="actif">Actif :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_utilisateur) {if ($row["actif_utilisateur"]=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
-			<input type="radio" name="actif" value="0" <?php if ($id_utilisateur) {if ($row["actif_utilisateur"]=="0") { echo "checked"; }} ?>> Non
+			<input type="radio" name="actif" value="1" <?php if ($id_utilisateur) {if ($row['actif_utilisateur']=="1") { echo "checked"; }} else echo "checked"; ?>> Oui 
+			<input type="radio" name="actif" value="0" <?php if ($id_utilisateur) {if ($row['actif_utilisateur']=="0") { echo "checked"; }} ?>> Non
 			</select> 
 		</div>
 		
@@ -100,7 +100,7 @@ function displayAttache(that) {
 <?php } ?>
 	</div>
 <?php if ($vue=="modif") { ?>
-	<a href="?id=<?=$id_utilisateur; ?>&do=mdp" style="float:right">Changer le mot de passe</a>
+	<a href="?id=<?= $id_utilisateur ?>&do=mdp" style="float:right">Changer le mot de passe</a>
 <?php } ?>
 </fieldset>
 

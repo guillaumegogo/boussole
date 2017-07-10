@@ -164,22 +164,22 @@ if(isset($id_offre)) {
 		$row = mysqli_fetch_assoc($result);
 		
 		//affichage de la compétence géo du pro 
-		switch ($row["competence_geo"]) {
+		switch ($row['competence_geo']) {
 			case "territoire":
-				$geo = $row["competence_geo"]." ".$row["nom_territoire"]; break;
+				$geo = $row['competence_geo']." ".$row['nom_territoire']; break;
 			case "departemental":
-				$geo = $row["competence_geo"]." ".$row["nom_departement"]; break;
+				$geo = $row['competence_geo']." ".$row['nom_departement']; break;
 			case "regional":
-				$geo = $row["competence_geo"]." ".$row["nom_region"]; break;
+				$geo = $row['competence_geo']." ".$row['nom_region']; break;
 			case "national":
-				$geo = $row["competence_geo"]; break;
+				$geo = $row['competence_geo']; break;
 		}
 		
 		//affichage des critères de l'offre (selected dans listes déroulantes)
 		$sql2 = "SELECT * FROM `bsl_offre_criteres` where id_offre=".$id_offre;
 		$result2 = mysqli_query($conn, $sql2);
 		while ($row2 = mysqli_fetch_assoc($result2)) {
-			$criteres[$row2["nom_critere"]][$row2["valeur_critere"]]=1;
+			$criteres[$row2['nom_critere']][$row2['valeur_critere']]=1;
 		}
 	}
 
@@ -222,14 +222,14 @@ if(isset($id_offre)) {
 	$liste_villes_pro = "";
 	$sqlv = "SELECT `bsl__ville`.`code_insee`, MIN(`bsl__ville`.`code_postal`) as cp, `bsl__ville`.`nom_ville` 
 				FROM `bsl__ville` ";
-	switch ($row["competence_geo"]) {
+	switch ($row['competence_geo']) {
 		case "territoire":
 			$sqlv .= " JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.code_insee=`bsl__ville`.code_insee
-			WHERE id_territoire=\"".$row["id_competence_geo"]."\""; break;
+			WHERE id_territoire=\"".$row['id_competence_geo']."\""; break;
 		case "departemental":
-			$sqlv .= " WHERE SUBSTR(`bsl__ville`.code_insee,1,2)=\"".$row["id_competence_geo"]."\""; break;
+			$sqlv .= " WHERE SUBSTR(`bsl__ville`.code_insee,1,2)=\"".$row['id_competence_geo']."\""; break;
 		case "regional":
-			$sqlv .= " JOIN `bsl__departement` ON SUBSTR(`bsl__ville`.code_insee,1,2)=`bsl__departement`.id_departement AND id_region=\"".$row["id_competence_geo"]."\""; break;
+			$sqlv .= " JOIN `bsl__departement` ON SUBSTR(`bsl__ville`.code_insee,1,2)=`bsl__departement`.id_departement AND id_region=\"".$row['id_competence_geo']."\""; break;
 		case "national":
 			$sqlv .= ""; break;
 	}
@@ -238,13 +238,13 @@ if(isset($id_offre)) {
 	$result = mysqli_query($conn, $sqlv);
 	if (mysqli_num_rows($result) > 0) {
 		while($rowv = mysqli_fetch_assoc($result)) {
-			$liste_villes_pro .= "<option value=\"".$rowv["code_insee"]."\">".$rowv["nom_ville"]." ".$rowv["cp"]. "</option>";
+			$liste_villes_pro .= "<option value=\"".$rowv['code_insee']."\">".$rowv['nom_ville']." ".$rowv['cp']. "</option>";
 		}
 	}
 	
 	//*********** liste des villes liées à l'offre
 	$liste2 = "";
-	if ($row["zone_selection_villes"]) { 
+	if ($row['zone_selection_villes']) { 
 		$sqlv2 = "SELECT * FROM `bsl_offre_criteres` 
 		JOIN bsl__ville ON valeur_critere=code_insee 
 		WHERE `nom_critere` LIKE 'villes' AND id_offre=".$id_offre." 
@@ -252,7 +252,7 @@ if(isset($id_offre)) {
 		$result = mysqli_query($conn, $sqlv2);
 		if (mysqli_num_rows($result) > 0) {
 			while($rowv2 = mysqli_fetch_assoc($result)) {
-				$liste2 .= "<option value=\"".$rowv2["code_insee"]."\">".$rowv2["nom_ville"]." ".$rowv2["code_postal"]. "</option>";
+				$liste2 .= "<option value=\"".$rowv2['code_insee']."\">".$rowv2['nom_ville']." ".$rowv2['code_postal']. "</option>";
 			}
 		}
 	}
@@ -393,7 +393,7 @@ if (isset($tab_select_soustheme)){
     <div class="deux_colonnes">
 		<div class="lab">
 			<label for="nom">Nom de l'offre de service :</label>
-			<input type="text" name="nom" value="<?php if ($id_offre) { echo $row["nom_offre"]; } ?>"/>
+			<input type="text" name="nom" value="<?php if ($id_offre) { echo $row['nom_offre']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="desc">Description de l'offre :</label>
@@ -403,14 +403,14 @@ if (isset($tab_select_soustheme)){
 				<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');" />
 				<input type="button" value="Lien" onclick="commande('createLink');" />
 				<input type="button" value="Image" onclick="commande('insertImage');" />
-				<div id="editeur" contentEditable><?php if ($id_offre) { echo $row["description_offre"]; } ?></div>
+				<div id="editeur" contentEditable><?php if ($id_offre) { echo $row['description_offre']; } ?></div>
 				<input id="resultat" type="hidden" name="desc"/>
 			</div>
 		</div>
 		<div class="lab">
 			<label for="du">Dates de validité :</label>
-			<input type="text" name="du" size="10" class="datepick" value="<?php if ($id_offre) { echo $row["date_debut"]; } else echo date("d/m/Y");?>" />
-			au <input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) { echo $row["date_fin"]; } else echo date("d/m/Y", strtotime("+1 year"));?>"/> 
+			<input type="text" name="du" size="10" class="datepick" value="<?php if ($id_offre) { echo $row['date_debut']; } else echo date("d/m/Y");?>" />
+			au <input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) { echo $row['date_fin']; } else echo date("d/m/Y", strtotime("+1 year"));?>"/> 
 		</div>
 <?php //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche
 if ($id_offre) { 
@@ -434,7 +434,7 @@ if ($id_offre) {
 			<label for="pro">Professionnel :</label>
 <?php //si création d'une offre de service -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
 if(isset($id_offre)) { 
-			echo"<input type=\"text\" name=\"pro\" value=\"".$row["nom_pro"]."\" disabled/>";
+			echo"<input type=\"text\" name=\"pro\" value=\"".$row['nom_pro']."\" disabled/>";
 } else {
 			echo"<select name=\"pro\">".$liste_pro."</select>";
 } 
@@ -443,55 +443,55 @@ if(isset($id_offre)) {
 <?php if ($id_offre) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. ?>
 		<div class="lab">
 			<label for="adresse">Adresse :</label>
-			<input type="text" name="adresse" value="<?php if ($id_offre) { echo $row["adresse_offre"]; } ?>" />
+			<input type="text" name="adresse" value="<?php if ($id_offre) { echo $row['adresse_offre']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="code_postal">Commune :</label>
-			<input type="text" name="commune" id="villes" value="<?php if ($id_offre) { echo $row["ville_offre"]." ".$row["code_postal_offre"]; } ?>" /> 
+			<input type="text" name="commune" id="villes" value="<?php if ($id_offre) { echo $row['ville_offre']." ".$row['code_postal_offre']; } ?>" /> 
 		</div>
 <!--***************** cp et ville à remplacer par commune, au dessus
 		<div class="lab">
 			<label for="code_postal">Code postal :</label>
-			<input type="text" name="code_postal" value="<?php if ($id_offre) { echo $row["code_postal_offre"]; } ?>" maxlength="5" style="width:5em"/> <abbr title="Le code postal devra permettre de générer une liste de villes possibles, pour une meilleure géolocalisation.">&#9888;</abbr> <!--<input type="submit" name="villes_code_postal" value="Lister les villes" />
+			<input type="text" name="code_postal" value="<?php if ($id_offre) { echo $row['code_postal_offre']; } ?>" maxlength="5" style="width:5em"/> <abbr title="Le code postal devra permettre de générer une liste de villes possibles, pour une meilleure géolocalisation.">&#9888;</abbr> <!--<input type="submit" name="villes_code_postal" value="Lister les villes" />
 		</div>
 		<div class="lab">
 			<label for="ville">Ville :</label>
-			<input type="text" name="ville" value="<?php if ($id_offre) { echo $row["ville_offre"]; } ?>" />
+			<input type="text" name="ville" value="<?php if ($id_offre) { echo $row['ville_offre']; } ?>" />
 		</div> -->
 		<div class="lab">
 			<label for="courriel">Courriel :</label>
-			<input type="email" name="courriel" value="<?php if ($id_offre) { echo $row["courriel_offre"]; } ?>"/>
+			<input type="email" name="courriel" value="<?php if ($id_offre) { echo $row['courriel_offre']; } ?>"/>
 		</div>
 		<div class="lab">
 			<label for="tel">Téléphone :</label>
-			<input type="text" name="tel"  value="<?php if ($id_offre) { echo $row["telephone_offre"]; } ?>" />
+			<input type="text" name="tel"  value="<?php if ($id_offre) { echo $row['telephone_offre']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="site">Site internet :</label>
-			<input type="text" name="site"  value="<?php if ($id_offre) { echo $row["site_web_offre"]; } ?>" />
+			<input type="text" name="site"  value="<?php if ($id_offre) { echo $row['site_web_offre']; } ?>" />
 		</div>
 		<div class="lab">
 			<label for="delai">Délai garanti de réponse :</label>
 			<select name="delai">
-				<option value="2" <?php if ($id_offre) {if ($row["delai_offre"]=="2") { echo "selected"; }} ?>>2 jours</option>
-				<option value="3" <?php if ($id_offre) {if ($row["delai_offre"]=="3") { echo "selected"; }} ?>>3 jours</option>
-				<option value="5" <?php if ($id_offre) {if ($row["delai_offre"]=="5") { echo "selected"; }} ?>>5 jours</option>
-				<option value="7" <?php if ($id_offre) {if ($row["delai_offre"]=="7") { echo "selected"; }} ?>>7 jours</option>
+				<option value="2" <?php if ($id_offre) {if ($row['delai_offre']=="2") { echo "selected"; }} ?>>2 jours</option>
+				<option value="3" <?php if ($id_offre) {if ($row['delai_offre']=="3") { echo "selected"; }} ?>>3 jours</option>
+				<option value="5" <?php if ($id_offre) {if ($row['delai_offre']=="5") { echo "selected"; }} ?>>5 jours</option>
+				<option value="7" <?php if ($id_offre) {if ($row['delai_offre']=="7") { echo "selected"; }} ?>>7 jours</option>
 			</select> 
 		</div>
 		<div class="lab">
 			<label for="zone">Zone concernée :</label>
 			<div style="display:inline-block;">
-				<input type="radio" name="zone" value="0" <?php if ($id_offre) {if (!$row["zone_selection_villes"]) { echo "checked"; }} else { echo "checked"; } ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence géographique du pro <?php echo "<small>(".$geo.")</small>"; ?><br/>
-				<input type="radio" name="zone" value="1" <?php if ($id_offre) {if ($row["zone_selection_villes"]) { echo "checked"; }} ?>  onchange="document.getElementById('div_liste_villes').style.display = 'block';" > Sélection de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
+				<input type="radio" name="zone" value="0" <?php if ($id_offre) {if (!$row['zone_selection_villes']) { echo "checked"; }} else { echo "checked"; } ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence géographique du pro <?php echo "<small>(".$geo.")</small>"; ?><br/>
+				<input type="radio" name="zone" value="1" <?php if ($id_offre) {if ($row['zone_selection_villes']) { echo "checked"; }} ?>  onchange="document.getElementById('div_liste_villes').style.display = 'block';" > Sélection de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
 			</div>
 		</div>
-		<div class="lab" id="div_liste_villes"  style="display:<?php if ($id_offre) {if ($row["zone_selection_villes"]) { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>">
+		<div class="lab" id="div_liste_villes"  style="display:<?php if ($id_offre) {if ($row['zone_selection_villes']) { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>">
 			<!--<label for="villes">Villes  :</label>
 			<select name="villes[]" multiple size=10 >
 			<?php 
 			//********* liste des villes liées au pro, le cas échéant
-			/*if ($row["zone_selection_villes"]) { 
+			/*if ($row['zone_selection_villes']) { 
 			$sql = "SELECT `bsl__ville`.`code_insee`, `bsl__ville`.`code_postal`, `bsl__ville`.`nom_ville` 
 				FROM `bsl__ville` 
 				JOIN `bsl_professionnel_villes` ON `bsl_professionnel_villes`.`code_insee`=`bsl__ville`.`code_insee` 
@@ -500,7 +500,7 @@ if(isset($id_offre)) {
 			$result = mysqli_query($conn, $sql);
 			if (mysqli_num_rows($result) > 0) {
 				while($row2 = mysqli_fetch_assoc($result)) {
-					$liste2 .= "<option value=\"".$row2["code_insee"]."\">".$row2["nom_ville"]." ".$row2["code_postal"]. "</option>";
+					$liste2 .= "<option value=\"".$row2['code_insee']."\">".$row2['nom_ville']." ".$row2['code_postal']. "</option>";
 				}
 			}
 			*/
@@ -509,7 +509,7 @@ if(isset($id_offre)) {
 			?> -->
 			
 <!--********************** compétence villes => désactivé -->
-			<!--<div id="liste_villes" style="width:100%; vertical-align: middle; height: 100%; display:<?php if ($id_professionnel) {if ($row["competence_geo"]=="villes") { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>;">-->
+			<!--<div id="liste_villes" style="width:100%; vertical-align: middle; height: 100%; display:<?php if ($id_professionnel) {if ($row['competence_geo']=="villes") { echo "block"; } else { echo "none"; }} else { echo "none"; } ?>;">-->
 			<div style="margin-bottom:1em;">Filtre : <input id="textbox" value="nom de ville, code postal ou département..." type="text" style="width:20em;" onFocus="javascript:this.value='';"></div>
 			
 			<div style="display:inline-block; vertical-align:top;">		
@@ -530,7 +530,7 @@ if(isset($id_offre)) {
 		</div>
 		<div class="lab">
 			<label for="actif">Offre active :</label>
-			<input type="radio" name="actif" value="1" <?php if ($id_offre) {if ($row["actif_offre"]=="1") { echo "checked"; }} else echo "checked";  ?>> Oui <input type="radio" name="actif" value="0" <?php if ($id_offre) {if ($row["actif_offre"]=="0") { echo "checked"; }} ?>> Non
+			<input type="radio" name="actif" value="1" <?php if ($id_offre) {if ($row['actif_offre']=="1") { echo "checked"; }} else echo "checked";  ?>> Oui <input type="radio" name="actif" value="0" <?php if ($id_offre) {if ($row['actif_offre']=="0") { echo "checked"; }} ?>> Non
 		</div>
 	</div>
 <?php } ?>
@@ -540,7 +540,7 @@ if(isset($id_offre)) {
 //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. 
 if ($id_offre) { 
 	// si theme de l'offre = emploi
-	if ($row["id_theme_pere"]=="1") { 
+	if ($row['id_theme_pere']=="1") { 
 ?>
 <fieldset>
 	<legend>Liste des critères de l'offre de service</legend>
@@ -724,7 +724,7 @@ echo $t;
 </fieldset>
 <?php 
 	// si theme = logement
-	} else if ($row["id_theme_pere"]=="2") { 
+	} else if ($row['id_theme_pere']=="2") { 
 ?>
 ...
 <?php

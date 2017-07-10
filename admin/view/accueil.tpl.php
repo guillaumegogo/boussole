@@ -20,19 +20,19 @@
 	<div style="width:100%; text-align:center;">
 		<div class="colonne_accueil">
 		<?php if ($liens_activite) { ?>
-			<b>Activité</b> <ul style="line-height:2em;"><?= $liens_activite; ?></ul>
+			<b>Activité</b> <ul style="line-height:2em;"><?= $liens_activite ?></ul>
 		<?php } ?>
 		</div>
 		
 		<div class="colonne_accueil">
 		<?php if ($liens_admin) { ?>
-			<b>Acteurs</b> <ul style="line-height:2em;"><?= $liens_admin; ?></ul>
+			<b>Acteurs</b> <ul style="line-height:2em;"><?= $liens_admin ?></ul>
 		<?php } ?>
 		</div>
 		
 		<div class="derniere colonne_accueil">
 		<?php if ($liens_reference) { ?>
-			<b>Données de référence</b> <ul style="line-height:2em;"><?= $liens_reference; ?></ul>
+			<b>Données de référence</b> <ul style="line-height:2em;"><?= $liens_reference ?></ul>
 		<?php } ?>
 		</div>
 	</div>

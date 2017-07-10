@@ -34,22 +34,22 @@ if (mysqli_num_rows($result) > 0) {
 	
 <?php while($row = mysqli_fetch_assoc($result)) {
 		//colonne "compétence géographique"
-		$geo = $row["competence_geo"];
-		switch ($row["competence_geo"]) {
+		$geo = $row['competence_geo'];
+		switch ($row['competence_geo']) {
 			case "territoire":
-				$geo .= " (".$row["nom_territoire"].")"; break;
+				$geo .= " (".$row['nom_territoire'].")"; break;
 			case "departemental":
-				$geo .= " (".$row["nom_departement"].")"; break;
+				$geo .= " (".$row['nom_departement'].")"; break;
 			case "regional":
-				$geo .= " (".$row["nom_region"].")"; break;
+				$geo .= " (".$row['nom_region'].")"; break;
 		}
 ?>
 		<tr>
-			<td><a href="professionnel_detail.php?id=<?=$row["id_professionnel"];?>"><?=$row["nom_pro"];?></a></td>
-			<td><?=$row["type_pro"];?></td>
-			<td><?php echo $row["ville_pro"]. " (" . $row["code_postal_pro"]. ")";?></td>
-			<td><?=$row["themes"];?></td>
-			<td><?=$geo;?></td>
+			<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a></td>
+			<td><?= $row['type_pro'] ?></td>
+			<td><?php echo $row['ville_pro']. " (" . $row['code_postal_pro']. ")";?></td>
+			<td><?= $row['themes'] ?></td>
+			<td><?= $geo ?></td>
 		</tr>
 <?php
 	}

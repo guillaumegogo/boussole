@@ -16,7 +16,7 @@
 
 	<h2>Connexion</h2>
 
-	<div class="soustitre"><?=$msg; ?></div>
+	<div class="soustitre"><?= $msg ?></div>
 
 	<form method="post" class="detail">
 		<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
