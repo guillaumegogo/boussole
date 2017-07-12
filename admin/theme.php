@@ -15,33 +15,31 @@ $libelle_theme_choisi = "";
 $id_theme_choisi = 1;
 if (isset($_POST['choix_theme'])) $id_theme_choisi = $_POST['choix_theme'];
 
-//********** mise à jour/création du theme
-if (isset($_POST["submit_meta"])) {
-	$id_theme_choisi = $_POST["maj_id_theme"];
-	if ($id_theme_choisi) {
-		$req= "UPDATE `bsl_theme` SET `libelle_theme`=\"".$_POST["libelle_theme"]."\", `actif_theme`=\"".$_POST["actif"]."\" WHERE `id_theme`=".$id_theme_choisi;
+if (isset($_POST["maj_id_theme"])) {
+	$result = false;
+
+	//********** mise à jour/création du theme
+	if (isset($_POST["submit_theme"])) {
+		$req= "UPDATE `bsl_theme` SET `libelle_theme`=\"".$_POST["libelle_theme"]."\", `actif_theme`=\"".$_POST["actif"]."\" WHERE `id_theme`=".$_POST["maj_id_theme"];
 		$result=mysqli_query($conn, $req);
+	}
+	//********** mise à jour des sous themes
+	if (isset($_POST["submit_liste_sous_themes"])) {
 		foreach($_POST['sthemes'] as $selected_option => $foo) {
 			foreach($foo as $selected_option) {
 				$rreq= "UPDATE `bsl_theme` SET `libelle_theme`=\"".$foo[1]."\", `ordre_theme`=\"".$foo[2]."\", `actif_theme`=\"".$foo[3]."\" WHERE `id_theme`=".$foo[0];
-				$rresult=mysqli_query($conn, $rreq);
+				$result=mysqli_query($conn, $rreq);
 			}
 		}
-		if ($result) { 
-			$msg = "Modification bien enregistrée.";
-		}
 	}
-}
-
-//********** mise à jour/création du theme
-if (isset($_POST["submit_nouveau_sous_theme"])) {
-	$id_theme_choisi = $_POST["maj_id_theme"];
-	if ($id_theme_choisi) {
-		$req= "INSERT INTO `bsl_theme` (`libelle_theme`, `id_theme_pere`, `actif_theme`) VALUES ( \"".$_POST["libelle_nouveau_sous_theme"]."\", '".$id_theme_choisi."', '0')";
+	//********** mise à jour/création du theme
+	if (isset($_POST["submit_nouveau_sous_theme"])) {
+		$req= "INSERT INTO `bsl_theme` (`libelle_theme`, `id_theme_pere`, `actif_theme`) VALUES ( \"".$_POST["libelle_nouveau_sous_theme"]."\", '".$_POST["maj_id_theme"]."', '0')";
 		$result=mysqli_query($conn, $req);
-		if ($result) { 
-			$msg = "Modification bien enregistrée.";
-		}
+	}
+	
+	if ($result) { 
+		$msg = "Modification bien enregistrée.";
 	}
 }
 

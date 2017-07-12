@@ -38,4 +38,3 @@ $lien_desactives = ($flag_actif) ? "<a href=\"offre_liste.php?actif=non\">Liste 
 
 //view
 require 'view/offre_liste.tpl.php';
-

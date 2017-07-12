@@ -19,8 +19,8 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif']=="non") ? 0 : 1;
 //tous les professionnel actifs, du territoire si choisi
 $sql = "SELECT `bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,GROUP_CONCAT(libelle_theme_court separator ', ') as themes, competence_geo,  nom_departement, nom_region, nom_territoire  
 FROM `bsl_professionnel` 
-JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_professionnel`=`bsl_professionnel`.`id_professionnel`
-JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_professionnel_themes`.`id_theme`
+LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_professionnel`=`bsl_professionnel`.`id_professionnel`
+LEFT JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_professionnel_themes`.`id_theme`
 LEFT JOIN `bsl__departement` ON `bsl_professionnel`.`competence_geo`=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 LEFT JOIN `bsl__region` ON `bsl_professionnel`.`competence_geo`=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
 LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.`competence_geo`=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`

@@ -39,7 +39,7 @@ if (isset($_POST['maj_id'])) {
 		$code_insee = $row['code_insee'];
 	}
 	//si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
-	$id_competence_geo = null;
+	$id_competence_geo = "NULL";
 	if (isset($_POST['competence_geo'])) {
 		if ($_POST['competence_geo']=='regional' && $_POST['liste_regions']){
 			$id_competence_geo = $_POST['liste_regions'];
@@ -59,7 +59,8 @@ if (isset($_POST['maj_id'])) {
 	//requête de modification
 	}else{
 		$req = 'UPDATE `bsl_professionnel` SET `nom_pro` = "'.$_POST['nom'].'", `type_pro` = "'.$_POST['type'].'", `description_pro` = "'.$_POST['desc'].'", `adresse_pro` = "'.$_POST['adresse'].'", `code_postal_pro` = "'.$code_postal.'", `ville_pro` = "'.$ville.'", `code_insee_pro` = "'.$code_insee.'", `courriel_pro` = "'.$_POST['courriel'].'", `telephone_pro` = "'.$_POST['tel'].'", `site_web_pro` = "'.$_POST['site'].'", `delai_pro` = '.$_POST['delai'].', `actif_pro` = '.$_POST['actif'].' ';
-		if (isset($_POST['competence_geo'])) { $req .= ', `competence_geo` = "'.$_POST['competence_geo'].'", `id_competence_geo` = '.$id_competence_geo.' '; }
+		if ($_POST['competence_geo']) { $req .= ', `competence_geo` = "'.$_POST['competence_geo'].'" '; }
+		if ($id_competence_geo) { $req .= ', `id_competence_geo` = '.$id_competence_geo.' '; }
 		$req .= ' WHERE `id_professionnel` = '.$_POST['maj_id'];
 		$result=mysqli_query($conn, $req);
 		$last_id=$_POST['maj_id'];

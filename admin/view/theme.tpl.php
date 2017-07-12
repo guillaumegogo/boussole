@@ -75,7 +75,7 @@ if ($id_theme_choisi) {
 		}
 ?>
 		</tbody></table>
-		<input type="submit" style="display:block; margin:0 auto;" name="submit_meta" value="Valider">
+		<input type="submit" style="display:block; margin:0 auto;" name="submit_liste_sous_themes" value="Valider">
 <?php
 	} else {
 ?>
