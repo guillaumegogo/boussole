@@ -81,7 +81,7 @@ if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 	<div>J'habite à <b><?= $_SESSION['ville_habitee'] ?> (<?= $_SESSION['code_postal'] ?>)</b> et je souhaite... </div>
 	<div class="boutonsbesoin">
 <?php foreach ($themes as $theme) { ?>
-		<input type="submit" value="<?= $theme['libelle'] ?>" name="besoin" <?= ($theme['actif'])? "":"disabled" ?> >
+		<input type="submit" value="<?= $theme['libelle'] ?>" name="besoin" <?= ($theme['actif'])? "":"disabled" ?> >  <!--formaction="formulaire.php?b=<?= $theme['id'] ?>"-->
 <?php } ?>
 	</div>
 </fieldset>
@@ -94,9 +94,12 @@ if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 	<div class="block123"><img src="img/message.png">2. Je suis recontacté·e dans les jours qui suivent.</div>
 	<div class="block123"><img src="img/calendar.png">3. J'obtiens un rendez-vous et une réponse à mon besoin.</div>
 </div>
-<!--
-<?php print_r($_SESSION); echo "<br/>".$sql; ?>
--->
+
+<?php 
+if ($ENVIRONNEMENT=="LOCAL") {
+	echo "<pre>";print_r($_SESSION); echo "<br/>".@$sql; echo "</pre>";
+}
+?>
 <?php include('inc/footer.inc.php'); ?>
 </div>
 </body>

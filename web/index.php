@@ -87,7 +87,7 @@ WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...
 				mysqli_stmt_bind_result($stmtt, $id_theme, $libelle_theme, $actif_theme);
 
 				while (mysqli_stmt_fetch($stmtt)) {
-					$themes[] = array('libelle'=>$libelle_theme, 'actif'=>$actif_theme);
+					$themes[] = array('id'=>$id_theme, 'libelle'=>$libelle_theme, 'actif'=>$actif_theme);
 				}
 			}
 			mysqli_stmt_close($stmtt);

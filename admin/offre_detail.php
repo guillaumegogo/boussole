@@ -132,15 +132,14 @@ if (isset($_POST["maj_id"])) {
 					}
 				}
 				$result2=mysqli_query($conn, $req2);
-				
-				if ($result && $result2) { 
-					$msg = "Modification bien enregistrée.";
-				} else { 
-					$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";
-				}
-				$msg = "<div class=\"soustitre\">".$msg."</div>";
 			}
 		}
+	}
+	
+	if ($result && (!isset($result2) || $result2)) { 
+		$msg = "Modification bien enregistrée.";
+	} else { 
+		$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";
 	}
 }
 

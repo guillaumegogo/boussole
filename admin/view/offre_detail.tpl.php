@@ -35,18 +35,12 @@ $( function() {
 $(function() {
 	$('#list1').filterByText($('#textbox'));
 });
-function checkall(){
-	var sel= document.getElementById('list2'); 
-	for(i=0;i<sel.options.length;i++){
-		sel.options[i].selected=true;
-	}
-}
+
 $(document).ready(function() {     
 	$.datepicker.setDefaults($.datepicker.regional["fr"]);
 	$('.datepick').datepicker({ dateFormat: "dd/mm/yy"});
 });
 
-//******* javascript
 /*montrer ou non la liste des villes*/
 function cacheVilles() {
     var x = document.getElementById('liste_villes');
@@ -77,13 +71,21 @@ function commande(nom, argument) {
   }
 }
 
-function htmleditor() {
-  document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
+/*validation formulaire*/
+function checkall(){
+	var sel= document.getElementById('list2'); 
+	if (sel != null && sel.value == '') {
+		for(i=0;i<sel.options.length;i++){
+			sel.options[i].selected=true;
+		}
+	}
 }
-
+function htmleditor() {
+	document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
+}
 function choixTheme(that){
-  var x = that.value;
-  var tab = [];
+	var x = that.value;
+	var tab = [];
 <?php
 if (isset($tab_select_soustheme)){
 	foreach ($tab_select_soustheme as $key => $value) {
@@ -91,7 +93,7 @@ if (isset($tab_select_soustheme)){
 	}
 }
 ?>
-  document.getElementById("select_sous_themes").innerHTML = tab[x];
+	document.getElementById("select_sous_themes").innerHTML = tab[x];
 }
 </script>
 </head>
@@ -102,9 +104,11 @@ if (isset($tab_select_soustheme)){
 
 <div class="container">
 <h2><?php if ($id_offre) { echo "Modification"; } else { echo "Ajout"; } ?> d'une offre de service</h2>
-<?php echo $msg; ?>
 
-<form method="post" class="detail" onsubmit='checkall(); htmleditor()'>
+<div class="soustitre"><?= $msg ?></div>
+
+
+<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
 <input type="hidden" name="maj_id" value="<?php echo $id_offre; ?>">
 

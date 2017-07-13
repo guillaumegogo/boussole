@@ -413,6 +413,13 @@ body:after{
 	text-align: justify;
 }
 
+pre{
+ background:#eee;
+ padding:1em;
+ margin-top:3em;
+ white-space : pre-wrap;
+ font-size:0.8em;
+}
 /*
 marianne : https://upload.wikimedia.org/wikipedia/fr/thumb/3/38/Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg/100px-Logo_de_la_R%C3%A9publique_fran%C3%A7aise_%281999%29.svg.png
 float:right;
