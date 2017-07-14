@@ -63,9 +63,13 @@ if (mysqli_stmt_execute($stmt)) {
 	if($nb==0){
 		$msg = "Nous ne trouvons pas de formulaire. Recommence s'il te plait.";
 	}else {
-		mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+		mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+		$i=0;
 		while (mysqli_stmt_fetch($stmt)) {
-			$elements_formulaire[] = array($id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+			if($i++<1){
+				$meta[] = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
+			}
+			$elements[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);
 		}
 	}
 }

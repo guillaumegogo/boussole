@@ -17,18 +17,18 @@
 <form action="formulaire.php" method="post" class="joli formulaire">
 
 	<fieldset class="formulaire">
-		<legend><?= $elements_formulaire[0][2] ?> (<?= $elements_formulaire[0][3] ?>/<?= $elements_formulaire[0][1] ?>)</legend>
-		<div class="aide"><img src="img/ci_help.png" title="<?= $elements_formulaire[0][5] ?>"></div>
+		<legend><?= $meta['titre'] ?> (<?= $meta['etape'] ?>/<?= $meta['nb'] ?>)</legend>
+		<div class="aide"><img src="img/ci_help.png" title="<?= $meta['aide'] ?>"></div>
 		
 		<div class="centreformulaire">
-			<input type="hidden" name="etape" value="<?= ($elements_formulaire[0][3]<$elements_formulaire[0][1]) ? ($elements_formulaire[0][3]+1) : "fin" ?>">
+			<input type="hidden" name="etape" value="<?= $meta['suite'] ?>">
 
 <?php 
 $la="";
 $ty="";
-foreach ($elements_formulaire as $ele) {
+foreach ($elements as $ele) {
 
-	if ($la!=$ele[6]){ //si première ligne de ce label
+	if ($la!=$ele['name']){ //si première ligne de ce label
 		if($ty){ //cloture de la ligne précédente
 			switch ($ty) {
 			case "checkbox":
@@ -41,11 +41,11 @@ foreach ($elements_formulaire as $ele) {
 			}
 			echo "</div>";
 		}
-		$la=$ele[6]; 
-		$ty=$ele[7]; //récup des valeurs utiles dans des variables temporaires
+		$la=$ele['name']; 
+		$ty=$ele['type']; //récup des valeurs utiles dans des variables temporaires
 ?>
 			<div class="lab">
-				<label class="label_long" for="<?= $la ?>"><?= $ele[5] ?></label>
+				<label class="label_long" for="<?= $la ?>"><?= $ele['que'] ?></label>
 				<div style="display:inline-block;">
 <?php 
 		switch ($ty) { //affichage ligne préalable si le type le demande
@@ -56,26 +56,26 @@ foreach ($elements_formulaire as $ele) {
 			echo "<select name=\"".$la."\">"; 
 			break;
 		case "multiple":
-			echo "<select name=\"".$la."\" size=\"".$ele[8]."\">";
+			echo "<select name=\"".$la."\" size=\"".$ele['tai']."\">";
 			break;
 		}
 	}
 	switch ($ty) { //affichage valeur par valeur en fonction du type
 	case "radio":
-		$t = "<input type=\"radio\" name=\"".$la."\" value=\"".$ele[11]."\" ";
-		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele[11]) $t .= " checked "; } else if ($ele[12]==1) $t .= " checked ";
-		$t .= "> ".$ele[10]."\n";
+		$t = "<input type=\"radio\" name=\"".$la."\" value=\"".$ele['val']."\" ";
+		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele['val']) $t .= " checked "; } else if ($ele['def']==1) $t .= " checked ";
+		$t .= "> ".$ele['lib']."\n";
 		break;
 	case "checkbox":
-		$t = "<input type=\"checkbox\" name=\"".$la."\" value=\"".$ele[11]."\" ";
-		if (isset($_SESSION[$la])){ if (in_array($ele[11], $_SESSION[$la])) $t .= " checked "; } else if ($ele[12]==1) $t .= " checked ";
-		$t .= "> ".$ele[10]."</br>\n";
+		$t = "<input type=\"checkbox\" name=\"".$la."\" value=\"".$ele['val']."\" ";
+		if (isset($_SESSION[$la])){ if (in_array($ele['val'], $_SESSION[$la])) $t .= " checked "; } else if ($ele['def']==1) $t .= " checked ";
+		$t .= "> ".$ele['lib']."</br>\n";
 		break;
 	case "select":
 	case "multiple":
-		$t = "<option value=\"".$ele[11]."\" ";
-		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele[11]) $t .= " selected "; } else if ($ele[12]==1) $t .= " selected ";
-		$t .= "> ".$ele[10]."</option>\n";
+		$t = "<option value=\"".$ele['val']."\" ";
+		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele['val']) $t .= " selected "; } else if ($ele['def']==1) $t .= " selected ";
+		$t .= "> ".$ele['lib']."</option>\n";
 		break;
 	}
 	echo $t;
