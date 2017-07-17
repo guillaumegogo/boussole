@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require('secret/connect.php');
+include('inc/modele.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
@@ -10,6 +10,11 @@ $msg = "";
 //********* censé permettre de revenir sur les formulaires sans recharger
 header('Cache-Control: no cache'); 
 session_cache_limiter('private_no_expire');
+
+//************ si accès direct à la page, renvoi vers l'accueil
+if (!isset($_SESSION['ville_habitee']) || !isset($_POST['besoin'])) {
+	header('Location: index.php');
+}
 
 //********* valeur de sessions
 if (isset($_POST['besoin'])) { $_SESSION['besoin'] = $_POST['besoin']; }
@@ -28,53 +33,21 @@ if (isset($_POST['secteur'])) { $_SESSION['secteur'] = $_POST['secteur']; }
 if (isset($_POST['type_emploi'])) { $_SESSION['type_emploi'] = $_POST['type_emploi']; }
 if (isset($_POST['inscription'])) { $_SESSION['inscription'] = $_POST['inscription']; }
 
-//if (isset($_GET['b']) and ctype_digit((string)$_GET['b'])){ $_SESSION['id_besoin'] = $_GET['b']; } //à voir...
-
-//************ si accès direct à la page, renvoi vers l'accueil
-if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
-	header('Location: index.php');
+//************ si fin du formulaire
+if (isset($_POST['etape']) && $_POST['etape']=='fin') {
+	header('Location: resultat.php');
 }
 
-//********* etape dans le formulaire : si on a validé la dernière étape on est renvoyé sur la page de résultats
+//************ récupération des éléments de la page du formulaire
 $etape = 1;
-if (isset($_POST['etape'])) {
-	if ($_POST['etape']=='fin') {
-		header('Location: resultat.php');
-	}else{
-		$etape = $_POST['etape'];
-	}
+if (isset($_POST['etape'])) { 
+	$etape = $_POST['etape'];
 }
+$elements = get_formulaire($etape);
 
-//********* récup du formulaire
-$sql = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` as `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire` 
-JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
-JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
-JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
-JOIN `bsl_formulaire__valeur` ON `bsl_formulaire__valeur`.`id_question`=`bsl_formulaire__question`.`id_question` AND `bsl_formulaire__valeur`.`actif`=1
-WHERE `bsl_formulaire`.`actif`=1 AND `bsl_theme`.`libelle_theme`= ? AND `bsl_formulaire__page`.`ordre` = ?
-ORDER BY `ordre_page`, `bsl_formulaire__question`.`ordre`, `bsl_formulaire__valeur`.`ordre`';
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, 'si', $_SESSION['besoin'], $etape);
-
-if (mysqli_stmt_execute($stmt)) {
-	mysqli_stmt_store_result($stmt);
-	$nb=mysqli_stmt_num_rows($stmt);
-
-	if($nb==0){
-		$msg = "Nous ne trouvons pas de formulaire. Recommence s'il te plait.";
-	}else {
-		mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
-		$i=1;
-		while (mysqli_stmt_fetch($stmt)) {
-			if($i){
-				$meta = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
-				$i--;
-			}
-			$elements[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);
-		}
-	}
+if(count($elements)==0){
+	$msg = "Nous ne trouvons pas de formulaire. Recommence s'il te plait.";
 }
-mysqli_stmt_close($stmt);
 
 //view
 require 'view/formulaire.tpl.php';

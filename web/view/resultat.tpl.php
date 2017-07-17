@@ -40,7 +40,7 @@ window.onclick = function(event) {
 		<?php echo $titre_criteres; ?>
 		<div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
 			<div class="colonnes">
-				<?php echo $txt_criteres; ?>  <abbr title="A mettre en forme...">&#9888;</abbr>
+				<?php echo liste_criteres('<br/>'); ?>  <abbr title="A mettre en forme...">&#9888;</abbr>
 			</div>
 			<div class="enbasadroite">
 				<a href="javascript:location.href='formulaire.php'">Revenir au formulaire</a>

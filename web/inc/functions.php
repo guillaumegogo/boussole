@@ -7,9 +7,9 @@ function format_insee($saisie){
 }
 
 //********* fonction de présentation (un peu crado) des critères du jeune
-function liste_criteres($separateur){
+function liste_criteres($separateur = ","){
 	$txt_criteres=null;
-	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "nationalite", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
+	$tab_criteres_a_afficher = array("ville_habitee", "besoin", "age", "sexe", "nationalite", "jesais", "situation", "etudes", "diplome", "permis", "handicap", "type_emploi", "temps_plein", "secteur", "experience", "inscription");
 	
 	foreach($_SESSION as $index=>$valeur){
 		if(in_array($index, $tab_criteres_a_afficher)){
