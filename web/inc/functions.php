@@ -28,7 +28,59 @@ function liste_criteres($separateur){
 }
 
 //******** présentation des questions du formulaire
-function affiche_formulaire($sujet, $tab){
+
+function ouverture_ligne($ele){ //affichage ligne préalable si le type le demande
+	$t='';
+	switch ($ele['type']) {
+		case 'checkbox':
+			$t = '<div style="display:inline-table;">';
+			break;
+		case 'select':
+			$t = '<select name="'.$ele['name'].'">'; 
+			break;
+		case 'multiple':
+			$t = '<select name="'.$ele['name'].'" size="'.$ele['tai'].'">';
+			break;
+	}
+	return $t;
+}
+function affiche_valeur($ele){ //affichage valeur
+	$t='';
+	switch ($ele['type']) {
+		case 'radio':
+			$t = '<input type="radio" name="'.$ele['name'].'" value="'.$ele['val'].'" ';
+			if (isset($_SESSION[$ele['name']])){ if ($_SESSION[$ele['name']]==$ele['val']) $t .= ' checked '; } else if ($ele['def']==1) $t .= ' checked ';
+			$t .= '> '.$ele['lib']."\n";
+			break;
+		case 'checkbox':
+			$t = '<input type="checkbox" name="'.$ele['name'].'" value="'.$ele['val'].'" ';
+			if (isset($_SESSION[$ele['name']])){ if (in_array($ele['val'], $_SESSION[$ele['name']])) $t .= ' checked '; } else if ($ele['def']==1) $t .= ' checked ';
+			$t .= '> '.$ele['lib'].'</br>'."\n";
+			break;
+		case 'select':
+		case 'multiple':
+			$t = '<option value="'.$ele['val'].'" ';
+			if (isset($_SESSION[$ele['name']])){ if ($_SESSION[$ele['name']]==$ele['val']) $t .= ' selected '; } else if ($ele['def']==1) $t .= ' selected ';
+			$t .= '> '.$ele['lib'].'</option>'."\n";
+			break;
+	}
+	return $t;
+}
+function cloture_ligne_precedente($type){
+	$t='</div></div>';
+	switch ($type) {
+		case 'checkbox':
+			$t = '</div>'.$t;
+			break;
+		case 'select':
+		case 'multiple':
+			$t = '</select>'.$t;
+			break;
+	}
+	return $t;
+}
+
+function affiche_formulaire($sujet, $tab){  //à supprimer
 	$t ="";
 	if($tab[$sujet]["type"]=="radio"){
 		foreach($tab[$sujet] as $key => $value){

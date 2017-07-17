@@ -38,7 +38,7 @@ foreach($_SESSION as $index=>$valeur){
 }
 
 //************ construction de LA requête
-$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, `bsl_theme`.`libelle_theme` AS `sous_theme_offre` /*`t`.*, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
+$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro` /*`t`.*, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
 	FROM ( SELECT `bsl_offre`.*,   /* on construit ici la liste des critères */
 		GROUP_CONCAT( if(nom_critere= 'age_min', valeur_critere, NULL ) separator '|') `age_min`, 
 		GROUP_CONCAT( if(nom_critere= 'age_max', valeur_critere, NULL ) separator '|') `age_max`, 
@@ -175,10 +175,16 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
 		}
 
 		if ($nb_offres > 0) {
-			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $sous_theme_offre);
+			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
 			while (mysqli_stmt_fetch($stmt)) {
-				$offres[] = array("id"=>$id_offre, "titre"=>$nom_offre, "description"=>$description_offre, "sous_theme"=>$sous_theme_offre);
+				if(isset($sous_themes[$id_sous_theme])) {
+					$sous_themes[$id_sous_theme]['nb']++;
+				}else{
+					$sous_themes[$id_sous_theme] = array('id'=>$id_sous_theme, 'titre'=>$sous_theme_offre, 'nb'=>1);
+				}
+				$offres[] = array('id'=>$id_offre, 'titre'=>$nom_offre, 'description'=>$description_offre, 'sous_theme'=>$id_sous_theme, 'nom_pro'=>$nom_pro);
 			}
+			
 			$titre_criteres = "<p onclick='masqueCriteres()'>".$message."<span id=\"fleche_criteres\">&#9661;</span></p>";
 			$aucune_offre = "<a href=\"#\">Aucune offre ne m'intéresse</a>";
 		}else{

@@ -23,66 +23,27 @@
 		<div class="centreformulaire">
 			<input type="hidden" name="etape" value="<?= $meta['suite'] ?>">
 
-<?php 
-$la="";
-$ty="";
-foreach ($elements as $ele) {
+<?php
+$label_precedent="";
+$type_precedent="";
+foreach ($elements as $element) {
 
-	if ($la!=$ele['name']){ //si première ligne de ce label
-		if($ty){ //cloture de la ligne précédente
-			switch ($ty) {
-			case "checkbox":
-				echo "</div>";
-				break;
-			case "select":
-			case "multiple":
-				echo "</select>";
-				break;
-			}
-			echo "</div>";
-		}
-		$la=$ele['name']; 
-		$ty=$ele['type']; //récup des valeurs utiles dans des variables temporaires
+	if ($label_precedent!=$element['name']){ //si première ligne de ce label
+		if ($type_precedent) echo cloture_ligne_precedente($type_precedent);
+		$label_precedent=$element['name']; //récup des valeurs utiles dans des variables temporaires 
+		$type_precedent=$element['type'];
 ?>
 			<div class="lab">
-				<label class="label_long" for="<?= $la ?>"><?= $ele['que'] ?></label>
+				<label class="label_long" for="<?= $element['name'] ?>"><?= $element['que'] ?></label>
 				<div style="display:inline-block;">
-<?php 
-		switch ($ty) { //affichage ligne préalable si le type le demande
-		case "checkbox":
-			echo "<div style=\"display:inline-table;\">";
-			break;
-		case "select":
-			echo "<select name=\"".$la."\">"; 
-			break;
-		case "multiple":
-			echo "<select name=\"".$la."\" size=\"".$ele['tai']."\">";
-			break;
-		}
+<?php
+		echo ouverture_ligne($element);
 	}
-	switch ($ty) { //affichage valeur par valeur en fonction du type
-	case "radio":
-		$t = "<input type=\"radio\" name=\"".$la."\" value=\"".$ele['val']."\" ";
-		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele['val']) $t .= " checked "; } else if ($ele['def']==1) $t .= " checked ";
-		$t .= "> ".$ele['lib']."\n";
-		break;
-	case "checkbox":
-		$t = "<input type=\"checkbox\" name=\"".$la."\" value=\"".$ele['val']."\" ";
-		if (isset($_SESSION[$la])){ if (in_array($ele['val'], $_SESSION[$la])) $t .= " checked "; } else if ($ele['def']==1) $t .= " checked ";
-		$t .= "> ".$ele['lib']."</br>\n";
-		break;
-	case "select":
-	case "multiple":
-		$t = "<option value=\"".$ele['val']."\" ";
-		if (isset($_SESSION[$la])){ if ($_SESSION[$la]==$ele['val']) $t .= " selected "; } else if ($ele['def']==1) $t .= " selected ";
-		$t .= "> ".$ele['lib']."</option>\n";
-		break;
-	}
-	echo $t;
-} ?>
-		<!--</div>
-	</div>-->
-
+	
+	echo affiche_valeur($element);
+} 
+echo cloture_ligne_precedente($type_precedent);
+?>
 			<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
 		</div>
 		
@@ -94,8 +55,7 @@ foreach ($elements as $ele) {
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r($_POST); echo "<br/>"; print_r($_SESSION);
-print_r($elements_formulaire);echo "</pre>";
+	echo "<pre>";print_r($_POST); echo "<br/>"; print_r($_SESSION); print_r($elements);echo "</pre>";
 }
 ?>
 <?php include('inc/footer.inc.php'); ?>

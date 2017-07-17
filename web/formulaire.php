@@ -64,10 +64,11 @@ if (mysqli_stmt_execute($stmt)) {
 		$msg = "Nous ne trouvons pas de formulaire. Recommence s'il te plait.";
 	}else {
 		mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
-		$i=0;
+		$i=1;
 		while (mysqli_stmt_fetch($stmt)) {
-			if($i++<1){
-				$meta[] = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
+			if($i){
+				$meta = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
+				$i--;
 			}
 			$elements[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);
 		}

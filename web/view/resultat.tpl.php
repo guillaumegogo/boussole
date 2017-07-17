@@ -18,6 +18,15 @@ function masqueCriteres(){
 		y.innerHTML = "&#9661;"; 
 	}
 }
+window.onclick = function(event) {
+	/*alert(event.target.id);*/
+	if (event.target.id.substring(0, 5) == 'modal') {
+		var tabModal = document.getElementsByClassName("modal");
+		for(var i=0; i<tabModal.length; i++){
+			tabModal[i].style.display = "none";
+		}
+	}
+}
 	</script>
 </head>
 <body>
@@ -41,33 +50,52 @@ function masqueCriteres(){
 </fieldset>
 </form>
 <form class="joli resultat" style="margin-top:1%;">
-<?php 
-$soustheme_encours = "";
+<?php
+$sous_offre_precedente='';
+$compteur_offres=0;
 foreach ($offres as $offre) {
-	//*********** découpage des titres trop longs
+	
+	//******* affichage des sous thèmes
+	if($offre['sous_theme']!=$sous_offre_precedente){
+		if($sous_offre_precedente){ 
+			//if($compteur_offres>4) echo '</div>';
+			echo "</div>\n</fieldset>"; //en cas de changement de sous-thème on ferme le fieldset précédent
+		}
+		$sous_offre_precedente=$offre['sous_theme'];
+		$compteur_offres=0;
+?>
+
+	<fieldset class="resultat"><legend><?= $sous_themes[$offre['sous_theme']]['titre'] ?> (<?= $sous_themes[$offre['sous_theme']]['nb'] ?> offre<?= ($sous_themes[$offre['sous_theme']]['nb']>1) ? 's':''; ?>)</legend>
+		<div style="width:100%; margin:auto;">
+<?php
+	}
+	
+	//******** découpage des titres trop longs
+	$titre_court = '';
 	if (strlen($offre["titre"]) > 80 ) { 
 		if (strpos($offre["titre"]," ",80)) { 
-			$offre["titre"] = substr($offre["titre"],0,strpos($offre["titre"]," ",80))."..."; 
+			$titre_court = substr($offre["titre"],0,strpos($offre["titre"]," ",80))."..."; 
 		}
 	} 
-	//*********** séparation par sous thèmes
-	if ($offre["sous_theme"]!=$soustheme_encours){
-		if ($soustheme_encours) echo "</fieldset>"; /*tweak */
-		$soustheme_encours=$offre["sous_theme"];
+	//if($compteur_offres++==4) echo '<div style="display:none">';
 ?>
-	<fieldset class="resultat"><legend><?= $soustheme_encours ?></legend>
-		<div style="width:100%; margin:auto;">
-<?php } ?>
-	<!-- affichage des offres -->
-	<div class="resultat_offre">
-		<!--<div class="coeur">&#9825;</div>-->
-		<a href="offre.php?id=<?= $offre["id"] ?>"><b><?= $offre["titre"] ?></b><!--<br/>
-		<small><?php
-		$desc=strip_tags($offre["description"]);
-		echo (strlen($desc) > 80 ) ? substr($desc,0,strpos($desc," ",80))."..." : $offre["description"] ; 
-		?></small>--></a>
-	</div>
-<?php } ?>
+		<!-- affichage des offres -->
+		<div class="resultat_offre"><!--
+			<div class="coeur">&#9825;</div>-->
+			<a href="#" onclick="javascript:document.getElementById('modal<?= $offre["id"] ?>').style.display = 'block';"><b><?= ($titre_court) ? $titre_court : $offre["titre"] ?></b></a>
+		</div>
+		<!-- fenêtre modale de l'offre -->
+		<div id="modal<?= $offre["id"] ?>" class="modal" ><div class="modal-content">
+			<span class="close" onclick="javascript:document.getElementById('modal<?= $offre["id"] ?>').style.display = 'none';">&times;</span>
+			<b><?= $offre["titre"] ?></b><br/>
+			<?= $offre["nom_pro"] ?><br/><br/>
+			<?= $offre["description"] ?><br/>
+			<div class="button"><a href="offre.php?id=<?= $offre["id"] ?>">En savoir +</a></div>
+		</div></div>
+<?php 
+}
+?> 
+		</div>
 	</fieldset>
 </form>
 <div class="lienenbas">
