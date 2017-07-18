@@ -27,7 +27,6 @@
 $label_precedent="";
 $type_precedent="";
 foreach ($elements as $element) {
-
 	if ($label_precedent!=$element['name']){ //si première ligne de ce label
 		if ($type_precedent) echo cloture_ligne_precedente($type_precedent);
 		$label_precedent=$element['name']; //récup des valeurs utiles dans des variables temporaires 
@@ -39,9 +38,8 @@ foreach ($elements as $element) {
 <?php
 		echo ouverture_ligne($element);
 	}
-	
 	echo affiche_valeur($element);
-} 
+}
 echo cloture_ligne_precedente($type_precedent);
 ?>
 			<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>

@@ -49,8 +49,11 @@ if (isset($_POST["maj_id"])) {
 			$row = mysqli_fetch_assoc($result);
 			$code_insee = $row['code_insee'];
 		}
-		
-		$req= "UPDATE `bsl_offre` SET `nom_offre` = \"".$_POST["nom"]."\", `description_offre` = \"".mysqli_real_escape_string ($conn, $_POST["desc"])."\", `debut_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\", `fin_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\", `id_sous_theme` = \"".$_POST["sous_theme"]."\", `adresse_offre` = \"".$_POST["adresse"]."\",`code_postal_offre`=\"".$code_postal."\",`ville_offre`=\"".$ville."\",`code_insee_offre`=\"".$code_insee."\", `courriel_offre` = \"".$_POST["courriel"]."\", `telephone_offre` = \"".$_POST["tel"]."\", `site_web_offre` = \"".$_POST["site"]."\", `delai_offre` = \"".$_POST["delai"]."\", `zone_selection_villes` = \"".$_POST["zone"]."\", `actif_offre` = \"".$_POST["actif"]."\",`user_derniere_modif`=\"".$_SESSION["user_id"]."\" WHERE `id_offre` = ".$last_id;
+		$url = $_POST["site"];
+		if (substr($url, 0, 3)=='www') {
+			$url = 'http://'.$url;
+		}
+		$req= "UPDATE `bsl_offre` SET `nom_offre` = \"".$_POST["nom"]."\", `description_offre` = \"".mysqli_real_escape_string ($conn, $_POST["desc"])."\", `debut_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\", `fin_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\", `id_sous_theme` = \"".$_POST["sous_theme"]."\", `adresse_offre` = \"".$_POST["adresse"]."\",`code_postal_offre`=\"".$code_postal."\",`ville_offre`=\"".$ville."\",`code_insee_offre`=\"".$code_insee."\", `courriel_offre` = \"".$_POST["courriel"]."\", `telephone_offre` = \"".$_POST["tel"]."\", `site_web_offre` = \"".$url."\", `delai_offre` = \"".$_POST["delai"]."\", `zone_selection_villes` = \"".$_POST["zone"]."\", `actif_offre` = \"".$_POST["actif"]."\",`user_derniere_modif`=\"".$_SESSION["user_id"]."\" WHERE `id_offre` = ".$last_id;
 		$result = mysqli_query($conn, $req);
 		
 		if(isset($_POST["maj_criteres"])){

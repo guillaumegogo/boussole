@@ -344,10 +344,14 @@ fieldset.resultat legend {
 	text-decoration: none;
 	cursor: pointer;
 }
-.button {
-	text-align:center;
+.center {
+	text-align: center;
 }
-.button a{
+.small {
+	font-size: small;
+}
+
+a.button {
 	-webkit-appearance: button;
 	-moz-appearance: button;
 	appearance: button;
@@ -391,9 +395,9 @@ table.offre tr:nth-child(odd){
 	float:right;
 	padding:auto;
 	width: 30%;
-	margin:0 5%;
+	margin:-1em 5% 0 5%;
 	min-width: 20em;
-	height: 20em;
+	height: 15em;
 	border:none;/*
 	position: absolute;
 	top: 0;

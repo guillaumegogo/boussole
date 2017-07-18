@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require('secret/connect.php');
+include('inc/modele.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
@@ -12,19 +12,17 @@ session_cache_limiter('private_no_expire');
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 	header('Location: index.php');
-} else {
-	$message = "J'habite à <b>".$_SESSION['ville_habitee']."</b> et je souhaite <b>".strtolower ($_SESSION['besoin'])."</b>.";
 }
 
-//********* variables utilisées dans ce fichier
-$aucune_offre="";
-$offres = array();
-$offres[] = get_offres();
+//********* on va chercher les offres et les sous-thèmes
+$t = get_liste_offres();
+$sous_themes = $t[0];
+$offres = $t[1];
 
 //********* contenu du template 
+$aucune_offre='';
 $nb_offres=count($offres);
 if ($nb_offres) {
-	$titre_criteres = "<p onclick='masqueCriteres()'>".$message."<span id=\"fleche_criteres\">&#9661;</span></p>";
 	$aucune_offre = "<a href=\"#\">Aucune offre ne m'intéresse</a>";
 	if ($nb_offres>1) {
 		$msg=$nb_offres." offres correspondent à ta recherche.";
@@ -32,7 +30,6 @@ if ($nb_offres) {
 		$msg="Une offre correspond à ta recherche.";
 	}
 }else{
-	$titre_criteres = "<p>".$message."</p>";
 	$msg="Aucune offre ne correspond à ta recherche.";
 }
 

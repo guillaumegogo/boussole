@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require('secret/connect.php');
+include('inc/modele.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
@@ -19,85 +19,65 @@ $zone = '';
 $row[] = array();
 
 //********* l'id de l'offre peut arriver en GET ou en POST selon d'où on vient
-$id_offre = null;
+$id_offre = 0;
 if(isset($_POST['id_offre'])) { 
 	$id_offre = $_POST['id_offre']; 
 } else if (isset($_GET['id'])) { 
 	$id_offre = $_GET['id']; 
 }
-$fullurl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?id=' . $id_offre;
+
+//************ si pas d'id offre valide
+if (!isset($id_offre) || !is_numeric($id_offre)) {
+	header('Location: index.php');
+}
 
 //********* requête de récup de l'offre pour affichage
 if(isset($id_offre)) {
-	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
-	FROM `bsl_offre` 
-	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
-	JOIN `bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`bsl_offre`.id_sous_theme
-	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`theme_fils`.id_theme_pere
-	WHERE `actif_offre` = 1 AND `id_offre`= ? ";
-	$stmt = mysqli_prepare($conn, $sql);
-	mysqli_stmt_bind_param($stmt, 'i', $id_offre);
+	$row = get_offre($id_offre);
 
-	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_store_result($stmt);
-		if (mysqli_stmt_num_rows($stmt) > 0) {
-			mysqli_stmt_bind_result($stmt, $row['nom_offre'], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
-			mysqli_stmt_fetch($stmt);
-
-			//mise en forme des données :
-			$adresse = $row['adresse_offre'].' '.$row['code_postal_offre'].' '.$row['ville_offre'];
-
-			$url=$row['site_web_offre'];
-			if (substr($url, 0, 3)=='www') {
-				$url = 'http://'.$url;
-			}
-			if (filter_var($url, FILTER_VALIDATE_URL)) {
-				$url .= '<a href="'.$url.'" target="_blank">'.$url.'</a>';
-			}
-
-			$courriel_offre = $row['courriel_offre'];
-			if (filter_var($row['courriel_offre'], FILTER_VALIDATE_EMAIL)) {
-				$courriel_offre = '<a href="mailto:"'.$row['courriel_offre'].'">'.$row['courriel_offre'].'</a>';
-			}
-
-			if (!$row['zone_selection_villes']) { 
-				$zone = 'Territoire'; 
-			} else { 
-				$zone = 'Sélection de villes'; // TODO : pas fini !
-			}
-		}
+	//****** mise en forme des données utilisées dans l'affichage
+	$url_toshare = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?id=' . $id_offre; // utilisé pour le partage de l'URL
+	$adresse = $row['adresse_offre'].' '.$row['code_postal_offre'].' '.$row['ville_offre'];
+	$url=$row['site_web_offre'];
+	if (filter_var($url, FILTER_VALIDATE_URL)) {
+		$url = '<a href="'.$url.'" target="_blank">'.str_replace(array("http://", "https://"), "", $url).'</a>';
 	}
-	mysqli_stmt_close($stmt);
+	$courriel_offre = $row['courriel_offre'];
+	if (filter_var($row['courriel_offre'], FILTER_VALIDATE_EMAIL)) {
+		$courriel_offre = '<a href="mailto:"'.$row['courriel_offre'].'">'.$row['courriel_offre'].'</a>';
+	}
+	if (!$row['zone_selection_villes']) { 
+		$zone = 'Zone du professionnel'; 
+	} else { 
+		$zone = 'Sélection de villes'; // todo : à détailler ?
+	}
 }
 
 //********* si demande de contact
 if(isset($_POST['coordonnees'])){
 
-	//*********** requête de création de la demande
-	$sql_dmd = "INSERT INTO `bsl_demande`(`date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NOW(), ?, ?, ?, ?)";
-	$stmt = mysqli_prepare($conn, $sql_dmd);
-	$liste=liste_criteres(',');
-	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $_POST['coordonnees'], $_SESSION['code_insee'], $liste);
-	$result_dmd = mysqli_stmt_execute($stmt);
+	//*********** création de la demande
+	$id_demande = create_demande($id_offre, $_POST['coordonnees']);
 
 	//*********** envoi de mail si demandé
-	if($result_dmd){
-		if(isset($_POST['envoi_mail'])){
+	if($id_demande){
+		if ($ENVIRONNEMENT!="LOCAL") {
 			$to = 'boussole@yopmail.fr'; //en prod il faudra mettre ici l'adresse du pro ie $row['courriel_offre']
 			$subject = 'Une demande a été déposée sur la Boussole des jeunes';
 			$message = "<html><p>Un jeune est intéressé par l'offre <b>".$row['nom_offre']."</b>.</p>"
 			. "<p>Il a déposé une demande de contact le ".strftime('%d %B %Y à %H:%M')."</p>"
 			. "<p>Son profil est le suivant : ".liste_criteres('<br/>')."</p>"
-			. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"".$url_admin."/demande_liste.php\">espace de gestion de la Boussole</a>."
+			. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"".$url_admin."\">espace de gestion de la Boussole</a>."
 			. "<p>Ce mail aurait du être envoyé à ".$row['courriel_offre']."</p></html>";
 			$headers  = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
 			$headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
 			$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
 			$envoi_mail = mail($to, $subject, $message, $headers);
+			
+			//todo : + envoyer accusé d'envoi au jeune demandeur ?
 
 			if ($envoi_mail){
-				//todo : critères à mettre mieux en forme
 				$resultat = "<p><img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> <b>Ta demande a bien été enregistrée et un courriel contenant les informations suivantes à été transmis à l'organisme proposant l'offre de service.</b></p>
 				<div style=\"liste_criteres\">".liste_criteres('<br/>')."</div>";
 			}else{

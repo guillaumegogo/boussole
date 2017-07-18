@@ -19,7 +19,7 @@ if (isset($_POST['ville_selectionnee'])) {
 	session_unset();  
 
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
-	$row[] = get_ville($_POST['ville_selectionnee']);
+	$row = get_ville($_POST['ville_selectionnee']);
 	$nb_villes=count($row);
 	
 	if($nb_villes==0){
@@ -31,15 +31,11 @@ if (isset($_POST['ville_selectionnee'])) {
 	}else {
 		$_SESSION['ville_habitee'] = $row[0]['nom_ville'];
 		$_SESSION['code_insee'] = $row[0]['code_insee'];
-		if ($cp) {
-			$_SESSION['code_postal'] = $cp;
-		}else{
-			$_SESSION['code_postal'] = $row[0]['codes_postaux'];
-		}
-
-		//********* récupération des thèmes disponibles en fonction des données en session 
-		$themes[] = get_themes();
+		$_SESSION['code_postal'] = $row[0]['codes_postaux'];
 	}
+
+	//********* récupération des thèmes disponibles en fonction des données en session 
+	$themes = get_themes();
 }
 
 //view

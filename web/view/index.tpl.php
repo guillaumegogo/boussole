@@ -97,7 +97,7 @@ if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r($_SESSION); echo "<br/>".@$sql; echo "</pre>";
+	echo "<pre>";print_r(@$_SESSION); echo "<br/>".@$sql; print_r(@$row); print_r(@$themes); echo "</pre>";
 }
 ?>
 <?php include('inc/footer.inc.php'); ?>

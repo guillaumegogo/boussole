@@ -3,11 +3,11 @@ require('secret/connect.php');
 
 //modele de fonction select
 function model(){
-    global $l;
+    global $conn;
     $query = 'SELECT ... FROM ...';
-    $stmt = mysqli_prepare($l, $query);
-    if (mysqli_error($l)) {
-        echo mysqli_error($l);
+    $stmt = mysqli_prepare($conn, $query);
+    if (mysqli_error($conn)) {
+        echo mysqli_error($conn);
         exit;
     }
     mysqli_stmt_execute($stmt);
@@ -30,6 +30,7 @@ function model(){
 JOIN `bsl_theme` as theme_offre ON bsl_offre.id_sous_theme=theme_offre.id_theme
 WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
 function get_themes(){
+	global $conn;
 
 	$sql = "SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
 		FROM `bsl_theme`
@@ -61,26 +62,26 @@ function get_themes(){
 
 //********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
 function get_ville($saisie){
+	global $conn;
 
 	//test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
 	if(is_numeric(substr($saisie, -3))){
-		$ville = substr($saisie, 0, -6);
-		$cp = substr($saisie, -5);
 		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
 			FROM `bsl__ville` 
 			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ?
 			GROUP BY `nom_ville`, `code_insee`";
 		$stmt = mysqli_prepare($conn, $sql);
+		$ville = substr($saisie, 0, -6);
+		$cp = substr($saisie, -5);
 		mysqli_stmt_bind_param($stmt, 'ss', $ville, $cp);
 	}else{
-		$ville = format_insee($saisie).'%'; //conversion des accents, etc.
-		$cp='';
 		$sql = "SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ', ') as `codes_postaux` 
 			FROM `bsl__ville` 
 			WHERE `nom_ville` LIKE ?
 			GROUP BY `nom_ville`, `code_insee`";
 		$stmt = mysqli_prepare($conn, $sql);
-		mysqli_stmt_bind_param($stmt, 's', $ville);
+		$saisie_insee = format_insee($saisie).'%';
+		mysqli_stmt_bind_param($stmt, 's', $saisie_insee);
 	}
 
 	if (mysqli_stmt_execute($stmt)) {
@@ -95,6 +96,7 @@ function get_ville($saisie){
 
 //************ récupération des éléments de la page du formulaire
 function get_formulaire($etape){
+	global $conn;
 
 	$sql = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` as `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire` 
 	JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
@@ -111,18 +113,19 @@ function get_formulaire($etape){
 		$i=1;
 		while (mysqli_stmt_fetch($stmt)) {
 			if($i){
-				$elements['meta'] = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
+				$meta = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
 				$i--;
 			}
 			$elements[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);
 		}
 	}
 	mysqli_stmt_close($stmt);
-	return $elements;
+	return [$meta, $elements];
 }
 
 //************ construction de LA requête
-function get_offres(){
+function get_liste_offres(){
+	global $conn;
 
 	$sql = "SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro` /*`t`.*, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
 		FROM ( SELECT `bsl_offre`.*,   /* on construit ici la liste des critères */
@@ -265,5 +268,46 @@ function get_offres(){
         exit;
 	}
 	mysqli_stmt_close($stmt);
-	return $offres;
+	return [$sous_themes, $offres];
+}
+
+function get_offre($id){
+	
+	global $conn;
+	$sql = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
+		FROM `bsl_offre` 
+		JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
+		JOIN `bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`bsl_offre`.id_sous_theme
+		JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`theme_fils`.id_theme_pere
+		WHERE `actif_offre` = 1 AND `id_offre`= ? ";
+	$stmt = mysqli_prepare($conn, $sql);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+
+	if (mysqli_stmt_execute($stmt)) {
+		mysqli_stmt_bind_result($stmt, $row['nom_offre'], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
+		mysqli_stmt_fetch($stmt);
+
+	}
+	mysqli_stmt_close($stmt);
+	return $row;
+}
+
+function create_demande($id_offre, $coord){
+	
+	global $conn;
+	$sql_dmd = "INSERT INTO `bsl_demande`(`id_demande`, `date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NULL, NOW(), ?, ?, ?, ?)";
+	$stmt = mysqli_prepare($conn, $sql_dmd);
+	$liste=liste_criteres(',');
+	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coord, $_SESSION['code_insee'], $liste);
+	//******* section utile pour debugage
+	/*$print_sql = $sql_dmd;
+	foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
+		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	}
+	echo $print_sql;*/
+	//******************
+	mysqli_stmt_execute($stmt);
+	$id = mysqli_stmt_insert_id($stmt);
+	mysqli_stmt_close($stmt);
+	return $id;
 }
