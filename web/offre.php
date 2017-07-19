@@ -10,13 +10,13 @@ header('Cache-Control: no cache');
 session_cache_limiter('private_no_expire');
 
 //********* variables
-$resultat='';
 $envoi_mail = false;
 $adresse = '';
 $url = '';
 $courriel_offre = '';
 $zone = '';
-$row[] = array();
+$row = array();
+$resultat='';
 
 //********* l'id de l'offre peut arriver en GET ou en POST selon d'où on vient
 $id_offre = 0;

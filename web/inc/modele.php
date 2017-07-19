@@ -1,16 +1,24 @@
 <?php
 require('secret/connect.php');
 
+/******* code utile pour debugage
+$print_sql = $query;
+foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo $print_sql;
+//******************************/
+
 //modele de fonction select
 function get_machin(){
     global $conn;
     $query = 'SELECT ... FROM ...';
     $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_execute($stmt);
     if (mysqli_error($conn)) {
         echo mysqli_error($conn);
         exit;
     }
-    mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $id, $nimetus, $kogus);
     $rows = array();
     while (mysqli_stmt_fetch($stmt)) {
@@ -49,12 +57,16 @@ function get_themes(){
 
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sss', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee']);
-	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_bind_result($stmt, $id_theme, $libelle_theme, $actif_theme);
+	
+	mysqli_stmt_execute($stmt);
+	if (mysqli_error($conn)) {
+		echo mysqli_error($conn);
+		exit;
+	}
+	mysqli_stmt_bind_result($stmt, $id_theme, $libelle_theme, $actif_theme);
 
-		while (mysqli_stmt_fetch($stmt)) {
-			$themes[] = array('id'=>$id_theme, 'libelle'=>$libelle_theme, 'actif'=>$actif_theme);
-		}
+	while (mysqli_stmt_fetch($stmt)) {
+		$themes[] = array('id'=>$id_theme, 'libelle'=>$libelle_theme, 'actif'=>$actif_theme);
 	}
 	mysqli_stmt_close($stmt);
 	return $themes;
@@ -84,11 +96,14 @@ function get_ville($saisie){
 		mysqli_stmt_bind_param($stmt, 's', $saisie_insee);
 	}
 
-	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_bind_result($stmt, $nom_ville, $code_insee, $codes_postaux);
-		while (mysqli_stmt_fetch($stmt)) {
-			$row[] = array('nom_ville'=>$nom_ville, 'code_insee'=>$code_insee, 'codes_postaux'=>$codes_postaux);
-		}
+	mysqli_stmt_execute($stmt);
+	if (mysqli_error($conn)) {
+		echo mysqli_error($conn);
+		exit;
+	}
+	mysqli_stmt_bind_result($stmt, $nom_ville, $code_insee, $codes_postaux);
+	while (mysqli_stmt_fetch($stmt)) {
+		$row[] = array('nom_ville'=>$nom_ville, 'code_insee'=>$code_insee, 'codes_postaux'=>$codes_postaux);
 	}
 	mysqli_stmt_close($stmt);
 	return $row;
@@ -108,19 +123,28 @@ function get_formulaire($etape){
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'si', $_SESSION['besoin'], $etape);
 
-	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
-		$i=1;
-		while (mysqli_stmt_fetch($stmt)) {
-			if($i){
-				$meta = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
-				$i--;
-			}
-			$elements[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);
+	mysqli_stmt_execute($stmt);
+	if (mysqli_error($conn)) {
+		echo mysqli_error($conn);
+		exit;
+	}
+	
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+	$tmp_id=0;
+	$tmp_que='';
+	while (mysqli_stmt_fetch($stmt)) {
+		if($id_formulaire!=$tmp_id){ //on récupère les données de la page de formulaire
+			$meta = array('id'=>$id_formulaire, 'nb'=>$nb_pages, 'titre'=>$titre, 'etape'=>$ordre_page, 'aide'=>$aide, 'suite'=>($ordre_page<$nb_pages) ? ($ordre_page+1) : 'fin');
+			$tmp_id=$id_formulaire;
 		}
+		if($question!=$tmp_que){ //on récupère les questions
+			$questions[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire);
+			$tmp_que=$question;
+		}
+		$reponses[] = array('name'=>$name, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);  //on récupère les réponses
 	}
 	mysqli_stmt_close($stmt);
-	return [$meta, $elements];
+	return [$meta, $questions, $reponses];
 }
 
 //************ construction de LA requête
@@ -129,21 +153,18 @@ function get_liste_offres(){
 	global $conn;
 
 	$query = "SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro` /*`t`.*, `bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
-		FROM ( SELECT `bsl_offre`.*,   /* on construit ici la liste des critères */
-			GROUP_CONCAT( if(nom_critere= 'age_min', valeur_critere, NULL ) separator '|') `age_min`, 
-			GROUP_CONCAT( if(nom_critere= 'age_max', valeur_critere, NULL ) separator '|') `age_max`, 
-			GROUP_CONCAT( if(nom_critere= 'villes', valeur_critere, NULL ) separator '|') `villes`, ";
-
-	foreach( $_SESSION as $cle=>$valeur ){
-		if (!in_array($cle, array('besoin','age','code_insee'))){ //à finir, on n'utilise ici que les champs des formulaires : sexe, jesais, situation, nationalite, permis, handicap, experience, type_emploi, temps_plein, inscription, etudes, diplome, secteur...
-			$query .= "GROUP_CONCAT( if(nom_critere= '".$cle."', valeur_critere, NULL ) separator '|') `".$cle."`, ";
-		}
+	FROM ( SELECT `bsl_offre`.*,   /* on construit ici la liste des critères */
+		GROUP_CONCAT( if(nom_critere= 'age_min', valeur_critere, NULL ) separator '|') `age_min`, 
+		GROUP_CONCAT( if(nom_critere= 'age_max', valeur_critere, NULL ) separator '|') `age_max`, 
+		GROUP_CONCAT( if(nom_critere= 'villes', valeur_critere, NULL ) separator '|') `villes` ";
+	foreach( $_SESSION['critere'] as $cle=>$valeur ){ //on va chercher les critères saisis dans le formulaire
+		$query .= ", GROUP_CONCAT( if(nom_critere= '".$cle."', valeur_critere, NULL ) separator '|') `".$cle."`";
 	}
-	$query .= "FROM `bsl_offre_criteres`
+	$query .= " FROM `bsl_offre_criteres`
 		JOIN `bsl_offre` ON `bsl_offre`.`id_offre`=`bsl_offre_criteres`.`id_offre`
 		WHERE `bsl_offre`.`actif_offre` = 1 
 		GROUP BY `bsl_offre_criteres`.`id_offre`
-	) as `t`
+		) as `t`
 	JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`t`.`id_sous_theme`
 	JOIN `bsl_theme` AS `theme_pere` ON `theme_pere`.`id_theme`=`bsl_theme`.`id_theme_pere`
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`t`.`id_professionnel` /* s'il n'y a pas une liste de villes propre à l'offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d'où les jointures en dessous ↓ */
@@ -163,68 +184,32 @@ function get_liste_offres(){
 			OR `bsl__departement`.`id_departement` = SUBSTR(?,1,2) 
 			OR `bsl__departement_region`.`id_departement` = SUBSTR(?,1,2)
 		)))
-	AND `t`.`age_min` <= ? AND `t`.`age_max` >= ?
-	AND `t`.`situation` LIKE ? AND `t`.`etudes` LIKE ? AND `t`.`diplome` LIKE ? AND `t`.`temps_plein` LIKE ? "; 
-
-	$terms = array ( $_SESSION['besoin'], "%".$_SESSION["code_insee"]."%", $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION["age"], $_SESSION["age"], "%".$_SESSION["situation"]."%", "%".$_SESSION["etudes"]."%", "%".$_SESSION["diplome"]."%", "%".$_SESSION["temps_plein"]."%");
-	$terms_type = "sssssiissss";
-
-	if (isset($_SESSION["sexe"])) {
-		$query .= " AND `t`.`sexe` LIKE ? ";
-		$terms[] = "%".$_SESSION["sexe"]."%";
-		$terms_type .= "s";
-	}
-	if (isset($_SESSION["jesais"])) {
-		$query .= " AND `t`.`jesais` LIKE ? ";
-		$terms[] = "%".$_SESSION["jesais"]."%";
-		$terms_type .= "s";
-	}
-	if (isset($_SESSION["nationalite"])) {
-		$query .= " AND `t`.`nationalite` LIKE ? ";
-		$terms[] = "%".$_SESSION["nationalite"]."%";
-		$terms_type .= "s";
-	}
-	if (isset($_SESSION["handicap"])) {
-		$query .= " AND `t`.`handicap` LIKE ? ";
-		$terms[] = "%".$_SESSION["handicap"]."%";
-		$terms_type .= "s";
-	}
-	if (isset($_SESSION["permis"])) {
-		$query .= " AND `t`.`permis` LIKE ? ";
-		$terms[] = "%".$_SESSION["permis"]."%";
-		$terms_type .= "s";
-	}
-	if (isset($_SESSION["experience"])) {
-		$query .= " AND `t`.`experience` LIKE ? ";
-		$terms[] = "%".$_SESSION["experience"]."%";
-		$terms_type .= "s";
-	}
-	$boutdesql = "";
-	if (isset($_SESSION['secteur'])){
-		foreach ($_SESSION['secteur'] as $selected_option) {
-			$boutdesql .= " `t`.`secteur` LIKE ? OR";
-			$terms[] = "%".$selected_option."%";
-			$terms_type .= "s";
+	AND `t`.`age_min` <= ? AND `t`.`age_max` >= ? ";
+	$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['age'], $_SESSION['age'] );
+	$terms_type = "sssssii";
+	
+	//foreach sur $_SESSION['critere'], en fonction du type 
+	foreach( $_SESSION['critere'] as $cle=>$valeur ){ 
+		if(isset($_SESSION['type'][$cle])){
+			switch ($_SESSION['type'][$cle] ) {
+				case 'select':
+				case 'radio':
+					$query .= " AND `t`.`$cle` LIKE ? ";
+					$terms[] = '%'.$valeur.'%';
+					$terms_type .= "s";
+					break;
+				case 'multiple':
+				case 'checkbox':
+					$boutdesql = "";
+					foreach ($_SESSION['critere'][$cle] as $selected_option) {
+						$boutdesql .= " `t`.`$cle` LIKE ? OR";
+						$terms[] = '%'.$selected_option.'%';
+						$terms_type .= "s";
+					}
+					$query .= " AND (". $boutdesql. " FALSE)";
+					break;
+			}
 		}
-		$query .= " AND (". $boutdesql. " FALSE)";
-	}
-	$boutdesql = "";
-	if (isset($_SESSION['type_emploi'])){
-		foreach ($_SESSION['type_emploi'] as $selected_option) {
-			$boutdesql .= " `t`.`type_emploi` LIKE ? OR";
-			$terms[] = "%".$selected_option."%";
-			$terms_type .= "s";
-		}
-		$query .= " AND (". $boutdesql. " FALSE)";
-	}
-	$boutdesql = "";
-	if (isset($_SESSION['inscription'])){
-		foreach ($_SESSION['inscription'] as $selected_option) {
-			$boutdesql .= " `t`.`inscription` LIKE ? OR";
-			$terms[] = "%".$selected_option."%";
-			$terms_type .= "s";
-		}
-		$query .= " AND (". $boutdesql. " FALSE)";
 	}
 	$query .= " ORDER BY `bsl_theme`.`ordre_theme`";
 
@@ -234,17 +219,10 @@ function get_liste_offres(){
 		$query_params = array();
 		$query_params[] = $terms_type;
 		foreach ($terms as $id => $term){
-		  $query_params[] = &$terms[$id];
+			$query_params[] = &$terms[$id];
 		}
 		call_user_func_array(array($stmt,'bind_param'),$query_params);
 		//******** fin de la manip...
-		
-		/******* pour debugage
-		$print_sql = $query;
-		foreach($terms as $term){
-			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-		}
-		*/
 
 		if (mysqli_stmt_execute($stmt)) {
 			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
@@ -268,7 +246,7 @@ function get_liste_offres(){
 function get_offre($id){
 	
 	global $conn;
-	$query = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
+	$query = "SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `bsl_offre`.`visibilite_coordonnees`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
 		FROM `bsl_offre` 
 		JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
 		JOIN `bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`bsl_offre`.id_sous_theme
@@ -277,11 +255,14 @@ function get_offre($id){
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
 
-	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_bind_result($stmt, $row['nom_offre'], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
-		mysqli_stmt_fetch($stmt);
-
+	mysqli_stmt_execute($stmt);
+	if (mysqli_error($conn)) {
+		echo mysqli_error($conn);
+		exit;
 	}
+	
+	mysqli_stmt_bind_result($stmt, $row['nom_offre'], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['visibilite_coordonnees'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
+	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
 	return $row;
 }
@@ -293,14 +274,12 @@ function create_demande($id_offre, $coord){
 	$stmt = mysqli_prepare($conn, $query);
 	$liste=liste_criteres(',');
 	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coord, $_SESSION['code_insee'], $liste);
-	//******* section utile pour debugage
-	/*$print_sql = $query;
-	foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
-		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-	}
-	echo $print_sql;*/
-	//******************
+
 	mysqli_stmt_execute($stmt);
+	if (mysqli_error($conn)) {
+		echo mysqli_error($conn);
+		exit;
+	}
 	$id = mysqli_stmt_insert_id($stmt);
 	mysqli_stmt_close($stmt);
 	return $id;

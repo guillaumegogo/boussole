@@ -12,7 +12,10 @@
 <div class="soustitre">
 	<p>J'habite à <b><?= $_SESSION['ville_habitee'] ?></b> et je souhaite <b><?= strtolower ($_SESSION['besoin']) ?></b>.</p>
 </div>
-<div class="soustitre" style="margin-top:3%"><?php echo $msg; ?></div>
+
+<?php
+if(count($meta)){
+?>
 
 <form action="formulaire.php" method="post" class="joli formulaire">
 
@@ -24,23 +27,25 @@
 			<input type="hidden" name="etape" value="<?= $meta['suite'] ?>">
 
 <?php
-$label_precedent="";
-$type_precedent="";
-foreach ($elements as $element) {
-	if ($label_precedent!=$element['name']){ //si première ligne de ce label
-		if ($type_precedent) echo cloture_ligne_precedente($type_precedent);
-		$label_precedent=$element['name']; //récup des valeurs utiles dans des variables temporaires 
-		$type_precedent=$element['type'];
+	foreach ($questions as $question) {
 ?>
 			<div class="lab">
-				<label class="label_long" for="<?= $element['name'] ?>"><?= $element['que'] ?></label>
+				<label class="label_long" for="<?= $question['name'] ?>"><?= $question['que'] ?></label>
 				<div style="display:inline-block;">
 <?php
-		echo ouverture_ligne($element);
+		echo ouverture_ligne($question);
+		reset($reponses);
+		foreach ($reponses as $reponse) {
+			if ($reponse['name']==$question['name']) {
+				echo affiche_valeur($reponse, $question['type']);
+			}
+		}
+		echo cloture_ligne($question['type']);
+?>
+				</div>
+			</div>
+<?php
 	}
-	echo affiche_valeur($element);
-}
-echo cloture_ligne_precedente($type_precedent);
 ?>
 			<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
 		</div>
@@ -48,12 +53,20 @@ echo cloture_ligne_precedente($type_precedent);
 	</fieldset>
 </form>
 
+<?php
+}else{
+?>
+<div class="soustitre" style="margin-top:3%">Nous ne trouvons pas de formulaire. Recommence s'il te plait.</div>
+<?php
+}
+?>
+
 <div class="lienenbas">&nbsp;</div>
 <div style="height:2em;">&nbsp;</div>  <!--tweak css-->
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo "<pre>";print_r($_POST); echo "<br/>"; print_r($_SESSION); print_r($elements);echo "</pre>";
+	echo "<pre>";print_r($_POST); echo "<br/>"; print_r($_SESSION); print_r(@$meta); print_r(@$questions); print_r(@$reponses);echo "</pre>";
 }
 ?>
 <?php include('inc/footer.inc.php'); ?>

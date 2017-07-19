@@ -157,9 +157,9 @@ if(isset($id_offre)) {
 	FROM `bsl_offre` 
 	JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
 	LEFT JOIN `bsl_theme` ON bsl_theme.id_theme=`bsl_offre`.id_sous_theme
-	LEFT JOIN `bsl__departement` ON `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
-	LEFT JOIN `bsl__region` ON `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
-	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
+	LEFT JOIN `bsl__departement` ON `bsl_professionnel`.`competence_geo`=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
+	LEFT JOIN `bsl__region` ON `bsl_professionnel`.`competence_geo`=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
+	LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.`competence_geo`=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
 	WHERE id_offre=".$id_offre;
 	$result = mysqli_query($conn, $sql);
 	if (mysqli_num_rows($result) > 0) {
@@ -177,7 +177,33 @@ if(isset($id_offre)) {
 				$geo = $row['competence_geo']; break;
 		}
 		
-		//affichage des critères de l'offre (selected dans listes déroulantes)
+		//****************** new : formulaire dynamique...
+		$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur` FROM `bsl_formulaire` 
+		JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
+		JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
+		JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
+		JOIN `bsl_formulaire__valeur` ON `bsl_formulaire__valeur`.`id_question`=`bsl_formulaire__question`.`id_question` AND `bsl_formulaire__valeur`.`actif`=1
+		LEFT JOIN `bsl_offre_criteres` ON `bsl_offre_criteres`.`nom_critere`=`bsl_formulaire__question`.`html_name` AND `bsl_offre_criteres`.`valeur_critere`=`bsl_formulaire__valeur`.`valeur` AND `bsl_offre_criteres`.`id_offre`= ?
+		WHERE `bsl_formulaire`.`actif`=1 AND `bsl_theme`.`id_theme`= ? 
+		ORDER BY `bsl_formulaire__page`.`ordre`, `bsl_formulaire__question`.`ordre`, `bsl_formulaire__valeur`.`ordre`';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'ii', $id_offre, $row['id_theme_pere']);
+
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $id_offre );
+		$tmp_que='';
+		while (mysqli_stmt_fetch($stmt)) {
+			if($libelle_question!=$tmp_que){ //on récupère les questions
+				$questions[] = array(/* ... */);
+				$tmp_que=$libelle_question;
+			}
+			$reponses[] = array(/* ... */);  //on récupère les réponses
+		}
+		}
+		mysqli_stmt_close($stmt);
+		
+		
+		//affichage des critères de l'offre (selected dans listes déroulantes) // sera remplacé par requête précédente
 		$sql2 = "SELECT * FROM `bsl_offre_criteres` where id_offre=".$id_offre;
 		$result2 = mysqli_query($conn, $sql2);
 		while ($row2 = mysqli_fetch_assoc($result2)) {

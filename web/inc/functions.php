@@ -28,10 +28,10 @@ function liste_criteres($separateur = ","){
 }
 
 //******** présentation des questions du formulaire
-
 function ouverture_ligne($ele){ //affichage ligne préalable si le type le demande
 	$t='';
 	switch ($ele['type']) {
+		case 'radio':
 		case 'checkbox':
 			$t = '<div style="display:inline-table;">';
 			break;
@@ -44,9 +44,10 @@ function ouverture_ligne($ele){ //affichage ligne préalable si le type le deman
 	}
 	return $t;
 }
-function affiche_valeur($ele){ //affichage valeur
+
+function affiche_valeur($ele, $type){ //affichage valeur
 	$t='';
-	switch ($ele['type']) {
+	switch ($type) {
 		case 'radio':
 			$t = '<input type="radio" name="'.$ele['name'].'" value="'.$ele['val'].'" ';
 			if (isset($_SESSION[$ele['name']])){ if ($_SESSION[$ele['name']]==$ele['val']) $t .= ' checked '; } else if ($ele['def']==1) $t .= ' checked ';
@@ -66,9 +67,11 @@ function affiche_valeur($ele){ //affichage valeur
 	}
 	return $t;
 }
-function cloture_ligne_precedente($type){
-	$t='</div></div>';
+
+function cloture_ligne($type){
+	$t='';
 	switch ($type) {
+		case 'radio':
 		case 'checkbox':
 			$t = '</div>'.$t;
 			break;
@@ -76,59 +79,6 @@ function cloture_ligne_precedente($type){
 		case 'multiple':
 			$t = '</select>'.$t;
 			break;
-	}
-	return $t;
-}
-
-function affiche_formulaire($sujet, $tab){  //à supprimer
-	$t ="";
-	if($tab[$sujet]["type"]=="radio"){
-		foreach($tab[$sujet] as $key => $value){
-			if ($key=="type") continue; //pour passer le "type"
-			$t .= "<input type=\"radio\" name=\"".$sujet."\" value=\"".$key."\" ";
-			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " checked ";
-			$t .= "> ".$value."\n";
-		}
-	}else if($tab[$sujet]["type"]=="checkbox"){
-		$t ="<div style=\"display:inline-table;\">";
-		foreach($tab[$sujet] as $key => $value){
-			if ($key=="type") continue;
-			$t .= "<input type=\"checkbox\" name=\"".$sujet."[]\" value=\"".$key."\" ";
-			if (isset($_SESSION[$sujet]) && in_array($key, $_SESSION[$sujet])) $t .= " checked ";
-			$t .= "> ".$value."</br>\n";
-		}
-	}else if($tab[$sujet]["type"]=="select"){
-		$t ="<select name=\"".$sujet."\">";
-		$defaut = "";
-		if(isset($tab[$sujet]["defaut"])) $defaut=$tab[$sujet]["defaut"];
-		foreach($tab[$sujet] as $key => $value){
-			if ($key=="type") continue;
-			if ($key=="defaut") continue;
-			$t .= "<option value=\"".$key."\" ";
-			if (isset($_SESSION[$sujet])){
-				if($_SESSION[$sujet]==$key) $t .= " selected ";
-			}else if ($defaut==$key) $t .= " selected ";
-			$t .= "> ".$value."</option>\n";
-		}
-		$t .="</select>";
-	}else if($tab[$sujet]["type"]=="multiple"){
-		$t ="<select name=\"".$sujet."[]\" size=\"".$tab[$sujet]["size"]."\">";
-		foreach($tab[$sujet] as $key => $value){
-			if ($key=="type" || $key=="size") continue;
-			$t .= "<option value=\"".$key."\" ";
-			if (isset($_SESSION[$sujet]) && $_SESSION[$sujet]==$key) $t .= " selected ";
-			$t .= "> ".$value."</option>\n";
-		}
-		$t .="</select>";
-	}else if($tab[$sujet]["type"]=="age"){
-		$t ="<select name=\"".$sujet."\" class=\"age\">";
-		for ($i = $tab[$sujet]["min"]; $i <= $tab[$sujet]["max"]; $i++) {
-			$t .= "<option value=\"".$i."\"";
-			if (isset($_SESSION['age']) && $i==$_SESSION['age']) $t .= " selected ";
-			else if ($tab[$sujet]["defaut"]==$i) $t .= " selected ";
-			$t .= ">".$i."</option>\n";
-		}
-		$t .= "</select> ans";
 	}
 	return $t;
 }

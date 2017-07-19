@@ -85,6 +85,7 @@ if($row['nom_offre']) { //si on a une offre
 				<td>Site internet</td>
 				<td><?= $url ?></td>
 			</tr>
+<?php if ($row['visibilite_coordonnees']) { ?>
 			<tr>
 				<td>Courriel <span style="font-size:small; color:red;">(à masquer ?)</span></td>
 				<td><?= $courriel_offre ?></td>
@@ -93,6 +94,7 @@ if($row['nom_offre']) { //si on a une offre
 				<td>Téléphone <span style="font-size:small; color:red;">(à masquer ?)</span></td>
 				<td><?php if ($id_offre) { echo $row['telephone_offre']; } ?></td>
 			</tr>
+<?php } ?>
 			<!--<tr>
 				<td>Zone concernée</td>
 				<td><?= $zone ?></td>

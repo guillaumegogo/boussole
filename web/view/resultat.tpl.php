@@ -126,7 +126,7 @@ foreach ($offres as $offre) {
 
 <?php 
 if ($ENVIRONNEMENT=="LOCAL") {
-	echo @$print_sql."\n"; print_r($_POST); echo "<br/>"; print_r($_SESSION); 
+	echo @$print_sql."\n"; print_r($_POST); echo "<br/>"; print_r($_SESSION); echo @print_sql;
 } ?>
 
 <?php include('inc/footer.inc.php'); ?>

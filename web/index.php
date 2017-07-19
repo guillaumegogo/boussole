@@ -29,8 +29,8 @@ if (isset($_POST['ville_selectionnee'])) {
 		$message = "Plusieurs villes correspondent à ta saisie. Recommence s'il te plait.";
 	
 	}else {
+		$_SESSION['code_insee'] = $row[0]['code_insee']; // sert à la requête
 		$_SESSION['ville_habitee'] = $row[0]['nom_ville'];
-		$_SESSION['code_insee'] = $row[0]['code_insee'];
 		$_SESSION['code_postal'] = $row[0]['codes_postaux'];
 	}
 
