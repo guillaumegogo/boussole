@@ -39,7 +39,7 @@ function ouverture_ligne($ele){ //affichage ligne préalable si le type le deman
 			$t = '<select name="'.$ele['name'].'">'; 
 			break;
 		case 'multiple':
-			$t = '<select name="'.$ele['name'].'" size="'.$ele['tai'].'">';
+			$t = '<select multiple name="'.$ele['name'].'" size="'.$ele['tai'].'">';
 			break;
 	}
 	return $t;
