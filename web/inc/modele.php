@@ -185,29 +185,31 @@ function get_liste_offres(){
 			OR `bsl__departement_region`.`id_departement` = SUBSTR(?,1,2)
 		)))
 	AND `t`.`age_min` <= ? AND `t`.`age_max` >= ? ";
-	$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['age'], $_SESSION['age'] );
+	$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['critere']['age'], $_SESSION['critere']['age'] );
 	$terms_type = "sssssii";
 	
 	//foreach sur $_SESSION['critere'], en fonction du type 
 	foreach( $_SESSION['critere'] as $cle=>$valeur ){ 
-		if(isset($_SESSION['type'][$cle])){
-			switch ($_SESSION['type'][$cle] ) {
-				case 'select':
-				case 'radio':
-					$query .= " AND `t`.`$cle` LIKE ? ";
-					$terms[] = '%'.$valeur.'%';
-					$terms_type .= "s";
-					break;
-				case 'multiple':
-				case 'checkbox':
-					$boutdesql = "";
-					foreach ($_SESSION['critere'][$cle] as $selected_option) {
-						$boutdesql .= " `t`.`$cle` LIKE ? OR";
-						$terms[] = '%'.$selected_option.'%';
+		if($cle!="age"){
+			if(isset($_SESSION['type'][$cle])){
+				switch ($_SESSION['type'][$cle] ) {
+					case 'select':
+					case 'radio':
+						$query .= " AND `t`.`$cle` LIKE ? ";
+						$terms[] = '%'.$valeur.'%';
 						$terms_type .= "s";
-					}
-					$query .= " AND (". $boutdesql. " FALSE)";
-					break;
+						break;
+					case 'multiple':
+					case 'checkbox':
+						$boutdesql = "";
+						foreach ($_SESSION['critere'][$cle] as $selected_option) {
+							$boutdesql .= " `t`.`$cle` LIKE ? OR";
+							$terms[] = '%'.$selected_option.'%';
+							$terms_type .= "s";
+						}
+						$query .= " AND (". $boutdesql. " FALSE)";
+						break;
+				}
 			}
 		}
 	}
@@ -223,6 +225,13 @@ function get_liste_offres(){
 		}
 		call_user_func_array(array($stmt,'bind_param'),$query_params);
 		//******** fin de la manip...
+		
+/******* pour debugage
+$print_sql = $query;
+foreach($terms as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo $print_sql; */
 
 		if (mysqli_stmt_execute($stmt)) {
 			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
