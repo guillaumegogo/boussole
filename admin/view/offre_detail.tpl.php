@@ -437,8 +437,8 @@ echo $t;
 			</select>
 		</div>
 		<div class="lab">
-			<label for="inscription[]">Inscription :</label>
-			<select name="inscription[]" multiple size="4">
+			<label for="critere[inscription][]">Inscription :</label>
+			<select name="critere[inscription][]" multiple size="4">
 				<option value="pole emploi" <?php if (isset($criteres["inscription"]["pole emploi"])) { echo "selected"; } ?>>Pôle emploi</option>
 				<option value="cap emploi" <?php if (isset($criteres["inscription"]["cap emploi"])) { echo "selected"; } ?>>Cap emploi</option>
 				<option value="mission locale" <?php if (isset($criteres["inscription"]["mission locale"])) { echo "selected"; } ?>>Mission locale</option>

@@ -1,36 +1,6 @@
 <?php
 require('secret/connect.php');
 
-/******* code utile pour debugage
-$print_sql = $query;
-foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo $print_sql;
-//******************************/
-
-//modele de fonction select
-function get_machin(){
-    global $conn;
-    $query = 'SELECT ... FROM ...';
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_execute($stmt);
-    if (mysqli_error($conn)) {
-        echo mysqli_error($conn);
-        exit;
-    }
-    mysqli_stmt_bind_result($stmt, $id, $nimetus, $kogus);
-    $rows = array();
-    while (mysqli_stmt_fetch($stmt)) {
-        $rows[] = array(
-            'id' => $id,
-            'xxxxx' => $xxx,
-        );
-    }
-    mysqli_stmt_close($stmt);
-    return $rows;
-}
-
 //********* affichage des thèmes disponibles en fonction de la ville choisie 
 //todo : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudra probablement descendre au niveau des offres pour une meilleure granularité. 
 /* on pourrait descendre à la granularité de l'offre, mais la requête serait encore plus complexe :
@@ -183,14 +153,16 @@ function get_liste_offres(){
 			OR `bsl_territoire_villes`.`code_insee` = ?
 			OR `bsl__departement`.`id_departement` = SUBSTR(?,1,2) 
 			OR `bsl__departement_region`.`id_departement` = SUBSTR(?,1,2)
-		)))
-	AND `t`.`age_min` <= ? AND `t`.`age_max` >= ? ";
-	$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['critere']['age'], $_SESSION['critere']['age'] );
-	$terms_type = "sssssii";
+		)))";
+	//AND `t`.`age_min` <= ? AND `t`.`age_max` >= ? 
+	$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'] );
+	//$terms = array ( $_SESSION['besoin'], '%'.$_SESSION['code_insee'].'%', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['critere']['age'], $_SESSION['critere']['age'] );
+	$terms_type = "sssss";
+	//$terms_type = "sssssii";
 	
 	//foreach sur $_SESSION['critere'], en fonction du type 
 	foreach( $_SESSION['critere'] as $cle=>$valeur ){ 
-		if($cle!="age"){
+		//if($cle!="age"){
 			if(isset($_SESSION['type'][$cle])){
 				switch ($_SESSION['type'][$cle] ) {
 					case 'select':
@@ -211,27 +183,21 @@ function get_liste_offres(){
 						break;
 				}
 			}
-		}
+		//}
 	}
 	$query .= " ORDER BY `bsl_theme`.`ordre_theme`";
+	//todo : rendre dynamique les terms_type... (s ou i)
 
 	if ($stmt = mysqli_prepare($conn, $query)) {
 
-		//******** petite manip pour gérer le nombre variable de paramètres dans la requête
+		// petite manip pour gérer le nombre variable de paramètres dans la requête
 		$query_params = array();
 		$query_params[] = $terms_type;
 		foreach ($terms as $id => $term){
 			$query_params[] = &$terms[$id];
 		}
 		call_user_func_array(array($stmt,'bind_param'),$query_params);
-		//******** fin de la manip...
-		
-/******* pour debugage
-$print_sql = $query;
-foreach($terms as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo $print_sql; */
+		// fin de la manip...
 
 		if (mysqli_stmt_execute($stmt)) {
 			mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
@@ -293,3 +259,35 @@ function create_demande($id_offre, $coord){
 	mysqli_stmt_close($stmt);
 	return $id;
 }
+
+
+/******* bouts de code utile
+//****** impression d'une requête
+$print_sql = $query;
+foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo $print_sql;
+
+//****** modele de fonction select
+function get_machin(){
+    global $conn;
+    $query = 'SELECT ... FROM ...';
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_execute($stmt);
+    if (mysqli_error($conn)) {
+        echo mysqli_error($conn);
+        exit;
+    }
+    mysqli_stmt_bind_result($stmt, $id, $nimetus, $kogus);
+    $rows = array();
+    while (mysqli_stmt_fetch($stmt)) {
+        $rows[] = array(
+            'id' => $id,
+            'xxxxx' => $xxx,
+        );
+    }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
+*/
