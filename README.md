@@ -2,7 +2,7 @@
 
 Projet en cours de développement. 
 
-PHP/MariaDB (bientôt Postgre ?). 
+PHP/MariaDB. 
 
 Copyright DJEPVA / Ministère chargé de la Jeunesse.
 
