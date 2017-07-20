@@ -34,11 +34,8 @@ if(count($meta)){
 				<div style="display:inline-block;">
 <?php
 		echo ouverture_ligne($question);
-		reset($reponses);
-		foreach ($reponses as $reponse) {
-			if ($reponse['name']==$question['name']) {
-				echo affiche_valeur($reponse, $question['type']);
-			}
+		foreach ($reponses[$question['id']] as $reponse) {
+			echo affiche_valeur($reponse, $question['type']);
 		}
 		echo cloture_ligne($question['type']);
 ?>

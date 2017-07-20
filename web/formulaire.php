@@ -9,18 +9,16 @@ include('inc/variables.php');
 header('Cache-Control: no cache'); 
 session_cache_limiter('private_no_expire');
 
-//********* tous les champs saisis sont remontés en session (sauf "etape" qui n'a pas d'intérêt) : besoin et age (gestion particulière) / mais aussi sexe, nationalite, jesais, situation, etudes, diplome, permis, handicap, temps_plein, experience, secteur, type_emploi, inscription, etc.
-foreach( $_POST as $cle=>$valeur ){
-	if(in_array($cle, ['besoin','age'])) { 
-		$_SESSION[$cle] = $valeur; 
-	}else if($cle!='etape') { 
-		$_SESSION['critere'][$cle] = $valeur; 
-	}
-}
-
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 	header('Location: index.php');
+}
+
+//********* tous les champs saisis sont remontés en session (sauf "etape" qui n'a pas d'intérêt) : age, sexe, nationalite, jesais, situation, etudes, diplome, permis, handicap, temps_plein, experience, secteur, type_emploi, inscription, etc.
+foreach( $_POST as $cle=>$valeur ){
+	if($cle!='etape') { 
+		$_SESSION['critere'][$cle] = $valeur; 
+	}
 }
 
 //************ gestion de l'étape en cours (le formulaire est en plusieurs pages)
@@ -38,8 +36,10 @@ $meta = $t[0];
 $questions = $t[1];
 $reponses = $t[2];
 
-foreach ($questions as $question) { //besoin pour la page resultat (get_liste_offres)
+//************ on en profite pour récolter une donnée utile pour la page resultat (modele/get_liste_offres)
+foreach ($questions as $question) { 
 	$_SESSION['type'][$question['name']] = $question['type']; 
 }
+
 //view
 require 'view/formulaire.tpl.php';

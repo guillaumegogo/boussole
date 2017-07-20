@@ -113,7 +113,7 @@ function get_ville($saisie){
 function get_formulaire($etape){
 	global $conn;
 
-	$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` as `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire` 
+	$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` as `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`id_question`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire` 
 	JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
 	JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
 	JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
@@ -129,7 +129,7 @@ function get_formulaire($etape){
 		exit;
 	}
 	
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $idq, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
 	$tmp_id=0;
 	$tmp_que='';
 	while (mysqli_stmt_fetch($stmt)) {
@@ -138,10 +138,10 @@ function get_formulaire($etape){
 			$tmp_id=$id_formulaire;
 		}
 		if($question!=$tmp_que){ //on récupère les questions
-			$questions[] = array('que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire);
+			$questions[] = array('id'=>$idq, 'que'=>$question, 'name'=>$name, 'type'=>$type, 'tai'=>$taille, 'obl'=>$obligatoire);
 			$tmp_que=$question;
 		}
-		$reponses[] = array('name'=>$name, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);  //on récupère les réponses
+		$reponses[$idq][] = array('name'=>$name, 'lib'=>$libelle, 'val'=>$valeur, 'def'=>$defaut);  //on récupère les réponses
 	}
 	mysqli_stmt_close($stmt);
 	return [$meta, $questions, $reponses];

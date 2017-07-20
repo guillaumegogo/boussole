@@ -76,12 +76,12 @@ if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
 //********* si une seule ville correspond
 }else{
 ?>
-<form action="formulaire.php" class="joli accueil vert" method="post">
+<form class="joli accueil vert" method="post">
 <fieldset class="accueil_choix_besoin">
 	<div>J'habite à <b><?= $_SESSION['ville_habitee'] ?> (<?= $_SESSION['code_postal'] ?>)</b> et je souhaite... </div>
 	<div class="boutonsbesoin">
 <?php foreach ($themes as $theme) { ?>
-		<input type="submit" value="<?= $theme['libelle'] ?>" name="besoin" <?= ($theme['actif'])? "":"disabled" ?> >  <!--formaction="formulaire.php?b=<?= $theme['id'] ?>"-->
+		<input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled" ?> >  <!--formaction="formulaire.php?b=<?= $theme['id'] ?>"-->
 <?php } ?>
 	</div>
 </fieldset>
