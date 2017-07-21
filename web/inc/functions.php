@@ -38,7 +38,7 @@ function ouverture_ligne($ele){ //affichage ligne préalable si le type le deman
 			$t = '<select name="'.$ele['name'].'">'; 
 			break;
 		case 'multiple':
-			$t = '<select multiple name="'.$ele['name'].'" size="'.$ele['tai'].'">';
+			$t = '<select multiple name="'.$ele['name'].'[]" size="'.$ele['tai'].'">';
 			break;
 	}
 	return $t;
@@ -53,7 +53,7 @@ function affiche_valeur($ele, $type){ //affichage valeur
 			$t .= '> '.$ele['lib']."\n";
 			break;
 		case 'checkbox':
-			$t = '<input type="checkbox" name="'.$ele['name'].'" value="'.$ele['val'].'" ';
+			$t = '<input type="checkbox" name="'.$ele['name'].'"[] value="'.$ele['val'].'" ';
 			if (isset($_SESSION['critere'][$ele['name']])){ if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' checked '; } else if ($ele['def']==1) $t .= ' checked ';
 			$t .= '> '.$ele['lib'].'</br>'."\n";
 			break;

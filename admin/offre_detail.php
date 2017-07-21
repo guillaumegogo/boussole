@@ -1,6 +1,6 @@
 <?php
 session_start();
-require('secret/connect.php');
+require('inc/modele.php');
 include('inc/functions.php');
 include('inc/variables.php');
 
@@ -56,86 +56,24 @@ if (isset($_POST["maj_id"])) {
 		$req= "UPDATE `bsl_offre` SET `nom_offre` = \"".$_POST["nom"]."\", `description_offre` = \"".mysqli_real_escape_string ($conn, $_POST["desc"])."\", `debut_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"])))."\", `fin_offre` = \"".date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"])))."\", `id_sous_theme` = \"".$_POST["sous_theme"]."\", `adresse_offre` = \"".$_POST["adresse"]."\",`code_postal_offre`=\"".$code_postal."\",`ville_offre`=\"".$ville."\",`code_insee_offre`=\"".$code_insee."\", `courriel_offre` = \"".$_POST["courriel"]."\", `telephone_offre` = \"".$_POST["tel"]."\", `site_web_offre` = \"".$url."\", `delai_offre` = \"".$_POST["delai"]."\", `zone_selection_villes` = \"".$_POST["zone"]."\", `actif_offre` = \"".$_POST["actif"]."\",`user_derniere_modif`=\"".$_SESSION["user_id"]."\" WHERE `id_offre` = ".$last_id;
 		$result = mysqli_query($conn, $req);
 		
-		if(isset($_POST["maj_criteres"])){
-			//mise à jour des critères
+		if(isset($_POST["maj_criteres"]) && $_POST["maj_criteres"]){ //mise à jour des critères
+			
 			$reqd= "DELETE FROM `bsl_offre_criteres` WHERE `id_offre` = ".$last_id;
 			mysqli_query($conn, $reqd);
 			
-			if($_POST["maj_criteres"]=="emploi"){
-
-				$req2 = "INSERT INTO `bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES (".$last_id.", \"age_min\", \"".$_POST['age_min']."\"),  (".$last_id.", \"age_max\", \"".$_POST['age_max']."\")";
-				if (isset($_POST['list2'])){
-					foreach ($_POST['list2'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"villes\", \"".$selected_option."\")";
-					}
+			$req2 = "INSERT INTO `bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES ";
+			if (isset($_POST['list2'])){
+				foreach ($_POST['list2'] as $selected_option) {
+					$req2 .= "(".$last_id.", \"villes\", \"".$selected_option."\"), ";
 				}
-				if (isset($_POST['jesais'])){
-					foreach ($_POST['jesais'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"jesais\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['sexe'])){
-					foreach ($_POST['sexe'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"sexe\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['situation'])){
-					foreach ($_POST['situation'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"situation\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['nationalite'])){
-					foreach ($_POST['nationalite'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"nationalite\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['permis'])){
-					foreach ($_POST['permis'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"permis\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['handicap'])){
-					foreach ($_POST['handicap'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"handicap\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['experience'])){
-					foreach ($_POST['experience'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"experience\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['type_emploi'])){
-					foreach ($_POST['type_emploi'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"type_emploi\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['temps_plein'])){
-					foreach ($_POST['temps_plein'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"temps_plein\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['inscription'])){
-					foreach ($_POST['inscription'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"inscription\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['etudes'])){
-					foreach ($_POST['etudes'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"etudes\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['diplome'])){
-					foreach ($_POST['diplome'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"diplome\", \"".$selected_option."\")";
-					}
-				}
-				if (isset($_POST['secteur'])){
-					foreach ($_POST['secteur'] as $selected_option) {
-						$req2 .= ", (".$last_id.", \"secteur\", \"".$selected_option."\")";
-					}
-				}
-				$result2=mysqli_query($conn, $req2);
 			}
+			foreach ($_POST['critere'] as $name=>$tab_critere) {
+				foreach ($tab_critere as $key=>$selected_option) {
+					$req2 .= "(".$last_id.", \"".$name."\", \"".$selected_option."\"), ";
+				}
+			}
+			$req2 = substr($req2, 0, -2); //on enlève le dernier ", "
+			$result2=mysqli_query($conn, $req2);
 		}
 	}
 	
@@ -178,36 +116,20 @@ if(isset($id_offre)) {
 		}
 		
 		//****************** new : formulaire dynamique...
-		$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_offre_criteres`.`id_offre` FROM `bsl_formulaire` 
-		JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
-		JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
-		JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
-		JOIN `bsl_formulaire__valeur` ON `bsl_formulaire__valeur`.`id_question`=`bsl_formulaire__question`.`id_question` AND `bsl_formulaire__valeur`.`actif`=1
-		LEFT JOIN `bsl_offre_criteres` ON `bsl_offre_criteres`.`nom_critere`=`bsl_formulaire__question`.`html_name` AND `bsl_offre_criteres`.`valeur_critere`=`bsl_formulaire__valeur`.`valeur` AND `bsl_offre_criteres`.`id_offre`= ?
-		WHERE `bsl_formulaire`.`actif`=1 AND `bsl_theme`.`id_theme`= ? 
-		ORDER BY `bsl_formulaire__page`.`ordre`, `bsl_formulaire__question`.`ordre`, `bsl_formulaire__valeur`.`ordre`';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'ii', $id_offre, $row['id_theme_pere']);
-
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $id_o );
-		$tmp_que='';
-		while (mysqli_stmt_fetch($stmt)) {
-			if($libelle_question!=$tmp_que){ //on récupère les questions
-				$questions[] = array('libelle'=>$libelle_question, 'name'=>$html_name, 'type'=>$type, 'obligatoire'=>$obligatoire);
-				$tmp_que=$libelle_question;
-			}
-			$reponses[$html_name][] = array('libelle'=>$libelle, 'valeur'=>$valeur, 'selectionne'=>($id_o) ? 'selected':'');  //on récupère les réponses
+		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
+			$t = get_criteres($id_offre, $row['id_theme_pere']);
+			$questions = $t[0];
+			$reponses = $t[1];
 		}
-		mysqli_stmt_close($stmt);
 		
 		//affichage des critères de l'offre (selected dans listes déroulantes) 
-		// **** old **** sera remplacé par requête précédente
+		/* **** old **** remplacé par requête précédente
 		$sql2 = "SELECT * FROM `bsl_offre_criteres` where id_offre=".$id_offre;
 		$result2 = mysqli_query($conn, $sql2);
 		while ($row2 = mysqli_fetch_assoc($result2)) {
 			$criteres[$row2['nom_critere']][$row2['valeur_critere']]=1;
 		}
+		*/
 	}
 
 	//********* liste déroulante des thèmes / sous-thèmes du pro
@@ -287,8 +209,8 @@ if(isset($id_offre)) {
 //********** sinon écran de création simple : récupération de la liste des professionnels (avec thème) en fonction des droits du user
 }else{
 	$sql = "SELECT `bsl_professionnel`.`id_professionnel`, `nom_pro` FROM `bsl_professionnel` 
-		JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_professionnel`=`bsl_professionnel`.`id_professionnel`
 		WHERE `actif_pro`=1 "; //todo limiter en fonction du user_statut
+		//JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_professionnel`=`bsl_professionnel`.`id_professionnel`
 	if (isset($_SESSION['territoire_id']) && $_SESSION['territoire_id']) { 
 		$sql .= " AND `competence_geo`=\"territoire\" AND `id_competence_geo`=".$_SESSION['territoire_id']; 
 	}
