@@ -68,36 +68,39 @@ window.onclick = function(event) {
 	</div>
 </fieldset>
 </form>
+<?php
+if ($nb_offres) {
+?>
 <form class="joli resultat" style="margin-top:1%;">
 <?php
-$sous_offre_precedente='';
-$compteur_offres=0;
-foreach ($offres as $offre) {
+	$sous_offre_precedente='';
+	$compteur_offres=0;
+	foreach ($offres as $offre) {
 	
-	//******* affichage des sous thèmes
-	if($offre['sous_theme']!=$sous_offre_precedente){
-		if($sous_offre_precedente){ 
-			if($compteur_offres>4) echo '</div><div class="center"><a href="#'.$anchor.'" id="lien'.$sous_offre_precedente.'" class="small" onclick="afficheAutres(\''.$sous_offre_precedente.'\');">Afficher les autres offres</a></div>';
-			echo "</div>\n</fieldset>"; //en cas de changement de sous-thème on ferme le fieldset précédent
-		}
-		$sous_offre_precedente=$offre['sous_theme'];
-		$compteur_offres=0;
-		$anchor="a".$offre['sous_theme'];
+		//******* affichage des sous thèmes
+		if($offre['sous_theme']!=$sous_offre_precedente){
+			if($sous_offre_precedente){ 
+				if($compteur_offres>4) echo '</div><div class="center"><a href="#'.$anchor.'" id="lien'.$sous_offre_precedente.'" class="small" onclick="afficheAutres(\''.$sous_offre_precedente.'\');">Afficher les autres offres</a></div>';
+				echo "</div>\n</fieldset>"; //en cas de changement de sous-thème on ferme le fieldset précédent
+			}
+			$sous_offre_precedente=$offre['sous_theme'];
+			$compteur_offres=0;
+			$anchor="a".$offre['sous_theme'];
 ?>
 
 	<fieldset class="resultat" id="<?= $anchor ?>"><legend><?= $sous_themes[$offre['sous_theme']]['titre'] ?> (<?= $sous_themes[$offre['sous_theme']]['nb'] ?> offre<?= ($sous_themes[$offre['sous_theme']]['nb']>1) ? 's':''; ?>)</legend>
 		<div style="width:100%; margin:auto;">
 <?php
-	}
-	
-	//******** découpage des titres trop longs
-	$titre_court = '';
-	if (strlen($offre["titre"]) > 80 ) { 
-		if (strpos($offre["titre"]," ",80)) { 
-			$titre_court = substr($offre["titre"],0,strpos($offre["titre"]," ",80))."..."; 
 		}
-	} 
-	if($compteur_offres++==4) echo '<div id="suite'.$offre['sous_theme'].'" style="display:none">';
+	
+		//******** découpage des titres trop longs
+		$titre_court = '';
+		if (strlen($offre["titre"]) > 80 ) { 
+			if (strpos($offre["titre"]," ",80)) { 
+				$titre_court = substr($offre["titre"],0,strpos($offre["titre"]," ",80))."..."; 
+			}
+		} 
+		if($compteur_offres++==4) echo '<div id="suite'.$offre['sous_theme'].'" style="display:none">';
 ?>
 		<!-- affichage des offres -->
 		<div class="resultat_offre"><!--
@@ -112,11 +115,14 @@ foreach ($offres as $offre) {
 			<div class="center"><a href="offre.php?id=<?= $offre["id"] ?>" class="button">En savoir +</a></div>
 		</div></div>
 <?php 
-}
+	}
 ?> 
 		</div>
 	</fieldset>
 </form>
+<?php 
+}
+?> 
 <div class="lienenbas">
 <?php
 	echo $aucune_offre;
