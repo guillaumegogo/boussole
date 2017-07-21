@@ -263,7 +263,39 @@ if(isset($id_offre)) {
 
 <?php 
 //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. 
-if ($id_offre) { 
+if ($id_offre) {
+?>
+
+<fieldset>
+	<legend>Liste des critères de l'offre de service</legend>
+	<div class="colonnes">
+
+<?php
+	foreach ($questions as $question) {
+?>
+		<div class="lab">
+			<label for="critere[<?= $question['name'] ?>][]"><?= $question['libelle'] ?></label>
+			<select name="critere[<?= $question['name'] ?>][]" multiple size="<?= min(count($reponses[$question['name']]), 10) ?>">
+<?php
+		foreach ($reponses[$question['name']] as $reponse) {
+			$n++;
+?>
+				<option value="<?= $reponse['valeur'] ?>" <?= $reponse['selectionne'] ?>><?= $reponse['libelle'] ?></option>
+<?php
+		}
+?>
+			</select>
+		</div>
+<?php
+	}
+?>
+	</div>
+</fieldset>
+
+
+<?php
+	//******************* old *********************
+	
 	// si theme de l'offre = emploi
 	if ($row['id_theme_pere']=="1") { 
 ?>

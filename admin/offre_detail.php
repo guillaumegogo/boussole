@@ -178,7 +178,7 @@ if(isset($id_offre)) {
 		}
 		
 		//****************** new : formulaire dynamique...
-		/*$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_offre_criteres`.`id_offre` FROM `bsl_formulaire` 
+		$query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire__question`.`libelle` as `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_offre_criteres`.`id_offre` FROM `bsl_formulaire` 
 		JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
 		JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
 		JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
@@ -190,18 +190,19 @@ if(isset($id_offre)) {
 		mysqli_stmt_bind_param($stmt, 'ii', $id_offre, $row['id_theme_pere']);
 
 		mysqli_stmt_execute($stmt);
-		mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $id_offre );
+		mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $id_o );
 		$tmp_que='';
 		while (mysqli_stmt_fetch($stmt)) {
 			if($libelle_question!=$tmp_que){ //on récupère les questions
-				$questions[] = array($libelle_question, $html_name, $type, $taille, $obligatoire);
+				$questions[] = array('libelle'=>$libelle_question, 'name'=>$html_name, 'type'=>$type, 'obligatoire'=>$obligatoire);
 				$tmp_que=$libelle_question;
 			}
-			$reponses[$html_name][] = array($libelle, $valeur, ($id_offre) ? 1:0);  //on récupère les réponses
+			$reponses[$html_name][] = array('libelle'=>$libelle, 'valeur'=>$valeur, 'selectionne'=>($id_o) ? 'selected':'');  //on récupère les réponses
 		}
-		mysqli_stmt_close($stmt);*/
+		mysqli_stmt_close($stmt);
 		
-		//affichage des critères de l'offre (selected dans listes déroulantes) // sera remplacé par requête précédente
+		//affichage des critères de l'offre (selected dans listes déroulantes) 
+		// **** old **** sera remplacé par requête précédente
 		$sql2 = "SELECT * FROM `bsl_offre_criteres` where id_offre=".$id_offre;
 		$result2 = mysqli_query($conn, $sql2);
 		while ($row2 = mysqli_fetch_assoc($result2)) {

@@ -35,8 +35,8 @@
 	</form>
 
 	<div style="text-align:center; color:red; margin:2em auto; font-size:0.8em;">
-		ML Reims : boussole@mission-locale-reims.jeunes-ca.fr / azerty<br/>
-		Animateur Grand Reims : boussole@grandreims.fr / azerty
+		ML Reims : boussole@mission-locale-reims.jeunes-ca.fr<br/>
+		Animateur Grand Reims : boussole@grandreims.fr
 	</div>
 	<!-- le temps des tests
 	<div style="width:100%; margin:1em auto;">

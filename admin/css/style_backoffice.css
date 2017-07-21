@@ -107,6 +107,12 @@ legend{
 	margin-right:1em;
 	margin-bottom:0.5em;
 } 
+.colonnes{
+	-webkit-column-width: 28em; /* Chrome, Safari, Opera */
+	-moz-column-width: 28em; /* Firefox */
+	column-width: 28em;
+	column-rule:1px solid grey;
+}
 
 /*input[type=text], input[type=email],input[list], textarea, select { 
 	width: auto; 

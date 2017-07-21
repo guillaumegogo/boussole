@@ -59,7 +59,7 @@ window.onclick = function(event) {
 		<p onclick='masqueCriteres()'>J'habite à <b><?= $_SESSION['ville_habitee'] ?></b> et je souhaite <b><?= strtolower ($_SESSION['besoin']) ?></b> <span id="fleche_criteres">&#9662;</span></p>
 		<div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
 			<div class="colonnes">
-				<?php echo liste_criteres('<br/>'); ?>  <abbr title="A mettre en forme...">&#9888;</abbr>
+				<?php echo liste_criteres('<br/>'); ?> <!--todo : à mettre en forme-->
 			</div>
 			<div class="enbasadroite">
 				<a href="javascript:location.href='formulaire.php'">Revenir au formulaire</a>
