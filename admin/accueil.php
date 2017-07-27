@@ -1,9 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-checkLogin();
+secu_check_login();
 
 //******** calcul du nb de demandes (todo : à adapter pour pros et animateurs)
 $nb_dmd = '';
@@ -56,7 +54,7 @@ if ($_SESSION['user_droits']['critere']) {
 if (isset($_POST['choix_territoire'])) {
     $_SESSION['territoire_id'] = $_POST['choix_territoire'];
 }
-include('admin/select_territoires.inc.php');
+include('../src/admin/select_territoires.inc.php');
 
 //view
 require 'view/accueil.tpl.php';

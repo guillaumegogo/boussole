@@ -1,10 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-if (!isset($_SESSION['user_id'])) header('Location: index.php'); //si pas connecté, retour à la page de connection
-if (!$_SESSION['user_droits']['utilisateur']) header('Location: accueil.php'); //si pas de droits de gestion des utilisateurs, retour à l'accueil
+secu_check_login(DROIT_UTILISATEUR);
 
 //********* territoire sélectionné
 if (isset($_POST['choix_territoire'])) {

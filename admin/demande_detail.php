@@ -1,9 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-checkLogin();
+secu_check_login(DROIT_DEMANDE);
 
 //********* variables
 $id_demande = null;

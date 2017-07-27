@@ -1,9 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
+secu_check_login(DROIT_OFFRE);
 
-//********* verif des droits
-checkLogin();
 /*todo
 $sql = "SELECT `id_offre` FROM `bsl_offre` JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_offre`.id_professionnel 
 WHERE id_offre=".$id_offre;

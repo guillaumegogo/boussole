@@ -2,10 +2,6 @@
 
 include('../src/web/bootstrap.php');
 
-//********* censé permettre de revenir sur les formulaires sans recharger
-header('Cache-Control: no cache');
-session_cache_limiter('private_no_expire');
-
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
     header('Location: index.php');

@@ -1,10 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-if (!isset($_SESSION['user_id'])) header('Location: index.php');
-if (!$_SESSION['user_droits']['territoire']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
+secu_check_login(DROIT_TERRITOIRE);
 
 //********* variables
 $msg = "";
@@ -81,7 +78,7 @@ if (isset($_SESSION["territoire_id"])) {
     }
 }
 
-include('admin/select_territoires.inc.php');
+include('../src/admin/select_territoires.inc.php');
 
 //view
 require 'view/territoire.tpl.php';

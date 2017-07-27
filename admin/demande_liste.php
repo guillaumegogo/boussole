@@ -1,15 +1,13 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-checkLogin(PAGE_DEMANDE_LISTE);
+secu_check_login(DROIT_DEMANDE);
 
 //********* territoire sélectionné
 if (isset($_POST["choix_territoire"])) {
     $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]);
 }
-include('admin/select_territoires.inc.php');
+include('../src/admin/select_territoires.inc.php');
 
 //********page des demandes traitées ou à traiter ?
 $flag_traite = (isset($_GET['etat']) && $_GET['etat'] == "traite") ? 1 : 0;

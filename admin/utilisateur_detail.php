@@ -1,9 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
+secu_check_login(DROIT_UTILISATEUR);
 
-//********* verif des droits
-if (!isset($_SESSION['user_id'])) header('Location: index.php'); //1. doit être connecté 
 /*todo
 if ($_SESSION['user_droits']['utilisateur']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){

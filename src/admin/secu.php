@@ -1,48 +1,72 @@
 <?php
 
-define('PAGE_DEMANDE_LISTE', 'demande_listing');
-define('PAGE_OFFRE_LISTE', 'offre_liste');
-define('PAGE_PROFESSIONNEL_LISTE', 'professionnel_liste');
+define('DROIT_DEMANDE', 'demande');
+define('DROIT_OFFRE', 'offre');
+define('DROIT_PROFESSIONNEL', 'professionnel');
+define('DROIT_TERRITOIRE', 'territoire');
+define('DROIT_THEME', 'theme');
+define('DROIT_UTILISATEUR', 'utilisateur');
+define('DROIT_CRITERE', 'critere');
 
-function login($login, $password)
+define('SALT_BOUSSOLE', '@CC#B0usS0l3_');
+
+function secu_login($login, $password)
 {
     global $conn;
     $logged = false;
 
-    $sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`, `actif_utilisateur`
+    $sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`, `date_inscription`
             FROM `bsl_utilisateur` 
             JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
             LEFT JOIN  `bsl_territoire` ON `bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`bsl_territoire`.`id_territoire`
             LEFT JOIN  `bsl_professionnel` ON `bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`bsl_professionnel`.`id_professionnel`
-            WHERE `email` LIKE ? ';
+            WHERE `email` = ? AND `actif_utilisateur` = 1';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 's', $login);
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_store_result($stmt);
-        if (mysqli_stmt_num_rows($stmt) > 0) {
-            mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $motdepasse, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire, $actif_utilisateur);
+        if (mysqli_stmt_num_rows($stmt) === 1) {
+            mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $motdepasse, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire, $date_inscription);
             mysqli_stmt_fetch($stmt);
             check_mysql_error($conn);
 
-            if ($actif_utilisateur) {
-                if (password_verify($password, $motdepasse)) { //verif du mot de passe saisi
-                    //********* (mise en session de la gestion de droits : 1 = accès à la page listant l'objet correspondant)
-                    $_SESSION['user_id'] = $id_utilisateur;
-                    $_SESSION['user_statut'] = $libelle_statut;
-                    $_SESSION['user_nom'] = $nom_utilisateur;
-                    $_SESSION['territoire_id'] = 0;
-                    if ($id_statut == 2) $_SESSION['territoire_id'] = $id_metier;
-                    if ($id_statut == 3) $_SESSION['user_pro_id'] = $id_metier;
-                    $_SESSION['user_droits'] = array('territoire' => $acces_territoire, 'professionnel' => $acces_professionnel, 'offre' => $acces_offre, 'theme' => $acces_theme, 'utilisateur' => $acces_utilisateur, 'demande' => $acces_demande, 'critere' => $acces_critere);
+            if (password_verify($password, $motdepasse)) {
+                //verif du mot de passe saisi
+                //(mise en session de la gestion de droits : 1 = accès à la page listant l'objet correspondant)
+                $_SESSION['user_id'] = $id_utilisateur;
+                $_SESSION['user_statut'] = $libelle_statut;
+                $_SESSION['user_nom'] = $nom_utilisateur;
+                $_SESSION['territoire_id'] = 0;
 
-                    //********** accroche statut
-                    $_SESSION['accroche'] = 'Bonjour ' . $_SESSION['user_nom'] . ', vous êtes ' . $_SESSION['user_statut'];
-                    if ($id_statut == 2) $_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
-                    if ($id_statut == 3) $_SESSION['accroche'] .= ' (' . $nom_pro . ')';
+                $_SESSION['user_checksum'] = secu_user_checksum($id_utilisateur, $login, $date_inscription);
 
-                    $logged = true;
-                }
+                if ($id_statut == 2)
+                    $_SESSION['territoire_id'] = $id_metier;
+
+                if ($id_statut == 3)
+                    $_SESSION['user_pro_id'] = $id_metier;
+
+                $_SESSION['user_droits'] = array(
+                    'territoire' => $acces_territoire,
+                    'professionnel' => $acces_professionnel,
+                    'offre' => $acces_offre,
+                    'theme' => $acces_theme,
+                    'utilisateur' => $acces_utilisateur,
+                    'demande' => $acces_demande,
+                    'critere' => $acces_critere
+                );
+
+                //accroche statut
+                $_SESSION['accroche'] = 'Bonjour ' . $_SESSION['user_nom'] . ', vous êtes ' . $_SESSION['user_statut'];
+
+                if ($id_statut == 2)
+                    $_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
+
+                if ($id_statut == 3)
+                    $_SESSION['accroche'] .= ' (' . $nom_pro . ')';
+
+                $logged = true;
             }
         }
     }
@@ -52,42 +76,80 @@ function login($login, $password)
     return $logged;
 }
 
-function checkLogin($page = null)
+function secu_check_login($page = null)
 {
-    if (!isset($_SESSION['user_id']))
-    {
+
+    global $conn;
+
+    $logged = false;
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id']) && isset($_SESSION['user_checksum']) && !empty($_SESSION['user_checksum'])) {
+        $sql = 'SELECT `nom_utilisateur`, `date_inscription`
+            FROM `bsl_utilisateur`
+            WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
+        $stmt = mysqli_prepare($conn, $sql);
+        $id = (int) $_SESSION['user_id'];
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) === 1) {
+                mysqli_stmt_bind_result($stmt, $login, $date_inscription);
+                mysqli_stmt_fetch($stmt);
+                check_mysql_error($conn);
+                if(secu_user_checksum($id, $login, $date_inscription))
+                    $logged = true;
+            }
+        }
+
+    }
+
+    if ($logged !== true) {
         header('Location: index.php');
         exit();
     }
 
-    if($page !== null)
-    {
-        switch ($page)
-        {
-            case PAGE_DEMANDE_LISTE :
-                if (!$_SESSION['user_droits']['demande'])
-                {
-                    header('Location: accueil.php');
-                    exit();
-                }
+    if ($page !== null) {
+        $authorized = false;
+        switch ($page) {
+            case DROIT_DEMANDE :
+                if ($_SESSION['user_droits']['demande'])
+                    $authorized = true;
                 break;
-            case PAGE_OFFRE_LISTE :
-                if (!$_SESSION['user_droits']['offre'])
-                {
-                    header('Location: accueil.php');
-                    exit();
-                }
+            case DROIT_OFFRE :
+                if ($_SESSION['user_droits']['offre'])
+                    $authorized = true;
                 break;
-            case PAGE_PROFESSIONNEL_LISTE :
-                if (!$_SESSION['user_droits']['professionnel'])
-                {
-                    header('Location: accueil.php');
-                    exit();
-                }
+            case DROIT_PROFESSIONNEL :
+                if ($_SESSION['user_droits']['professionnel'])
+                    $authorized = true;
                 break;
-            default :
-                header('Location: index.php');
-                exit();
+            case DROIT_TERRITOIRE :
+                if ($_SESSION['user_droits']['territoire'])
+                    $authorized = true;
+                break;
+            case DROIT_THEME :
+                if ($_SESSION['user_droits']['theme'])
+                    $authorized = true;
+                break;
+            case DROIT_UTILISATEUR :
+                if ($_SESSION['user_droits']['utilisateur'])
+                    $authorized = true;
+                break;
+            case DROIT_CRITERE :
+                if ($_SESSION['user_droits']['critere'])
+                    $authorized = true;
+                break;
+                break;
+        }
+
+        if ($authorized !== true) {
+            header('Location: accueil.php');
+            exit();
         }
     }
+}
+
+function secu_user_checksum($id, $email, $date_inscription)
+{
+    return hash('sha256', SALT_BOUSSOLE . $id . '/' . $email . '!' . $_SERVER['HTTP_USER_AGENT'].'¤'.$date_inscription);
 }

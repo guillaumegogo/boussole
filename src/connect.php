@@ -4,10 +4,6 @@ $username = "apache";
 $password = "cpvaprplf";
 $nom_base_donnees = "boussole";
 
-//Sur la prod on désactive l'affichage des erreurs
-if (ENVIRONMENT === ENV_PROD)
-    error_reporting(0);
-
 // connection à la base de données
 $conn = @mysqli_connect($servername, $username, $password, $nom_base_donnees);
 if (!$conn || !$conn instanceof mysqli)

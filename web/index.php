@@ -2,10 +2,6 @@
 
 include('../src/web/bootstrap.php');
 
-//********* censé permettre de revenir sur les formulaires sans recharger
-header('Cache-Control: no cache');
-session_cache_limiter('private_no_expire');
-
 //********* variables utilisées dans ce fichier
 $nb_villes = 0;
 $themes = array();

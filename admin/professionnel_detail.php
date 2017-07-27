@@ -1,9 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
+secu_check_login(DROIT_PROFESSIONNEL);
 
-//********* verif des droits
-checkLogin();
 /*if (!$_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
 		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_professionnel`

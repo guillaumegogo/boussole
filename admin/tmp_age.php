@@ -1,7 +1,6 @@
 <?php
 include('../src/admin/bootstrap.php');
-
-checkLogin();
+secu_check_login(DROIT_THEME);
 
 $req = "SELECT * FROM `bsl_offre_criteres` WHERE `nom_critere` LIKE 'age_%' ORDER BY id_offre, nom_critere DESC";
 $result = mysqli_query($conn, $req);

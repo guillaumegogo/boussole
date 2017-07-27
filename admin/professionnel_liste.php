@@ -1,15 +1,13 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-checkLogin(PAGE_PROFESSIONNEL_LISTE);
+secu_check_login(DROIT_PROFESSIONNEL);
 
 //********* territoire sélectionné
 if (isset($_POST["choix_territoire"])) {
     $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]);
 }
-include('admin/select_territoires.inc.php');
+include('../src/admin/select_territoires.inc.php');
 
 //********page actif ou désactivés ?
 $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;

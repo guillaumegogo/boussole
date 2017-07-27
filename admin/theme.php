@@ -1,10 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-
-//********* verif des droits
-if (!isset($_SESSION['user_id'])) header('Location: index.php');
-if (!$_SESSION['user_droits']['theme']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
+secu_check_login(DROIT_THEME);
 
 //********* variable
 $msg = "";
