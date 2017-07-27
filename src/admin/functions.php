@@ -45,4 +45,3 @@ $timestamp_fin = microtime(true);
 $difference_ms = $timestamp_fin - $timestamp_debut;
 echo 'Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.';
 */
-?>

@@ -1,19 +1,18 @@
 <?php
-session_start();
-require('secret/connect.php');
-include('inc/functions.php');
-include('inc/variables.php');
+
+include('../src/admin/bootstrap.php');
 
 //********* verif des droits
-if (!isset($_SESSION['user_id'])) header('Location: index.php');
-if (!$_SESSION['user_droits']['offre']) header('Location: accueil.php'); //si pas les droits, retour à l'accueil
+checkLogin(PAGE_OFFRE_LISTE);
 
 //********* territoire sélectionné
-if (isset($_POST["choix_territoire"])) { $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]); }
-include('inc/select_territoires.inc.php');
+if (isset($_POST["choix_territoire"])) {
+    $_SESSION['territoire_id'] = securite_bdd($conn, $_POST["choix_territoire"]);
+}
+include('admin/select_territoires.inc.php');
 
 //********page des offres actives ou désactivées ?
-$flag_actif = (isset($_GET['actif']) && $_GET['actif']=="non") ? 0 : 1;
+$flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;
 
 //******** liste des offres de service
 $sql = "SELECT id_offre, nom_offre, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS date_debut, DATE_FORMAT(`fin_offre`, '%d/%m/%Y') AS date_fin, `theme_pere`.libelle_theme_court, zone_selection_villes, nom_pro, `competence_geo`, `id_competence_geo`, nom_departement, nom_region, nom_territoire  
@@ -24,12 +23,12 @@ $sql = "SELECT id_offre, nom_offre, DATE_FORMAT(`debut_offre`, '%d/%m/%Y') AS da
 	LEFT JOIN `bsl__departement` ON `bsl_professionnel`.`competence_geo`=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl__region` ON `bsl_professionnel`.`competence_geo`=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.`competence_geo`=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo`
-	WHERE actif_offre='".$flag_actif."' ";
+	WHERE actif_offre='" . $flag_actif . "' ";
 if (isset($_SESSION['territoire_id']) && $_SESSION['territoire_id']) {
-	$sql .= "AND `competence_geo`=\"territoire\" AND `id_competence_geo`= ".$_SESSION['territoire_id'];
+    $sql .= "AND `competence_geo`=\"territoire\" AND `id_competence_geo`= " . $_SESSION['territoire_id'];
 }
 if (isset($_SESSION['user_pro_id'])) {
-	$sql .= "AND `bsl_professionnel`.id_professionnel = ".$_SESSION['user_pro_id'];
+    $sql .= "AND `bsl_professionnel`.id_professionnel = " . $_SESSION['user_pro_id'];
 }
 $result = mysqli_query($conn, $sql);
 
