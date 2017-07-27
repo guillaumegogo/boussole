@@ -81,4 +81,4 @@ if (isset($_SESSION["territoire_id"])) {
 include('../src/admin/select_territoires.inc.php');
 
 //view
-require 'view/territoire.tpl.php';
+require '../src/admin/view/territoire.tpl.php';

@@ -4,7 +4,7 @@ include('../src/admin/bootstrap.php');
 secu_check_login(DROIT_UTILISATEUR);
 
 /*todo
-if ($_SESSION['user_droits']['utilisateur']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
+if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
 		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_utilisateur` 
 			WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_utilisateur='.$_GET['id'];
@@ -32,7 +32,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
         }
         if ($_POST["nouveaumotdepasse"] == $_POST["nouveaumotdepasse2"]) {
 
-            $req = "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"" . $_POST["nom_utilisateur"] . "\",\"" . $_POST["courriel"] . "\",\"" . password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT) . "\",NOW(),\"" . $_POST["statut"] . "\"," . $maj_attache . ")";
+            $req = "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"" . $_POST["nom_utilisateur"] . "\",\"" . $_POST["courriel"] . "\",\"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\",NOW(),\"" . $_POST["statut"] . "\"," . $maj_attache . ")";
 
             if ($result = mysqli_query($conn, $req)) {
                 $msg = 'Utilisateur bien créé.';
@@ -62,7 +62,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
                 if (mysqli_num_rows($result)) {
                     $row = mysqli_fetch_assoc($result);
                     if (password_verify($_POST['motdepasseactuel'], $row['motdepasse'])) {
-                        $req = "UPDATE `bsl_utilisateur` SET `motdepasse` = \"" . password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT) . "\" WHERE `id_utilisateur` = " . $_POST["maj_id"];
+                        $req = "UPDATE `bsl_utilisateur` SET `motdepasse` = \"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\" WHERE `id_utilisateur` = " . $_POST["maj_id"];
                         //pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
                         if ($result = mysqli_query($conn, $req)) {
                             $msg = 'Mot de passe modifié.';
@@ -164,4 +164,4 @@ if (isset($_GET["do"]) && $_GET["do"] == "mdp") {
 }
 
 //view
-require 'view/utilisateur_detail.tpl.php';
+require '../src/admin/view/utilisateur_detail.tpl.php';

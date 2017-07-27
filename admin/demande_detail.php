@@ -27,4 +27,4 @@ if (isset($_GET["id"])) {
 }
 
 //view
-require 'view/demande_detail.tpl.php';
+require '../src/admin/view/demande_detail.tpl.php';

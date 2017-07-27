@@ -3,7 +3,7 @@
 include('../src/admin/bootstrap.php');
 secu_check_login(DROIT_PROFESSIONNEL);
 
-/*if (!$_SESSION['user_droits']['professionnel']){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
+/*if (!secu_check_auth(DROIT_PROFESSIONNEL)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
 		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_professionnel`
 		WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_professionnel='.$_GET['id'];
@@ -236,4 +236,4 @@ while ($rowt = mysqli_fetch_assoc($result)) {
 }
 
 //view
-require 'view/professionnel_detail.tpl.php';
+require '../src/admin/view/professionnel_detail.tpl.php';

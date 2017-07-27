@@ -29,7 +29,7 @@ if (isset($_POST['login'])) {
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
             $headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
-            $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+            //$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
             $envoi_mail = mail($to, $subject, $message, $headers);
             if (!$envoi_mail) {
                 $msg = 'Le message n\'a pas pu être envoyé, veuillez réessayer ultérieurement. Si le problème persiste, contactez votre administrateur.';
@@ -69,7 +69,7 @@ if (isset($_POST['maj_id'])) {
     if ($_POST["nouveaumotdepasse"] == $_POST["nouveaumotdepasse2"]) {
         $sql = "UPDATE `bsl_utilisateur` SET `motdepasse` = ?, reinitialisation_mdp = NULL WHERE `id_utilisateur` = ?";
         $stmt = mysqli_prepare($conn, $sql);
-        $m = password_hash($_POST["nouveaumotdepasse"], PASSWORD_DEFAULT);
+        $m = secu_password_hash($_POST["nouveaumotdepasse"]);
         mysqli_stmt_bind_param($stmt, 'si', $m, $id_utilisateur);
 
         if (mysqli_stmt_execute($stmt)) {
@@ -88,4 +88,4 @@ if (isset($_POST['maj_id'])) {
 }
 
 //view
-require 'view/motdepasseoublie.tpl.php';
+require '../src/admin/view/motdepasseoublie.tpl.php';

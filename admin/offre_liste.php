@@ -34,4 +34,4 @@ $result = mysqli_query($conn, $sql);
 $lien_desactives = ($flag_actif) ? "<a href=\"offre_liste.php?actif=non\">Liste des offres désactivées</a>" : "<a href=\"offre_liste.php\">Liste des offres actives</a>";
 
 //view
-require 'view/offre_liste.tpl.php';
+require '../src/admin/view/offre_liste.tpl.php';

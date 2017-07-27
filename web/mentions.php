@@ -89,7 +89,7 @@ include('../src/web/bootstrap.php');
         <p>Lors de leur navigation sur le site, les internautes laissent des traces informatiques. Cet ensemble d’informations est recueilli à l’aide d’un témoin de connexion appelé cookie qui ne contient, toutefois, aucune information personnelle.<br>Dans le but d’améliorer l’ergonomie, la navigation au sein du site, le contenu éditorial et le service aux internautes, l’outil gestionnaire des statistiques du site <a class="spip_url spip_out" href='http://www.jeunes.gouv.fr' rel="nofollow external">www.jeunes.gouv.fr</a> des informations relatives au profil des internautes&nbsp;: équipement, navigateur utilisé, origine géographique des requêtes, date et heure de la connexion, navigation sur le site, fréquence des visites, etc. Ces données de connexion permettent des extractions statistiques et sont conservées pendant un an.<br>Tout internaute a la possibilité de refuser l’enregistrement de ces données en modifiant la configuration du navigateur de son ordinateur qui autorise ou non l’enregistrement de cookies. Il vous est possible de les refuser ou de les supprimer sans que cela ait une quelconque influence sur votre accès aux pages du site. Pour vous opposer à l’enregistrement de cookies ou être prévenu avant d’accepter les cookies, nous vous recommandons la lecture de la rubrique d’aide de votre navigateur qui vous précisera la marche à suivre.</p>-->
     </div>
 
-    <?php include('web/footer.inc.php'); ?>
+    <?php include('../src/web/footer.inc.php'); ?>
 </div>
 </body>
 </html>

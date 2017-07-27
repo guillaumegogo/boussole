@@ -57,4 +57,4 @@ if (isset($_POST['choix_territoire'])) {
 include('../src/admin/select_territoires.inc.php');
 
 //view
-require 'view/accueil.tpl.php';
+require '../src/admin/view/accueil.tpl.php';

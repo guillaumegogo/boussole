@@ -85,4 +85,4 @@ if (isset($_POST['coordonnees'])) {
 }
 
 //view
-require 'view/offre.tpl.php';
+require '../src/web/view/offre.tpl.php';

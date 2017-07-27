@@ -35,4 +35,4 @@ foreach ($questions as $question) {
 }
 
 //view
-require 'view/formulaire.tpl.php';
+require '../src/web/view/formulaire.tpl.php';

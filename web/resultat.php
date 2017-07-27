@@ -27,4 +27,4 @@ if ($nb_offres) {
 }
 
 //view
-require 'view/resultat.tpl.php';
+require '../src/web/view/resultat.tpl.php';

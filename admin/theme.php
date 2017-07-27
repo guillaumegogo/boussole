@@ -67,4 +67,4 @@ if ($id_theme_choisi) {
 }
 
 //view
-require 'view/theme.tpl.php';
+require '../src/admin/view/theme.tpl.php';

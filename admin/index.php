@@ -2,7 +2,7 @@
 
 include('../src/admin/bootstrap.php');
 
-session_unset();
+secu_logout();
 
 $msg = '';
 
@@ -15,4 +15,4 @@ if (isset($_POST['login']) && isset($_POST['motdepasseactuel'])) {
 }
 
 //view
-require 'view/index.tpl.php';
+require '../src/admin/view/index.tpl.php';
