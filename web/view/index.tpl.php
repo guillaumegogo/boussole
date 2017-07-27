@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/png" href="img/compass-icon.png" />
     <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link href="https://fonts.googleapis.com/css?family=Cabin|Questrial" rel="stylesheet"> 
     <script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
     <script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
     <script>$( function() {
@@ -90,9 +91,9 @@
     }
     ?>
     <div class="div123">
-        <div class="block123"><img src="img/ci_search.png">1. En 5 minutes je trouve le bon professionnel.</div>
-        <div class="block123"><img src="img/message.png">2. Je suis recontacté·e dans les jours qui suivent.</div>
-        <div class="block123"><img src="img/calendar.png">3. J'obtiens un rendez-vous et une réponse à mon besoin.</div>
+        <div class="block123 pro">En 5 minutes je trouve le bon professionnel.</div>
+        <div class="block123 contact">Je suis recontacté·e dans les jours qui suivent.</div>
+        <div class="block123 rdv">J'obtiens un rendez-vous et une réponse à mon besoin.</div>
     </div>
     <?php include('../src/web/footer.inc.php'); ?>
 </div>
