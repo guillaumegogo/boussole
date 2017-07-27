@@ -267,7 +267,7 @@ div.boutonsbesoin input:disabled{
 	display:inline-block; margin-right:1em; margin-bottom:1em;
 	width:30%;
 	vertical-align:middle; 
-	height:100%; padding:2em 0;
+	height:100%; padding:2em ;
 	position: relative;
 	color: #656665;
 	font-size: 20px;
