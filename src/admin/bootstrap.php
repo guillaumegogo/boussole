@@ -1,8 +1,6 @@
 <?php
-session_start();
 
-include('../src/variables.php');
-require('../src/connect.php');
-include('../src/admin/functions.php');
-require('../src/admin/secu.php');
-include('../src/admin/modele.php');
+include __DIR__.'/../bootstrap.php';
+include __DIR__.'/functions.php';
+require __DIR__.'/secu.php';
+include __DIR__.'/modele.php';

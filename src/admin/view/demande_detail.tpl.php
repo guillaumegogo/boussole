@@ -16,48 +16,48 @@
     <?php echo $msg; ?>
 
     <?php
-    if (mysqli_num_rows($result) > 0) {
+    if ($demande !== null) {
         ?>
 
         <table>
             <tr>
                 <th>N° demande</th>
-                <td><?php echo $row['id_demande']; ?></td>
+                <td><?php echo $demande['id_demande']; ?></td>
             </tr>
             <tr>
                 <th>Date demande</th>
-                <td><?php echo date_format(date_create($row['date_demande']), 'd/m/Y à H\hi'); ?></td>
+                <td><?php echo date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi'); ?></td>
             </tr>
             <tr>
                 <th>Coordonnées du demandeur</th>
                 <td><?php
-                    if (filter_var($row['contact_jeune'], FILTER_VALIDATE_EMAIL)) {
-                        echo "<a href=\"mailto:\"" . $row['contact_jeune'] . ">" . $row['contact_jeune'] . "</a>";
+                    if (filter_var($demande['contact_jeune'], FILTER_VALIDATE_EMAIL)) {
+                        echo "<a href=\"mailto:\"" . $demande['contact_jeune'] . ">" . $demande['contact_jeune'] . "</a>";
                     } else {
-                        echo $row['contact_jeune'];
+                        echo $demande['contact_jeune'];
                     }
                     ?></td>
             </tr>
             <tr>
                 <th>Offre de service</th>
-                <td><?php echo $row['nom_offre']; ?></td>
+                <td><?php echo $demande['nom_offre']; ?></td>
             </tr>
             <tr>
                 <th>Professionnel</th>
-                <td><?php echo $row['nom_pro']; ?></td>
+                <td><?php echo $demande['nom_pro']; ?></td>
             </tr>
             <tr>
                 <th>Profil</th>
-                <td><?php echo str_replace(",", "<br/>", $row['profil']); ?></td>
+                <td><?php echo str_replace(",", "<br/>", $demande['profil']); ?></td>
             </tr>
             <tr>
                 <th>Traité</th>
                 <td>
                     <?php
-                    if ($row['date_traitement']) {
-                        $traite = "Traité le " . date_format(date_create($row['date_traitement']), 'd/m/Y à H\hi') . "<br/>Commentaire : " . $row['commentaire'];
+                    if ($demande['date_traitement']) {
+                        $traite = "Traité le " . date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi') . "<br/>Commentaire : " . $demande['commentaire'];
                     } else {
-                        $traite = "<form method=\"post\" class=\"detail\"><input type=\"hidden\" name=\"id_traite\" value=\"" . $id_demande . "\" /><textarea name=\"commentaire\"   style=\"width:100%\"  rows=\"5\" placeholder=\"Conditions et suites données à l'échange (...)\"></textarea> <input type=\"submit\" value=\"Marquer comme traité\"></form> ";
+                        $traite = "<form method=\"post\" class=\"detail\"><input type=\"hidden\" name=\"id_traite\" value=\"" . $demande['id_demande'] . "\" /><textarea name=\"commentaire\"   style=\"width:100%\"  rows=\"5\" placeholder=\"Conditions et suites données à l'échange (...)\"></textarea> <input type=\"submit\" value=\"Marquer comme traité\"></form> ";
                     }
                     echo $traite;
                     ?>

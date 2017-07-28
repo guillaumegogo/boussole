@@ -49,7 +49,7 @@ if (isset($_POST['maj_id'])) {
 
     //requête d'ajout
     if (!$_POST['maj_id']) {
-        $req = 'INSERT INTO `bsl_professionnel`(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) VALUES ("' . $_POST['nom'] . '","' . $_POST['type'] . '","' . $_POST['desc'] . '","' . $_POST['adresse'] . '","' . $code_postal . '","' . $ville . '","' . $code_insee . '","' . $_POST['courriel'] . '","' . $_POST['tel'] . '","' . $_POST['site'] . '",' . $_POST['delai'] . ',"' . $_POST['competence_geo'] . '",' . $id_competence_geo . ',' . $_SESSION['user_id'] . ')';
+        $req = 'INSERT INTO `bsl_professionnel`(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) VALUES ("' . $_POST['nom'] . '","' . $_POST['type'] . '","' . $_POST['desc'] . '","' . $_POST['adresse'] . '","' . $code_postal . '","' . $ville . '","' . $code_insee . '","' . $_POST['courriel'] . '","' . $_POST['tel'] . '","' . $_POST['site'] . '",' . $_POST['delai'] . ',"' . $_POST['competence_geo'] . '",' . $id_competence_geo . ',' . secu_get_current_user_id() . ')';
         $result = mysqli_query($conn, $req);
         $last_id = mysqli_insert_id($conn);
 
@@ -112,7 +112,7 @@ $affiche_listes_geo = '';
 
 $liste_competence_geo = '<option value=\'\'>A choisir</option>';
 $tabgeo = array('territoire' => 'Territoire');
-if ($_SESSION['user_statut'] == 'administrateur') {
+if (secu_check_role(ROLE_ADMIN)) {
     $tabgeo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
 }
 foreach ($tabgeo as $key => $value) {
@@ -128,7 +128,7 @@ foreach ($tabgeo as $key => $value) {
 $select_region = '';
 $select_dep = '';
 $choix_territoire = '';
-if ($_SESSION['user_statut'] == 'administrateur') { // choix accessibles uniquement aux admins
+if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
     //liste déroulante des régions
     $sql = 'SELECT * FROM `bsl__region` WHERE 1 ';
     $result = mysqli_query($conn, $sql);
@@ -183,7 +183,7 @@ if ($_SESSION['user_statut'] == 'administrateur') { // choix accessibles uniquem
 
 //+ liste déroulante des territoires
 $sql = 'SELECT `id_territoire`, `nom_territoire` FROM `bsl_territoire` WHERE 1 ';
-if ($_SESSION['user_statut'] == 'animateur territorial') {
+if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
 }
 $result = mysqli_query($conn, $sql);
@@ -213,7 +213,8 @@ if ($id_professionnel) {
 } else {
     $choix_territoire .= 'none';
 }
-if (!in_array($_SESSION['user_statut'], array('administrateur', 'animateur territorial'))) $choix_territoire .= ' disabled ';
+if (!secu_check_role(ROLE_ADMIN) && !secu_check_role(ROLE_ANIMATEUR))
+    $choix_territoire .= ' disabled ';
 $choix_territoire .= '">' . $select_territoire . '</select>';
 $affiche_listes_geo .= $choix_territoire;
 

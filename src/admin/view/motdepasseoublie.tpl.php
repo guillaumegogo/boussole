@@ -28,10 +28,9 @@
                 <input type="submit" value="Réinitialiser le mot de passe">
             </div>
 
-        <?php } else if ($vue == 'reinit') { ?>
+        <?php } else if ($vue == 'reinit' && $token !== null) { ?>
             <div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
-                <input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
-
+                <input type="hidden" name="token" value="<?= $token ?>">
                 <div class="lab">
                     <label for="nouveaumotdepasse">Nouveau mot de passe :</label>
                     <input type="password" name="nouveaumotdepasse"/>

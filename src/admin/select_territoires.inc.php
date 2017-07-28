@@ -1,7 +1,7 @@
 <?php
 $select_territoire = "";
 $nom_territoire_choisi = "";
-if (in_array($_SESSION['user_statut'], array("administrateur", "animateur territorial"))) {
+if (secu_check_role(ROLE_ADMIN) || secu_check_role(ROLE_ANIMATEUR)) {
 
     $sql = "SELECT `id_territoire`, `nom_territoire`, `code_territoire` FROM `bsl_territoire` WHERE 1 ";
     $result = mysqli_query($conn, $sql);
@@ -9,7 +9,7 @@ if (in_array($_SESSION['user_statut'], array("administrateur", "animateur territ
     if (mysqli_num_rows($result) > 0) {
         $select_territoire = "<label for=\"choix_territoire\">Territoire :</label>
 		<select name=\"choix_territoire\" onchange=\"this.form.submit()\" ";
-        if ($_SESSION['user_statut'] != "administrateur") {
+        if (!secu_check_role(ROLE_ADMIN)) {
             $select_territoire .= " disabled";
         }
         $select_territoire .= "><option value=\"0\" >National</option>";

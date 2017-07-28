@@ -6,23 +6,6 @@ function format_insee($saisie){
 	return str_replace($tab_aremplacer, $tab_rempace, $saisie);
 }
 
-//********* https://openclassrooms.com/courses/securite-php-securiser-les-flux-de-donnees
-// fonction à utiliser pour la sécurisation de toutes les variables utilisées dans les requêtes
-function securite_bdd($conn, $string){
-	
-	// On regarde si le type de string est un nombre entier (int)
-	if(ctype_digit($string)) {
-		$string = intval($string);
-	}
-	// Pour tous les autres types
-	else {
-		$string = mysqli_real_escape_string($conn, $string);
-		$string = addcslashes($string, '%_');
-	}
-	
-	return $string;
-}
-
 //************** liste villes (à voir si utile - pour l'instant remplacé par des fichiers texte pour de meilleures perfs)
 function liste_villes($conn,$format){
 	$sql = "SELECT DISTINCT nom_ville, code_postal FROM `bsl__ville` ORDER BY nom_ville";

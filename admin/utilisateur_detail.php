@@ -12,7 +12,7 @@ if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un
 		if (mysqli_num_rows($result) == 0) { header('Location: utilisateur_liste.php'); }
 	}
 }else{ //autrement, le seul cas possible est la consultation de ses propres infos
-	$_GET['id'] = $_SESSION['user_id'];
+	$_GET['id'] = secu_get_current_user_id();
 }*/
 
 //********* variables
@@ -27,10 +27,10 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
 
         $maj_attache = "NULL";
         if (isset($_POST["statut"])) {
-            if ($_POST["statut"] == 2 && isset($_POST["attache"])) $maj_attache = "\"" . $_POST["attache"] . "\"";
-            else if ($_POST["statut"] == 3 && isset($_POST["attache_p"])) $maj_attache = "\"" . $_POST["attache_p"] . "\"";
+            if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) $maj_attache = "\"" . $_POST["attache"] . "\"";
+            else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) $maj_attache = "\"" . $_POST["attache_p"] . "\"";
         }
-        if ($_POST["nouveaumotdepasse"] == $_POST["nouveaumotdepasse2"]) {
+        if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
 
             $req = "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"" . $_POST["nom_utilisateur"] . "\",\"" . $_POST["courriel"] . "\",\"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\",NOW(),\"" . $_POST["statut"] . "\"," . $maj_attache . ")";
 
@@ -41,7 +41,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
                 $msg = $message_erreur_bd;
             }
         } else {
-            $msg = 'Les deux mots de passe ne correspondent pas.';
+            $msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
         }
 
     } else { //requête de modification
@@ -54,14 +54,15 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
                 $msg = $message_erreur_bd;
             }
         } else { //modif mot de passe
-            if ($_POST["nouveaumotdepasse"] == $_POST["nouveaumotdepasse2"]) {
+            //TODO ajouter longueur minimale pour password
+            if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
 
                 $sql = 'SELECT `motdepasse` FROM `bsl_utilisateur` WHERE `id_utilisateur`=' . $_POST["maj_id"];
                 $result = mysqli_query($conn, $sql);
 
                 if (mysqli_num_rows($result)) {
                     $row = mysqli_fetch_assoc($result);
-                    if (password_verify($_POST['motdepasseactuel'], $row['motdepasse'])) {
+                    if (password_verify(SALT_BOUSSOLE . $_POST['motdepasseactuel'], $row['motdepasse'])) {
                         $req = "UPDATE `bsl_utilisateur` SET `motdepasse` = \"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\" WHERE `id_utilisateur` = " . $_POST["maj_id"];
                         //pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
                         if ($result = mysqli_query($conn, $req)) {
@@ -77,7 +78,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
                     $msg = 'Pas d\'utilisateur connu.';
                 }
             } else {
-                $msg = 'Les nouveaux mots de passe saisis ne correspondent pas.';
+                $msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
             }
         }
     }
@@ -105,9 +106,9 @@ if (isset($id_utilisateur)) {
     if (mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
 
-        if ($row['id_statut'] == 2) {
+        if ($row['id_statut'] == ROLE_ANIMATEUR) {
             $attache = $row['nom_territoire'];
-        } else if ($row['id_statut'] == 3) {
+        } else if ($row['id_statut'] == ROLE_PRO) {
             $attache = $row['nom_pro'];
         }
 
@@ -125,7 +126,7 @@ $select_professionnel = '<option value="" >A choisir</option>';
 //si modif = affichage en disabled du territoire ou de la liste des pros, en fonction de la liste
 
 $sql2 = 'SELECT `id_territoire`, `nom_territoire` FROM `bsl_territoire` WHERE 1 ';
-if ($_SESSION['user_statut'] == 'animateur territorial') {
+if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql2 .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
 }
 $result = mysqli_query($conn, $sql2);
@@ -140,7 +141,7 @@ while ($row2 = mysqli_fetch_assoc($result)) {
 }
 
 $sql3 = 'SELECT `id_professionnel`, `nom_pro` FROM `bsl_professionnel` WHERE 1 ';
-if ($_SESSION['user_statut'] == 'animateur territorial') {
+if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql3 .= ' AND `competence_geo`="territoire" AND `id_competence_geo`=' . $_SESSION['territoire_id'];
 }
 $result = mysqli_query($conn, $sql3);

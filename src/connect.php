@@ -1,13 +1,8 @@
 <?php
-$servername = "srv-sql";
-$username = "apache";
-$password = "cpvaprplf";
-$nom_base_donnees = "boussole";
-
-// connection à la base de données
-$conn = @mysqli_connect($servername, $username, $password, $nom_base_donnees);
+//Connexion à la base de données
+$conn = @mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWD, DB_NAME);
 if (!$conn || !$conn instanceof mysqli)
-    throw new Exception("Connection failed: " . mysqli_connect_error());
+    throw new Exception("Connection failed : ".mysqli_connect_error());
 
 mysqli_set_charset($conn, "utf8");
 

@@ -1,5 +1,10 @@
 <?php
 
+define('ROLE_ADMIN', 1);
+define('ROLE_ANIMATEUR', 2);
+define('ROLE_PRO', 3);
+define('ROLE_CONSULTANT', 4);
+
 define('DROIT_DEMANDE', 'demande');
 define('DROIT_OFFRE', 'offre');
 define('DROIT_PROFESSIONNEL', 'professionnel');
@@ -7,6 +12,8 @@ define('DROIT_TERRITOIRE', 'territoire');
 define('DROIT_THEME', 'theme');
 define('DROIT_UTILISATEUR', 'utilisateur');
 define('DROIT_CRITERE', 'critere');
+
+define('PASSWD_MIN_LENGTH', 6);
 
 define('SALT_BOUSSOLE', '@CC#B0usS0l3_');
 
@@ -25,61 +32,47 @@ function secu_login($email, $password)
             WHERE `email` = ? AND `actif_utilisateur` = 1';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 's', $email);
+    check_mysql_error($conn);
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_store_result($stmt);
         if (mysqli_stmt_num_rows($stmt) === 1) {
             mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire, $date_inscription);
             mysqli_stmt_fetch($stmt);
-            check_mysql_error($conn);
+
 
             //Verification du mot de passe saisi
             if (password_verify(SALT_BOUSSOLE . $password, $hash)) {
-
-                //(mise en session de la gestion de droits : 1 = accès à la page listant l'objet correspondant)
                 $_SESSION['user_id'] = $id_utilisateur;
                 $_SESSION['user_checksum'] = secu_user_checksum($id_utilisateur, $email, $date_inscription);
 
-                $_SESSION['user_statut'] = $libelle_statut;
-                $_SESSION['user_nom'] = $nom_utilisateur;
+                secu_set_territoire_id(null);
+                if ($id_statut == ROLE_ANIMATEUR)
+                    secu_set_territoire_id($id_metier);
 
-                $_SESSION['territoire_id'] = 0;
-                if ($id_statut == 2)
-                    $_SESSION['territoire_id'] = $id_metier;
-
-                if ($id_statut == 3)
-                    $_SESSION['user_pro_id'] = $id_metier;
-
-                $_SESSION['user_droits'] = array(
-                    'territoire' => $acces_territoire,
-                    'professionnel' => $acces_professionnel,
-                    'offre' => $acces_offre,
-                    'theme' => $acces_theme,
-                    'utilisateur' => $acces_utilisateur,
-                    'demande' => $acces_demande,
-                    'critere' => $acces_critere
-                );
+                if ($id_statut == ROLE_PRO)
+                    secu_set_user_pro_id($id_metier);
 
                 //accroche statut
-                $_SESSION['accroche'] = 'Bonjour ' . $_SESSION['user_nom'] . ', vous êtes ' . $_SESSION['user_statut'];
+                $_SESSION['accroche'] = 'Bonjour ' . $nom_utilisateur . ', vous êtes ' . $libelle_statut;
 
-                if ($id_statut == 2)
+                if ($id_statut == ROLE_ANIMATEUR)
                     $_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
 
-                if ($id_statut == 3)
+                if ($id_statut == ROLE_PRO)
                     $_SESSION['accroche'] .= ' (' . $nom_pro . ')';
 
                 $logged = true;
             }
+            mysqli_stmt_close($stmt);
         }
     }
-
     //Pas de message d'erreur spécifique
 
     return $logged;
 }
 
-function secu_check_login($page = null)
+function secu_is_logged()
 {
     global $conn;
 
@@ -98,13 +91,21 @@ function secu_check_login($page = null)
                 mysqli_stmt_bind_result($stmt, $login, $date_inscription);
                 mysqli_stmt_fetch($stmt);
                 check_mysql_error($conn);
+
                 if (secu_user_checksum($id, $login, $date_inscription) === $_SESSION['user_checksum'])
                     $logged = true;
+
+                mysqli_stmt_close($stmt);
             }
         }
     }
 
-    if ($logged !== true) {
+    return $logged;
+}
+
+function secu_check_login($page = null)
+{
+    if (secu_is_logged() !== true) {
         header('Location: index.php');
         exit();
     }
@@ -119,40 +120,215 @@ function secu_check_login($page = null)
 
 function secu_is_authorized($page)
 {
+    global $conn;
     $authorized = false;
-    switch ($page) {
-        case DROIT_DEMANDE :
-            if ($_SESSION['user_droits']['demande'])
-                $authorized = true;
-            break;
-        case DROIT_OFFRE :
-            if ($_SESSION['user_droits']['offre'])
-                $authorized = true;
-            break;
-        case DROIT_PROFESSIONNEL :
-            if ($_SESSION['user_droits']['professionnel'])
-                $authorized = true;
-            break;
-        case DROIT_TERRITOIRE :
-            if ($_SESSION['user_droits']['territoire'])
-                $authorized = true;
-            break;
-        case DROIT_THEME :
-            if ($_SESSION['user_droits']['theme'])
-                $authorized = true;
-            break;
-        case DROIT_UTILISATEUR :
-            if ($_SESSION['user_droits']['utilisateur'])
-                $authorized = true;
-            break;
-        case DROIT_CRITERE :
-            if ($_SESSION['user_droits']['critere'])
-                $authorized = true;
-            break;
-            break;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $sql = 'SELECT `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`
+            FROM `bsl_utilisateur` 
+            JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
+            WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
+        $stmt = mysqli_prepare($conn, $sql);
+        $id = (int)$_SESSION['user_id'];
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) === 1) {
+                mysqli_stmt_bind_result($stmt, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere);
+                mysqli_stmt_fetch($stmt);
+                check_mysql_error($conn);
+
+                switch ($page) {
+                    case DROIT_DEMANDE :
+                        if ((int)$acces_demande > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_OFFRE :
+                        if ((int)$acces_offre > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_PROFESSIONNEL :
+                        if ((int)$acces_professionnel > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_TERRITOIRE :
+                        if ((int)$acces_territoire > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_THEME :
+                        if ((int)$acces_theme > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_UTILISATEUR :
+                        if ((int)$acces_utilisateur > 0)
+                            $authorized = true;
+                        break;
+                    case DROIT_CRITERE :
+                        if ((int)$acces_critere > 0)
+                            $authorized = true;
+                        break;
+                }
+
+                mysqli_stmt_close($stmt);
+            }
+        }
     }
 
     return $authorized;
+}
+
+function secu_check_role($role)
+{
+    global $conn;
+    $check = false;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $sql = 'SELECT `id_statut` 
+                FROM `bsl_utilisateur` 
+                WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
+        $stmt = mysqli_prepare($conn, $sql);
+        $id = (int)$_SESSION['user_id'];
+        mysqli_stmt_bind_param($stmt, 'i', $id);
+
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) === 1) {
+                $id_statut = null;
+                mysqli_stmt_bind_result($stmt, $id_statut);
+                mysqli_stmt_fetch($stmt);
+                check_mysql_error($conn);
+
+                $check = ($id_statut === $role);
+
+                mysqli_stmt_close($stmt);
+            }
+        }
+    }
+
+    return $check;
+}
+
+/* reset password */
+
+function secu_send_reset_email($email)
+{
+    global $conn;
+    global $url_admin;
+
+    $token = hash('sha256', $email . time() . rand(0, 1000000));
+
+    $sql = 'UPDATE `bsl_utilisateur` 
+            SET `reinitialisation_mdp`= ? ,`date_demande_reinitialisation`= NOW() 
+            WHERE `email`= ? AND `actif_utilisateur`= 1';
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 'ss', $token, $_POST['login']);
+    check_mysql_error($conn);
+    if (mysqli_stmt_execute($stmt)) {
+        if (mysqli_stmt_affected_rows($stmt) === 1) {
+            $subject = 'Réinitialisation de votre mot de passe';
+            $message = "<html><p>Vous avez demandé la réinitialisation de votre mot de passe.</p> "
+                . "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur ce lien : <a href=\"" . $url_admin . "/motdepasseoublie.php?t=" . $token . "\">" . $url_admin . "/motdepasseoublie.php?t=" . $token . "</a></p>"
+                . "<p>Merci d'utiliser le lien dans les trois jours, après quoi il ne sera plus valide.</html>";
+            $headers = 'MIME-Version: 1.0' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+            $headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
+            //$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+
+            mail($email, $subject, $message, $headers);
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
+
+function secu_check_reset_token($token)
+{
+    global $conn;
+    $check = false;
+
+    $sql = 'SELECT `date_demande_reinitialisation` 
+            FROM `bsl_utilisateur` 
+            WHERE `reinitialisation_mdp`= ? AND `actif_utilisateur`= 1';
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 's', $token);
+    check_mysql_error($conn);
+
+    if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_store_result($stmt);
+        if (mysqli_stmt_num_rows($stmt) === 1) {
+            mysqli_stmt_bind_result($stmt, $date_demande_reinitialisation);
+            mysqli_stmt_fetch($stmt);
+            if (strtotime($date_demande_reinitialisation) > time() - (3600 * 24 * 3)) {  //3 jours
+                $check = true;
+            }
+        }
+        mysqli_stmt_close($stmt);
+    }
+
+    return $check;
+}
+
+function secu_reset_password($password, $token)
+{
+    global $conn;
+
+    $sql = 'UPDATE `bsl_utilisateur` 
+            SET `motdepasse` = ?, reinitialisation_mdp = NULL 
+            WHERE `reinitialisation_mdp` = ? AND `actif_utilisateur`= 1';
+
+    $stmt = mysqli_prepare($conn, $sql);
+    $hash = secu_password_hash($password);
+    mysqli_stmt_bind_param($stmt, 'ss', $hash, $token);
+    check_mysql_error($conn);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+/*Session management*/
+
+function secu_get_current_user_id()
+{
+    $user_id = null;
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id']))
+        $user_id = (int)$_SESSION['user_id'];
+
+    return $user_id;
+}
+
+function secu_set_territoire_id($id)
+{
+    if ((int)$id > 0)
+        $_SESSION['territoire_id'] = (int)$id;
+    else
+        $_SESSION['territoire_id'] = null;
+}
+
+function secu_get_territoire_id()
+{
+    $territoire_id = null;
+    if (isset($_SESSION['territoire_id']) && !empty($_SESSION['territoire_id']))
+        $territoire_id = (int)$_SESSION['territoire_id'];
+
+    return $territoire_id;
+}
+
+function secu_set_user_pro_id($id)
+{
+    if ((int)$id > 0)
+        $_SESSION['user_pro_id'] = (int)$id;
+    else
+        $_SESSION['user_pro_id'] = null;
+}
+
+function secu_get_user_pro_id()
+{
+    $user_pro_id = null;
+    if (isset($_SESSION['user_pro_id']) && !empty($_SESSION['user_pro_id']))
+        $user_pro_id = (int)$_SESSION['user_pro_id'];
+
+    return $user_pro_id;
 }
 
 function secu_user_checksum($id, $email, $date_inscription)

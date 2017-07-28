@@ -54,7 +54,7 @@ if (isset($_POST['coordonnees'])) {
 
     //*********** envoi de mail si demandé
     if ($id_demande) {
-        if (ENVIRONMENT != ENV_LOCAL) {
+        if (ENVIRONMENT === ENV_PROD) {
             $to = 'boussole@yopmail.fr'; //en prod il faudra mettre ici l'adresse du pro ie $row['courriel_offre']
             $subject = 'Une demande a été déposée sur la Boussole des jeunes';
             $message = "<html><p>Un jeune est intéressé par l'offre <b>" . $row['nom_offre'] . "</b>.</p>"

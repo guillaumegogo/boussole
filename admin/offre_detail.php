@@ -27,7 +27,7 @@ if (isset($_POST["maj_id"])) {
     //requête d'ajout (on récupère les données de contact du pro sélectionné)
     if (!$_POST["maj_id"]) {
         $req = "INSERT INTO `bsl_offre`(`nom_offre`, `description_offre`, `debut_offre`, `fin_offre`, `id_professionnel`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `user_derniere_modif`) 
-		SELECT \"" . $_POST["nom"] . "\",\"" . mysqli_real_escape_string($conn, $_POST["desc"]) . "\",\"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"]))) . "\",\"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"]))) . "\",\"" . $_POST["pro"] . "\",`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`,\"" . $_SESSION["user_id"] . "\"
+		SELECT \"" . $_POST["nom"] . "\",\"" . mysqli_real_escape_string($conn, $_POST["desc"]) . "\",\"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"]))) . "\",\"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"]))) . "\",\"" . $_POST["pro"] . "\",`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`,\"" . secu_get_current_user_id() . "\"
 		FROM `bsl_professionnel`
 		WHERE `bsl_professionnel`.id_professionnel = \"" . $_POST["pro"] . "\"";
 
@@ -50,7 +50,7 @@ if (isset($_POST["maj_id"])) {
         if (substr($url, 0, 3) == 'www') {
             $url = 'http://' . $url;
         }
-        $req = "UPDATE `bsl_offre` SET `nom_offre` = \"" . $_POST["nom"] . "\", `description_offre` = \"" . mysqli_real_escape_string($conn, $_POST["desc"]) . "\", `debut_offre` = \"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"]))) . "\", `fin_offre` = \"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"]))) . "\", `id_sous_theme` = \"" . $_POST["sous_theme"] . "\", `adresse_offre` = \"" . $_POST["adresse"] . "\",`code_postal_offre`=\"" . $code_postal . "\",`ville_offre`=\"" . $ville . "\",`code_insee_offre`=\"" . $code_insee . "\", `courriel_offre` = \"" . $_POST["courriel"] . "\", `telephone_offre` = \"" . $_POST["tel"] . "\", `site_web_offre` = \"" . $url . "\", `delai_offre` = \"" . $_POST["delai"] . "\", `zone_selection_villes` = \"" . $_POST["zone"] . "\", `actif_offre` = \"" . $_POST["actif"] . "\",`user_derniere_modif`=\"" . $_SESSION["user_id"] . "\" WHERE `id_offre` = " . $last_id;
+        $req = "UPDATE `bsl_offre` SET `nom_offre` = \"" . $_POST["nom"] . "\", `description_offre` = \"" . mysqli_real_escape_string($conn, $_POST["desc"]) . "\", `debut_offre` = \"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["du"]))) . "\", `fin_offre` = \"" . date("Y-m-d", strtotime(str_replace('/', '-', $_POST["au"]))) . "\", `id_sous_theme` = \"" . $_POST["sous_theme"] . "\", `adresse_offre` = \"" . $_POST["adresse"] . "\",`code_postal_offre`=\"" . $code_postal . "\",`ville_offre`=\"" . $ville . "\",`code_insee_offre`=\"" . $code_insee . "\", `courriel_offre` = \"" . $_POST["courriel"] . "\", `telephone_offre` = \"" . $_POST["tel"] . "\", `site_web_offre` = \"" . $url . "\", `delai_offre` = \"" . $_POST["delai"] . "\", `zone_selection_villes` = \"" . $_POST["zone"] . "\", `actif_offre` = \"" . $_POST["actif"] . "\",`user_derniere_modif`=\"" . secu_get_current_user_id() . "\" WHERE `id_offre` = " . $last_id;
         $result = mysqli_query($conn, $req);
 
         if (isset($_POST["maj_criteres"]) && $_POST["maj_criteres"]) { //mise à jour des critères

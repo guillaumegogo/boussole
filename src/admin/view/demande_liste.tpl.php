@@ -26,7 +26,7 @@
     <h2><?php echo $titre_page; ?></h2>
 
     <?php
-    if (mysqli_num_rows($result) > 0) {
+    if (count($demandes) > 0) {
         ?>
         <table id="sortable">
             <thead>
@@ -38,17 +38,17 @@
             </thead>
             <tbody>
             <?php
-            while ($row = mysqli_fetch_assoc($result)) {
-                //print_r($row);
+            foreach ($demandes as $demande) {
+                //print_r($demande);
                 ?>
                 <tr>
                     <td>
-                        <a href="demande_detail.php?id=<?= $row['id_demande'] ?>"><?= date_format(date_create($row['date_demande']), 'd/m/Y à H\hi') ?>
+                        <a href="demande_detail.php?id=<?= $demande['id_demande'] ?>"><?= date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi') ?>
                     </td>
-                    <td><?= $row['contact_jeune'] ?></td>
-                    <td><?= $row['nom_offre'] ?></td>
-                    <td><?= $row['nom_pro'] ?></td>
-                    <?php echo ($flag_traite) ? "<td>" . date_format(date_create($row['date_traitement']), 'd/m/Y à H\hi') . "</td>" : ""; ?>
+                    <td><?= $demande['contact_jeune'] ?></td>
+                    <td><?= $demande['nom_offre'] ?></td>
+                    <td><?= $demande['nom_pro'] ?></td>
+                    <?php echo ($flag_traite) ? "<td>" . date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi') . "</td>" : ""; ?>
                 </tr>
                 <?php
             }

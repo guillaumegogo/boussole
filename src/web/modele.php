@@ -35,6 +35,7 @@ function get_themes()
     }
     mysqli_stmt_bind_result($stmt, $id_theme, $libelle_theme, $actif_theme);
 
+    $themes = [];
     while (mysqli_stmt_fetch($stmt)) {
         $themes[] = array('id' => $id_theme, 'libelle' => $libelle_theme, 'actif' => $actif_theme);
     }
@@ -99,6 +100,9 @@ function get_formulaire($etape)
     mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $idq, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
     $tmp_id = 0;
     $tmp_que = '';
+    $meta = [];
+    $questions = [];
+    $reponses = [];
     while (mysqli_stmt_fetch($stmt)) {
         if ($id_formulaire != $tmp_id) { //on récupère les données de la page de formulaire
             $meta = array('id' => $id_formulaire, 'nb' => $nb_pages, 'titre' => $titre, 'etape' => $ordre_page, 'aide' => $aide, 'suite' => ($ordre_page < $nb_pages) ? ($ordre_page + 1) : 'fin');
@@ -126,7 +130,8 @@ function get_liste_offres()
 		GROUP_CONCAT( if(nom_critere= 'age_max', valeur_critere, NULL ) SEPARATOR '|') `age_max`, 
 		GROUP_CONCAT( if(nom_critere= 'villes', valeur_critere, NULL ) SEPARATOR '|') `villes` ";
     foreach ($_SESSION['critere'] as $cle => $valeur) { //on va chercher les critères saisis dans le formulaire
-        $query .= ", GROUP_CONCAT( if(nom_critere= '" . $cle . "', valeur_critere, NULL ) separator '|') `" . $cle . "`";
+        $c_cle = securite_bdd($conn, $cle);
+        $query .= ", GROUP_CONCAT( if(nom_critere= '" . $c_cle . "', valeur_critere, NULL ) separator '|') `" . $c_cle . "`";
     }
     $query .= " FROM `bsl_offre_criteres`
 		JOIN `bsl_offre` ON `bsl_offre`.`id_offre`=`bsl_offre_criteres`.`id_offre`
@@ -161,23 +166,24 @@ function get_liste_offres()
     //foreach sur $_SESSION['critere'], en fonction du type
     foreach ($_SESSION['critere'] as $cle => $valeur) {
         //if($cle!="age"){
+        $c_cle = securite_bdd($conn, $cle);
         if (isset($_SESSION['type'][$cle])) {
             switch ($_SESSION['type'][$cle]) {
                 case 'select':
                 case 'radio':
-                    $query .= " AND `t`.`$cle` LIKE ? ";
+                    $query .= " AND `t`.`$c_cle` LIKE ? ";
                     $terms[] = '%' . $valeur . '%';
                     $terms_type .= "s";
                     break;
                 case 'multiple':
                 case 'checkbox':
-                    $boutdesql = "";
+                    $sql = "";
                     foreach ($_SESSION['critere'][$cle] as $selected_option) {
-                        $boutdesql .= " `t`.`$cle` LIKE ? OR";
+                        $sql .= " `t`.`$c_cle` LIKE ? OR";
                         $terms[] = '%' . $selected_option . '%';
                         $terms_type .= "s";
                     }
-                    $query .= " AND (" . $boutdesql . " FALSE)";
+                    $query .= " AND (" . $sql . " FALSE)";
                     break;
             }
         }
@@ -197,6 +203,8 @@ function get_liste_offres()
         call_user_func_array(array($stmt, 'bind_param'), $query_params);
         // fin de la manip...
 
+        $sous_themes = [];
+        $offres = [];
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
             while (mysqli_stmt_fetch($stmt)) {
@@ -232,6 +240,7 @@ function get_offre($id)
     mysqli_stmt_execute($stmt);
     check_mysql_error($conn);
 
+    $row = [];
     mysqli_stmt_bind_result($stmt, $row['nom_offre'], $row['description_offre'], $row['date_debut'], $row['date_fin'], $row['theme_offre'], $row['sous_theme_offre'], $row['adresse_offre'], $row['code_postal_offre'], $row['ville_offre'], $row['code_insee_offre'], $row['courriel_offre'], $row['telephone_offre'], $row['site_web_offre'], $row['visibilite_coordonnees'], $row['delai_offre'], $row['zone_selection_villes'], $row['nom_pro']);
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
@@ -254,18 +263,6 @@ function create_demande($id_offre, $coord)
     return $id;
 }
 
-/**
- * Fonction de gestion des erreurs mysqli
- * @param mysqli $conn
- * @throws Exception
- */
-function check_mysql_error(mysqli $conn)
-{
-    if (mysqli_error($conn))
-        throw new Exception('MySQL error : ' . mysqli_error($conn));
-}
-
-
 /******* bouts de code utile
  * //****** impression d'une requête
  * $print_sql = $query;
@@ -280,10 +277,7 @@ function check_mysql_error(mysqli $conn)
  * $query = 'SELECT ... FROM ...';
  * $stmt = mysqli_prepare($conn, $query);
  * mysqli_stmt_execute($stmt);
- * if (mysqli_error($conn)) {
- * echo mysqli_error($conn);
- * exit;
- * }
+ * check_mysql_error($conn);
  * mysqli_stmt_bind_result($stmt, $id, $nimetus, $kogus);
  * $rows = array();
  * while (mysqli_stmt_fetch($stmt)) {
