@@ -14,7 +14,7 @@ function securite_bdd(mysqli $conn, $value){
     // Pour tous les autres types
     else {
         $value = mysqli_real_escape_string($conn, (string) $value);
-        $value = addcslashes($value, '%_');
+        // $value = addcslashes($value, '%_'); -> GUILLAUME : fait pêter la requête de get_liste_offres (bcp de noms de critères contiennent un "_", qui du coup est échappé)
     }
 
     return $value;
