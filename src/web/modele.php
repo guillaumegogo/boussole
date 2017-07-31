@@ -10,20 +10,23 @@ function get_themes()
 {
     global $conn;
 
-    $query = "SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
+	$query = 'SELECT `id_theme`, `libelle_theme`, `actif_theme`, MAX(`c`) as `nb` FROM (
+		SELECT DISTINCT `bsl_theme`.`id_theme`, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme` , COUNT(`bsl_professionnel`.id_professionnel) as `c`
 		FROM `bsl_theme`
-		JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.id_theme=`bsl_theme`.id_theme
-		JOIN `bsl_professionnel` ON `bsl_professionnel`.id_professionnel=`bsl_professionnel_themes`.id_professionnel
-		LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.competence_geo=\"territoire\" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
-		LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire`
-		LEFT JOIN `bsl__departement` ON `bsl_professionnel`.competence_geo=\"departemental\" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo`
-		LEFT JOIN `bsl__region` ON `bsl_professionnel`.competence_geo=\"regional\" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo`
-		LEFT JOIN `bsl__departement` AS `bsl__departement_region` ON `bsl__departement_region`.`id_region`=`bsl__region`.`id_region`
-		WHERE `bsl_theme`.actif_theme=1 AND `bsl_professionnel`.actif_pro=1 AND (`bsl_professionnel`.competence_geo=\"national\" OR code_insee=? OR `bsl__departement`.id_departement=SUBSTR(?,1,2) OR `bsl__departement_region`.id_departement=SUBSTR(?,1,2))
+		LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme`
+		LEFT JOIN `bsl_professionnel` ON `bsl_professionnel`.`id_professionnel`=`bsl_professionnel_themes`.`id_professionnel` AND `bsl_professionnel`.`actif_pro`=1
+		LEFT JOIN `bsl_territoire` ON `bsl_professionnel`.`competence_geo`="territoire" AND `bsl_territoire`.`id_territoire`=`bsl_professionnel`.`id_competence_geo` 
+		LEFT JOIN `bsl_territoire_villes` ON `bsl_territoire_villes`.`id_territoire`=`bsl_territoire`.`id_territoire` 
+		LEFT JOIN `bsl__departement` ON `bsl_professionnel`.`competence_geo`="departemental" AND `bsl__departement`.`id_departement`=`bsl_professionnel`.`id_competence_geo` 
+		LEFT JOIN `bsl__region` ON `bsl_professionnel`.`competence_geo`="regional" AND `bsl__region`.`id_region`=`bsl_professionnel`.`id_competence_geo` 
+		LEFT JOIN `bsl__departement` as `bsl__departement_region` ON `bsl__departement_region`.`id_region`=`bsl__region`.`id_region` 
+		WHERE `id_theme_pere` IS NULL AND (`bsl_professionnel`.competence_geo="national" OR `bsl_territoire_villes`.`code_insee`=? OR `bsl__departement_region`.`id_departement`=SUBSTR(?,1,2) OR `bsl__departement`.`id_departement`=SUBSTR(?,1,2)) 
+		GROUP BY `bsl_theme`.`id_theme`, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme` 
 		UNION
-		SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`
+		SELECT DISTINCT `bsl_theme`.id_theme, `bsl_theme`.`libelle_theme`, `bsl_theme`.`actif_theme`, 0 as `c`
 		FROM `bsl_theme`
-		WHERE `id_theme_pere` IS NULL AND `actif_theme`=0";
+		WHERE `id_theme_pere` IS NULL) as `t`
+	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';
 
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, 'sss', $_SESSION['code_insee'], $_SESSION['code_insee'], $_SESSION['code_insee']);
@@ -33,11 +36,11 @@ function get_themes()
         echo mysqli_error($conn);
         exit;
     }
-    mysqli_stmt_bind_result($stmt, $id_theme, $libelle_theme, $actif_theme);
+    mysqli_stmt_bind_result($stmt, $id_theme, $libelle_theme, $actif_theme, $nb);
 
     $themes = [];
     while (mysqli_stmt_fetch($stmt)) {
-        $themes[] = array('id' => $id_theme, 'libelle' => $libelle_theme, 'actif' => $actif_theme);
+        $themes[] = array('id' => $id_theme, 'libelle' => $libelle_theme, 'actif' => $actif_theme*$nb); //si le thème est désactivé nationalement, ou s'il n'y a pas d'offre sur le territoire, alors il est considéré comme désactivé
     }
     mysqli_stmt_close($stmt);
     return $themes;
@@ -119,7 +122,6 @@ function get_formulaire($etape)
 }
 
 //************ construction de LA requête
-/*todo : il va falloir d'abord faire une requête pour lister les inputs (name/type) du formulaire - cf le get_formulaire - et construire en fonction la requête select */
 function get_liste_offres()
 {
     global $conn;
@@ -190,7 +192,7 @@ function get_liste_offres()
         //}
     }
     $query .= " ORDER BY `bsl_theme`.`ordre_theme`";
-    //todo : rendre dynamique les terms_type... (s ou i)
+    //todo : rendre dynamique les terms_type... (mettre des i à la place des s quand c'est pertinent)
 
     if ($stmt = mysqli_prepare($conn, $query)) {
 
@@ -220,6 +222,7 @@ function get_liste_offres()
         echo "L'application a rencontré un problème technique. Merci de contacter l'administrateur du site via le formulaire avec le message d'erreur suivant : " . mysqli_error($conn);
         exit;
     }
+
     mysqli_stmt_close($stmt);
     return [$sous_themes, $offres];
 }
@@ -264,10 +267,11 @@ function create_demande($id_offre, $coord)
 }
 
 /******* bouts de code utile
+ *
  * //****** impression d'une requête
  * $print_sql = $query;
- * foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
- * $print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+ * foreach($terms as $term){
+ * 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
  * }
  * echo $print_sql;
  *

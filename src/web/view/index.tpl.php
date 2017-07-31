@@ -82,7 +82,7 @@
                 <div>J'habite à <b><?= $_SESSION['ville_habitee'] ?> (<?= $_SESSION['code_postal'] ?>)</b> et je souhaite... </div>
                 <div class="boutonsbesoin">
                     <?php foreach ($themes as $theme) { ?>
-                        <input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled" ?> >  <!--formaction="formulaire.php?b=<?= $theme['id'] ?>"-->
+                        <input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
                     <?php } ?>
                 </div>
             </fieldset>
