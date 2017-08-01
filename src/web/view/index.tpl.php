@@ -79,12 +79,16 @@
         ?>
         <form class="joli accueil vert" method="post">
             <fieldset class="accueil_choix_besoin">
+			<?php if($flag_theme){ ?>
                 <div>J'habite à <b><?= $_SESSION['ville_habitee'] ?> (<?= $_SESSION['code_postal'] ?>)</b> et je souhaite... </div>
                 <div class="boutonsbesoin">
-                    <?php foreach ($themes as $theme) { ?>
-                        <input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
-                    <?php } ?>
+				<?php foreach ($themes as $theme) { ?>
+					<input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
+				<?php } ?>
                 </div>
+			<?php }else{ ?>
+                <div>La boussole n'est pas encore disponible sur ton territoire.<br/><br/>Tu peux cependant contacter <a href="http://www.crij.org/france" target="_blank">le réseau d'information jeunesse le plus proche de chez toi</a>.</div>
+			<?php } ?>
             </fieldset>
         </form>
         <?php

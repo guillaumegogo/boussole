@@ -29,6 +29,11 @@ if (isset($_POST['ville_selectionnee'])) {
 
     //********* récupération des thèmes disponibles en fonction des données en session
     $themes = get_themes();
+	
+	$flag_theme=0;
+	foreach ($themes as $theme) { 
+		$flag_theme += $theme['actif'];
+	}
 }
 
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
