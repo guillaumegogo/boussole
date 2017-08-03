@@ -52,27 +52,47 @@ if (isset($_POST['coordonnees'])) {
     //*********** création de la demande
     $id_demande = create_demande($id_offre, $_POST['coordonnees']);
 
-    //*********** envoi de mail si demandé
+    //*********** envoi des mails
     if ($id_demande) {
-        if (ENVIRONMENT === ENV_PROD) {
-            $to = 'boussole@yopmail.fr'; //en prod il faudra mettre ici l'adresse du pro ie $row['courriel_offre']
-            $subject = 'Une demande a été déposée sur la Boussole des jeunes';
+        if ((ENVIRONMENT === ENV_PROD) || (ENVIRONMENT === ENV_TEST)) {
+            //au professionnel
+			$to = 'boussole@yopmail.fr';
+            if (ENVIRONMENT === ENV_PROD) {
+                $to = $row['courriel_offre'];
+            }
+            $subject = 'Une demande a été déposée sur la Boussole des droits';
             $message = "<html><p>Un jeune est intéressé par l'offre <b>" . $row['nom_offre'] . "</b>.</p>"
                 . "<p>Il a déposé une demande de contact le " . strftime('%d %B %Y à %H:%M') . "</p>"
                 . "<p>Son profil est le suivant : " . liste_criteres('<br/>') . "</p>"
-                . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"" . $url_admin . "\">espace de gestion de la Boussole</a>."
-                . "<p>Ce mail aurait du être envoyé à " . $row['courriel_offre'] . "</p></html>";
+                . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"" . $url_admin . "\">espace de gestion de la Boussole</a></p></html>";
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
-            $headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
-            $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+            $headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
+            if (ENVIRONMENT !== ENV_PROD) {
+                $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+            }
             $envoi_mail = mail($to, $subject, $message, $headers);
 
-            //todo : + envoyer accusé d'envoi au jeune demandeur ?
-
+			//accusé d'envoi au demandeur
+			if (filter_var($_POST['coordonnees'], FILTER_VALIDATE_EMAIL)) {
+				
+				$to = $_POST['coordonnees'];
+				$subject = 'Vous avez déposé une demande de contact sur la Boussole des droits';
+				$message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
+					. "<p>Offre <b>" . $row['nom_offre'] . "</b>.</p>"
+					. "<p>Profil : " . liste_criteres('<br/>') . "</p></html>";
+				$headers = 'MIME-Version: 1.0' . "\r\n";
+				$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+				$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
+				if (ENVIRONMENT !== ENV_PROD) {
+					$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+				}
+				$envoi_accuse = mail($to, $subject, $message, $headers);
+			}
+			
             if ($envoi_mail) {
                 $resultat = "<p><img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> <b>Ta demande a bien été enregistrée et un courriel contenant les informations suivantes à été transmis à l'organisme proposant l'offre de service.</b></p>
-				<div style=\"liste_criteres\">" . liste_criteres('<br/>') . "</div>";
+                <div style=\"liste_criteres\">" . liste_criteres('<br/>') . "</div>";
             } else {
                 $resultat = "<p><img src=\"img/exclamation.png\" width=\"24px\"> Ta demande a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement " . $row['courriel_offre'] . ".</p>";
             }

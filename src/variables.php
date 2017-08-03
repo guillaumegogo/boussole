@@ -1,8 +1,9 @@
 <?php
 define('ENV_LBA', 'lba');
 define('ENV_GUILLAUME', 'guillaume');
+define('ENV_TEST', 'test');
 define('ENV_PROD', 'prod');
-define('ENVIRONMENT', ENV_LBA);
+define('ENVIRONMENT', ENV_GUILLAUME);
 
 define('DEBUG', true);
 
@@ -21,6 +22,7 @@ switch (ENVIRONMENT)
         define('DB_PASSWD', '');
         define('DB_NAME', 'boussole');
         break;
+    case ENV_TEST :
     case ENV_PROD :
         define('DB_HOST', '???');
         define('DB_USERNAME', '???');
@@ -32,4 +34,4 @@ switch (ENVIRONMENT)
 $titredusite = "la boussole des droits";
 $version = "Version du 01 août 2017";
 $message_erreur_bd = "L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
-$url_admin = "/admin";
+$url_admin = "http://beta.boussoledesdroits.fr/admin";
