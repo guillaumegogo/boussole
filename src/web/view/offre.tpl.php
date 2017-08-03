@@ -58,8 +58,15 @@
                             <input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"/>
                             <button type="submit">Je demande à être contacté·e</button>
                             <br/>
-                            <!--todo // en vue de tests-->
-                            <div style="font-size:small; color:red;">(le mail prévu pour le professionnel n'est pour le moment pas envoyé à l'adresse indiquée mais est <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>)</div>
+						<?php 
+						if (ENVIRONMENT !== ENV_PROD) { 
+							if (ENVIRONMENT === ENV_TEST) { 
+						?>
+                            <div style="font-size:small; color:red;">En environnement de test, le mail censé être adressé au professionnel est <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>.</div>
+						<?php }else{ ?>
+                            <div style="font-size:small; color:red;">Aucun mail n'est envoyé depuis cet environnement.</div>
+						<?php }
+						} ?>
                             </select>
                         </div>
                         <?php

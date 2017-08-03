@@ -18,12 +18,9 @@ html, body {
 body {
 	/*background: linear-gradient(to bottom right, white, GhostWhite); */
 	background-color: white;
-
-   // font-family: 'Cabin', sans-serif;
-
-    font-family: 'Questrial', sans-serif;
-
-	//font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: 'Questrial', sans-serif;
+	/*font-family: 'Cabin', sans-serif;
+	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 	font-size:120%;
 }
 #main{
@@ -102,7 +99,7 @@ label {
 .soustitre {
 	text-align:center;
 	width:90%;
-	margin:5% auto 0 auto;
+	margin:3em auto;
 	font-size:1.2em;
 	color: #656665;
 }
@@ -149,7 +146,7 @@ form.accueil{
 	padding-top:1em;
 	background: #29B297;
 	position: relative;
-	margin: 140px 0;
+	margin: 10% 0;
 }
 form.accueil:after{
 	content: '';
@@ -257,20 +254,23 @@ div.boutonsbesoin input:disabled{
 }
 .div123{
 	width:100%; 
-	margin: 50px 0 0 0;
+	margin: 5em 0 2em 0;
 	display: inline-block;
 	text-align:center; 
 	font-size:0.8em;
-	padding:0 10%;
+	padding:0;
 }
 .block123{
-	display:inline-block; margin-right:1em; margin-bottom:1em;
+	display:inline-block; 
 	width:30%;
 	vertical-align:middle; 
-	height:100%; padding:2em ;
+	height:100%; 
+	margin:0 1em 1em 0;
+	padding:2em 1em;
 	position: relative;
 	color: #656665;
 	font-size: 20px;
+	min-width:12em;
 }
 .block123:before{
 	content: '';
@@ -337,6 +337,9 @@ input[type=text], input[type=email],input[list], textarea, select {
 	height: 30px;
 	border: 1px solid #ccc;
 	padding-left: 8px;
+}
+select[multiple] {
+	height: auto;
 }
 select option{
 	padding: 5px 0 5px 8px;
@@ -410,6 +413,8 @@ fieldset.resultat legend {
 	border: 1px solid #eee;
 	vertical-align:top;
 	position: relative;
+	min-width:12em;
+	min-height:4.5em; 
 }
 .resultat_offre:before{
 	content: '';
@@ -436,9 +441,9 @@ fieldset.resultat legend {
 	font-weight: normal;
 	text-decoration:none;
 	font-size: 16px;
-	text-overflow: ellipsis;
+	text-overflow: initial; /*ellipsis;
 	overflow: hidden;
-	white-space: nowrap;
+	white-space: nowrap;*/
 }
 .resultat_offre a:visited{
 	color:DimGray;
@@ -603,23 +608,23 @@ table.offre img{
 	border:none;
 }
 
-footer {
-	position: absolute; 
-	bottom: 0; width:100%; 
-	font-size:0.7em;
-}
 .version{ 
 	text-align:right;
 	margin-right:1%; 
 	font-size:small; 
 	color:grey;
 }
+footer {
+	position: absolute; 
+	bottom: 0; 
+	width:100%; 
+	font-size:0.7em;
+}
 footer ul { 
 	background-color:#f7f7f6;
 	margin:0;
 	text-align:center;
-	padding-top:0.5em;
-	padding-bottom:0.5em;
+	padding:0.5em 0;
 }
 footer li { 
 	display:inline; 

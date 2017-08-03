@@ -57,7 +57,7 @@
 </head>
 <body><div id="main">
     <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?= $titredusite ?></a></div></div>
-    <div class="soustitre">Rencontrer des professionnel·le·s <b>près de chez moi</b> qui <b>m'aident</b> dans mes recherches.</div>
+    <div class="soustitre"><strong>Rencontre un conseiller</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
     <?php
     //********* 1er affichage de la page (ou mauvaise saise)
     if ($nb_villes!=1) {
