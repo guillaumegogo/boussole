@@ -40,6 +40,7 @@ if (isset($_POST['ville_selectionnee'])) {
 if (isset($_POST['besoin'])) {
     $_SESSION['besoin'] = $_POST['besoin'];
     header('Location: formulaire.php');
+    exit();
 }
 
 //view

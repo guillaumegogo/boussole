@@ -22,6 +22,7 @@ if (isset($_POST['id_offre'])) {
 //************ si pas d'id offre valide
 if (!isset($id_offre) || !is_numeric($id_offre)) {
     header('Location: index.php');
+    exit();
 }
 
 //********* requête de récup de l'offre pour affichage

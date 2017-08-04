@@ -10,12 +10,12 @@ include('../src/web/bootstrap.php');
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="css/style.css"/>
     <link rel="icon" type="image/png" href="img/compass-icon.png"/>
-    <title><?php echo ucfirst($titredusite); ?></title>
+    <title><?php xecho(ucfirst($titredusite)); ?></title>
 </head>
 <body>
 <div id="main">
     <div class="bandeau">
-        <div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div>
+        <div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div>
     </div>
 
     <div class="mentions">

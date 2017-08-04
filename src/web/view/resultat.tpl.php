@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/png" href="img/compass-icon.png" />
-    <title><?php echo ucfirst($titredusite); ?></title>
+    <title><?php xecho(ucfirst($titredusite)); ?></title>
     <script>
         function masqueCriteres(){
             var x = document.getElementById('criteres');
@@ -50,13 +50,13 @@
 </head>
 <body>
 <div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
-    <div class="soustitre" style="margin-top:3%"><?php echo $msg; ?></div>
+    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
+    <div class="soustitre" style="margin-top:3%"><?php xecho($msg); ?></div>
     <form class="joli resultat">
         <fieldset class="resultat">
             <legend>Rappel de mes informations</legend>
             <div>
-                <p onclick='masqueCriteres()'>J'habite à <b><?= $_SESSION['ville_habitee'] ?></b> et je souhaite <b><?= strtolower ($_SESSION['besoin']) ?></b> <span id="fleche_criteres">&#9662;</span></p>
+                <p onclick='masqueCriteres()'>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b> <span id="fleche_criteres">&#9662;</span></p>
                 <div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
                     <div class="colonnes">
                         <?php echo liste_criteres('<br/>'); ?> <!--todo : à mettre en forme-->
@@ -88,7 +88,7 @@
             $anchor="a".$offre['sous_theme'];
             ?>
 
-            <fieldset class="resultat" id="<?= $anchor ?>"><legend><?= $sous_themes[$offre['sous_theme']]['titre'] ?> (<?= $sous_themes[$offre['sous_theme']]['nb'] ?> offre<?= ($sous_themes[$offre['sous_theme']]['nb']>1) ? 's':''; ?>)</legend>
+            <fieldset class="resultat" id="<?= $anchor ?>"><legend><?php xecho($sous_themes[$offre['sous_theme']]['titre']) ?> (<?php xecho($sous_themes[$offre['sous_theme']]['nb']) ?> offre<?= ($sous_themes[$offre['sous_theme']]['nb']>1) ? 's':''; ?>)</legend>
                 <div style="width:100%; margin:auto;">
                     <?php
                     }
@@ -105,14 +105,14 @@
                     <!-- affichage des offres -->
                     <div class="resultat_offre"><!--
 			<div class="coeur">&#9825;</div>-->
-                        <a href="#<?= $anchor ?>" onclick="afficheModal('<?= $offre["id"] ?>');"><b><?= ($titre_court) ? $titre_court : $offre["titre"] ?></b></a>
+                        <a href="#<?= $anchor ?>" onclick="afficheModal('<?= (int) $offre["id"] ?>');"><b><?php xecho(($titre_court) ? $titre_court : $offre["titre"]) ?></b></a>
                     </div>
                     <!-- fenêtre modale de l'offre -->
-                    <div id="modal<?= $offre["id"] ?>" class="modal" ><div class="modal-content">
-                            <span class="close" onclick="cacheModal('<?= $offre["id"] ?>');">&times;</span>
-                            <p><b><?= $offre["titre"] ?></b><br/><?= $offre["nom_pro"] ?></p>
-                            <p><?= $offre["description"] ?></p>
-                            <div class="center"><a href="offre.php?id=<?= $offre["id"] ?>" class="button">En savoir +</a></div>
+                    <div id="modal<?= (int) $offre["id"] ?>" class="modal" ><div class="modal-content">
+                            <span class="close" onclick="cacheModal('<?= (int) $offre["id"] ?>');">&times;</span>
+                            <p><b><?php xecho($offre["titre"]) ?></b><br/><?= (int) $offre["nom_pro"] ?></p>
+                            <p><?php xecho($offre["description"]) ?></p>
+                            <div class="center"><a href="offre.php?id=<?= (int) $offre["id"] ?>" class="button">En savoir +</a></div>
                         </div></div>
                     <?php
                     }

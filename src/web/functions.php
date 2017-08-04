@@ -23,7 +23,7 @@ function liste_criteres($separateur = ",")
                 $txt .= $valeur;
             }
         }
-        $txt_criteres .= $txt . $separateur;
+        $txt_criteres .= xssafe($txt) . $separateur;
     }
     return $txt_criteres;
 }
@@ -31,6 +31,7 @@ function liste_criteres($separateur = ",")
 //******** présentation des questions du formulaire
 function ouverture_ligne($ele)
 { //affichage ligne préalable si le type le demande
+    //Voir si implémentation xssafe possible ou si ça fait sauter les "name"
     $t = '';
     switch ($ele['type']) {
         case 'radio':
@@ -49,6 +50,7 @@ function ouverture_ligne($ele)
 
 function affiche_valeur($ele, $type)
 { //affichage valeur
+    //Voir si implémentation xssafe possible ou si ça fait sauter les "name"
     $t = '';
     switch ($type) {
         case 'radio':
@@ -56,14 +58,14 @@ function affiche_valeur($ele, $type)
             if (isset($_SESSION['critere'][$ele['name']])) {
                 if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' checked ';
             } else if ($ele['def'] == 1) $t .= ' checked ';
-            $t .= '> ' . $ele['lib'] . "\n";
+            $t .= '> ' . xssafe($ele['lib']) . "\n";
             break;
         case 'checkbox':
             $t = '<input type="checkbox" name="' . $ele['name'] . '"[] value="' . $ele['val'] . '" ';
             if (isset($_SESSION['critere'][$ele['name']])) {
                 if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' checked ';
             } else if ($ele['def'] == 1) $t .= ' checked ';
-            $t .= '> ' . $ele['lib'] . '</br>' . "\n";
+            $t .= '> ' . xssafe($ele['lib']) . '</br>' . "\n";
             break;
         case 'select':
         case 'multiple':
@@ -71,7 +73,7 @@ function affiche_valeur($ele, $type)
             if (isset($_SESSION['critere'][$ele['name']])) {
                 if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' selected ';
             } else if ($ele['def'] == 1) $t .= ' selected ';
-            $t .= '> ' . $ele['lib'] . '</option>' . "\n";
+            $t .= '> ' . xssafe($ele['lib']) . '</option>' . "\n";
             break;
     }
     return $t;

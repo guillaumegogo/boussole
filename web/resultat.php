@@ -5,6 +5,7 @@ include('../src/web/bootstrap.php');
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
     header('Location: index.php');
+    exit();
 }
 
 //********* on va chercher les offres et les sous-thèmes

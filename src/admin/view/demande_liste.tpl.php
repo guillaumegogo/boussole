@@ -18,12 +18,12 @@
 
 <body>
 <h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
-<div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
     <?php echo $select_territoire; ?>
 
-    <h2><?php echo $titre_page; ?></h2>
+    <h2><?php xecho($titre_page); ?></h2>
 
     <?php
     if (count($demandes) > 0) {
@@ -39,15 +39,14 @@
             <tbody>
             <?php
             foreach ($demandes as $demande) {
-                //print_r($demande);
                 ?>
                 <tr>
                     <td>
-                        <a href="demande_detail.php?id=<?= $demande['id_demande'] ?>"><?= date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi') ?>
+                        <a href="demande_detail.php?id=<?= (int) $demande['id_demande'] ?>"><?= date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi') ?>
                     </td>
-                    <td><?= $demande['contact_jeune'] ?></td>
-                    <td><?= $demande['nom_offre'] ?></td>
-                    <td><?= $demande['nom_pro'] ?></td>
+                    <td><?php xecho($demande['contact_jeune']) ?></td>
+                    <td><?php xecho($demande['nom_offre']) ?></td>
+                    <td><?php xecho($demande['nom_pro']) ?></td>
                     <?php echo ($flag_traite) ? "<td>" . date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi') . "</td>" : ""; ?>
                 </tr>
                 <?php

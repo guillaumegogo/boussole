@@ -53,10 +53,10 @@
                 }
             });
         } );</script>
-    <title><?= ucfirst($titredusite) ?></title>
+    <title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?= $titredusite ?></a></div></div>
+    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
     <div class="soustitre"><strong>Rencontre un conseiller</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
     <?php
     //********* 1er affichage de la page (ou mauvaise saise)
@@ -64,9 +64,9 @@
         ?>
         <form class="joli accueil vert" method="post" id="searchForm">
             <fieldset class="accueil_choix_ville">
-                <?php
-                if (isset($message)) { echo "<p class=\"message\">".$message."</p>"; }
-                ?>
+                <?php if (isset($message)) { ?>
+                    <p class="message"><?php xecho($message) ?></p>
+                <?php } ?>
                 <label for="ville_selectionnee">J'habite à</label>
                 <input type="text" id="villes" name="ville_selectionnee" placeholder="ville ou code postal">
                 <input type="submit" value="Démarrer">
@@ -80,10 +80,10 @@
         <form class="joli accueil vert" method="post">
             <fieldset class="accueil_choix_besoin">
 			<?php if($flag_theme){ ?>
-                <div>J'habite à <b><?= $_SESSION['ville_habitee'] ?> (<?= $_SESSION['code_postal'] ?>)</b> et je souhaite... </div>
+                <div>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?> (<?php xecho($_SESSION['code_postal']) ?>)</b> et je souhaite... </div>
                 <div class="boutonsbesoin">
 				<?php foreach ($themes as $theme) { ?>
-					<input type="submit" name="besoin" value="<?= $theme['libelle'] ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
+					<input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
 				<?php } ?>
                 </div>
 			<?php }else{ ?>

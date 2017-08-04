@@ -5,26 +5,26 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/png" href="img/compass-icon.png" />
-    <title><?= ucfirst($titredusite) ?></title>
+    <title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?= $titredusite ?></a></div></div>
+    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
 
     <?php
     if($row['nom_offre']) { //si on a une offre
         ?>
-        <div class="soustitre"  style="margin-top:3%">Je suis intéressé par l'offre de service &laquo;&nbsp;<b><?= $row['nom_offre'] ?></b>&nbsp;&raquo;.</div>
+        <div class="soustitre"  style="margin-top:3%">Je suis intéressé par l'offre de service &laquo;&nbsp;<b><?php xecho($row['nom_offre']) ?></b>&nbsp;&raquo;.</div>
         <form class="joli resultat" style="margin-top:2%" action="offre.php" method="post">
             <fieldset>
                 <legend>Détail de l'offre</legend>
                 <table class="offre">
                     <tr>
                         <td>Description</td>
-                        <td colspan=2><?= $row['description_offre'] ?></td>
+                        <td colspan=2><?php xecho($row['description_offre']) ?></td>
                     </tr>
                     <tr>
                         <td>Validité</td>
-                        <td><?= $row['date_debut'] ?> au <?= $row['date_fin'] ?></td>
+                        <td><?php xecho($row['date_debut']) ?> au <?php xecho($row['date_fin']) ?></td>
                         <td rowspan=2>
                             <div style=" text-align:center; padding:0.5em;">
                                 <p style="margin:0.5em"><i>Partage-cette offre :</i></p>
@@ -36,11 +36,11 @@
                     </tr>
                     <!--<tr>
 			<td style="padding:0.5em;">Thème</td>
-			<td style="padding:0.5em;"><?= $row['theme_offre'] ?></td>
+			<td style="padding:0.5em;"><?php xecho($row['theme_offre']) ?></td>
 		</tr>-->
                     <tr>
                         <td style="padding:0.5em;">Thèmatique</td>
-                        <td style="padding:0.5em;"><?= $row['sous_theme_offre'] ?></td>
+                        <td style="padding:0.5em;"><?php xecho($row['sous_theme_offre']) ?></td>
                     </tr>
                 </table>
             </fieldset>
@@ -52,9 +52,9 @@
                         echo $resultat;
                     } else {
                         ?>
-                        <p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller d'ici <b><?= $row['delai_offre'] ?> jours</b> maximum.</p>
+                        <p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller d'ici <b><?php xecho($row['delai_offre']) ?> jours</b> maximum.</p>
                         <div style="text-align:center; margin:1em auto;">
-                            <input type="hidden" name="id_offre" value="<?= $id_offre ?>">
+                            <input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
                             <input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"/>
                             <button type="submit">Je demande à être contacté·e</button>
                             <br/>
@@ -82,29 +82,29 @@
                     <table class="offre" style="width:auto;"> <!--style="width:50%;"-->
                         <tr>
                             <td style="width:15em;">Professionnel</td>
-                            <td><b><?= $row['nom_pro'] ?></b></td>
+                            <td><b><?php xecho($row['nom_pro']) ?></b></td>
                         </tr>
                         <tr>
                             <td>Adresse</td>
-                            <td><?= $adresse ?></td>
+                            <td><?php xecho($adresse) ?></td>
                         </tr>
                         <tr>
                             <td>Site internet</td>
-                            <td><?= $url ?></td>
+                            <td><?php xecho($url) ?></td>
                         </tr>
                         <?php if ($row['visibilite_coordonnees']) { ?>
                             <tr>
                                 <td>Courriel <span style="font-size:small; color:red;">(à masquer ?)</span></td>
-                                <td><?= $courriel_offre ?></td>
+                                <td><?php xecho($courriel_offre) ?></td>
                             </tr>
                             <tr>
                                 <td>Téléphone <span style="font-size:small; color:red;">(à masquer ?)</span></td>
-                                <td><?php if ($id_offre) { echo $row['telephone_offre']; } ?></td>
+                                <td><?php if ($id_offre) { xecho($row['telephone_offre']); } ?></td>
                             </tr>
                         <?php } ?>
                         <!--<tr>
 				<td>Zone concernée</td>
-				<td><?= $zone ?></td>
+				<td><?php xecho($zone) ?></td>
 			</tr>-->
                     </table>
                 </div>

@@ -5,12 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/png" href="img/compass-icon.png" />
-    <title><?php echo ucfirst($titredusite); ?></title>
+    <title><?php xecho(ucfirst($titredusite)); ?></title>
 </head>
 <body><div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php echo $titredusite; ?></a></div></div>
+    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
     <div class="soustitre">
-        <p>J'habite à <b><?= $_SESSION['ville_habitee'] ?></b> et je souhaite <b><?= strtolower ($_SESSION['besoin']) ?></b>.</p>
+        <p>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b>.</p>
     </div>
 
     <?php
@@ -20,17 +20,17 @@
         <form action="formulaire.php" method="post" class="joli formulaire">
 
             <fieldset class="formulaire">
-                <legend><?= $meta['titre'] ?> (<?= $meta['etape'] ?>/<?= $meta['nb'] ?>)</legend>
-                <div class="aide"><img src="img/ci_help.png" title="<?= $meta['aide'] ?>"></div>
+                <legend><?php xecho($meta['titre']) ?> (<?php xecho($meta['etape']) ?>/<?php xecho($meta['nb']) ?>)</legend>
+                <div class="aide"><img src="img/ci_help.png" title="<?php xecho($meta['aide']) ?>"></div>
 
                 <div class="centreformulaire">
-                    <input type="hidden" name="etape" value="<?= $meta['suite'] ?>">
+                    <input type="hidden" name="etape" value="<?php xecho($meta['suite']) ?>">
 
                     <?php
                     foreach ($questions as $question) {
                         ?>
                         <div class="lab">
-                            <label class="label_long" for="<?= $question['name'] ?>"><?= $question['que'] ?></label>
+                            <label class="label_long" for="<?php xecho($question['name']) ?>"><?php xecho($question['que']) ?></label>
                             <div style="display:inline-block;">
                                 <?php
                                 echo ouverture_ligne($question);

@@ -30,3 +30,24 @@ function check_mysql_error(mysqli $conn)
     if (mysqli_error($conn))
         throw new Exception('MySQL error : ' . mysqli_error($conn));
 }
+
+/**
+ * Sécurisation des chaines de caractère pour empêcher les injection xss
+ * @param mixed $data
+ * @param string $encoding
+ * @return string
+ */
+function xssafe($data, $encoding = 'UTF-8')
+{
+    return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+}
+
+/**
+ * Print d'une chaine de caractère xss safe
+ * @param mixed $data
+ */
+function xecho($data)
+{
+    echo xssafe($data);
+}
+

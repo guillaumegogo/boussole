@@ -5,6 +5,7 @@ include('../src/web/bootstrap.php');
 //************ si accès direct à la page, renvoi vers l'accueil
 if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
     header('Location: index.php');
+    exit();
 }
 
 //********* tous les champs saisis sont remontés en session (sauf "etape" qui n'a pas d'intérêt) : age, sexe, nationalite, jesais, situation, etudes, diplome, permis, handicap, temps_plein, experience, secteur, type_emploi, inscription, etc.
@@ -21,6 +22,7 @@ if (isset($_POST['etape'])) {
 }
 if ($etape=='fin') {
     header('Location: resultat.php');
+    exit();
 }
 
 //************ récupération des éléments de la page du formulaire

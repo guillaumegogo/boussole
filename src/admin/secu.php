@@ -1,5 +1,7 @@
 <?php
 
+/*---------------------------------------------------- CONSTANTES ----------------------------------------------------*/
+
 define('ROLE_ADMIN', 1);
 define('ROLE_ANIMATEUR', 2);
 define('ROLE_PRO', 3);
@@ -17,6 +19,14 @@ define('PASSWD_MIN_LENGTH', 6);
 
 define('SALT_BOUSSOLE', '@CC#B0usS0l3_');
 
+/*------------------------------------------------------- LOGIN ------------------------------------------------------*/
+
+/**
+ * Fonction de login backoffice
+ * @param string $email
+ * @param string $password
+ * @return bool
+ */
 function secu_login($email, $password)
 {
     secu_logout();
@@ -72,6 +82,10 @@ function secu_login($email, $password)
     return $logged;
 }
 
+/**
+ * Verification l'état d'authentification de l'utilisateur courant
+ * @return bool
+ */
 function secu_is_logged()
 {
     global $conn;
@@ -103,6 +117,11 @@ function secu_is_logged()
     return $logged;
 }
 
+/**
+ * Verifie si l'utilisateur courant a les droits pour accéder au BO ou plus spécifiquement à une page
+ * Redirige automatiquement si ce n'est pas le cas
+ * @param null|string $page
+ */
 function secu_check_login($page = null)
 {
     if (secu_is_logged() !== true) {
@@ -118,6 +137,11 @@ function secu_check_login($page = null)
     }
 }
 
+/**
+ * Verifie que l'utilisateur courant à les droits pour accéder à une page en particulier
+ * @param string $page
+ * @return bool
+ */
 function secu_is_authorized($page)
 {
     global $conn;
@@ -178,6 +202,11 @@ function secu_is_authorized($page)
     return $authorized;
 }
 
+/**
+ * Verifie le role de l'utilisateur connecté
+ * @param int $role
+ * @return bool
+ */
 function secu_check_role($role)
 {
     global $conn;
@@ -209,8 +238,12 @@ function secu_check_role($role)
     return $check;
 }
 
-/* reset password */
+/*-------------------------------------------------- RESET PASSWORD --------------------------------------------------*/
 
+/**
+ * Envoi du mail de réinitialisation de mot de passe
+ * @param string $email
+ */
 function secu_send_reset_email($email)
 {
     global $conn;
@@ -242,6 +275,11 @@ function secu_send_reset_email($email)
     }
 }
 
+/**
+ * Verification du token de réinitialisation de mot de passe
+ * @param $token
+ * @return bool
+ */
 function secu_check_reset_token($token)
 {
     global $conn;
@@ -270,6 +308,11 @@ function secu_check_reset_token($token)
     return $check;
 }
 
+/**
+ * Réinitialisation de mot de passe (en base)
+ * @param string $password
+ * @param string $token
+ */
 function secu_reset_password($password, $token)
 {
     global $conn;
@@ -286,8 +329,12 @@ function secu_reset_password($password, $token)
     mysqli_stmt_close($stmt);
 }
 
-/*Session management*/
+/*------------------------------------------------ SESSION MANAGEMENT ------------------------------------------------*/
 
+/**
+ * Récupération de l'id de l'utilisateur courant
+ * @return int|null
+ */
 function secu_get_current_user_id()
 {
     $user_id = null;
@@ -297,6 +344,10 @@ function secu_get_current_user_id()
     return $user_id;
 }
 
+/**
+ * Affectation de l'id de territoire
+ * @param int|null $id
+ */
 function secu_set_territoire_id($id)
 {
     if ((int)$id > 0)
@@ -305,6 +356,10 @@ function secu_set_territoire_id($id)
         $_SESSION['territoire_id'] = null;
 }
 
+/**
+ * Recuperation de l'id de territoire
+ * @return int|null
+ */
 function secu_get_territoire_id()
 {
     $territoire_id = null;
@@ -314,6 +369,10 @@ function secu_get_territoire_id()
     return $territoire_id;
 }
 
+/**
+ * Affectation de l'id de user pro
+ * @param int|null $id
+ */
 function secu_set_user_pro_id($id)
 {
     if ((int)$id > 0)
@@ -322,6 +381,10 @@ function secu_set_user_pro_id($id)
         $_SESSION['user_pro_id'] = null;
 }
 
+/**
+ * Recuperation de l'id de user pro
+ * @return int|null
+ */
 function secu_get_user_pro_id()
 {
     $user_pro_id = null;
@@ -331,16 +394,55 @@ function secu_get_user_pro_id()
     return $user_pro_id;
 }
 
+/*------------------------------------------------------ UTILS -------------------------------------------------------*/
+
+/**
+ * Generation d'un checksum
+ * @param int $id
+ * @param string $email
+ * @param string $date_inscription
+ * @return string
+ */
 function secu_user_checksum($id, $email, $date_inscription)
 {
-    return hash('sha256', SALT_BOUSSOLE . $id . '/' . $email . '!' . $_SERVER['HTTP_USER_AGENT'] . '¤' . $date_inscription);
+    $ip = secu_get_ip();
+    return hash('sha256', SALT_BOUSSOLE . '%' . $ip . '*' . $id . '/' . $email . '!' . $_SERVER['HTTP_USER_AGENT'] . '¤' . $date_inscription);
 }
 
+/**
+ * Récupération de l'adresse ip d'un utilisateur
+ * @return array|string
+ */
+function secu_get_ip()
+{
+    $address = $_SERVER['REMOTE_ADDR'];
+    if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (array_key_exists('HTTP_CLIENT_IP', $_SERVER) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $address = $_SERVER['HTTP_CLIENT_IP'];
+    }
+
+    if (strpos($address, ",") > 0) {
+        $ips = explode(",", $address);
+        $address = trim($ips[0]);
+    }
+
+    return $address;
+}
+
+/**
+ * Hash du password
+ * @param $password
+ * @return bool|string
+ */
 function secu_password_hash($password)
 {
     return password_hash(SALT_BOUSSOLE . $password, PASSWORD_DEFAULT);
 }
 
+/**
+ * Nettoyage de la session
+ */
 function secu_logout()
 {
     session_unset();
