@@ -28,4 +28,4 @@ if ($nb_offres) {
 }
 
 //view
-require '../src/web/view/resultat.tpl.php';
+require 'view/resultat.tpl.php';

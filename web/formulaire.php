@@ -37,4 +37,4 @@ foreach ($questions as $question) {
 }
 
 //view
-require '../src/web/view/formulaire.tpl.php';
+require 'view/formulaire.tpl.php';

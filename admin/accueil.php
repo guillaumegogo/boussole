@@ -20,7 +20,7 @@ if (secu_is_authorized(DROIT_OFFRE)) {
     $liens_activite .= '<li><a href=\'offre_liste.php\'>Offres de service</a></li>';
 }
 if (secu_is_authorized(DROIT_DEMANDE)) {
-    $liens_activite .= '<li><a keehref=\'demande_liste.php\'>Demandes reçues</a> ' . $nb_dmd . '</li>';
+    $liens_activite .= '<li><a href=\'demande_liste.php\'>Demandes reçues</a> ' . $nb_dmd . '</li>';
 }
 
 $liens_admin = '';
@@ -43,7 +43,7 @@ if (secu_is_authorized(DROIT_THEME)) {
     $liens_reference .= '<li><a href=\'theme.php\'>Thèmes et sous-thèmes</a></li>';
 }
 if (secu_is_authorized(DROIT_CRITERE)) {
-    $liens_reference .= '<li>Critères</li>';
+    $liens_reference .= '<li><a href=\'formulaire_liste.php\'>Formulaires</a></li>';
 }
 
 //********** sélection territoire
@@ -54,4 +54,4 @@ if (isset($_POST['choix_territoire'])) {
 include('../src/admin/select_territoires.inc.php');
 
 //view
-require '../src/admin/view/accueil.tpl.php';
+require 'view/accueil.tpl.php';

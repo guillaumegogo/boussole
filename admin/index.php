@@ -15,4 +15,4 @@ if (isset($_POST['login']) && isset($_POST['motdepasseactuel'])) {
 }
 
 //view
-require '../src/admin/view/index.tpl.php';
+require 'view/index.tpl.php';

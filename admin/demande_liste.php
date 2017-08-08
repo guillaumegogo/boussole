@@ -23,4 +23,4 @@ $titre_page = ($flag_traite) ? "Liste des demandes traitées" : "Liste des deman
 $lien_traites = ($flag_traite) ? "<a href=\"demande_liste.php\">Liste des demandes à traiter</a>" : "<a href=\"demande_liste.php?etat=traite\">Liste des demandes traitées</a>";
 
 //view
-require '../src/admin/view/demande_liste.tpl.php';
+require 'view/demande_liste.tpl.php';

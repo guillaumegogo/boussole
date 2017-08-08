@@ -243,4 +243,4 @@ if (isset($id_offre)) {
 }
 
 //view
-require '../src/admin/view/offre_detail.tpl.php';
+require 'view/offre_detail.tpl.php';

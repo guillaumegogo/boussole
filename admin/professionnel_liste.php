@@ -32,4 +32,4 @@ $result = mysqli_query($conn, $sql);
 $lien_desactives = ($flag_actif) ? "<a href=\"professionnel_liste.php?actif=non\">Liste des professionnels désactivés</a>" : "<a href=\"professionnel_liste.php\">Liste des professionnels actifs</a>";
 
 //view
-require '../src/admin/view/professionnel_liste.tpl.php';
+require 'view/professionnel_liste.tpl.php';

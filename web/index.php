@@ -44,4 +44,4 @@ if (isset($_POST['besoin'])) {
 }
 
 //view
-require '../src/web/view/index.tpl.php';
+require 'view/index.tpl.php';

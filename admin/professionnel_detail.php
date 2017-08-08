@@ -237,4 +237,4 @@ while ($rowt = mysqli_fetch_assoc($result)) {
 }
 
 //view
-require '../src/admin/view/professionnel_detail.tpl.php';
+require 'view/professionnel_detail.tpl.php';

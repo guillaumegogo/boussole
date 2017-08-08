@@ -53,4 +53,4 @@ if (mysqli_num_rows($result) > 0) {
 $lien_desactives = ($flag_actif) ? '<a href=\'utilisateur_liste.php?actif=non\'>Liste des utilisateurs désactivés</a>' : '<a href=\'utilisateur_liste.php\'>Liste des utilisateurs actifs</a>';
 
 //view
-require '../src/admin/view/utilisateur_liste.tpl.php';
+require 'view/utilisateur_liste.tpl.php';

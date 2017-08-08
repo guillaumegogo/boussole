@@ -40,4 +40,4 @@ if (isset($_POST['token']) && !empty($_POST['token']) && secu_check_reset_token(
 }
 
 //view
-require '../src/admin/view/motdepasseoublie.tpl.php';
+require 'view/motdepasseoublie.tpl.php';

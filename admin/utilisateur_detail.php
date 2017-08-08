@@ -165,4 +165,4 @@ if (isset($_GET["do"]) && $_GET["do"] == "mdp") {
 }
 
 //view
-require '../src/admin/view/utilisateur_detail.tpl.php';
+require 'view/utilisateur_detail.tpl.php';
