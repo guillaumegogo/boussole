@@ -123,6 +123,9 @@ legend{
 .detail input[type=text].datepick { 
 	width: 8em; 
 }
+.input_int { 
+	width: 3em; 
+}
 #editeur{
   width: 18em;
   height: 12em;

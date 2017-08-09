@@ -20,70 +20,108 @@
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-    <h2>Détail d'un formulaire</h2>
+<?php
+if ($meta !== null) {
+?>
+
+    <h2>Détail du formulaire : <?php xecho($meta['theme'].' / '.$meta['territoire']) ?></h2> 
+	<p style='color:red; text-align:center;'>Ce module n'est pour le moment disponible qu'en consultation.</p>
     <?php echo $msg; ?>
 
     <?php
-    if ($form !== null) {
-        ?>
+    if (count($pages) > 0) {
+    ?>
 	
-    <?php
-    if (count($form[0]) > 0) {
-        ?>
-        <table id="sortable">
+	<div><div style="float:left; min-width:30%; border:1px solid white;">
+	<h3>Pages</h3>
+		<form method="post">
+        <table class="sortable">
             <thead>
             <tr>
-                <th>Question</th>
-                <th>Identifiant</th>
-                <th>Page</th>
-                <th>Type</th>
-                <th>Taille</th>
-                <th>Obligatoire</th>
-                <th>Valeurs proposées</th>
+                <th>Ordre</th>
+                <th>Titre</th>
             </thead>
             <tbody>
             <?php
-            foreach ($form[0] as $question) {
-            ?>
+            foreach ($pages as $page) {
+			?>
                 <tr>
-                    <td><a href="#"><!--formulaire_question.php?id=<?= (int) $question['id'] ?>--><?php xecho($question['que']) ?></a></td>
-                    <td><?php xecho($question['name']) ?></td>
-                    <td><?php xecho($question['ordre_page']) ?></td>
-                    <td><?php xecho($question['type']) ?></td>
-                    <td><?php xecho($question['tai']) ?></td>
-                    <td><?= ($question['obl']) ? "oui":"non" ?></td>
-					<td>
-				<?php
-				foreach ($form[1][$question['id']] as $reponse) {
-                ?>
-					<?php xecho($reponse['lib']." ;") ?>
-				<?php
-				}
-                ?>
-					</td>
+					<td><input name="ordre_maj_<?= $page['id'] ?>" type="text" value="<?php xecho($page['ordre']); ?>" class="input_int"></td>
+					<td><input name="titre_maj_<?= $page['id'] ?>" type="text" value="<?php xecho($page['titre']); ?>"></td>
                 </tr>
                 <?php
             }
             ?>
+                <tr>
+					<td><input name="ordre_maj_nv" type="text" value="" class="input_int"></td>
+					<td><input name="titre_maj_nv" type="text" value="" placeholder="Nouvelle page"></td>
+                </tr>
             </tbody>
         </table>
-
-        <?php
-    } else {
-        ?>
-        <div style="margin:1em;text-align:center">Aucun résultat</div>
-        <?php
-    }
-    ?>
-        <?php
-    } else {
-        echo "N° de demande non valide.";
-    }
-    ?>
-
-    <div class="button"><a href="formulaire_liste.php">Retour à la liste des formulaires</a></div>
+		
+		<div class="button"><input type="submit" value="Enregistrer" disabled></div>
+		</form>
+	</div>
 	
-	<pre><?php print_r($form); ?></pre>
+    <?php
+    } else {
+    ?>
+    <div style="margin:1em;text-align:center">Aucun résultat</div>
+    <?php
+    }
+	
+    if (count($questions) > 0) {
+    ?>
+	<div style="width:auto; border:1px solid white;">
+	<h3>Questions</h3>
+        <table class="sortable">
+            <thead>
+            <tr>
+                <th>Page</th>
+                <th>Ordre</th>
+                <th>Identifiant</th>
+                <th>Libellé</th>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($pages as $page) {
+				foreach ($questions[$page['id']] as $question) {
+			?>
+                <tr>
+                    <td><?php xecho($page['ordre']) ?></td>
+                    <td><?php xecho($question['ordre']) ?></td>
+                    <td><a href="formulaire_question.php?id=<?= (int) $question['id'] ?>"><?php xecho($question['name']) ?></a></td>
+                    <td><?php xecho($question['libelle']) ?></td>
+                </tr>
+                <?php
+				}
+            }
+            ?>
+            </tbody>
+        </table>
+	</div>
+	</div>
+
+    <?php
+    } else {
+    ?>
+	<div style="margin:1em;text-align:center">Aucun résultat</div>
+	<?php
+    }
+    ?>
+	
+<?php
+} else {
+	echo "N° de demande non valide.";
+}
+?>
+		
+	<!--<div class="button">
+		<input type="button" value="Ajouter une page" onclick="javascript:location.href='formulaire_page.php?f=<?= $meta['id'] ?>'">
+		<input type="button" value="Ajouter une question" onclick="javascript:location.href='formulaire_question.php?f=<?= $meta['id'] ?>'">
+	</div>-->
+
+	<div class="button"><a href="formulaire_liste.php">Retour à la liste des formulaires</a></div>
 </div>
 </body>
 </html>

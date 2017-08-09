@@ -177,8 +177,7 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null)
     mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire);
     $formulaires = [];
     while (mysqli_stmt_fetch($stmt)) {
-        if (!$territoire) $territoire = "National";
-		$formulaires[] = array('id' => $id_formulaire, 'libelle' => $libelle, 'territoire' => $territoire);
+		$formulaires[] = array('id' => $id_formulaire, 'libelle' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national');
     }
     mysqli_stmt_close($stmt);
     return $formulaires;
@@ -188,31 +187,66 @@ function get_formulaire_by_id($id)
 {
     global $conn;
 
-    $query = 'SELECT `bsl_formulaire`.`id_formulaire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` AS `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`id_question`, `bsl_formulaire__question`.`ordre` AS `ordre_question`, `bsl_formulaire__question`.`libelle` AS `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire` 
+    $query = 'SELECT `bsl_formulaire`.`id_formulaire`,`bsl_theme`.`libelle_theme_court`, `bsl_territoire`.`nom_territoire`, `bsl_formulaire`.`nb_pages`, `bsl_formulaire__page`.`id_page`, `bsl_formulaire__page`.`titre`, `bsl_formulaire__page`.`ordre` AS `ordre_page`, `bsl_formulaire__page`.`aide`, `bsl_formulaire__question`.`id_question`, `bsl_formulaire__question`.`ordre` AS `ordre_question`, `bsl_formulaire__question`.`libelle` AS `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire` FROM `bsl_formulaire` 
 		JOIN `bsl_theme` ON `bsl_theme`.`id_theme`=`bsl_formulaire`.`id_theme`
+		LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_formulaire`.`id_territoire` AND `bsl_territoire`.`actif_territoire`=1 
 		JOIN `bsl_formulaire__page` ON `bsl_formulaire__page`.`id_formulaire`=`bsl_formulaire`.`id_formulaire` AND `bsl_formulaire__page`.`actif`=1
 		JOIN `bsl_formulaire__question` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page` AND `bsl_formulaire__question`.`actif`=1
-		JOIN `bsl_formulaire__valeur` ON `bsl_formulaire__valeur`.`id_question`=`bsl_formulaire__question`.`id_question` AND `bsl_formulaire__valeur`.`actif`=1
 		WHERE `bsl_formulaire`.`id_formulaire` = ?
-		ORDER BY `ordre_page`, `bsl_formulaire__question`.`ordre`, `bsl_formulaire__valeur`.`ordre`';
+		ORDER BY `ordre_page`, `bsl_formulaire__question`.`ordre`';
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
     check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $idq, $ordre_question, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
-    $tmp_que = '';
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_theme_court, $nom_territoire, $nb_pages, $id_page, $titre, $ordre_page, $aide, $id_question, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire);
+    $tmp_id = 0;
+	$tmp_p = 0;
+	$meta = [];
+    $pages = [];
     $questions = [];
-    $reponses = [];
     while (mysqli_stmt_fetch($stmt)) {
-        if ($question != $tmp_que) { //on récupère les questions
-            $questions[] = array('id' => $idq, 'ordre_page' => $ordre_page, 'ordre_question' => $ordre_question, 'que' => $question, 'name' => $name, 'type' => $type, 'tai' => $taille, 'obl' => $obligatoire);
-            $tmp_que = $question;
+        if ($id_formulaire != $tmp_id) { //données du formulaire
+            $meta = array('id' => $id_formulaire, 'theme' => $libelle_theme_court, 'territoire' => ($nom_territoire) ? $nom_territoire : 'national', 'nb' => $nb_pages);
+            $tmp_id = $id_formulaire;
         }
-        $reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
+        if ($id_page != $tmp_p) { //données des pages du formulaire
+            $pages[] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre_page, 'aide' => $aide);
+            $tmp_p = $id_page;
+        }
+        $questions[$id_page][] = array('id' => $id_question, 'ordre' => $ordre_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire);
     }
     mysqli_stmt_close($stmt);
-    return [$questions, $reponses];
+    return [$meta, $pages, $questions];
+}
+
+function get_question_by_id($id)
+{
+    global $conn;
+
+    $query = 'SELECT `bsl_formulaire__question`.`id_question`, `bsl_formulaire__page`.`id_formulaire`, `bsl_formulaire__question`.`ordre` AS `ordre_question`, `bsl_formulaire__question`.`libelle` AS `libelle_question`, `bsl_formulaire__question`.`html_name`, `bsl_formulaire__question`.`type`, `bsl_formulaire__question`.`taille`, `bsl_formulaire__question`.`obligatoire`, `bsl_formulaire__valeur`.`libelle`, `bsl_formulaire__valeur`.`valeur`, `bsl_formulaire__valeur`.`ordre` AS `ordre_valeur`, `bsl_formulaire__valeur`.`defaut` FROM `bsl_formulaire__question`
+		JOIN `bsl_formulaire__valeur` ON `bsl_formulaire__valeur`.`id_question`=`bsl_formulaire__question`.`id_question` AND `bsl_formulaire__valeur`.`actif`=1
+		JOIN `bsl_formulaire__page` ON `bsl_formulaire__question`.`id_page`=`bsl_formulaire__page`.`id_page`
+		WHERE `bsl_formulaire__question`.`id_question` = ?
+		ORDER BY `bsl_formulaire__valeur`.`ordre`';
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    check_mysql_error($conn);
+
+	mysqli_stmt_bind_result($stmt, $id_question, $id_formulaire, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $ordre_valeur, $defaut);
+    $tmp_q = 0;
+    $question = [];
+    $reponses = [];
+    while (mysqli_stmt_fetch($stmt)) {
+        if ($id_question != $tmp_q) {
+            $question = array('id' => $id_question, 'id_formulaire' => $id_formulaire, 'ordre' => $ordre_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire);
+            $tmp_q = $id_question;
+        }
+        $reponses[] = array('libelle' => $libelle, 'valeur' => $valeur, 'ordre' => $ordre_valeur, 'defaut' => $defaut);
+    }
+    mysqli_stmt_close($stmt);
+    return [$question, $reponses];
 }
 
 /******* bouts de code utile
