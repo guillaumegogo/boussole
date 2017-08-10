@@ -247,7 +247,6 @@ function secu_check_role($role)
 function secu_send_reset_email($email)
 {
     global $conn;
-    global $url_admin;
 
     $token = hash('sha256', $email . time() . rand(0, 1000000));
 
@@ -260,14 +259,13 @@ function secu_send_reset_email($email)
     check_mysql_error($conn);
     if (mysqli_stmt_execute($stmt)) {
         if (mysqli_stmt_affected_rows($stmt) === 1) {
-            $subject = 'Réinitialisation de votre mot de passe';
+            $subject = mb_encode_mimeheader('Réinitialisation de votre mot de passe', 'UTF-8');
             $message = "<html><p>Vous avez demandé la réinitialisation de votre mot de passe.</p> "
-                . "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur ce lien : <a href=\"" . $url_admin . "/motdepasseoublie.php?t=" . $token . "\">" . $url_admin . "/motdepasseoublie.php?t=" . $token . "</a></p>"
-                . "<p>Merci d'utiliser le lien dans les trois jours, après quoi il ne sera plus valide.</html>";
+                . "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur ce lien : <a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "</a></p>"
+                . "<p>Ce lien est valide trois jours, après quoi il vous faudra refaire une demande.</html>";
             $headers = 'MIME-Version: 1.0' . "\r\n";
-            $headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
             $headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
-            //$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
 
             mail($email, $subject, $message, $headers);
         }

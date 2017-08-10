@@ -61,13 +61,13 @@ if (isset($_POST['coordonnees'])) {
             if (ENVIRONMENT === ENV_PROD) {
                 $to = $row['courriel_offre'];
             }
-            $subject = 'Une demande a été déposée sur la Boussole des droits';
+            $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des droits');
             $message = "<html><p>Un jeune est intéressé par l'offre <b>" . $row['nom_offre'] . "</b>.</p>"
-                . "<p>Il a déposé une demande de contact le " . strftime('%d %B %Y à %H:%M') . "</p>"
+                . "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
                 . "<p>Son profil est le suivant : " . liste_criteres('<br/>') . "</p>"
-                . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"" . $url_admin . "\">espace de gestion de la Boussole</a></p></html>";
+                . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/\">espace de gestion de la Boussole</a></p></html>";
             $headers = 'MIME-Version: 1.0' . "\r\n";
-            $headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
             $headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
             if (ENVIRONMENT !== ENV_PROD) {
                 $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
@@ -78,12 +78,12 @@ if (isset($_POST['coordonnees'])) {
 			if (filter_var($_POST['coordonnees'], FILTER_VALIDATE_EMAIL)) {
 				
 				$to = $_POST['coordonnees'];
-				$subject = 'Vous avez déposé une demande de contact sur la Boussole des droits';
+				$subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des droits');
 				$message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
 					. "<p>Offre <b>" . $row['nom_offre'] . "</b>.</p>"
 					. "<p>Profil : " . liste_criteres('<br/>') . "</p></html>";
 				$headers = 'MIME-Version: 1.0' . "\r\n";
-				$headers .= 'Content-type: text/html; charset=charset=utf-8' . "\r\n";
+				$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 				$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
 				if (ENVIRONMENT !== ENV_PROD) {
 					$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";

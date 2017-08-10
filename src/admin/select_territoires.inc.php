@@ -3,7 +3,8 @@ $select_territoire = "";
 $nom_territoire_choisi = "";
 if (secu_check_role(ROLE_ADMIN) || secu_check_role(ROLE_ANIMATEUR)) {
 
-    $sql = "SELECT `id_territoire`, `nom_territoire`, `code_territoire` FROM `bsl_territoire` WHERE 1 ";
+    $sql = "SELECT `id_territoire`, `nom_territoire`, `code_territoire` FROM `bsl_territoire` 
+	WHERE `actif_territoire` = 1 AND `nom_territoire` != '' ";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {

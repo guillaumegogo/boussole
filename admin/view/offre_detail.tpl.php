@@ -146,8 +146,7 @@
                     <div style="display:inline-block;">
                         <input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
                         <input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
-                        <input type="button" value="S" style="text-decoration: underline;"
-                               onclick="commande('underline');"/>
+                        <input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
                         <input type="button" value="Lien" onclick="commande('createLink');"/>
                         <input type="button" value="Image" onclick="commande('insertImage');"/>
                         <div id="editeur" contentEditable><?php if ($id_offre) {

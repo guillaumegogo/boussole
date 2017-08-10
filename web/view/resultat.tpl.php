@@ -54,10 +54,10 @@
     <div class="soustitre" style="margin-top:3%"><?php xecho($msg); ?></div>
     <form class="joli resultat">
         <fieldset class="resultat">
-            <legend>Rappel de mes informations</legend>
-            <div>
-                <p onclick='masqueCriteres()'>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b> <span id="fleche_criteres">&#9662;</span></p>
-                <div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
+            <legend  onclick='masqueCriteres()'>Rappel de mes informations <span id="fleche_criteres">&#9662;</span></legend>
+            <div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
+                <p>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b> </p>
+                <div>
                     <div class="colonnes">
                         <?php echo liste_criteres('<br/>'); ?> <!--todo : à mettre en forme-->
                     </div>
@@ -110,8 +110,8 @@
                     <!-- fenêtre modale de l'offre -->
                     <div id="modal<?= (int) $offre["id"] ?>" class="modal" ><div class="modal-content">
                             <span class="close" onclick="cacheModal('<?= (int) $offre["id"] ?>');">&times;</span>
-                            <p><b><?php xecho($offre["titre"]) ?></b><br/><?= (int) $offre["nom_pro"] ?></p>
-                            <p><?php xecho($offre["description"]) ?></p>
+                            <p><b><?php xecho($offre["titre"]) ?></b><br/><?= xecho($offre["nom_pro"]) ?></p>
+                            <p><?php echo $offre["description"] //xecho($offre["description"]) TODO : mise en commentaire temporaire en attendant un éditeur wysiwyg + sécurisé ?></p>
                             <div class="center"><a href="offre.php?id=<?= (int) $offre["id"] ?>" class="button">En savoir +</a></div>
                         </div></div>
                     <?php
