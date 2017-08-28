@@ -61,17 +61,23 @@ function affiche_valeur($ele, $type)
             $t .= '> ' . xssafe($ele['lib']) . "\n";
             break;
         case 'checkbox':
-            $t = '<input type="checkbox" name="' . $ele['name'] . '"[] value="' . $ele['val'] . '" ';
+            $t = '<input type="checkbox" name="' . $ele['name'] . '[]" value="' . $ele['val'] . '" ';
             if (isset($_SESSION['critere'][$ele['name']])) {
                 if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' checked ';
             } else if ($ele['def'] == 1) $t .= ' checked ';
             $t .= '> ' . xssafe($ele['lib']) . '</br>' . "\n";
             break;
         case 'select':
-        case 'multiple':
             $t = '<option value="' . $ele['val'] . '" ';
             if (isset($_SESSION['critere'][$ele['name']])) {
                 if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' selected ';
+            } else if ($ele['def'] == 1) $t .= ' selected ';
+            $t .= '> ' . xssafe($ele['lib']) . '</option>' . "\n";
+            break;
+        case 'multiple':
+            $t = '<option value="' . $ele['val'] . '" ';
+            if (isset($_SESSION['critere'][$ele['name']])) {
+                if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' selected ';
             } else if ($ele['def'] == 1) $t .= ' selected ';
             $t .= '> ' . xssafe($ele['lib']) . '</option>' . "\n";
             break;
@@ -79,10 +85,10 @@ function affiche_valeur($ele, $type)
     return $t;
 }
 
-function cloture_ligne($type)
+function cloture_ligne($ele)
 {
     $t = '';
-    switch ($type) {
+    switch ($ele['type']) {
         case 'radio':
         case 'checkbox':
             $t = '</div>' . $t;
@@ -92,5 +98,9 @@ function cloture_ligne($type)
             $t = '</select>' . $t;
             break;
     }
+	
+	//une fois le critère affiché (avec la préselection), on vide la session du critere correspondant
+	unset($_SESSION['critere'][$ele['name']]);
+	
     return $t;
 }

@@ -37,7 +37,7 @@
                                 foreach ($reponses[$question['id']] as $reponse) {
                                     echo affiche_valeur($reponse, $question['type']);
                                 }
-                                echo cloture_ligne($question['type']);
+                                echo cloture_ligne($question);
                                 ?>
                             </div>
                         </div>
