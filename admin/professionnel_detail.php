@@ -5,7 +5,7 @@ secu_check_login(DROIT_PROFESSIONNEL);
 
 /*if (!secu_check_auth(DROIT_PROFESSIONNEL)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
-		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_professionnel`
+		$sql = 'SELECT competence_geo, id_competence_geo FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_professionnel='.$_GET['id'];
 		$result = mysqli_query($conn, $sql);
 		if (mysqli_num_rows($result) == 0) { header('Location: professionnel_liste.php'); }
@@ -29,7 +29,7 @@ if (isset($_POST['maj_id'])) {
     $themes = '';
     $code_postal = substr($_POST['commune'], -5);
     $ville = substr($_POST['commune'], 0, -6);
-    $sql = 'SELECT code_insee FROM `bsl__ville` WHERE code_postal="' . $code_postal . '" AND nom_ville LIKE "' . $ville . '"';
+    $sql = 'SELECT code_insee FROM `'.DB_PREFIX.'bsl__ville` WHERE code_postal="' . $code_postal . '" AND nom_ville LIKE "' . $ville . '"';
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
@@ -49,13 +49,13 @@ if (isset($_POST['maj_id'])) {
 
     //requête d'ajout
     if (!$_POST['maj_id']) {
-        $req = 'INSERT INTO `bsl_professionnel`(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) VALUES ("' . $_POST['nom'] . '","' . $_POST['type'] . '","' . $_POST['desc'] . '","' . $_POST['adresse'] . '","' . $code_postal . '","' . $ville . '","' . $code_insee . '","' . $_POST['courriel'] . '","' . $_POST['tel'] . '","' . $_POST['site'] . '",' . $_POST['delai'] . ',"' . $_POST['competence_geo'] . '",' . $id_competence_geo . ',' . secu_get_current_user_id() . ')';
+        $req = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) VALUES ("' . $_POST['nom'] . '","' . $_POST['type'] . '","' . $_POST['desc'] . '","' . $_POST['adresse'] . '","' . $code_postal . '","' . $ville . '","' . $code_insee . '","' . $_POST['courriel'] . '","' . $_POST['tel'] . '","' . $_POST['site'] . '",' . $_POST['delai'] . ',"' . $_POST['competence_geo'] . '",' . $id_competence_geo . ',' . secu_get_current_user_id() . ')';
         $result = mysqli_query($conn, $req);
         $last_id = mysqli_insert_id($conn);
 
         //requête de modification
     } else {
-        $req = 'UPDATE `bsl_professionnel` SET `nom_pro` = "' . $_POST['nom'] . '", `type_pro` = "' . $_POST['type'] . '", `description_pro` = "' . $_POST['desc'] . '", `adresse_pro` = "' . $_POST['adresse'] . '", `code_postal_pro` = "' . $code_postal . '", `ville_pro` = "' . $ville . '", `code_insee_pro` = "' . $code_insee . '", `courriel_pro` = "' . $_POST['courriel'] . '", `telephone_pro` = "' . $_POST['tel'] . '", `site_web_pro` = "' . $_POST['site'] . '", `delai_pro` = ' . $_POST['delai'] . ', `actif_pro` = ' . $_POST['actif'] . ' ';
+        $req = 'UPDATE `'.DB_PREFIX.'bsl_professionnel` SET `nom_pro` = "' . $_POST['nom'] . '", `type_pro` = "' . $_POST['type'] . '", `description_pro` = "' . $_POST['desc'] . '", `adresse_pro` = "' . $_POST['adresse'] . '", `code_postal_pro` = "' . $code_postal . '", `ville_pro` = "' . $ville . '", `code_insee_pro` = "' . $code_insee . '", `courriel_pro` = "' . $_POST['courriel'] . '", `telephone_pro` = "' . $_POST['tel'] . '", `site_web_pro` = "' . $_POST['site'] . '", `delai_pro` = ' . $_POST['delai'] . ', `actif_pro` = ' . $_POST['actif'] . ' ';
         if ($_POST['competence_geo']) {
             $req .= ', `competence_geo` = "' . $_POST['competence_geo'] . '" ';
         }
@@ -70,10 +70,10 @@ if (isset($_POST['maj_id'])) {
     //prise en compte du choix multiple themes
     if (isset($_POST['theme'])) {
         //mise à jour des critères
-        $reqd = 'DELETE FROM `bsl_professionnel_themes` WHERE `id_professionnel` = ' . $last_id;
+        $reqd = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ' . $last_id;
         mysqli_query($conn, $reqd);
 
-        $reqt = 'INSERT INTO `bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
+        $reqt = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
         foreach ($_POST['theme'] as $selected_option) {
             $reqt .= '(' . $last_id . ', \'' . $selected_option . '\'), ';
         }
@@ -94,7 +94,7 @@ if (isset($_GET['id'])) {
     $id_professionnel = $_GET['id'];
 }
 if (isset($id_professionnel)) {
-    $sql = 'SELECT * FROM `bsl_professionnel` 
+    $sql = 'SELECT * FROM `'.DB_PREFIX.'bsl_professionnel` 
 	WHERE id_professionnel=' . $id_professionnel;
     $result = mysqli_query($conn, $sql);
 
@@ -130,7 +130,7 @@ $select_dep = '';
 $choix_territoire = '';
 if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
     //liste déroulante des régions
-    $sql = 'SELECT * FROM `bsl__region` WHERE 1 ';
+    $sql = 'SELECT * FROM `'.DB_PREFIX.'bsl__region` WHERE 1 ';
     $result = mysqli_query($conn, $sql);
     $select_region = '<option value=\'\' >A choisir</option>';
     while ($row2 = mysqli_fetch_assoc($result)) {
@@ -155,7 +155,7 @@ if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
     $choix_region .= ' >' . $select_region . '</select>';
 
     //liste déroulante des départements
-    $sql = 'SELECT `id_departement`, `nom_departement` FROM `bsl__departement` WHERE 1 ';
+    $sql = 'SELECT `id_departement`, `nom_departement` FROM `'.DB_PREFIX.'bsl__departement` WHERE 1 ';
     $result = mysqli_query($conn, $sql);
     $select_dep = '<option value=\'\' >A choisir</option>';
     while ($row2 = mysqli_fetch_assoc($result)) {
@@ -182,7 +182,7 @@ if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
 }
 
 //+ liste déroulante des territoires
-$sql = 'SELECT `id_territoire`, `nom_territoire` FROM `bsl_territoire` WHERE 1 ';
+$sql = 'SELECT `id_territoire`, `nom_territoire` FROM `'.DB_PREFIX.'bsl_territoire` WHERE 1 ';
 if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
 }
@@ -219,22 +219,30 @@ $choix_territoire .= '">' . $select_territoire . '</select>';
 $affiche_listes_geo .= $choix_territoire;
 
 //********* liste déroulante des thèmes
-$select_theme = '';
-$sqlt = 'SELECT `bsl_theme`.`id_theme`, `libelle_theme` FROM `bsl_theme`';
+$select_theme = '<div style="display:inline-table;">';
+$sqlt = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme` FROM `'.DB_PREFIX.'bsl_theme`';
 if ($id_professionnel) {
-    $sqlt = 'SELECT `bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` FROM `bsl_theme`'
-        . ' LEFT JOIN `bsl_professionnel_themes` ON `bsl_professionnel_themes`.`id_theme`=`bsl_theme`.`id_theme` '
-        . ' AND `bsl_professionnel_themes`.`id_professionnel`=' . $id_professionnel;
+    $sqlt = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme`,`id_professionnel` FROM `'.DB_PREFIX.'bsl_theme`'
+        . ' LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` ON `'.DB_PREFIX.'bsl_professionnel_themes`.`id_theme`=`'.DB_PREFIX.'bsl_theme`.`id_theme` '
+        . ' AND `'.DB_PREFIX.'bsl_professionnel_themes`.`id_professionnel`=' . $id_professionnel;
 }
 $sqlt .= ' WHERE actif_theme=1 AND `id_theme_pere` IS NULL';
 $result = mysqli_query($conn, $sqlt);
 while ($rowt = mysqli_fetch_assoc($result)) {
-    $select_theme .= '<option value="' . $rowt['id_theme'] . '" ';
+    /* //<select name="theme[]" multiple size="2">
+	$select_theme .= '<option value="' . $rowt['id_theme'] . '" ';
     if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) {
         $select_theme .= ' selected ';
     }
     $select_theme .= '>' . $rowt['libelle_theme'] . '</option>';
+	//</select>*/
+	$select_theme .= '<input type="checkbox" name="theme[]" value="' . $rowt['id_theme'] . '" ';
+    if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) {
+        $select_theme .= ' checked ';
+    }
+    $select_theme .= '>' . $rowt['libelle_theme'] . '</br>';
 }
+$select_theme .= '</div>';
 
 //view
 require 'view/professionnel_detail.tpl.php';

@@ -96,9 +96,7 @@
                 </div>
                 <div class="lab">
                     <label for="theme[]">Thème(s) :</label>
-                    <select name="theme[]" multiple size="2">
-                        <?= $select_theme ?>
-                    </select>
+					<?= $select_theme ?>
                 </div>
                 <div class="lab">
                     <label for="actif">Actif :</label>

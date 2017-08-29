@@ -34,11 +34,11 @@ function secu_login($email, $password)
     global $conn;
     $logged = false;
 
-    $sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`, `date_inscription`
-            FROM `bsl_utilisateur` 
-            JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
-            LEFT JOIN  `bsl_territoire` ON `bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`bsl_territoire`.`id_territoire`
-            LEFT JOIN  `bsl_professionnel` ON `bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`bsl_professionnel`.`id_professionnel`
+    $sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`, `date_inscription`
+            FROM `'.DB_PREFIX.'bsl_utilisateur` 
+            JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+            LEFT JOIN  `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire`
+            LEFT JOIN  `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`
             WHERE `email` = ? AND `actif_utilisateur` = 1';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 's', $email);
@@ -93,7 +93,7 @@ function secu_is_logged()
     $logged = false;
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id']) && isset($_SESSION['user_checksum']) && !empty($_SESSION['user_checksum'])) {
         $sql = 'SELECT `email`, `date_inscription`
-            FROM `bsl_utilisateur`
+            FROM `'.DB_PREFIX.'bsl_utilisateur`
             WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
         $stmt = mysqli_prepare($conn, $sql);
         $id = (int)$_SESSION['user_id'];
@@ -149,8 +149,8 @@ function secu_is_authorized($page)
 
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $sql = 'SELECT `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`
-            FROM `bsl_utilisateur` 
-            JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
+            FROM `'.DB_PREFIX.'bsl_utilisateur` 
+            JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
             WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
         $stmt = mysqli_prepare($conn, $sql);
         $id = (int)$_SESSION['user_id'];
@@ -214,7 +214,7 @@ function secu_check_role($role)
 
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $sql = 'SELECT `id_statut` 
-                FROM `bsl_utilisateur` 
+                FROM `'.DB_PREFIX.'bsl_utilisateur` 
                 WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
         $stmt = mysqli_prepare($conn, $sql);
         $id = (int)$_SESSION['user_id'];
@@ -250,7 +250,7 @@ function secu_send_reset_email($email)
 
     $token = hash('sha256', $email . time() . rand(0, 1000000));
 
-    $sql = 'UPDATE `bsl_utilisateur` 
+    $sql = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
             SET `reinitialisation_mdp`= ? ,`date_demande_reinitialisation`= NOW() 
             WHERE `email`= ? AND `actif_utilisateur`= 1';
 
@@ -284,7 +284,7 @@ function secu_check_reset_token($token)
     $check = false;
 
     $sql = 'SELECT `date_demande_reinitialisation` 
-            FROM `bsl_utilisateur` 
+            FROM `'.DB_PREFIX.'bsl_utilisateur` 
             WHERE `reinitialisation_mdp`= ? AND `actif_utilisateur`= 1';
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -315,7 +315,7 @@ function secu_reset_password($password, $token)
 {
     global $conn;
 
-    $sql = 'UPDATE `bsl_utilisateur` 
+    $sql = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
             SET `motdepasse` = ?, reinitialisation_mdp = NULL 
             WHERE `reinitialisation_mdp` = ? AND `actif_utilisateur`= 1';
 

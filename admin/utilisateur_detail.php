@@ -6,7 +6,7 @@ secu_check_login(DROIT_UTILISATEUR);
 /*todo
 if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
-		$sql = 'SELECT competence_geo, id_competence_geo FROM `bsl_utilisateur` 
+		$sql = 'SELECT competence_geo, id_competence_geo FROM `'.DB_PREFIX.'bsl_utilisateur` 
 			WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_utilisateur='.$_GET['id'];
 		$result = mysqli_query($conn, $sql);
 		if (mysqli_num_rows($result) == 0) { header('Location: utilisateur_liste.php'); }
@@ -32,7 +32,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
         }
         if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
 
-            $req = "INSERT INTO `bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES (\"" . $_POST["nom_utilisateur"] . "\",\"" . $_POST["courriel"] . "\",\"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\",NOW(),\"" . $_POST["statut"] . "\"," . $maj_attache . ")";
+            $req = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) VALUES ("' . $_POST["nom_utilisateur"] . '","' . $_POST["courriel"] . '","' . secu_password_hash($_POST["nouveaumotdepasse"]) . '",NOW(),"' . $_POST["statut"] . '",' . $maj_attache . ')';
 
             if ($result = mysqli_query($conn, $req)) {
                 $msg = 'Utilisateur bien créé.';
@@ -46,7 +46,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
 
     } else { //requête de modification
         if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
-            $req = "UPDATE `bsl_utilisateur` SET `nom_utilisateur` = \"" . $_POST["nom_utilisateur"] . "\", `email` = \"" . $_POST["courriel"] . "\", `actif_utilisateur` = \"" . $_POST["actif"] . "\" WHERE `id_utilisateur` = " . $_POST["maj_id"];
+            $req = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` SET `nom_utilisateur` = "' . $_POST["nom_utilisateur"] . '", `email` = "' . $_POST["courriel"] . '", `actif_utilisateur` = "' . $_POST["actif"] . '" WHERE `id_utilisateur` = ' . $_POST["maj_id"];
             if ($result = mysqli_query($conn, $req)) {
                 $msg = 'Utilisateur modifié.';
                 $last_id = $_POST["maj_id"];
@@ -57,13 +57,13 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
             //TODO ajouter longueur minimale pour password
             if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
 
-                $sql = 'SELECT `motdepasse` FROM `bsl_utilisateur` WHERE `id_utilisateur`=' . $_POST["maj_id"];
+                $sql = 'SELECT `motdepasse` FROM `'.DB_PREFIX.'bsl_utilisateur` WHERE `id_utilisateur`=' . $_POST["maj_id"];
                 $result = mysqli_query($conn, $sql);
 
                 if (mysqli_num_rows($result)) {
                     $row = mysqli_fetch_assoc($result);
                     if (password_verify(SALT_BOUSSOLE . $_POST['motdepasseactuel'], $row['motdepasse'])) {
-                        $req = "UPDATE `bsl_utilisateur` SET `motdepasse` = \"" . secu_password_hash($_POST["nouveaumotdepasse"]) . "\" WHERE `id_utilisateur` = " . $_POST["maj_id"];
+                        $req = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` SET `motdepasse` = "' . secu_password_hash($_POST["nouveaumotdepasse"]) . '" WHERE `id_utilisateur` = ' . $_POST["maj_id"];
                         //pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
                         if ($result = mysqli_query($conn, $req)) {
                             $msg = 'Mot de passe modifié.';
@@ -95,11 +95,11 @@ if (isset($_GET['id'])) {
     $id_utilisateur = $_GET['id'];
 }
 if (isset($id_utilisateur)) {
-    $sql = 'SELECT `bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `date_inscription`, `actif_utilisateur`, `id_professionnel`, `nom_pro`, `id_territoire` , `nom_territoire`
-	FROM `bsl_utilisateur` 
-	JOIN `bsl__statut` ON `bsl__statut`.`id_statut`=`bsl_utilisateur`.`id_statut`
-	LEFT JOIN `bsl_territoire` ON `bsl_territoire`.`id_territoire`=`bsl_utilisateur`.`id_metier`
-	LEFT JOIN `bsl_professionnel` ON `bsl_professionnel`.`id_professionnel`=`bsl_utilisateur`.`id_metier`
+    $sql = 'SELECT `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `date_inscription`, `actif_utilisateur`, `id_professionnel`, `nom_pro`, `id_territoire` , `nom_territoire`
+	FROM `'.DB_PREFIX.'bsl_utilisateur` 
+	JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+	LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
+	LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 	WHERE `id_utilisateur`=' . $id_utilisateur;
     $result = mysqli_query($conn, $sql);
 
@@ -125,7 +125,7 @@ $select_professionnel = '<option value="" >A choisir</option>';
 //si création, liste = liste du/des territoire(s) et des pros du/des territoire(s), avec tout en display none
 //si modif = affichage en disabled du territoire ou de la liste des pros, en fonction de la liste
 
-$sql2 = 'SELECT `id_territoire`, `nom_territoire` FROM `bsl_territoire` WHERE 1 ';
+$sql2 = 'SELECT `id_territoire`, `nom_territoire` FROM `'.DB_PREFIX.'bsl_territoire` WHERE 1 ';
 if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql2 .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
 }
@@ -140,7 +140,7 @@ while ($row2 = mysqli_fetch_assoc($result)) {
     $select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
 }
 
-$sql3 = 'SELECT `id_professionnel`, `nom_pro` FROM `bsl_professionnel` WHERE 1 ';
+$sql3 = 'SELECT `id_professionnel`, `nom_pro` FROM `'.DB_PREFIX.'bsl_professionnel` WHERE 1 ';
 if (secu_check_role(ROLE_ANIMATEUR)) {
     $sql3 .= ' AND `competence_geo`="territoire" AND `id_competence_geo`=' . $_SESSION['territoire_id'];
 }

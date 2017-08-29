@@ -8,7 +8,7 @@ function format_insee($saisie){
 
 //************** liste villes (à voir si utile - pour l'instant remplacé par des fichiers texte pour de meilleures perfs)
 function liste_villes($conn,$format){
-	$sql = "SELECT DISTINCT nom_ville, code_postal FROM `bsl__ville` ORDER BY nom_ville";
+	$sql = 'SELECT DISTINCT nom_ville, code_postal FROM `'.DB_PREFIX.'bsl__ville` ORDER BY nom_ville';
 	$result = mysqli_query($conn, $sql);
 	$liste = null;
 	while($row = mysqli_fetch_assoc($result)) {
