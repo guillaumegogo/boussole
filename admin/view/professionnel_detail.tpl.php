@@ -147,30 +147,15 @@
                 <div class="lab">
                     <label for="delai">Délai garanti de réponse :</label>
                     <select name="delai">
-                        <option value="2" <?php if ($id_professionnel) {
-                            if ($row['delai_pro'] == 2) {
+					<?php for($i = 1; $i <= 7 ;$i++) { ?>
+                        <option value="<?= $i ?>" 
+						<?php if ($id_professionnel) {
+                            if ($row['delai_pro'] == $i) {
                                 echo "selected";
                             }
-                        } ?>>2 jours
+                        } ?>><?= $i ?> jours
                         </option>
-                        <option value="3" <?php if ($id_professionnel) {
-                            if ($row['delai_pro'] == 3) {
-                                echo "selected";
-                            }
-                        } ?>>3 jours
-                        </option>
-                        <option value="5" <?php if ($id_professionnel) {
-                            if ($row['delai_pro'] == 5) {
-                                echo "selected";
-                            }
-                        } ?>>5 jours
-                        </option>
-                        <option value="7" <?php if ($id_professionnel) {
-                            if ($row['delai_pro'] == 7) {
-                                echo "selected";
-                            }
-                        } ?>>7 jours
-                        </option>
+					<?php } ?>
                     </select>
                 </div>
                 <div class="lab">
