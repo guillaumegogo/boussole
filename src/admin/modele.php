@@ -345,6 +345,27 @@ function get_villes_by_offre($id) {
 	return $villes;
 }
 
+function get_territoires() {
+	
+	global $conn;
+	$t = null;
+	
+	$sql = 'SELECT `id_territoire`, `nom_territoire`, `code_territoire` 
+		FROM `'.DB_PREFIX.'bsl_territoire` 
+		WHERE `actif_territoire` = 1 AND `nom_territoire` != "" ';
+
+	$stmt = mysqli_prepare($conn, $query);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$t[] = $row;
+		}
+		mysqli_stmt_close($stmt);
+	}
+	return $t;
+}
+
 function get_pros_offre($id_territoire, $id_user_pro) { //todo : passer en statement
 
 	global $conn;
@@ -617,6 +638,25 @@ function get_question_by_id($id) {
 	}
 	mysqli_stmt_close($stmt);
 	return [$question, $reponses];
+}
+
+//************** liste villes 
+//à voir si toujours utile - remplacé depuis la v0 par l'appel à un fichier texte
+function liste_villes($format){
+	
+	global $conn;
+	
+	$sql = 'SELECT DISTINCT nom_ville, code_postal FROM `'.DB_PREFIX.'bsl__ville` ORDER BY nom_ville';
+	$result = mysqli_query($conn, $sql);
+	$liste = null;
+	while($row = mysqli_fetch_assoc($result)) {
+		if ($format=="jq") {
+			$liste .= "\"".$row['nom_ville']." ".$row['code_postal']."\",";
+		}else if ($format=="select") {
+			$liste .= "<option value=\"".$row['nom_ville']." ".$row['code_postal']. "\">".$row['nom_ville']." ".$row['code_postal']. "</option>";
+		}
+	}
+	return $liste;
 }
 
 /******* bouts de code utile

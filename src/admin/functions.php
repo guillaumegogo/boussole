@@ -6,21 +6,6 @@ function format_insee($saisie){
 	return str_replace($tab_aremplacer, $tab_rempace, $saisie);
 }
 
-//************** liste villes (à voir si utile - pour l'instant remplacé par des fichiers texte pour de meilleures perfs)
-function liste_villes($conn,$format){
-	$sql = 'SELECT DISTINCT nom_ville, code_postal FROM `'.DB_PREFIX.'bsl__ville` ORDER BY nom_ville';
-	$result = mysqli_query($conn, $sql);
-	$liste = null;
-	while($row = mysqli_fetch_assoc($result)) {
-		if ($format=="jq") {
-			$liste .= "\"".$row['nom_ville']." ".$row['code_postal']."\",";
-		}else if ($format=="select") {
-			$liste .= "<option value=\"".$row['nom_ville']." ".$row['code_postal']. "\">".$row['nom_ville']." ".$row['code_postal']. "</option>";
-		}
-	}
-	return $liste;
-}
-
 /*
 $timestamp_debut = microtime(true);
 ...
