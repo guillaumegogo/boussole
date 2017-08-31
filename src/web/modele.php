@@ -1,13 +1,8 @@
 <?php
 
 //********* affichage des thèmes disponibles en fonction de la ville choisie 
-//todo : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudra probablement descendre au niveau des offres pour une meilleure granularité. 
-/* on pourrait descendre à la granularité de l'offre, mais la requête serait encore plus complexe :
-(...) JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel
-JOIN `'.DB_PREFIX.'bsl_theme` as theme_offre ON `'.DB_PREFIX.'bsl_offre`.id_sous_theme=theme_offre.id_theme
-WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
-function get_themes()
-{
+function get_themes(){
+	
     global $conn;
 
 	$query = 'SELECT `id_theme`, `libelle_theme`, `actif_theme`, MAX(`c`) as `nb` FROM (
@@ -46,9 +41,15 @@ function get_themes()
     return $themes;
 }
 
+/* todo sur get_themes : la requête fait la vérification des thèmes des pros autorisés à travailler sur une zone géographique englobant la zone indiquée : pays, région, département ou territoire. il faudrait descendre au niveau des offres pour une meilleure granularité. 
+l'ajout à la requête serait du genre :
+(...) JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel
+JOIN `'.DB_PREFIX.'bsl_theme` as theme_offre ON `'.DB_PREFIX.'bsl_offre`.id_sous_theme=theme_offre.id_theme
+WHERE actif_offre=1 AND debut_offre <= CURDATE() AND fin_offre >= CURDATE() (...)*/
+
 //********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville 
-function get_ville($saisie)
-{
+function get_ville($saisie){
+
     global $conn;
 
     //test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
@@ -83,8 +84,8 @@ function get_ville($saisie)
 }
 
 //************ récupération des éléments de la page du formulaire
-function get_formulaire($etape)
-{
+function get_formulaire($etape){
+	
     global $conn;
 
     $query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` 
@@ -122,10 +123,10 @@ function get_formulaire($etape)
 }
 
 //************ construction de LA requête
-function get_liste_offres()
-{
-    global $conn;
+function get_liste_offres(){
 
+    global $conn;
+	
     $query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro` /*`t`.*, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
 	FROM ( SELECT `'.DB_PREFIX.'bsl_offre`.*,   /* on construit ici la liste des critères */
 		GROUP_CONCAT( if(nom_critere= "age_min", valeur_critere, NULL ) SEPARATOR "|") `age_min`, 
@@ -189,17 +190,6 @@ function get_liste_offres()
     $query .= ' ORDER BY `'.DB_PREFIX.'bsl_theme`.`ordre_theme`';
     //todo : rendre dynamique les terms_type... (mettre des i à la place des s quand c'est pertinent)
 
-//****** debug : impression d'une requête
-/*echo "<pre>"; 
-$print_sql = $query;
-foreach($terms as $term){
-$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo $print_sql;
-echo "<br/><br/>";
-print_r($_SESSION);
-echo "</pre>"; */
- 
     if ($stmt = mysqli_prepare($conn, $query)) {
 
         // petite manip pour gérer le nombre variable de paramètres dans la requête
@@ -233,8 +223,7 @@ echo "</pre>"; */
     return [$sous_themes, $offres];
 }
 
-function get_offre($id)
-{
+function get_offre($id){
 
     global $conn;
     $query = 'SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut, DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `'.DB_PREFIX.'bsl_offre`.`visibilite_coordonnees`, `delai_offre`, `zone_selection_villes`, `nom_pro`  
@@ -256,8 +245,7 @@ function get_offre($id)
     return $row;
 }
 
-function create_demande($id_offre, $coord)
-{
+function create_demande($id_offre, $coord){
 
     global $conn;
     $query = 'INSERT INTO `'.DB_PREFIX.'bsl_demande`(`id_demande`, `date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) VALUES (NULL, NOW(), ?, ?, ?, ?)';
@@ -274,29 +262,33 @@ function create_demande($id_offre, $coord)
 
 /******* bouts de code utile
  *
- * //****** impression d'une requête
- * $print_sql = $query;
- * foreach($terms as $term){
- * 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
- * }
- * echo $print_sql;
+ * //****** debug : impression d'une requête
+echo "<pre>"; 
+$print_sql = $query;
+foreach($terms as $term){
+$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo $print_sql;
+echo "<br/><br/>";
+print_r($_SESSION);
+echo "</pre>";
  *
  * //****** modele de fonction select
- * function get_machin(){
- * global $conn;
- * $query = 'SELECT ... FROM ...';
- * $stmt = mysqli_prepare($conn, $query);
- * mysqli_stmt_execute($stmt);
- * check_mysql_error($conn);
- * mysqli_stmt_bind_result($stmt, $id, $nimetus, $kogus);
- * $rows = array();
- * while (mysqli_stmt_fetch($stmt)) {
- * $rows[] = array(
- * 'id' => $id,
- * 'xxxxx' => $xxx,
- * );
- * }
- * mysqli_stmt_close($stmt);
- * return $rows;
- * }
+function get_machin(){
+	global $conn;
+	$query = 'SELECT ... FROM ...';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_execute($stmt);
+	check_mysql_error($conn);
+	mysqli_stmt_bind_result($stmt, $id, $xxx, ...);
+	$rows = array();
+	while (mysqli_stmt_fetch($stmt)) {
+		$rows[] = array(
+			'id' => $id,
+			'xxxxx' => $xxx,
+		);
+	}
+	mysqli_stmt_close($stmt);
+	return $rows;
+}
  */

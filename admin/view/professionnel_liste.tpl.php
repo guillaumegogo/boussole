@@ -23,10 +23,10 @@
 <div class="container">
     <?php echo $select_territoire; ?>
 
-    <h2>Liste des professionnels</h2>
+    <h2>Liste des professionnels <?php if (!$flag_actif) echo "désactivés"; ?></h2>
 
     <?php
-    if (mysqli_num_rows($result) > 0) {
+    if (count($pros) > 0) {
         ?>
         <table id="sortable">
             <thead>
@@ -40,7 +40,8 @@
             </thead>
             <tbody>
 
-            <?php while ($row = mysqli_fetch_assoc($result)) {
+            <?php
+            foreach ($pros as $row) {
                 //colonne "compétence géographique"
                 $geo = $row['competence_geo'];
                 switch ($row['competence_geo']) {

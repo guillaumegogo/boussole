@@ -15,7 +15,6 @@ $flag_traite = (isset($_GET['etat']) && $_GET['etat'] == "traite") ? 1 : 0;
 //******** liste de demandes
 $territoire_id = secu_get_territoire_id();
 $user_pro_id = secu_get_user_pro_id();
-
 $demandes = get_liste_demandes($flag_traite, $territoire_id, $user_pro_id);
 
 //********** lien actifs/désactivés

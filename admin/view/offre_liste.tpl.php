@@ -26,7 +26,7 @@
     <h2>Liste des offres <?php if (!$flag_actif) echo "désactivées"; ?></h2>
 
     <?php
-    if (mysqli_num_rows($result) > 0) {
+    if (count($offres) > 0) {
         ?>
         <table id="sortable">
             <thead>
@@ -41,7 +41,7 @@
             <tbody>
 
             <?php
-            while ($row = mysqli_fetch_assoc($result)) {
+            foreach ($offres as $row) {
                 //affichage de la compétence géo du pro (si pas sélection de villes)
                 if ($row['zone_selection_villes']) {
                     $zone = "sélection de villes";

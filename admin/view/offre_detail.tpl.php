@@ -227,30 +227,14 @@
                 <div class="lab">
                     <label for="delai">Délai garanti de réponse :</label>
                     <select name="delai">
-                        <option value="2" <?php if ($id_offre) {
-                            if ($row['delai_offre'] == "2") {
-                                echo "selected";
-                            }
-                        } ?>>2 jours
+					<?php for($i = 1; $i <= 7 ;$i++) { ?>
+                        <option value="<?= $i ?>" 
+						<?php 
+						if ($row['delai_offre'] == $i) {
+                            echo "selected";
+                        } ?>><?= $i ?> jours
                         </option>
-                        <option value="3" <?php if ($id_offre) {
-                            if ($row['delai_offre'] == "3") {
-                                echo "selected";
-                            }
-                        } ?>>3 jours
-                        </option>
-                        <option value="5" <?php if ($id_offre) {
-                            if ($row['delai_offre'] == "5") {
-                                echo "selected";
-                            }
-                        } ?>>5 jours
-                        </option>
-                        <option value="7" <?php if ($id_offre) {
-                            if ($row['delai_offre'] == "7") {
-                                echo "selected";
-                            }
-                        } ?>>7 jours
-                        </option>
+					<?php } ?>
                     </select>
                 </div>
                 <div class="lab">
@@ -281,10 +265,12 @@
                 } else {
                     echo "none";
                 } ?>">
-                    <div style="margin-bottom:1em;">Filtre : <input id="textbox"
-                                                                    value="nom de ville, code postal ou département..."
-                                                                    type="text" style="width:20em;"
-                                                                    onFocus="javascript:this.value='';"></div>
+                    <div style="margin-bottom:1em;">Filtre : 
+						<input id="textbox"
+							value="nom de ville, code postal ou département..."
+							type="text" style="width:20em;"
+							onFocus="javascript:this.value='';">
+					</div>
 
                     <div style="display:inline-block; vertical-align:top;">
                         <select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
