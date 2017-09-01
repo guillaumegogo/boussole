@@ -17,24 +17,17 @@ secu_check_login(DROIT_PROFESSIONNEL);
 //********* variables
 $last_id = null;
 $msg = '';
-$req = '';
-$liste2 = '';
-$row = [];
 
 //si post du formulaire interne
 if (isset($_POST['maj_id'])) {
 
     //récupération du code insee correspondant à la saisie
-    $code_insee = '';
-    $themes = '';
+    $themes = null;
+	if (isset($_POST['theme'])) $themes=$_POST['theme'];
     $code_postal = substr($_POST['commune'], -5);
     $ville = substr($_POST['commune'], 0, -6);
-    $sql = 'SELECT code_insee FROM `'.DB_PREFIX.'bsl__ville` WHERE code_postal="' . $code_postal . '" AND nom_ville LIKE "' . $ville . '"';
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $code_insee = $row['code_insee'];
-    }
+    $code_insee = get_code_insee($code_postal, $ville);
+
     //si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
     $id_competence_geo = "NULL";
     if (isset($_POST['competence_geo'])) {
@@ -49,46 +42,24 @@ if (isset($_POST['maj_id'])) {
 
     //requête d'ajout
     if (!$_POST['maj_id']) {
-        $req = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) VALUES ("' . $_POST['nom'] . '","' . $_POST['type'] . '","' . $_POST['desc'] . '","' . $_POST['adresse'] . '","' . $code_postal . '","' . $ville . '","' . $code_insee . '","' . $_POST['courriel'] . '","' . $_POST['tel'] . '","' . $_POST['site'] . '",' . $_POST['delai'] . ',"' . $_POST['competence_geo'] . '",' . $id_competence_geo . ',' . secu_get_current_user_id() . ')';
-        $result = mysqli_query($conn, $req);
-        $last_id = mysqli_insert_id($conn);
+		$created = create_pro($_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, secu_get_current_user_id());
+		$last_id = mysqli_insert_id($conn);
+		if ($created) $msg = 'Création bien enregistrée.';
 
-        //requête de modification
+	//requête de modification
     } else {
-        $req = 'UPDATE `'.DB_PREFIX.'bsl_professionnel` SET `nom_pro` = "' . $_POST['nom'] . '", `type_pro` = "' . $_POST['type'] . '", `description_pro` = "' . $_POST['desc'] . '", `adresse_pro` = "' . $_POST['adresse'] . '", `code_postal_pro` = "' . $code_postal . '", `ville_pro` = "' . $ville . '", `code_insee_pro` = "' . $code_insee . '", `courriel_pro` = "' . $_POST['courriel'] . '", `telephone_pro` = "' . $_POST['tel'] . '", `site_web_pro` = "' . $_POST['site'] . '", `delai_pro` = ' . $_POST['delai'] . ', `actif_pro` = ' . $_POST['actif'] . ' ';
-        if ($_POST['competence_geo']) {
-            $req .= ', `competence_geo` = "' . $_POST['competence_geo'] . '" ';
-        }
-        if ($id_competence_geo) {
-            $req .= ', `id_competence_geo` = ' . $id_competence_geo . ' ';
-        }
-        $req .= ' WHERE `id_professionnel` = ' . $_POST['maj_id'];
-        $result = mysqli_query($conn, $req);
-        $last_id = $_POST['maj_id'];
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['delai'], $_POST['actif'], $_POST['competence_geo'], $id_competence_geo, $themes, secu_get_current_user_id());
+		$last_id = $_POST['maj_id'];
+		if ($updated) $msg = 'Modification bien enregistrée.';
     }
 
-    //prise en compte du choix multiple themes
-    if (isset($_POST['theme'])) {
-        //mise à jour des critères
-        $reqd = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ' . $last_id;
-        mysqli_query($conn, $reqd);
-
-        $reqt = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
-        foreach ($_POST['theme'] as $selected_option) {
-            $reqt .= '(' . $last_id . ', \'' . $selected_option . '\'), ';
-        }
-        $reqt = substr($reqt, 0, -2);
-        $result2 = mysqli_query($conn, $reqt);
-    }
-
-    if ($result) {
-        $msg = 'Modification bien enregistrée.';
-    } else {
+    if (!$msg) {
         $msg = 'Il y a eu un problème à l\'enregistrement . Contactez l\'administration centrale si le problème perdure.';
     }
 }
 
 //*********** affichage du professionnel demandé ou nouvellement créé
+$row = [];
 $id_professionnel = $last_id;
 if (isset($_GET['id'])) {
     $id_professionnel = $_GET['id'];

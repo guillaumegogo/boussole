@@ -121,9 +121,9 @@ function get_liste_demandes($flag_traite, $territoire_id = null, $user_pro_id = 
 	$stmt = mysqli_prepare($conn, $query);
 	if(count($params) > 0) {
 		$query_params = [];
-		$query_params[] = &$types;
-		foreach ($params as $param) {
-			$query_params[] = &$param;
+		$query_params[] = $types;
+		foreach ($params as $id => $term) {
+			$query_params[] = &$params[$id];
 		}
 		call_user_func_array(array($stmt, 'bind_param'), $query_params);
 	}
@@ -354,7 +354,7 @@ function get_territoires() {
 		FROM `'.DB_PREFIX.'bsl_territoire` 
 		WHERE `actif_territoire` = 1 AND `nom_territoire` != "" ';
 
-	$stmt = mysqli_prepare($conn, $query);
+	$stmt = mysqli_prepare($conn, $sql);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);
@@ -366,7 +366,7 @@ function get_territoires() {
 	return $t;
 }
 
-function get_pros_offre($id_territoire, $id_user_pro) { //todo : passer en statement
+function get_liste_pros_select($id_territoire, $id_user_pro) { //todo : passer en statement
 
 	global $conn;
 	$pros = null;
@@ -439,22 +439,30 @@ function get_liste_offres($flag, $territoire_id, $user_pro_id) {
 	$types = 'i';
 	
 	if (isset($territoire_id) && $territoire_id) {
-		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ' . $territoire_id;
+		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ?';
 		$params[] = (int) $territoire_id;
 		$types .= 'i';
 	}
 	if (isset($user_pro_id)) {
-		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ' . $user_pro_id;
+		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ?';
 		$params[] = (int) $user_pro_id;
 		$types .= 'i';
 	}
 	$stmt = mysqli_prepare($conn, $query);
-	
+
 	$query_params = [];
-	$query_params[] = &$types;
-	foreach ($params as $param) {
-		$query_params[] = &$param;
+	$query_params[] = $types;
+	foreach ($params as $id => $term) {
+		$query_params[] = &$params[$id];
 	}
+	/*********** debug
+	echo "<pre>";
+	echo $query;
+	print_r($params);
+	print_r($query_params);
+	echo $types."</pre>";
+	//*********** debug */
+	
 	call_user_func_array(array($stmt, 'bind_param'), $query_params);
 	
 	check_mysql_error($conn);
@@ -505,6 +513,109 @@ function get_liste_pros($flag, $territoire_id) { //tous les professionnel du ter
 
 	return $pros;
 }
+
+function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $site, $delai, $competence_geo, $competence_geo_id, $user_id) {
+	
+	global $conn;
+	$created = false;
+	
+	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
+		(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, 
+		`courriel_pro`, `telephone_pro`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`) 
+		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
+
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ssssssssssisii', $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $site, $delai, $competence_geo, $competence_geo_id, $user_id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$created = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+
+	return $created;
+}
+
+function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $site, $delai, $actif, $competence_geo, $competence_geo_id, $themes, $user_id){
+	
+	global $conn;
+	
+	//mise à jour des champs principaux
+	$updated = false;
+	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel` 
+		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `site_web_pro` = ?, `delai_pro` = ?, `actif_pro` = ?, `user_derniere_modif` = ? ';
+	
+	$terms = array($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $site, $delai, $actif, $user_id);
+	$terms_type = "ssssssssssiii";
+	if ($competence_geo) {
+		$query .= ', `competence_geo` = ?';
+		$terms[] = $competence_geo;
+		$terms_type .= "s";
+	}
+	if ($competence_geo_id) {
+		$query .= ', `id_competence_geo` = ? ';
+		$terms[] = $competence_geo_id;
+		$terms_type .= "i";
+	}
+	$query .= ' WHERE `id_professionnel` = ?';
+	$terms[] = $pro_id;
+	$terms_type .= "i";
+	
+	$stmt = mysqli_prepare($conn, $query);
+	$query_params = [];
+	$query_params[] = $terms_type;
+	foreach ($terms as $id => $term) {
+		$query_params[] = &$terms[$id];
+	}
+	call_user_func_array(array($stmt, 'bind_param'), $query_params);
+	
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$updated = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+	
+	//mise à jour des thèmes (ce sont des checkboxes : on vide et on réimporte)
+	$query_d = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ? ';
+	$stmt = mysqli_prepare($conn, $query_d);
+	mysqli_stmt_bind_param($stmt, 'i', $pro_id);
+	check_mysql_error($conn);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+	
+	if (isset($themes)){
+		$query_t = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
+		$terms_t = array();
+		$terms_type_t = null;
+		foreach ($themes as $theme_id) {
+			$query_t .= '(?, ?), ';
+			$terms_t[] = $pro_id;
+			$terms_t[] = $theme_id;
+			$terms_type_t .= "ii";
+		}
+		$query_t = substr($query_t, 0, -2); // tweak pour enlever " '" à la fin de la requête
+		$stmt = mysqli_prepare($conn, $query_t);
+		$query_params_t = [];
+		$query_params_t[] = $terms_type_t;
+		foreach ($terms_t as $id => $term) {
+			$query_params_t[] = &$terms_t[$id];
+		}
+		call_user_func_array(array($stmt, 'bind_param'), $query_params_t);
+
+		check_mysql_error($conn);
+		if (mysqli_stmt_execute($stmt)) {
+			$updated_t = mysqli_stmt_affected_rows($stmt) > 0;
+			mysqli_stmt_close($stmt);
+		}
+	}
+
+	return ($updated+$updated_t);
+}
+/*echo "<pre>";
+print_r($themes);
+echo $query_t;
+echo $terms_type_t;
+print_r($query_params_t);
+echo "</pre>";*/
 
 /* Utilisateurs */
 function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du territoire
@@ -639,6 +750,29 @@ function get_question_by_id($id) {
 	mysqli_stmt_close($stmt);
 	return [$question, $reponses];
 }
+
+function get_code_insee($code_postal, $ville){
+	
+	global $conn;
+	$code_insee = null;
+	
+	$query = 'SELECT code_insee FROM `'.DB_PREFIX.'bsl__ville` WHERE code_postal=? AND nom_ville LIKE ? ';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ss', $code_postal, $ville);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		if (mysqli_num_rows($result) === 1) {
+			$row = mysqli_fetch_assoc($result);
+			$code_insee = $row['code_insee'];
+		}
+		mysqli_stmt_close($stmt);
+	}
+
+	return $code_insee;
+}
+
+
 
 //************** liste villes 
 //à voir si toujours utile - remplacé depuis la v0 par l'appel à un fichier texte
