@@ -65,20 +65,12 @@ if (isset($_GET['id'])) {
     $id_professionnel = $_GET['id'];
 }
 if (isset($id_professionnel)) {
-    $sql = 'SELECT * FROM `'.DB_PREFIX.'bsl_professionnel` 
-	WHERE id_professionnel=' . $id_professionnel;
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-    } else {
-        $msg = '<div class=\'soustitre\'>Ce professionnel est inconnu.</div>';
-    }
+    $row = get_pro_by_id((int)$id_professionnel); 
 }
 
 $soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
 
-//************************* génération des listes des compétences géographiques (régions, départements et/ou territoires )
+//********** génération des listes des compétences géographiques (régions, départements et/ou territoires )
 $affiche_listes_geo = '';
 
 $liste_competence_geo = '<option value=\'\'>A choisir</option>';
@@ -98,95 +90,52 @@ foreach ($tabgeo as $key => $value) {
 
 $select_region = '';
 $select_dep = '';
-$choix_territoire = '';
 if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
-    //liste déroulante des régions
-    $sql = 'SELECT * FROM `'.DB_PREFIX.'bsl__region` WHERE 1 ';
-    $result = mysqli_query($conn, $sql);
-    $select_region = '<option value=\'\' >A choisir</option>';
-    while ($row2 = mysqli_fetch_assoc($result)) {
-        $select_region .= '<option value=\'' . $row2['id_region'] . '\' ';
-        if ($id_professionnel) {
-            if (($row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) {
-                $select_region .= 'selected';
-            }
-        }
+    
+	//liste déroulante des régions
+    $regions = get_liste_regions();
+    $select_region = '<option value="" >A choisir</option>';
+	foreach($regions as $row2) {
+        $select_region .= '<option value="' . $row2['id_region'] . '" ';
+        if ($id_professionnel && ($row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
         $select_region .= '>' . $row2['nom_region'] . '</option>';
     }
-    $choix_region = '<select name=\'liste_regions\' id=\'liste_regions\' style=\'display:';
-    if ($id_professionnel) {
-        if ($row['competence_geo'] == 'regional') {
-            $choix_region .= 'block\'';
-        } else {
-            $choix_region .= 'none\'';
-        }
-    } else {
-        $choix_region .= 'none\'';
-    }
-    $choix_region .= ' >' . $select_region . '</select>';
+    $choix_region = '<select name="liste_regions" id="liste_regions" style="display:';
+	$choix_region .= (id_professionnel && ($row['competence_geo'] == 'regional')) ? 'block' : 'none';
+    $choix_region .= '" >' . $select_region . '</select>';
 
     //liste déroulante des départements
-    $sql = 'SELECT `id_departement`, `nom_departement` FROM `'.DB_PREFIX.'bsl__departement` WHERE 1 ';
-    $result = mysqli_query($conn, $sql);
-    $select_dep = '<option value=\'\' >A choisir</option>';
-    while ($row2 = mysqli_fetch_assoc($result)) {
-        $select_dep .= '<option value=\'' . $row2['id_departement'] . '\' ';
-        if ($id_professionnel) {
-            if (($row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) {
-                $select_dep .= 'selected';
-            }
-        }
-        $select_dep .= '>' . $row2['id_departement'] . ' ' . $row2['nom_departement'] . '</option>';
+    $dep = get_liste_departements();
+    $select_dep = '<option value="" >A choisir</option>';
+	foreach($dep as $row2) {
+        $select_departement .= '<option value="' . $row2['id_departement'] . '" ';
+        if ($id_professionnel && ($row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_departement .= 'selected';
+        $select_departement .= '>' . $row2['nom_departement'] . '</option>';
     }
-    $choix_dep = '<select name=\'liste_departements\' id=\'liste_departements\' style=\'display:';
-    if ($id_professionnel) {
-        if ($row['competence_geo'] == 'departemental') {
-            $choix_dep .= 'block\'';
-        } else {
-            $choix_dep .= 'none\'';
-        }
-    } else {
-        $choix_dep .= 'none\'';
-    }
-    $choix_dep .= '>' . $select_dep . '</select>';
+    $choix_dep = '<select name="liste_departements" id="liste_departements" style="display:';
+	$choix_dep .= (id_professionnel && ($row['competence_geo'] == 'departemental')) ? 'block' : 'none';
+    $choix_dep .= '" >' . $select_departement . '</select>';
+	
     $affiche_listes_geo .= $choix_region . $choix_dep;
 }
 
 //+ liste déroulante des territoires
-$sql = 'SELECT `id_territoire`, `nom_territoire` FROM `'.DB_PREFIX.'bsl_territoire` WHERE 1 ';
-if (secu_check_role(ROLE_ANIMATEUR)) {
-    $sql .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
-}
-$result = mysqli_query($conn, $sql);
-$select_territoire = '<option value=\'\' >A choisir</option>';
-while ($row2 = mysqli_fetch_assoc($result)) {
-    $select_territoire .= '<option value=\'' . $row2['id_territoire'] . '\' ';
-    if ($id_professionnel) {
-        if (($row['competence_geo'] == 'territoire') && ($row2['id_territoire'] == $row['id_competence_geo'])) {
-            $select_territoire .= 'selected';
-        }
-    } else {
-        if (isset($_SESSION['territoire_id'])) {
-            if ($row2['id_territoire'] == $_SESSION['territoire_id']) {
-                $select_territoire .= 'selected';
-            }
-        }
-    }
-    $select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
+$choix_territoire = '';
+$param = null;
+if (secu_check_role(ROLE_ANIMATEUR)) $param = $_SESSION['territoire_id'];
+$terri = get_territoires($param);
+
+$select_territoire = '<option value="" >A choisir</option>';
+foreach($terri as $row2) {
+	$select_territoire .= '<option value="' . $row2['id_territoire'] . '" ';
+	if ($id_professionnel && ($row['competence_geo'] == 'territoire') && ($row2['id_territoire'] == $row['id_competence_geo'])) $select_territoire .= 'selected';
+	$select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
 }
 $choix_territoire = '<select name="liste_territoires" id="liste_territoires" style="display:';
-if ($id_professionnel) {
-    if ($row['competence_geo'] == 'territoire') {
-        $choix_territoire .= 'block';
-    } else {
-        $choix_territoire .= 'none';
-    }
-} else {
-    $choix_territoire .= 'none';
-}
-if (!secu_check_role(ROLE_ADMIN) && !secu_check_role(ROLE_ANIMATEUR))
-    $choix_territoire .= ' disabled ';
-$choix_territoire .= '">' . $select_territoire . '</select>';
+$choix_territoire .= (id_professionnel && ($row['competence_geo'] == 'territoire')) ? 'block' : 'none';
+//if (!secu_check_role(ROLE_ADMIN) && !secu_check_role(ROLE_ANIMATEUR)) $choix_territoire .= ' disabled ';
+$choix_territoire .= '" >' . $select_territoire . '</select>';
+
 $affiche_listes_geo .= $choix_territoire;
 
 //********* liste déroulante des thèmes

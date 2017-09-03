@@ -60,7 +60,6 @@ function get_criteres($id_offre, $id_theme){
 	return [$questions, $reponses];
 }
 
-
 /* Demandes */
 function get_demande_by_id($id){
 	
@@ -345,7 +344,7 @@ function get_villes_by_offre($id) {
 	return $villes;
 }
 
-function get_territoires() {
+function get_territoires($id = null) {
 	
 	global $conn;
 	$t = null;
@@ -353,6 +352,7 @@ function get_territoires() {
 	$sql = 'SELECT `id_territoire`, `nom_territoire`, `code_territoire` 
 		FROM `'.DB_PREFIX.'bsl_territoire` 
 		WHERE `actif_territoire` = 1 AND `nom_territoire` != "" ';
+	if ($id) $sql .= ' AND `id_territoire`=' . $id;
 
 	$stmt = mysqli_prepare($conn, $sql);
 	check_mysql_error($conn);
@@ -512,6 +512,28 @@ function get_liste_pros($flag, $territoire_id) { //tous les professionnel du ter
 	}
 
 	return $pros;
+}
+
+function get_pro_by_id($id){
+	
+	global $conn;
+	$pro = null;
+	
+	$query = 'SELECT * FROM `'.DB_PREFIX.'bsl_professionnel` 
+		WHERE id_professionnel= ?';
+
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		if (mysqli_num_rows($result) === 1) {
+			$pro = mysqli_fetch_assoc($result);
+		}
+		mysqli_stmt_close($stmt);
+	}
+
+	return $pro;
 }
 
 function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $site, $delai, $competence_geo, $competence_geo_id, $user_id) {
@@ -772,7 +794,41 @@ function get_code_insee($code_postal, $ville){
 	return $code_insee;
 }
 
+function get_liste_regions() {
 
+	global $conn;
+	$regions = null;
+	$query = 'SELECT `id_region`, `nom_region` FROM `'.DB_PREFIX.'bsl__region` WHERE 1 '; 
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$regions[] = $row;
+	}
+	return $regions;
+}
+
+function get_liste_departements() {
+
+	global $conn;
+	$departements = null;
+	$query = 'SELECT `id_departement`, `nom_departement` FROM `'.DB_PREFIX.'bsl__departement` WHERE 1 ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$departements[] = $row;
+	}
+	return $departements;
+}
+
+function get_liste_departements() {
+
+	global $conn;
+	$departements = null;
+	$query = 'SELECT `id_departement`, `nom_departement` FROM `'.DB_PREFIX.'bsl__departement` WHERE 1 ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$departements[] = $row;
+	}
+	return $departements;
+}
 
 //************** liste villes 
 //à voir si toujours utile - remplacé depuis la v0 par l'appel à un fichier texte

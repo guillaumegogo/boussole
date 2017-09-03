@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="css/style_backoffice.css"/>
-    <link rel="icon" type="image/png" href="img/compass-icon.png"/>
     <title>Boussole des jeunes</title>
+    <link rel="icon" type="image/png" href="img/compass-icon.png"/>
+    <link rel="stylesheet" href="css/style_backoffice.css"/>
 </head>
 
 <body>

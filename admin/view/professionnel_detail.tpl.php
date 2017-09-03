@@ -69,6 +69,10 @@
 
     <div class="soustitre"><?= $msg ?></div>
 
+    <?php
+    if ($row !== null) {
+    ?>
+
     <form method="post" class="detail">
 
         <input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
@@ -179,6 +183,11 @@
             <input type="submit" value="Enregistrer">
         </div>
     </form>
+    <?php
+    } else {
+        echo "Professionnel inconnu.";
+    }
+    ?>
 </div>
 </body>
 </html>
