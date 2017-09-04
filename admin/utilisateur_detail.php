@@ -2,13 +2,10 @@
 
 include('../src/admin/bootstrap.php');
 secu_check_login(DROIT_UTILISATEUR);
-
-/*todo
+/* todo...
 if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){
-		$sql = 'SELECT competence_geo, id_competence_geo FROM `'.DB_PREFIX.'bsl_utilisateur` 
-			WHERE competence_geo="territoire" AND id_competence_geo='.$_SESSION['territoire_id'].' AND id_utilisateur='.$_GET['id'];
-		$result = mysqli_query($conn, $sql);
+		$result = verif_territoire_user($_SESSION['territoire_id'], $_GET['id']);
 		if (mysqli_num_rows($result) == 0) { header('Location: utilisateur_liste.php'); }
 	}
 }else{ //autrement, le seul cas possible est la consultation de ses propres infos
@@ -18,9 +15,6 @@ if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un
 //********* variables
 $last_id = null;
 $msg = '';
-$req = '';
-$row = array();
-$attache = '';
 
 if (isset($_POST['maj_id'])) { //si post du formulaire interne
     if (!$_POST["maj_id"]) { //requête d'ajout
@@ -90,6 +84,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
 }
 
 //*********** affichage de l'utilisateur demandé ou nouvellement créé
+$attache = '';
 $id_utilisateur = $last_id;
 if (isset($_GET['id'])) {
     $id_utilisateur = $_GET['id'];

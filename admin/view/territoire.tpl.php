@@ -73,7 +73,7 @@
 
                     <div style="display:inline-block;  vertical-align:top;">
                         <select name="list2[]" id="list2" MULTIPLE SIZE="20"
-                                style=" min-width:20em;"><?php echo $liste2; ?></select>
+                                style=" min-width:20em;"><?php echo $liste_villes_territoire; ?></select>
                     </div>
 
                     <input style="display:block; margin:2em auto 0 auto;" type="submit" name="submit_villes"
@@ -87,3 +87,11 @@
 </div>
 </body>
 </html>
+
+<?php
+if (DEBUG) { 
+	$timestamp_fin = microtime(true);
+	$difference_ms = $timestamp_fin - $timestamp_debut;
+	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.</pre>'; 
+}
+?>

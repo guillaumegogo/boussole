@@ -1,4 +1,5 @@
 <?php
+$timestamp_debut = microtime(true);
 
 include('../src/admin/bootstrap.php');
 secu_check_login(DROIT_OFFRE);
@@ -6,6 +7,8 @@ secu_check_login(DROIT_OFFRE);
 //********* variables
 $id_offre = null;
 $msg = "";
+$user_pro_id = null;
+if (isset($_SESSION['user_pro_id'])) $user_pro_id=$_SESSION['user_pro_id'];
 
 //********** si post du formulaire interne
 if (isset($_POST["maj_id"])) {
@@ -30,6 +33,7 @@ if (isset($_POST["maj_id"])) {
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères
 			$liste_villes=null;
 			if(isset($_POST['list2'])) $liste_villes=$_POST['list2'];
+			
 			$updated2 = update_criteres_offre((int)$id_offre, $liste_villes, $_POST['critere'], secu_get_current_user_id());
 		}
 	}
@@ -131,11 +135,11 @@ if (isset($id_offre)) {
 //********** sinon écran de création simple : récupération de la liste des professionnels (avec thème) en fonction des droits du user
 } else {
 	$liste_pro = "<option value=\"\" >A choisir</option>";
-	$result = get_liste_pros_select($_SESSION['territoire_id'], $_SESSION['user_pro_id']);
+	$result = get_liste_pros_select($_SESSION['territoire_id'], $user_pro_id);
 	if (mysqli_num_rows($result) > 0) {
 		while ($rowp = mysqli_fetch_assoc($result)) {
 			$liste_pro .= '<option value="' . $rowp['id_professionnel'] . '"';
-			if (isset($_SESSION['user_pro_id']) && $rowp['id_professionnel'] == $_SESSION['user_pro_id']) {
+			if ($rowp['id_professionnel'] == $user_pro_id) {
 				$liste_pro .= ' selected ';
 			}
 			$liste_pro .= '>' . $rowp['nom_pro'] . '</option>';

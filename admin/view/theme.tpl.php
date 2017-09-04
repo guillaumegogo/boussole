@@ -57,7 +57,7 @@
             <fieldset style="margin-bottom:1em;">
                 <legend>Liste des sous-thèmes</legend>
                 <?php
-                if (mysqli_num_rows($result_st) > 0) {
+                if (count($sous_themes) > 0) {
                     ?>
                     <table>
                         <thead>
@@ -69,7 +69,7 @@
                         </thead>
                         <tbody>
                         <?php
-                        while ($row = mysqli_fetch_assoc($result_st)) {
+                        foreach($sous_themes as $row) {
                             if ($row['id_theme'] != $id_theme_choisi) {
                                 ?>
                                 <tr>
