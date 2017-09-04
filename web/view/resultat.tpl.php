@@ -50,7 +50,7 @@
 </head>
 <body>
 <div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
+    <div class="bandeau"><img src="img/2017_MEN_logo.jpg" width="113px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
     <div class="soustitre" style="margin-top:3%"><?php xecho($msg); ?></div>
     <form class="joli resultat">
         <fieldset class="resultat">

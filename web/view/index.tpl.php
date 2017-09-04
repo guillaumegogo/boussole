@@ -56,7 +56,7 @@
     <title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-    <div class="bandeau"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
+    <div class="bandeau"><img src="img/2017_MEN_logo.jpg" width="113px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
     <div class="soustitre"><strong>Rencontre un conseiller</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
     <?php
     //********* 1er affichage de la page (ou mauvaise saise)
