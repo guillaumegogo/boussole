@@ -232,6 +232,13 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 	}
 
 	return $updated;
+	
+	//debug
+	$print_sql = $req;
+	foreach(array($nom, $desc, $date_d, $date_f, $sous_theme, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $url, $delai, $zone, $actif, $user_id, $id_offre) as $term){
+		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	}
+	echo $print_sql;
 }
 
 function update_criteres_offre($id, $tab_villes, $tab_criteres, $user_id) { //todo : passer en statement
@@ -257,6 +264,9 @@ function update_criteres_offre($id, $tab_villes, $tab_criteres, $user_id) { //to
 	$result2 = mysqli_query($conn, $req2);
 	
 	return $result2;
+	
+	//debug
+	echo $req2;
 }
 
 function get_themes_by_pro($id){
@@ -1007,6 +1017,120 @@ function create_sous_theme($libelle, $id_theme) {
 	}
 	return $created;
 }
+
+/* Utilisateurs */
+function create_user($nom_utilisateur, $courriel, $mdp, $statut, $attache) {
+
+	global $conn;
+	$created = false;
+
+	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) 
+				VALUES (? , ? , ? ,NOW(), ? , ?)';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'sssss', $nom_utilisateur, $courriel, $mdp, $statut, $attache);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$created = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+
+	return $created;
+}
+
+function update_user($id, $nom, $courriel, $actif){
+
+	global $conn;
+	$updated = false;
+	
+	$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` SET `nom_utilisateur` = ?, `email` = ?, `actif_utilisateur` = ? WHERE `id_utilisateur` = ?';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ssii', $nom, $courriel, $actif, $id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$updated = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+
+	return $updated;
+}
+
+function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse, $actif){
+
+	global $conn;
+	$updated = false;
+	
+	$query = 'SELECT `motdepasse` FROM `'.DB_PREFIX.'bsl_utilisateur` WHERE `id_utilisateur`= ?';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	check_mysql_error($conn);
+	
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		$row = mysqli_fetch_assoc($result);
+		
+		if (password_verify(SALT_BOUSSOLE . $motdepasseactuel, $nouveaumotdepasse)) {
+			$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
+				SET `motdepasse` = ? 
+				WHERE `id_utilisateur` = ?';
+			//pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
+			$stmt2 = mysqli_prepare($conn, $query);
+			$hache = secu_password_hash($nouveaumotdepasse);
+			mysqli_stmt_bind_param($stmt2, 'si', $hache, $id);
+			check_mysql_error($conn);
+			
+			if (mysqli_stmt_execute($stmt2)) {
+				$updated = mysqli_stmt_affected_rows($stmt) > 0;
+				mysqli_stmt_close($stmt);
+				$msg = 'Mot de passe modifié.';
+			} else {
+				$msg = $message_erreur_bd;
+			}
+		} else {//mdp actuel correct
+			$msg = "Le mot de passe indiqué n'est pas le bon.";
+		}
+	} else {
+		$msg = "Pas d'utilisateur connu.";
+	}
+	mysqli_stmt_close($stmt);
+
+	return [$updated,$msg];
+}
+
+function get_user_by_id($id){
+
+	global $conn;
+	$user = null;
+
+	$query = 'SELECT `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `date_inscription`, `actif_utilisateur`, `id_professionnel`, `nom_pro`, `id_territoire` , `nom_territoire`
+		FROM `'.DB_PREFIX.'bsl_utilisateur` 
+		JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
+		WHERE `id_utilisateur`= ?';
+
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		if (mysqli_num_rows($result) === 1) {
+			$user = mysqli_fetch_assoc($result);
+		}
+		mysqli_stmt_close($stmt);
+	}
+
+	return $user;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

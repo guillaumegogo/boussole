@@ -359,6 +359,8 @@
 if (DEBUG) { 
 	$timestamp_fin = microtime(true);
 	$difference_ms = $timestamp_fin - $timestamp_debut;
-	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.</pre>'; 
+	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.';
+	print_r($_POST);
+	echo'</pre>'; 
 }
 ?>

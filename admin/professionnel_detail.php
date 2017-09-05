@@ -60,14 +60,14 @@ if (isset($_POST['maj_id'])) {
 //*********** affichage du professionnel demandé ou nouvellement créé
 $row = [];
 $id_professionnel = $last_id;
+$soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
+
 if (isset($_GET['id'])) {
     $id_professionnel = $_GET['id'];
 }
 if (isset($id_professionnel)) {
     $row = get_pro_by_id((int)$id_professionnel); 
 }
-
-$soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
 
 //********** génération des listes des compétences géographiques (régions, départements et/ou territoires )
 $affiche_listes_geo = '';
@@ -80,7 +80,7 @@ if (secu_check_role(ROLE_ADMIN)) {
 foreach ($tabgeo as $key => $value) {
     $liste_competence_geo .= '<option value=\'' . $key . '\' ';
     if ($id_professionnel) {
-        if ($row['competence_geo'] == $key) {
+        if (isset($row['competence_geo']) && $row['competence_geo'] == $key) {
             $liste_competence_geo .= ' selected ';
         }
     }
@@ -96,7 +96,7 @@ if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
     $select_region = '<option value="" >A choisir</option>';
 	foreach($regions as $row2) {
         $select_region .= '<option value="' . $row2['id_region'] . '" ';
-        if ($id_professionnel && ($row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
+        if ((isset($row['competence_geo']) && $row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
         $select_region .= '>' . $row2['nom_region'] . '</option>';
     }
     $choix_region = '<select name="liste_regions" id="liste_regions" style="display:';
@@ -108,7 +108,7 @@ if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
     $select_dep = '<option value="" >A choisir</option>';
 	foreach($dep as $row2) {
         $select_dep .= '<option value="' . $row2['id_departement'] . '" ';
-        if ($id_professionnel && ($row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_dep .= 'selected';
+        if ((isset($row['competence_geo']) && $row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_dep .= 'selected';
         $select_dep .= '>' . $row2['nom_departement'] . '</option>';
     }
     $choix_dep = '<select name="liste_departements" id="liste_departements" style="display:';
@@ -127,7 +127,7 @@ $terri = get_territoires($param);
 $select_territoire = '<option value="" >A choisir</option>';
 foreach($terri as $row2) {
 	$select_territoire .= '<option value="' . $row2['id_territoire'] . '" ';
-	if ($id_professionnel && ($row['competence_geo'] == 'territoire') && ($row2['id_territoire'] == $row['id_competence_geo'])) $select_territoire .= 'selected';
+	if ((isset($row['competence_geo']) && $row['competence_geo'] == 'territoire') && ($row2['id_territoire'] == $row['id_competence_geo'])) $select_territoire .= 'selected';
 	$select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
 }
 $choix_territoire = '<select name="liste_territoires" id="liste_territoires" style="display:';
