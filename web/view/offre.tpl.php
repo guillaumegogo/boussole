@@ -8,7 +8,7 @@
     <title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-    <div class="bandeau"><img src="img/2017_MEN_logo.jpg" width="113px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
+    <div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
 
     <?php
     if($row['nom_offre']) { //si on a une offre

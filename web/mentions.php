@@ -34,7 +34,7 @@ include('../src/web/bootstrap.php');
             doivent notamment s’abstenir, d’une manière générale, de porter atteinte à la vie privée ou à la réputation
             des personnes.</p>
         <p><strong>Contenu du site</strong></p>
-        <p>Le Ministère chargé de la Jeunesse met à disposition des utilisateurs de ce site web des informations et
+        <p>Le Ministère en charge de la Jeunesse met à disposition des utilisateurs de ce site web des informations et
             outils disponibles et vérifiés. Les informations du présent site renvoient parfois à des sites extérieurs
             (liens hypertextes) sur lesquels le ministère n’a aucun contrôle et pour lesquels il décline toute
             responsabilité.</p>
