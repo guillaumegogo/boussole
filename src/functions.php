@@ -7,17 +7,17 @@
  */
 function securite_bdd(mysqli $conn, $value){
 
-    // On regarde si le type de string est un nombre entier (int)
-    if(ctype_digit($value)) {
-        $value = (int) $value;
-    }
-    // Pour tous les autres types
-    else {
-        $value = mysqli_real_escape_string($conn, (string) $value);
-        // $value = addcslashes($value, '%_'); // note de Guillaume : j'ai mis en commentaire car cette ligne fait pêter la requête de get_liste_offres (bcp de noms de critères contiennent des "_", qui du coup sont échappés)
-    }
+	// On regarde si le type de string est un nombre entier (int)
+	if(ctype_digit($value)) {
+		$value = (int) $value;
+	}
+	// Pour tous les autres types
+	else {
+		$value = mysqli_real_escape_string($conn, (string) $value);
+		// $value = addcslashes($value, '%_'); // note de Guillaume : j'ai mis en commentaire car cette ligne fait pêter la requête de get_liste_offres (bcp de noms de critères contiennent des "_", qui du coup sont échappés)
+	}
 
-    return $value;
+	return $value;
 }
 
 /**
@@ -27,8 +27,8 @@ function securite_bdd(mysqli $conn, $value){
  */
 function check_mysql_error(mysqli $conn)
 {
-    if (mysqli_error($conn))
-        throw new Exception('MySQL error : ' . mysqli_error($conn));
+	if (mysqli_error($conn))
+		throw new Exception('MySQL error : ' . mysqli_error($conn));
 }
 
 /**
@@ -39,7 +39,7 @@ function check_mysql_error(mysqli $conn)
  */
 function xssafe($data, $encoding = 'UTF-8')
 {
-    return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+	return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
 }
 
 /**
@@ -48,6 +48,6 @@ function xssafe($data, $encoding = 'UTF-8')
  */
 function xecho($data)
 {
-    echo xssafe($data);
+	echo xssafe($data);
 }
 

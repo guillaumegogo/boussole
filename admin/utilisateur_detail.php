@@ -21,12 +21,14 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
 
 		$maj_attache = "NULL";
 		if (isset($_POST["statut"])) {
-			if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) $maj_attache = "\"" . $_POST["attache"] . "\"";
-			else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) $maj_attache = "\"" . $_POST["attache_p"] . "\"";
+			if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
+				$maj_attache = $_POST["attache"];
+			else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) 
+				$maj_attache = $_POST["attache_p"];
 		}
 		if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
 
-			$created = create_user($_POST["nom_utilisateur"], $_POST["courriel"], secu_password_hash($_POST["nouveaumotdepasse"]), $_POST["statut"], $maj_attache);
+			$created = create_user($_POST["nom_pouet"], $_POST["courriel"], secu_password_hash($_POST["nouveaumotdepasse"]), $_POST["statut"], $maj_attache);
 			if ($created) {
 				$last_id = mysqli_insert_id($conn);
 				$msg = 'Utilisateur bien créé.';
@@ -39,7 +41,7 @@ if (isset($_POST['maj_id'])) { //si post du formulaire interne
 
 	} else { //requête de modification
 		if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
-			$updated = update_user((int)$_POST['maj_id'], $_POST["nom_utilisateur"], $_POST["courriel"], $_POST["actif"]);
+			$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"], $_POST["actif"]);
 
 			if ($updated) {
 				$msg = 'Modification bien enregistrée.';

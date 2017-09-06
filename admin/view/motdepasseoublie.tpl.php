@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" href="css/style_backoffice.css"/>
-    <link rel="icon" type="image/png" href="img/compass-icon.png"/>
-    <title>Boussole des jeunes</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width"/>
+	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<title>Boussole des jeunes</title>
 </head>
 
 <body>
@@ -14,36 +14,36 @@
 
 <div class="container">
 
-    <h2>Réinitialisation du mot de passe</h2>
+	<h2>Réinitialisation du mot de passe</h2>
 
-    <div class="soustitre"><?= $msg ?></div>
+	<div class="soustitre"><?= $msg ?></div>
 
-    <form method="post" class="detail">
-        <?php if ($vue == 'normal') { ?>
-            <div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
-                <div class="lab">
-                    <label for="login">Adresse de courriel :</label>
-                    <input type="text" name="login"/>
-                </div>
-                <input type="submit" value="Réinitialiser le mot de passe">
-            </div>
+	<form method="post" class="detail">
+		<?php if ($vue == 'normal') { ?>
+			<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
+				<div class="lab">
+					<label for="login">Adresse de courriel :</label>
+					<input type="text" name="login"/>
+				</div>
+				<input type="submit" value="Réinitialiser le mot de passe">
+			</div>
 
-        <?php } else if ($vue == 'reinit' && $token !== null) { ?>
-            <div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
-                <input type="hidden" name="token" value="<?= $token ?>">
-                <div class="lab">
-                    <label for="nouveaumotdepasse">Nouveau mot de passe :</label>
-                    <input type="password" name="nouveaumotdepasse"/>
-                </div>
-                <div class="lab">
-                    <label for="nouveaumotdepasse2">Confirmez le mot de passe :</label>
-                    <input type="password" name="nouveaumotdepasse2"/>
-                </div>
-                <input type="submit" value="Valider">
-            </div>
+		<?php } else if ($vue == 'reinit' && $token !== null) { ?>
+			<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
+				<input type="hidden" name="token" value="<?= $token ?>">
+				<div class="lab">
+					<label for="nouveaumotdepasse">Nouveau mot de passe :</label>
+					<input type="password" name="nouveaumotdepasse"/>
+				</div>
+				<div class="lab">
+					<label for="nouveaumotdepasse2">Confirmez le mot de passe :</label>
+					<input type="password" name="nouveaumotdepasse2"/>
+				</div>
+				<input type="submit" value="Valider">
+			</div>
 
-        <?php } ?>
-    </form>
+		<?php } ?>
+	</form>
 </div>
 </body>
 </html>

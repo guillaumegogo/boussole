@@ -18,23 +18,25 @@ if (isset($_POST["maj_id"])) {
 		$id_offre = mysqli_insert_id($conn);
 		
 		if ($created) {
-			$msg = "Modification bien enregistrée.";
+			$msg = "Création bien enregistrée.";
 		}
 	} else { //requête de modification
 		$id_offre = $_POST['maj_id'];
 		$code_postal = substr($_POST['commune'], -5);
 		$ville = substr($_POST['commune'], 0, -6);
+		$liste_villes=null;
+		if(isset($_POST['list2'])) $liste_villes=$_POST['list2'];
 		
-		$updated = update_offre((int)$id_offre, $_POST['nom'], $_POST['desc'], $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], (int)$_POST['actif'], secu_get_current_user_id());
+		$updated = update_offre((int)$id_offre, $_POST['nom'], $_POST['desc'], $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], $liste_villes, (int)$_POST['actif'], secu_get_current_user_id());
 		
 		if ($updated) {
 			$msg = "Modification bien enregistrée.";
 		}
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères
-			$liste_villes=null;
-			if(isset($_POST['list2'])) $liste_villes=$_POST['list2'];
+			$liste_criteres=null;
+			if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];
 			
-			$updated2 = update_criteres_offre((int)$id_offre, $liste_villes, $_POST['critere'], secu_get_current_user_id());
+			$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres, secu_get_current_user_id());
 		}
 	}
 
@@ -86,8 +88,8 @@ if (isset($id_offre)) {
 		if (!$row['id_sous_theme']) {
 			$select_sous_theme = "<option value=\"\">A choisir</option>";
 		}
-		$tab_select_soustheme = array();
-
+		
+		$tab_js_soustheme = array();
 		$themes = get_themes_by_pro((int)$row['id_professionnel']);
 		foreach($themes as $rowt){
 			if (!isset($rowt['id_theme_pere'])) {
@@ -98,7 +100,7 @@ if (isset($id_offre)) {
 					}
 					$select_theme .= '>' . $rowt['libelle_theme'] . '</option>';
 				}
-				$tab_select_soustheme[$rowt['id_theme']] = '';
+				$tab_js_soustheme[$rowt['id_theme']] = '';
 				//liste des sous-thèmes (par défaut les sous-thèmes du thème-père sélectionné)
 			} else {
 				if ($rowt['id_theme_pere'] == $row['id_theme_pere']) {
@@ -109,8 +111,8 @@ if (isset($id_offre)) {
 					$select_sous_theme .= '>' . $rowt['libelle_theme'] . '</option>';
 				}
 				//tableau des listes pour fonction javascript ci-dessous
-				if (isset($tab_select_soustheme[$rowt['id_theme_pere']])) {
-					$tab_select_soustheme[$rowt['id_theme_pere']] .= '<option value="' . $rowt['id_theme'] . '">' . $rowt['libelle_theme'] . '</option>';
+				if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
+					$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
 				}
 			}
 		}
@@ -126,8 +128,10 @@ if (isset($id_offre)) {
 		$liste2 = '';
 		if ($row['zone_selection_villes']) {
 			$willes = get_villes_by_offre((int)$id_offre);
-			foreach($willes as $roww){
-				$liste2 .= '<option value="' . $roww['code_insee'] . '">' . $roww['nom_ville'] . ' ' . $roww['code_postal'] . '</option>';
+			if(isset($willes)){
+				foreach($willes as $roww){
+					$liste2 .= '<option value="' . $roww['code_insee'] . '">' . $roww['nom_ville'] . ' ' . $roww['code_postal'] . '</option>';
+				}
 			}
 		}
 	}

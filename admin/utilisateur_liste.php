@@ -5,7 +5,7 @@ secu_check_login(DROIT_UTILISATEUR);
 
 //********* territoire sélectionné
 if (isset($_POST['choix_territoire'])) {
-    secu_set_territoire_id($_POST["choix_territoire"]);
+	secu_set_territoire_id($_POST["choix_territoire"]);
 }
 include('../src/admin/select_territoires.inc.php');
 

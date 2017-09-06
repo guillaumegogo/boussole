@@ -188,7 +188,7 @@ function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
 	return $created;
 }
 
-function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $delai, $zone, $actif, $user_id){
+function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $delai, $zone, $tab_villes, $actif, $user_id){
 
 	global $conn;
 	$updated = false;
@@ -231,17 +231,19 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 		mysqli_stmt_close($stmt);
 	}
 
-	return $updated;
-	
-	//debug
-	$print_sql = $req;
-	foreach(array($nom, $desc, $date_d, $date_f, $sous_theme, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $url, $delai, $zone, $actif, $user_id, $id_offre) as $term){
-		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	$req2 = 'INSERT INTO `'.DB_PREFIX.'bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES '; //todo : passer en statement
+	if (isset($tab_villes)) {
+		foreach ($tab_villes as $selected_option) {
+			$req2 .= '(' . $id_offre . ', "villes", "' . $selected_option . '"), ';
+		}
 	}
-	echo $print_sql;
+	$req2 = substr($req2, 0, -2); //on enlève ", " à la fin de la requête
+	$result2 = mysqli_query($conn, $req2);
+	
+	return $updated;
 }
 
-function update_criteres_offre($id, $tab_villes, $tab_criteres, $user_id) { //todo : passer en statement
+function update_criteres_offre($id, $tab_criteres, $user_id) { 
 
 	global $conn;
 	$updated = false;
@@ -249,24 +251,18 @@ function update_criteres_offre($id, $tab_villes, $tab_criteres, $user_id) { //to
 	$reqd = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ' . $id;
 	mysqli_query($conn, $reqd);
 
-	$req2 = 'INSERT INTO `'.DB_PREFIX.'bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES ';
-	if (isset($tab_villes)) {
-		foreach ($tab_villes as $selected_option) {
-			$req2 .= '(' . $id . ', "villes", "' . $selected_option . '"), ';
+	$req2 = 'INSERT INTO `'.DB_PREFIX.'bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) VALUES '; //todo : passer en statement
+	if (isset($tab_criteres)) {
+		foreach ($tab_criteres as $name => $tab_critere) {
+			foreach ($tab_critere as $key => $selected_option) {
+				$req2 .= '(' . $id . ', "' . $name . '", "' . $selected_option . '"), ';
+			}
 		}
 	}
-	foreach ($tab_criteres as $name => $tab_critere) {
-		foreach ($tab_critere as $key => $selected_option) {
-			$req2 .= '(' . $id . ', "' . $name . '", "' . $selected_option . '"), ';
-		}
-	}
-	$req2 = substr($req2, 0, -2); //on enlève le dernier ", "
-	$result2 = mysqli_query($conn, $req2);
+	$req2 = substr($req2, 0, -2); //on enlève ", " à la fin de la requête
+	$result = mysqli_query($conn, $req2);
 	
-	return $result2;
-	
-	//debug
-	echo $req2;
+	return $result;
 }
 
 function get_themes_by_pro($id){
@@ -467,14 +463,6 @@ function get_liste_offres($flag, $territoire_id, $user_pro_id) {
 	foreach ($params as $id => $term) {
 		$query_params[] = &$params[$id];
 	}
-	/*********** debug
-	echo "<pre>";
-	echo $query;
-	print_r($params);
-	print_r($query_params);
-	echo $types."</pre>";
-	//*********** debug */
-
 	call_user_func_array(array($stmt, 'bind_param'), $query_params);
 
 	check_mysql_error($conn);
@@ -574,6 +562,7 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 
 	//mise à jour des champs principaux
 	$updated = false;
+	$updated_t = false;
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel`
 		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `site_web_pro` = ?, `delai_pro` = ?, `actif_pro` = ?, `user_derniere_modif` = ? ';
 
@@ -634,6 +623,10 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 		}
 		call_user_func_array(array($stmt, 'bind_param'), $query_params_t);
 
+//****** impression d'une requête
+echo $query_t; 
+print_r($terms_t);
+
 		check_mysql_error($conn);
 		if (mysqli_stmt_execute($stmt)) {
 			$updated_t = mysqli_stmt_affected_rows($stmt) > 0;
@@ -643,12 +636,6 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 
 	return ($updated+$updated_t);
 }
-/*echo "<pre>";
-print_r($themes);
-echo $query_t;
-echo $terms_type_t;
-print_r($query_params_t);
-echo "</pre>";*/
 
 /* Utilisateurs */
 function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du territoire
@@ -828,24 +815,41 @@ function get_liste_departements() {
 	return $departements;
 }
 
-function get_liste_themes($pro_id = null, $actif = 1) {
+function get_liste_themes($pro_id = null, $actif = null) {
 
 	global $conn;
 	$themes = null;
-	if ($pro_id) {
-		$query = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme`, `actif_theme`,`id_professionnel` FROM `'.DB_PREFIX.'bsl_theme`
+	$params = [];
+	$types = '';
+
+	if(isset($pro_id)) {
+		$query = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `id_professionnel` 
+			FROM `'.DB_PREFIX.'bsl_theme` 
 			LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes`
 			ON `'.DB_PREFIX.'bsl_professionnel_themes`.`id_theme`=`'.DB_PREFIX.'bsl_theme`.`id_theme`
-			AND `'.DB_PREFIX.'bsl_professionnel_themes`.`id_professionnel`= ?
-			WHERE `actif_theme`= ? AND `id_theme_pere` IS NULL';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $actif);
+			AND `'.DB_PREFIX.'bsl_professionnel_themes`.`id_professionnel`= ? ';
+		$params[] = (int) $pro_id;
+		$types .= 'i';
 	}else{
-		$query = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme`, `actif_theme` FROM `'.DB_PREFIX.'bsl_theme`
-			WHERE `actif_theme`= ? AND `id_theme_pere` IS NULL';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'i', $actif);
+		$query = 'SELECT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme` 
+			FROM `'.DB_PREFIX.'bsl_theme` ';
 	}
+	$query .= 'WHERE `id_theme_pere` IS NULL ';
+	if(isset($actif)) {
+		$query .= 'AND `actif_theme`= ? ';
+		$params[] = (int) $actif;
+		$types .= 'i';
+	}
+	$stmt = mysqli_prepare($conn, $query);
+	if(count($params) > 0) {
+		$query_params = [];
+		$query_params[] = $types;
+		foreach ($params as $id => $term) {
+			$query_params[] = &$params[$id];
+		}
+		call_user_func_array(array($stmt, 'bind_param'), $query_params);
+	}
+
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);
@@ -854,6 +858,10 @@ function get_liste_themes($pro_id = null, $actif = 1) {
 		}
 		mysqli_stmt_close($stmt);
 	}
+	
+	echo $query;
+	print_r($params);
+	print_r($themes);
 
 	return $themes;
 }
@@ -864,13 +872,15 @@ function get_liste_sous_themes($theme_pere) {
 	$themes = null;
 	if (isset($theme_pere)) {
 		$query = 'SELECT `id_theme`, `libelle_theme`, `ordre_theme`, `actif_theme` 
-		WHERE `id_theme_pere`=' . $theme_pere . ' 
-		ORDER BY actif_theme DESC, ordre_theme';
+			FROM `'.DB_PREFIX.'bsl_theme`
+			WHERE `id_theme_pere`= ?  
+			ORDER BY actif_theme DESC, ordre_theme';
 		$stmt = mysqli_prepare($conn, $query);
 		mysqli_stmt_bind_param($stmt, 'i', $theme_pere);
 	}else{
 		$query = 'SELECT `id_theme`, `libelle_theme`, `ordre_theme`, `actif_theme` 
-		ORDER BY actif_theme DESC, ordre_theme';
+			FROM `'.DB_PREFIX.'bsl_theme`
+			ORDER BY actif_theme DESC, ordre_theme';
 		$stmt = mysqli_prepare($conn, $query);
 	}
 	check_mysql_error($conn);
@@ -982,17 +992,18 @@ function update_theme($id, $libelle, $actif){
 	return $updated;
 }
 
-function update_sous_themes($id, $sous_themes=null){
+function update_sous_themes($id, $sous_themes){
 
 	global $conn;
 	$updated = 0;
 	
 	if(isset($sous_themes)){
 		foreach ($sous_themes as $foo) {
-			$query = 'UPDATE `'.DB_PREFIX.'bsl_theme` SET `libelle_theme`= ? , `ordre_theme`= ? , `actif_theme`= ? 
+			$query = 'UPDATE `'.DB_PREFIX.'bsl_theme` 
+				SET `libelle_theme`= ? , `ordre_theme`= ? , `actif_theme`= ? 
 				WHERE `id_theme`= ?';
 			$stmt = mysqli_prepare($conn, $query);
-			mysqli_stmt_bind_param($stmt, 'siii', $foo[1], $foo[2], $foo[3], $id);
+			mysqli_stmt_bind_param($stmt, 'siii', $foo[1], $foo[2], $foo[3], $foo[0]);
 			check_mysql_error($conn);
 			if (mysqli_stmt_execute($stmt)) {
 				$updated += mysqli_stmt_affected_rows($stmt) > 0;
@@ -1024,8 +1035,9 @@ function create_user($nom_utilisateur, $courriel, $mdp, $statut, $attache) {
 	global $conn;
 	$created = false;
 
-	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) 
-				VALUES (? , ? , ? ,NOW(), ? , ?)';
+	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`
+		(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) 
+		VALUES (? , ? , ? ,NOW(), ? , ?)';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sssss', $nom_utilisateur, $courriel, $mdp, $statut, $attache);
 	check_mysql_error($conn);
@@ -1184,12 +1196,13 @@ function verif_territoire_user($territoire_id, $id) {
 }
 
 /******* bouts de code utile
- * //****** impression d'une requête
- * $print_sql = $query;
- * foreach(array($id_offre, $coord, $_SESSION['code_insee'], $liste) as $term){
- * $print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
- * }
- * echo $print_sql;
+//****** impression d'une requête
+$print_sql = $query;
+foreach(array($nom_utilisateur, $courriel, $mdp, $statut, $attache) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<pre>".$print_sql."</pre>"; 
+ *
  *
  * //****** modele de fonction select
  * function get_machin(){

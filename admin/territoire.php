@@ -16,10 +16,10 @@ if (isset($_POST['choix_territoire'])) {
 if (isset($_POST["submit_meta"])) {
 	if ($_POST["maj_id_territoire"]) {
 		$updated=update_territoire((int)$_POST['maj_id_territoire'], $_POST['libelle_territoire']);
-		$id_territoire_choisi = $_POST['maj_id_territoire'];
+		$_SESSION['territoire_id'] = $_POST['maj_id_territoire'];
 	} else {
 		$created=create_territoire($_POST['libelle_territoire']);
-		$id_territoire_choisi = mysqli_insert_id($conn);
+		$_SESSION['territoire_id'] = mysqli_insert_id($conn);
 	}
 }
 

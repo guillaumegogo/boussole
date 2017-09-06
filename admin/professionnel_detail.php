@@ -20,54 +20,53 @@ $msg = '';
 //si post du formulaire interne
 if (isset($_POST['maj_id'])) {
 
-    //récupération du code insee correspondant à la saisie
-    $themes = null;
+	//récupération du code insee correspondant à la saisie
+	$themes = null;
 	if (isset($_POST['theme'])) $themes=$_POST['theme'];
-    $code_postal = substr($_POST['commune'], -5);
-    $ville = substr($_POST['commune'], 0, -6);
-    $code_insee = get_code_insee($code_postal, $ville);
+	$code_postal = substr($_POST['commune'], -5);
+	$ville = substr($_POST['commune'], 0, -6);
+	$code_insee = get_code_insee($code_postal, $ville);
 
-    //si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
-    $id_competence_geo = "NULL";
-    if (isset($_POST['competence_geo'])) {
-        if ($_POST['competence_geo'] == 'regional' && $_POST['liste_regions']) {
-            $id_competence_geo = $_POST['liste_regions'];
-        } else if ($_POST['competence_geo'] == 'departemental' && $_POST['liste_departements']) {
-            $id_competence_geo = $_POST['liste_departements'];
-        } else if ($_POST['competence_geo'] == 'territoire' && $_POST['liste_territoires']) {
-            $id_competence_geo = $_POST['liste_territoires'];
-        }
-    }
+	//si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
+	$id_competence_geo = "NULL";
+	if (isset($_POST['competence_geo'])) {
+		if ($_POST['competence_geo'] == 'regional' && $_POST['liste_regions']) {
+			$id_competence_geo = $_POST['liste_regions'];
+		} else if ($_POST['competence_geo'] == 'departemental' && $_POST['liste_departements']) {
+			$id_competence_geo = $_POST['liste_departements'];
+		} else if ($_POST['competence_geo'] == 'territoire' && $_POST['liste_territoires']) {
+			$id_competence_geo = $_POST['liste_territoires'];
+		}
+	}
 
-    //requête d'ajout
-    if (!$_POST['maj_id']) {
+	//requête d'ajout
+	if (!$_POST['maj_id']) {
 		$created = create_pro($_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, secu_get_current_user_id());
 		$last_id = mysqli_insert_id($conn);
 		if ($created) $msg = 'Création bien enregistrée.';
 
 	//requête de modification
-    } else {
+	} else {
 		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['delai'], $_POST['actif'], $_POST['competence_geo'], $id_competence_geo, $themes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
 		if ($updated) $msg = 'Modification bien enregistrée.';
-    }
+	}
 
-    if (!$msg) {
-        $msg = 'Il y a eu un problème à l\'enregistrement . Contactez l\'administration centrale si le problème perdure.';
-    }
+	if (!$msg) {
+		$msg = 'Il y a eu un problème à l\'enregistrement . Contactez l\'administration centrale si le problème perdure.';
+	}
 }
 
 //*********** affichage du professionnel demandé ou nouvellement créé
 $row = [];
 $id_professionnel = $last_id;
-$soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
-
 if (isset($_GET['id'])) {
-    $id_professionnel = $_GET['id'];
+	$id_professionnel = $_GET['id'];
 }
 if (isset($id_professionnel)) {
-    $row = get_pro_by_id((int)$id_professionnel); 
+	$row = get_pro_by_id((int)$id_professionnel); 
 }
+$soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
 
 //********** génération des listes des compétences géographiques (régions, départements et/ou territoires )
 $affiche_listes_geo = '';
@@ -75,47 +74,47 @@ $affiche_listes_geo = '';
 $liste_competence_geo = '<option value=\'\'>A choisir</option>';
 $tabgeo = array('territoire' => 'Territoire');
 if (secu_check_role(ROLE_ADMIN)) {
-    $tabgeo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
+	$tabgeo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
 }
 foreach ($tabgeo as $key => $value) {
-    $liste_competence_geo .= '<option value=\'' . $key . '\' ';
-    if ($id_professionnel) {
-        if (isset($row['competence_geo']) && $row['competence_geo'] == $key) {
-            $liste_competence_geo .= ' selected ';
-        }
-    }
-    $liste_competence_geo .= '>' . $value . '</option>';
+	$liste_competence_geo .= '<option value=\'' . $key . '\' ';
+	if ($id_professionnel) {
+		if (isset($row['competence_geo']) && $row['competence_geo'] == $key) {
+			$liste_competence_geo .= ' selected ';
+		}
+	}
+	$liste_competence_geo .= '>' . $value . '</option>';
 }
 
 $select_region = '';
 $select_dep = '';
 if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
-    
+	
 	//liste déroulante des régions
-    $regions = get_liste_regions();
-    $select_region = '<option value="" >A choisir</option>';
+	$regions = get_liste_regions();
+	$select_region = '<option value="" >A choisir</option>';
 	foreach($regions as $row2) {
-        $select_region .= '<option value="' . $row2['id_region'] . '" ';
-        if ((isset($row['competence_geo']) && $row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
-        $select_region .= '>' . $row2['nom_region'] . '</option>';
-    }
-    $choix_region = '<select name="liste_regions" id="liste_regions" style="display:';
+		$select_region .= '<option value="' . $row2['id_region'] . '" ';
+		if ((isset($row['competence_geo']) && $row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
+		$select_region .= '>' . $row2['nom_region'] . '</option>';
+	}
+	$choix_region = '<select name="liste_regions" id="liste_regions" style="display:';
 	$choix_region .= ($id_professionnel && ($row['competence_geo'] == 'regional')) ? 'block' : 'none';
-    $choix_region .= '" >' . $select_region . '</select>';
+	$choix_region .= '" >' . $select_region . '</select>';
 
-    //liste déroulante des départements
-    $dep = get_liste_departements();
-    $select_dep = '<option value="" >A choisir</option>';
+	//liste déroulante des départements
+	$dep = get_liste_departements();
+	$select_dep = '<option value="" >A choisir</option>';
 	foreach($dep as $row2) {
-        $select_dep .= '<option value="' . $row2['id_departement'] . '" ';
-        if ((isset($row['competence_geo']) && $row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_dep .= 'selected';
-        $select_dep .= '>' . $row2['nom_departement'] . '</option>';
-    }
-    $choix_dep = '<select name="liste_departements" id="liste_departements" style="display:';
+		$select_dep .= '<option value="' . $row2['id_departement'] . '" ';
+		if ((isset($row['competence_geo']) && $row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_dep .= 'selected';
+		$select_dep .= '>' . $row2['nom_departement'] . '</option>';
+	}
+	$choix_dep = '<select name="liste_departements" id="liste_departements" style="display:';
 	$choix_dep .= ($id_professionnel && ($row['competence_geo'] == 'departemental')) ? 'block' : 'none';
-    $choix_dep .= '" >' . $select_dep . '</select>';
+	$choix_dep .= '" >' . $select_dep . '</select>';
 
-    $affiche_listes_geo .= $choix_region . $choix_dep;
+	$affiche_listes_geo .= $choix_region . $choix_dep;
 }
 
 //+ liste déroulante des territoires
@@ -137,15 +136,15 @@ $choix_territoire .= '" >' . $select_territoire . '</select>';
 
 $affiche_listes_geo .= $choix_territoire;
 
-//********* liste déroulante des thèmes
+//********* liste des thèmes
 $select_theme = '<div style="display:inline-table;">';
-$themes = get_liste_themes($id_professionnel);
+$themes = get_liste_themes($id_professionnel, 1);
 foreach($themes as $rowt) {
 	$select_theme .= '<input type="checkbox" name="theme[]" value="' . $rowt['id_theme'] . '" ';
-    if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) {
-        $select_theme .= ' checked ';
-    }
-    $select_theme .= '>' . $rowt['libelle_theme'] . '</br>';
+	if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) {
+		$select_theme .= ' checked ';
+	}
+	$select_theme .= '>' . $rowt['libelle_theme'] . '</br>';
 }
 $select_theme .= '</div>';
 
