@@ -29,7 +29,7 @@ if (isset($_POST["maj_id"])) {
 		
 		$updated = update_offre((int)$id_offre, $_POST['nom'], $_POST['desc'], $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], $liste_villes, (int)$_POST['actif'], secu_get_current_user_id());
 		
-		if ($updated) {
+		if ($updated[0]) {
 			$msg = "Modification bien enregistrée.";
 		}
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères

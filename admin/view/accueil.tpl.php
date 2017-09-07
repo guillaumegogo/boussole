@@ -10,13 +10,13 @@
 
 <body>
 <a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<?php echo $select_territoire; ?>
 
-	<h2>Modules disponibles</h2>
+	<h2>Accueil</h2>
 	<div style="width:100%; text-align:center;">
 		<div class="colonne_accueil">
 			<?php if ($liens_activite) { ?>

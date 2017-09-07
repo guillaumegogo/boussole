@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
@@ -24,17 +24,24 @@
 if ($meta !== null) {
 ?>
 
-	<h2>Détail du formulaire : <?php xecho($meta['theme'].' / '.$meta['territoire']) ?></h2> 
-	<p style='color:red; text-align:center;'>Ce module n'est pour le moment disponible qu'en consultation.</p>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
+		Détail du formulaire</h2> 
+
 	<?php echo $msg; ?>
 
 	<?php
 	if (count($pages) > 0) {
 	?>
 	
-	<div><div style="float:left; min-width:30%; border:1px solid white;">
+	<div>
+	<div style="float:left; width:25%; min-width:30em;">
+	<h3>Identifiants</h3>
+	<ul>
+		<li>Thème : <?= xecho($meta['theme']) ?></li>
+		<li>Zone : <?= xecho($meta['territoire']) ?></li>
+	</ul>
+	
 	<h3>Pages</h3>
-		<form method="post">
 		<table class="sortable">
 			<thead>
 			<tr>
@@ -60,19 +67,18 @@ if ($meta !== null) {
 		</table>
 		
 		<div class="button"><input type="submit" value="Enregistrer" disabled></div>
-		</form>
 	</div>
 	
 	<?php
 	} else {
 	?>
-	<div style="margin:1em;text-align:center">Aucun résultat</div>
+	<div style="margin:1em; width:70%; min-width:30em; text-align:center">Aucun résultat</div>
 	<?php
 	}
 	
 	if (count($questions) > 0) {
 	?>
-	<div style="width:auto; border:1px solid white;">
+	<div style="float:left; width:auto;">
 	<h3>Questions</h3>
 		<table class="sortable">
 			<thead>
@@ -117,11 +123,11 @@ if ($meta !== null) {
 ?>
 		
 	<!--<div class="button">
-		<input type="button" value="Ajouter une page" onclick="javascript:location.href='formulaire_page.php?f=<?= $meta['id'] ?>'">
+		<input type="button" value="Ajouter une page" onclick="javascript:location.href='formulaire_xxx.php?f=<?= $meta['id'] ?>'">
 		<input type="button" value="Ajouter une question" onclick="javascript:location.href='formulaire_question.php?f=<?= $meta['id'] ?>'">
 	</div>-->
 
-	<div class="button"><a href="formulaire_liste.php">Retour à la liste des formulaires</a></div>
+	<div style="clear:both" class="button"><a href="formulaire_liste.php">Retour à la liste des formulaires</a></div>
 </div>
 </body>
 </html>

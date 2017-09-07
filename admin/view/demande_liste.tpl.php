@@ -17,13 +17,14 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<?php echo $select_territoire; ?>
 
-	<h2><?php xecho($titre_page); ?></h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> 
+		Liste des demandes <?= ($flag_traite) ? 'traitées' : 'à traiter' ?></h2>
 
 	<?php
 	if (count($demandes) > 0) {
@@ -63,7 +64,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><?php echo $lien_traites; ?></div>
+	<div style="text-align:left"><a href="demande_liste.php<?= ($flag_traite) ? '">Liste des demandes à traiter' : '?etat=traite">Liste des demandes traitées' ?></a></div>
 
 </div>
 </body>

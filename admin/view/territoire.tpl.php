@@ -25,13 +25,13 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<?php echo $select_territoire; ?>
 
-	<h2>Gestion des territoires</h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Gestion des territoires</h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 

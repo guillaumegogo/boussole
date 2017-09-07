@@ -61,11 +61,12 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?= $_SESSION["accroche"] ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<h2><?= $soustitre ?></h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des professionnels</a> ></small> 
+		<?= ($id_professionnel) ? 'Modification' : 'Création'; ?> d'un professionnel</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 

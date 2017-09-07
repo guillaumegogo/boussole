@@ -86,20 +86,18 @@ if (isset($id_utilisateur)) {
 	}
 }
 
-$soustitre = ($id_utilisateur) ? "Modification d'un utilisateur" : "Ajout d'un utilisateur";
-
 //********************* listes
-$select_territoire = '<option value="" >A choisir</option>';
-$select_professionnel = '<option value="" >A choisir</option>';
 //si création, liste = liste du/des territoire(s) et des pros du/des territoire(s), avec tout en display none
 //si modif = affichage en disabled du territoire ou de la liste des pros, en fonction de la liste
 
-$sql2 = 'SELECT `id_territoire`, `nom_territoire` FROM `'.DB_PREFIX.'bsl_territoire` WHERE 1 ';
+$param_territoire = null;
 if (secu_check_role(ROLE_ANIMATEUR)) {
-	$sql2 .= ' AND `id_territoire`=' . $_SESSION['territoire_id'];
+	$param_territoire = $_SESSION['territoire_id'];
 }
-$result = mysqli_query($conn, $sql2);
-while ($row2 = mysqli_fetch_assoc($result)) {
+
+$select_territoire = '<option value="" >A choisir</option>';
+$liste_territoires = get_territoires($param_territoire);
+foreach($liste_territoires as $row2) {
 	$select_territoire .= '<option value="' . $row2['id_territoire'] . '" ';
 	if (isset($row['id_territoire']) && ($row2['id_territoire'] == $row['id_territoire'])) {
 		$select_territoire .= 'selected';
@@ -107,12 +105,9 @@ while ($row2 = mysqli_fetch_assoc($result)) {
 	$select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
 }
 
-$sql3 = 'SELECT `id_professionnel`, `nom_pro` FROM `'.DB_PREFIX.'bsl_professionnel` WHERE 1 ';
-if (secu_check_role(ROLE_ANIMATEUR)) {
-	$sql3 .= ' AND `competence_geo`="territoire" AND `id_competence_geo`=' . $_SESSION['territoire_id'];
-}
-$result = mysqli_query($conn, $sql3);
-while ($row3 = mysqli_fetch_assoc($result)) {
+$select_professionnel = '<option value="" >A choisir</option>';
+$liste_pro = get_liste_pros_select($param_territoire);
+foreach($liste_pro as $row3) {
 	$select_professionnel .= '<option value="' . $row3['id_professionnel'] . '" ';
 	if (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) {
 		$select_professionnel .= 'selected';

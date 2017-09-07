@@ -17,9 +17,5 @@ $territoire_id = secu_get_territoire_id();
 $user_pro_id = secu_get_user_pro_id();
 $demandes = get_liste_demandes($flag_traite, $territoire_id, $user_pro_id);
 
-//********** lien actifs/désactivés
-$titre_page = ($flag_traite) ? "Liste des demandes traitées" : "Liste des demandes à traiter";
-$lien_traites = ($flag_traite) ? "<a href=\"demande_liste.php\">Liste des demandes à traiter</a>" : "<a href=\"demande_liste.php?etat=traite\">Liste des demandes traitées</a>";
-
 //view
 require 'view/demande_liste.tpl.php';

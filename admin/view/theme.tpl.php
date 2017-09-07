@@ -11,28 +11,28 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
+	
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Gestion des thèmes</h2>
+	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<?php if ($select_theme) { ?>
-		<form method="post" class="liste_territoire">
-			<label for="choix_theme">Thème :</label>
-			<select name="choix_theme" onchange="this.form.submit()">
-				<option value="">A choisir</option><?php echo $select_theme; ?></select>
-		</form>
+	<form method="post" style="margin-bottom:1em;">
+		<label for="choix_theme">Thème :</label>
+		<select name="choix_theme" onchange="this.form.submit()">
+			<option value="">A choisir</option><?php echo $select_theme; ?></select>
+	</form>
 	<?php } ?>
-
-	<h2>Gestion des thèmes</h2>
-	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<?php
 	if ($id_theme_choisi) {
 		?>
 		<form method="post" class="detail">
 			<fieldset style="margin-bottom:1em;">
-				<legend>Gérer le theme</legend>
+				<legend>Détail du theme</legend>
 				<div class="une_colonne" style="width:auto; min-width:auto;">
 					<div class="lab">
 						<label for="libelle_theme">Libellé court :</label>

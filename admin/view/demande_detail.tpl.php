@@ -8,11 +8,12 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<h2>Détail d'une demande</h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="demande_liste.php">Liste de demandes</a> ></small> 
+		Détail d'une demande</h2>
 	<?php echo $msg; ?>
 
 	<?php

@@ -115,18 +115,14 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<h2><?php if ($id_offre) {
-			echo "Modification";
-		} else {
-			echo "Ajout";
-		} ?> d'une offre de service</h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Liste des offres de service</a> ></small> 
+		<?= ($id_offre) ? 'Modification' : 'Création' ?> d'une offre</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
-
 
 	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
@@ -360,8 +356,6 @@
 if (DEBUG) { 
 	$timestamp_fin = microtime(true);
 	$difference_ms = $timestamp_fin - $timestamp_debut;
-	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.';
-	print_r($_POST);
-	echo'</pre>'; 
+	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.'.'</pre>'; 
 }
 ?>

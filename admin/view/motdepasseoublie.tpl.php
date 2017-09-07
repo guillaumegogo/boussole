@@ -14,7 +14,7 @@
 
 <div class="container">
 
-	<h2>Réinitialisation du mot de passe</h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Réinitialisation du mot de passe</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 

@@ -66,7 +66,6 @@ if (isset($_GET['id'])) {
 if (isset($id_professionnel)) {
 	$row = get_pro_by_id((int)$id_professionnel); 
 }
-$soustitre = ($id_professionnel) ? 'Modification d\'un professionnel' : 'Ajout d\'un professionnel';
 
 //********** génération des listes des compétences géographiques (régions, départements et/ou territoires )
 $affiche_listes_geo = '';

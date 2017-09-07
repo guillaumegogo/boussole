@@ -14,7 +14,7 @@
 
 <div class="container">
 
-	<h2>Connexion</h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Connexion</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 

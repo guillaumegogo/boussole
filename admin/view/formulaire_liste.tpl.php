@@ -17,55 +17,44 @@
 </head>
 
 <body>
-<h1 class="bandeau"><a href="accueil.php">Administration de la boussole des jeunes</a></h1>
+<h1 class="bandeau">Administration de la boussole des jeunes</h1>
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<?php echo $select_territoire; ?>
 
-	<h2><?php xecho($titre_page); ?></h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des formulaires <?= ($flag_actif) ? '' : 'inactifs'; ?></h2>
 
+	<p style='color:red; text-align:center;'>Ce module n'est pour le moment disponible qu'en consultation.</p>
+	
 	<?php
 	if (count($formulaires) > 0) {
-		?>
-		<table id="sortable">
-			<thead>
-			<tr>
-				<th>Thème</th>
-				<th>Territoire</th>
-				<th></th>
-			</thead>
-			<tbody>
-			<?php
-			foreach ($formulaires as $formulaire) {
-				?>
-				<tr>
-					<td><?php xecho($formulaire['libelle']) ?></td>
-					<td><?php xecho($formulaire['territoire']) ?></td>
-					<td>
-						<a href="formulaire_detail.php?id=<?= (int) $formulaire['id'] ?>">Accéder</a>
-					</td>
-				</tr>
-				<?php
-			}
-			?>
-			</tbody>
-		</table>
+	?>
+	
+		<ol style="line-height: 200%;">
+	<?php
+	foreach ($formulaires as $formulaire) {
+	?>
+		<li><a href="formulaire_detail.php?id=<?= (int) $formulaire['id'] ?>"><?php xecho($formulaire['libelle']) ?> / <?php xecho($formulaire['territoire']) ?></a></li>
+	<?php
+	}
+	?>
+		</ol>
 
-		<?php
+	<?php
 	} else {
-		?>
+	?>
 		<div style="margin:1em;text-align:center">Aucun résultat</div>
-		<?php
+	<?php
 	}
 	?>
 
-	<div style="text-align:left"><?php echo $lien_desactives; ?></div>
+	<!--<div style="text-align:left"><a href="? <?= ($flag_actif) ? 'actif=non">Liste des formulaires inactifs' : 'actif=oui">Liste des formulaires actifs'; ?></a></div>-->
 
 </div>
 
 <div class="button">
-	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'">
+	<input type="button" value="Créer un formulaire" disabled onclick="javascript:location.href='formulaire_detail.php'">
 </div>
 </body>
 </html>
