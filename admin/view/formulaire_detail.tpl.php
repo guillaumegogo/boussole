@@ -9,7 +9,9 @@
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function () {
-			$('#sortable').dataTable();
+			$('#sortable').dataTable( {
+				stateSave: true
+			} );
 		});
 	</script>
 	<title>Boussole des jeunes</title>

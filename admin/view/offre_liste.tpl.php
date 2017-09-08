@@ -9,7 +9,9 @@
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function () {
-			$('#sortable').dataTable();
+			$('#sortable').dataTable( {
+				stateSave: true
+			} );
 		});
 	</script>
 
@@ -80,7 +82,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><?php echo $lien_desactives; ?></div>
+	<div style="text-align:left"><a href="offre_liste.php<?= ($flag_actif) ? '?actif=non">Liste des offres désactivées' : '">Liste des offres actives'; ?></a></div>
 </div>
 
 <div class="button">
