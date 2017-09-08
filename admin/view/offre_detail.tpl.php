@@ -17,7 +17,7 @@
 		//fonction autocomplete commune
 		$(function () {
 			var listeVilles = [<?php include('../src/villes_index.inc');?>];
-			$("#villes").autocomplete({
+			$("#villes").autocomplete({ // non utilisé encore -> à reprendre de la page index du front office
 				minLength: 2,
 				source: function (request, response) {
 					//adaptation fichier insee
@@ -253,15 +253,7 @@
 						de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
 					</div>
 				</div>
-				<div class="lab" id="div_liste_villes" style="display:<?php if ($id_offre) {
-					if ($row['zone_selection_villes']) {
-						echo "block";
-					} else {
-						echo "none";
-					}
-				} else {
-					echo "none";
-				} ?>">
+				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_selection_villes']) ? "block" : "none" ?>">
 					<div style="margin-bottom:1em;">Filtre : 
 						<input id="textbox"
 							value="nom de ville, code postal ou département..."
@@ -271,7 +263,14 @@
 
 					<div style="display:inline-block; vertical-align:top;">
 						<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
-							<?php echo $liste_villes_pro; ?>
+					<?php 
+					if(isset($villes)){
+						foreach($villes as $rowv){ 
+					?>
+						<option value="<?= $rowv['code_insee'] ?>"><?= $rowv['nom_ville']. ' ' . $rowv['cp'] ?></option>
+					<?php 
+						} 
+					} ?>
 						</select>
 					</div>
 
@@ -285,7 +284,16 @@
 
 					<div style="display:inline-block;  vertical-align:top;">
 						<select name="list2[]" id="list2" MULTIPLE SIZE="10"
-								style=" min-width:14em;"><?php echo $liste2; ?></select>
+								style=" min-width:14em;">
+					<?php 
+					if(isset($willes)){
+						foreach($willes as $roww){ 
+					?>
+						<option value="<?= $roww['code_insee'] ?>"><?= $roww['nom_ville']. ' ' . $roww['code_postal'] ?></option>
+					<?php 
+						}
+					} ?>
+						</select>
 					</div>
 				</div>
 				<div class="lab">
@@ -307,38 +315,38 @@
 		<?php
 		//si création d'une offre de service -> on n'affiche pas. si modification -> on affiche.
 		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
-			?>
+		?>
 
 			<fieldset>
 				<legend>Liste des critères de l'offre de service</legend>
 				<input type="hidden" name="maj_criteres" value="oui"> <!--est-ce bien utile ?-->
 				<div class="colonnes">
 
-					<?php
-					foreach ($questions as $question) {
-						?>
+			<?php
+			foreach ($questions as $question) {
+			?>
 						<div class="lab">
 							<label for="critere[<?= $question['name'] ?>][]"><?= $question['libelle'] ?></label>
 							<select name="critere[<?= $question['name'] ?>][]" multiple
 									size="<?= min(count($reponses[$question['name']]), 10) ?>">
-								<?php
-								foreach ($reponses[$question['name']] as $reponse) {
-									if ($reponse['valeur']) {
-										?>
-										<option value="<?= $reponse['valeur'] ?>" <?= $reponse['selectionne'] ?>><?= $reponse['libelle'] ?></option>
-										<?php
-									}
-								}
-								?>
+				<?php
+				foreach ($reponses[$question['name']] as $reponse) {
+					if ($reponse['valeur']) {
+				?>
+							<option value="<?= $reponse['valeur'] ?>" <?= $reponse['selectionne'] ?>><?= $reponse['libelle'] ?></option>
+				<?php
+					}
+				}
+				?>
 							</select>
 						</div>
-						<?php
-					}
-					?>
+			<?php
+			}
+			?>
 				</div>
 			</fieldset>
 
-			<?php
+		<?php
 		}
 		?>
 

@@ -61,7 +61,7 @@
 
 					<div style="display:inline-block; vertical-align:top;">
 						<select id="list1" MULTIPLE SIZE="20" style=" min-width:20em;">
-							<?php include('../src/admin/villes_options_insee.inc'); ?>
+							<?php include('../src/admin/villes_options_insee.inc'); //la liste des villes de France... todo : à remplacer par $("#villes").autocomplete ?>
 						</select>
 					</div>
 

@@ -17,8 +17,5 @@ $territoire_id = secu_get_territoire_id();
 $user_pro_id = secu_get_user_pro_id();
 $offres = get_liste_offres($flag_actif, $territoire_id, $user_pro_id);
 
-//********** lien actifs/inactifs
-$lien_desactives = ($flag_actif) ? "<a href=\"offre_liste.php?actif=non\">Liste des offres désactivées</a>" : "<a href=\"offre_liste.php\">Liste des offres actives</a>";
-
 //view
 require 'view/offre_liste.tpl.php';

@@ -58,94 +58,33 @@ if (isset($_POST['maj_id'])) {
 }
 
 //*********** affichage du professionnel demandé ou nouvellement créé
-$row = [];
+$pro = [];
 $id_professionnel = $last_id;
 if (isset($_GET['id'])) {
 	$id_professionnel = $_GET['id'];
 }
 if (isset($id_professionnel)) {
-	$row = get_pro_by_id((int)$id_professionnel); 
+	$pro = get_pro_by_id((int)$id_professionnel); 
 }
 
-//********** génération des listes des compétences géographiques (régions, départements et/ou territoires )
-$affiche_listes_geo = '';
-
-$liste_competence_geo = '<option value=\'\'>A choisir</option>';
-$tabgeo = array('territoire' => 'Territoire');
-if (secu_check_role(ROLE_ADMIN)) {
-	$tabgeo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
-}
-foreach ($tabgeo as $key => $value) {
-	$liste_competence_geo .= '<option value=\'' . $key . '\' ';
-	if ($id_professionnel) {
-		if (isset($row['competence_geo']) && $row['competence_geo'] == $key) {
-			$liste_competence_geo .= ' selected ';
-		}
-	}
-	$liste_competence_geo .= '>' . $value . '</option>';
-}
-
-$select_region = '';
-$select_dep = '';
-if (secu_check_role(ROLE_ADMIN)) { // choix accessibles uniquement aux admins
-	
-	//liste déroulante des régions
-	$regions = get_liste_regions();
-	$select_region = '<option value="" >A choisir</option>';
-	foreach($regions as $row2) {
-		$select_region .= '<option value="' . $row2['id_region'] . '" ';
-		if ((isset($row['competence_geo']) && $row['competence_geo'] == 'regional') && ($row2['id_region'] == $row['id_competence_geo'])) $select_region .= 'selected';
-		$select_region .= '>' . $row2['nom_region'] . '</option>';
-	}
-	$choix_region = '<select name="liste_regions" id="liste_regions" style="display:';
-	$choix_region .= ($id_professionnel && ($row['competence_geo'] == 'regional')) ? 'block' : 'none';
-	$choix_region .= '" >' . $select_region . '</select>';
-
-	//liste déroulante des départements
-	$dep = get_liste_departements();
-	$select_dep = '<option value="" >A choisir</option>';
-	foreach($dep as $row2) {
-		$select_dep .= '<option value="' . $row2['id_departement'] . '" ';
-		if ((isset($row['competence_geo']) && $row['competence_geo'] == 'departemental') && ($row2['id_departement'] == $row['id_competence_geo'])) $select_dep .= 'selected';
-		$select_dep .= '>' . $row2['nom_departement'] . '</option>';
-	}
-	$choix_dep = '<select name="liste_departements" id="liste_departements" style="display:';
-	$choix_dep .= ($id_professionnel && ($row['competence_geo'] == 'departemental')) ? 'block' : 'none';
-	$choix_dep .= '" >' . $select_dep . '</select>';
-
-	$affiche_listes_geo .= $choix_region . $choix_dep;
-}
-
-//+ liste déroulante des territoires
-$choix_territoire = '';
-$param = null;
-if (secu_check_role(ROLE_ANIMATEUR)) $param = $_SESSION['territoire_id'];
-$terri = get_territoires($param);
-
-$select_territoire = '<option value="" >A choisir</option>';
-foreach($terri as $row2) {
-	$select_territoire .= '<option value="' . $row2['id_territoire'] . '" ';
-	if ((isset($row['competence_geo']) && $row['competence_geo'] == 'territoire') && ($row2['id_territoire'] == $row['id_competence_geo'])) $select_territoire .= 'selected';
-	$select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
-}
-$choix_territoire = '<select name="liste_territoires" id="liste_territoires" style="display:';
-$choix_territoire .= ($id_professionnel && ($row['competence_geo'] == 'territoire')) ? 'block' : 'none';
-//if (!secu_check_role(ROLE_ADMIN) && !secu_check_role(ROLE_ANIMATEUR)) $choix_territoire .= ' disabled ';
-$choix_territoire .= '" >' . $select_territoire . '</select>';
-
-$affiche_listes_geo .= $choix_territoire;
-
-//********* liste des thèmes
-$select_theme = '<div style="display:inline-table;">';
+//********** listes : thèmes et compétences géographiques (régions, départements et/ou territoires )
 $themes = get_liste_themes($id_professionnel, 1);
-foreach($themes as $rowt) {
-	$select_theme .= '<input type="checkbox" name="theme[]" value="' . $rowt['id_theme'] . '" ';
-	if (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) {
-		$select_theme .= ' checked ';
-	}
-	$select_theme .= '>' . $rowt['libelle_theme'] . '</br>';
+
+$competences_geo = array('territoire' => 'Territoire');
+$regions = null;
+$departements = null;
+if (secu_check_role(ROLE_ADMIN)) {
+	$competences_geo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
+	$regions = get_liste_regions();
+	$departements = get_liste_departements();
 }
-$select_theme .= '</div>';
+if (secu_check_role(ROLE_ANIMATEUR)) {
+	$territoires = get_territoires($_SESSION['territoire_id']);
+} else {
+	$territoires = get_territoires();
+}
+
+$liste_villes_pro = null; //la liste des villes du territoire si $pro['zone_selection_villes'] = 0 / la liste des villes du pro si $pro['zone_selection_villes'] = 1 
 
 //view
 require 'view/professionnel_detail.tpl.php';

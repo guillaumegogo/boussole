@@ -118,21 +118,12 @@ if (isset($id_offre)) {
 		}
 
 		//*********** liste des villes accessibles au pro
-		$liste_villes_pro = '';
 		$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
-		foreach($villes as $rowv){
-			$liste_villes_pro .= '<option value="' . $rowv['code_insee'] . '">' . $rowv['nom_ville'] . ' ' . $rowv['cp'] . '</option>';
-		}
 
 		//*********** liste des villes liées à l'offre
-		$liste2 = '';
+		$willes = null;
 		if ($row['zone_selection_villes']) {
 			$willes = get_villes_by_offre((int)$id_offre);
-			if(isset($willes)){
-				foreach($willes as $roww){
-					$liste2 .= '<option value="' . $roww['code_insee'] . '">' . $roww['nom_ville'] . ' ' . $roww['code_postal'] . '</option>';
-				}
-			}
 		}
 	}
 
@@ -140,8 +131,8 @@ if (isset($id_offre)) {
 } else {
 	$liste_pro = "<option value=\"\" >A choisir</option>";
 	$result = get_liste_pros_select($_SESSION['territoire_id'], $user_pro_id);
-	if (mysqli_num_rows($result) > 0) {
-		while ($rowp = mysqli_fetch_assoc($result)) {
+	if (count($result) > 0) {
+		foreach($result as $rowp) {
 			$liste_pro .= '<option value="' . $rowp['id_professionnel'] . '"';
 			if ($rowp['id_professionnel'] == $user_pro_id) {
 				$liste_pro .= ' selected ';

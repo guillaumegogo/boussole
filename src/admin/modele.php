@@ -383,9 +383,10 @@ function get_villes_by_offre($id) {
 	global $conn;
 	$villes = null;
 
-	$query = 'SELECT * FROM `'.DB_PREFIX.'bsl_offre_criteres`
-		JOIN `'.DB_PREFIX.'bsl__ville` ON valeur_critere=code_insee
-		WHERE `nom_critere` LIKE "villes" AND id_offre= ?
+	$query = 'SELECT `nom_ville`, `code_insee`, `code_postal` 
+		FROM `'.DB_PREFIX.'bsl__ville`
+		JOIN `'.DB_PREFIX.'bsl_offre_criteres` ON `nom_critere` LIKE "villes" AND `valeur_critere`=`code_insee`
+		WHERE id_offre= ?
 		ORDER BY nom_ville';
 
 	$stmt = mysqli_prepare($conn, $query);
@@ -506,7 +507,7 @@ function get_offre_by_id($id){
 }
 
 /* Offre */
-function get_liste_offres($flag, $territoire_id, $user_pro_id) {
+function get_liste_offres($flag = 1, $territoire_id = null, $user_pro_id = null) {
 
 	global $conn;
 	$offres = [];
@@ -556,6 +557,12 @@ function get_liste_offres($flag, $territoire_id, $user_pro_id) {
 	return $offres;
 }
 
+function get_liste_mesures($flag = 1) {
+
+	return null;
+}
+
+
 /* Pros */
 function get_liste_pros($flag, $territoire_id) { //tous les professionnel du territoire
 
@@ -598,7 +605,8 @@ function get_pro_by_id($id){
 	global $conn;
 	$pro = null;
 
-	$query = 'SELECT * FROM `'.DB_PREFIX.'bsl_professionnel`
+	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `actif_pro`, `user_derniere_modif` 
+		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE id_professionnel= ?';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
