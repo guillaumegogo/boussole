@@ -65,7 +65,8 @@ if (isset($_POST['coordonnees'])) {
 			$message = "<html><p>Un jeune est intéressé par l'offre <b>" . $row['nom_offre'] . "</b>.</p>"
 				. "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
 				. "<p>Son profil est le suivant : " . liste_criteres('<br/>') . "</p>"
-				. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/\">espace de gestion de la Boussole</a></p></html>";
+				. "<p>Les coordonnées indiquées sont les suivantes : <b>" . $_POST['coordonnees'] . "</b></p></html>";
+//				. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/\">espace de gestion de la Boussole</a></p>";
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 			$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";

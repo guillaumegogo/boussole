@@ -9,11 +9,9 @@
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
+	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
 	<script type="text/javascript">
-		//******** jquery
 		//fonction autocomplete commune
 		$(function () {
 			var listeVilles = [<?php include('../src/villes_index.inc');?>];
@@ -40,6 +38,19 @@
 			$.datepicker.setDefaults($.datepicker.regional["fr"]);
 			$('.datepick').datepicker({dateFormat: "dd/mm/yy"});
 		});
+
+		/*validation formulaire*/
+		function checkall()
+		{
+			var sel = document.getElementById('list2');
+			if (sel != null && sel.value == '')
+			{
+				for (i = 0; i < sel.options.length; i++)
+				{
+					sel.options[i].selected = true;
+				}
+			}
+		}
 
 		/*montrer ou non la liste des villes*/
 		function cacheVilles()
@@ -79,19 +90,6 @@
 			}
 		}
 
-		/*validation formulaire*/
-		function checkall()
-		{
-			var sel = document.getElementById('list2');
-			if (sel != null && sel.value == '')
-			{
-				for (i = 0; i < sel.options.length; i++)
-				{
-					sel.options[i].selected = true;
-				}
-			}
-		}
-
 		function htmleditor()
 		{
 			document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
@@ -128,7 +126,7 @@
 
 		<input type="hidden" name="maj_id" value="<?php echo $id_offre; ?>">
 
-		<fieldset>
+		<fieldset>	
 			<legend>Détail de l'offre de service</legend>
 
 			<div class="deux_colonnes">
@@ -262,12 +260,13 @@
 					</div>
 
 					<div style="display:inline-block; vertical-align:top;">
+						<small><i>Villes correspondant au filtre :</i></small><br/>
 						<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
 					<?php 
 					if(isset($villes)){
 						foreach($villes as $rowv){ 
 					?>
-						<option value="<?= $rowv['code_insee'] ?>"><?= $rowv['nom_ville']. ' ' . $rowv['cp'] ?></option>
+						<option value="<?= $rowv['code_insee'] ?>"><?= $rowv['nom_ville']. ' ' . $rowv['code_postal'] ?></option>
 					<?php 
 						} 
 					} ?>
@@ -283,6 +282,7 @@
 					</div>
 
 					<div style="display:inline-block;  vertical-align:top;">
+						<small><i>Zone couverte par l'offre :</i></small><br/>
 						<select name="list2[]" id="list2" MULTIPLE SIZE="10"
 								style=" min-width:14em;">
 					<?php 

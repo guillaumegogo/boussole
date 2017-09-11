@@ -8,6 +8,8 @@
 	<link rel="stylesheet" href="css/jquery-ui.css">
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
+	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript">
 		//fonction autocomplete commune
 		$(function () {
@@ -26,6 +28,9 @@
 					}));
 				}
 			});
+		});
+		$(function () {
+			$('#list1').filterByText($('#textbox'));
 		});
 
 		//fonction affichage listes
@@ -61,16 +66,41 @@
 			}
 		}
 		
+		function alertTheme(that)
+		{
+
+			if (that.checked == false)
+			{
+				alert("Si vous retirez un thème du profil d'un professionnel, ses offres de service liées à ce thème seront désactivées.");
+			}
+		}
+		
 		function displayZone(that)
 		{
-			var y2 = document.getElementById('div_liste_villes');
+			if(confirm("Attention : si vous retirez une ville de la zone du compétence du professionnel, elle sera également retirée des zones de compétence de toutes ses offres de service."))
+			{
+				
+				var y2 = document.getElementById('div_liste_villes');
 
-			if (that.checked == true)
+				if (that.checked == true)
+				{
+					y2.style.display = 'block';
+				} else
+				{
+					y2.style.display = 'none';
+				}
+			}
+		}
+		
+		function checkall()
+		{
+			var sel = document.getElementById('list2');
+			if (sel != null && sel.value == '')
 			{
-				y2.style.display = 'block';
-			} else
-			{
-				y2.style.display = 'none';
+				for (i = 0; i < sel.options.length; i++)
+				{
+					sel.options[i].selected = true;
+				}
 			}
 		}
 	</script>
@@ -90,7 +120,7 @@
 	if ($pro !== null) {
 	?>
 
-	<form method="post" class="detail">
+	<form method="post" class="detail" onsubmit='checkall();'>
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 		<fieldset>
@@ -119,7 +149,7 @@
 					<label for="theme[]">Thème(s) :</label>
 					<div style="display:inline-table;">
 					<?php foreach($themes as $rowt) { ?>
-						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?>> <?= $rowt['libelle_theme'] ?></br>
+						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?> onchange="alertTheme(this);"> <?= $rowt['libelle_theme'] ?></br>
 					<?php } ?>
 					</div>
 				</div>
@@ -230,7 +260,7 @@ if (isset($territoires)){
 </select></div>
 
 <div style="margin-top:1em"><span id="zone_personnalisee" style="display:<?= $display_t ?>" >
-	<input type="checkbox" name="zone_personnalisee" value="oui" <?= ($pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence</span>
+	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= ($pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence</span>
 	
 	<div class="lab" id="div_liste_villes" style="display:<?= ($pro['zone_selection_villes']) ? 'block' : 'none' ?>">
 		<div style="margin-bottom:1em;">Filtre : 
@@ -241,6 +271,7 @@ if (isset($territoires)){
 		</div>
 
 		<div style="display:inline-block; vertical-align:top;">
+			<small><i>Villes correspondant au filtre :</i></small><br/>
 			<select id="list1" MULTIPLE SIZE="20" style=" min-width:20em;">
 				<?php include('../src/admin/villes_options_insee.inc'); //la liste des villes de France... todo : à remplacer par $("#villes").autocomplete ?>
 			</select>
@@ -255,7 +286,8 @@ if (isset($territoires)){
 		</div>
 
 		<div style="display:inline-block;  vertical-align:top;">
-			<select name="list2[]" id="list2" MULTIPLE SIZE="10"
+			<small><i>Villes de compétence du professionnel :</i></small><br/>
+			<select name="list2[]" id="list2" MULTIPLE SIZE="20"
 					style=" min-width:14em;">
 			<?php 
 			if(isset($liste_villes_pro)){
@@ -289,4 +321,6 @@ if (isset($territoires)){
 	?>
 </div>
 </body>
+<pre><?php print_r($_POST);?></pre>
+
 </html>

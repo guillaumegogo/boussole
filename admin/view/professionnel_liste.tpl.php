@@ -58,6 +58,9 @@
 						$geo = "région " . $row['nom_region'];
 						break;
 				}
+				if ($row['zone_selection_villes']) {
+					$geo .= "&nbsp;<sup><abbr title=\"sélection de villes\">sv</abbr></sup>";
+				}
 				?>
 				<tr>
 					<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a>
@@ -81,7 +84,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><?php echo $lien_desactives; ?></div>
+	<div style="text-align:left"><a href="professionnel_liste.php?<?= ($flag_actif) ? 'actif=non">Liste des professionnels désactivés' : '>Liste des professionnels actifs' ?></a></div>
 </div>
 
 <div class="button">

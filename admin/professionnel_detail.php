@@ -22,7 +22,11 @@ if (isset($_POST['maj_id'])) {
 
 	//récupération du code insee correspondant à la saisie
 	$themes = null;
+	$zone = 0;
+	$liste_villes = null;
 	if (isset($_POST['theme'])) $themes=$_POST['theme'];
+	if (isset($_POST['check_zone'])) $zone=$_POST['check_zone'];
+	if (isset($_POST['list2'])) $liste_villes=$_POST['list2'];
 	$code_postal = substr($_POST['commune'], -5);
 	$ville = substr($_POST['commune'], 0, -6);
 	$code_insee = get_code_insee($code_postal, $ville);
@@ -47,7 +51,7 @@ if (isset($_POST['maj_id'])) {
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['delai'], $_POST['actif'], $_POST['competence_geo'], $id_competence_geo, $themes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['delai'], $_POST['actif'], $_POST['competence_geo'], $id_competence_geo, $themes, $zone, $liste_villes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
 		if ($updated) $msg = 'Modification bien enregistrée.';
 	}
@@ -84,7 +88,12 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires();
 }
 
-$liste_villes_pro = null; //la liste des villes du territoire si $pro['zone_selection_villes'] = 0 / la liste des villes du pro si $pro['zone_selection_villes'] = 1 
+$liste_villes_pro = null; //la liste des villes du territoire si $pro['zone_selection_villes'] = 0 / la liste des villes du pro si $pro['zone_selection_villes'] = 1
+if($pro['zone_selection_villes'] == 0){
+	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
+}else{
+	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel);
+}
 
 //view
 require 'view/professionnel_detail.tpl.php';
