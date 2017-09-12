@@ -1,5 +1,28 @@
 <?php
 
+//meta query pour se simplier la vie...
+function query_update($query,$terms,$terms_type){
+	
+	global $conn;
+	$affected = null;
+	
+	$stmt = mysqli_prepare($conn, $query);
+	if(count($terms) > 0) {
+		$query_params = [];
+		$query_params[] = $terms_type;
+		foreach ($terms as $id => $term) {
+			$query_params[] = &$terms[$id];
+		}
+		call_user_func_array(array($stmt, 'bind_param'), $query_params);
+	}
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$affected = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+	return $affected;
+}
+
 function get_nb_nouvelles_demandes() {
 
 	global $conn;
@@ -252,23 +275,10 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 			$types .= 'is';
 		}
 		$req2 = substr($req2, 0, -2); //on enlève ", " à la fin de la requête
-		$stmt = mysqli_prepare($conn, $req2);
-		if(count($params) > 0) {
-			$query_params = [];
-			$query_params[] = $types;
-			foreach ($params as $id => $term) {
-				$query_params[] = &$params[$id];
-			}
-			call_user_func_array(array($stmt, 'bind_param'), $query_params);
-		}
-		check_mysql_error($conn);
-		if (mysqli_stmt_execute($stmt)) {
-			$updated_v = mysqli_stmt_affected_rows($stmt) > 0;
-			mysqli_stmt_close($stmt);
-		}
+		$updated_v = query_update($req2,$params,$types);
 	}
 
-	return [$updated, updated_v];
+	return [$updated, $updated_v];
 }
 
 function update_criteres_offre($id, $tab_criteres, $user_id) { 
@@ -296,20 +306,7 @@ function update_criteres_offre($id, $tab_criteres, $user_id) {
 			$types .= 'iss';
 		}
 		$query2 = substr($query2, 0, -2); //on enlève ", " à la fin de la requête
-		$stmt = mysqli_prepare($conn, $query2);
-		if(count($params) > 0) {
-			$query_params = [];
-			$query_params[] = $types;
-			foreach ($params as $id => $term) {
-				$query_params[] = &$params[$id];
-			}
-			call_user_func_array(array($stmt, 'bind_param'), $query_params);
-		}
-		check_mysql_error($conn);
-		if (mysqli_stmt_execute($stmt)) {
-			$updated = mysqli_stmt_affected_rows($stmt) > 0;
-			mysqli_stmt_close($stmt);
-		}
+		$updated = query_update($query2,$params,$types);
 	}
 	
 	return $updated;
@@ -676,9 +673,7 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 	global $conn;
 
 	//mise à jour des champs principaux
-	$updated = false;
-	$updated_t = false;
-	$updated_v = false;
+	$updated = null;
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel`
 		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `actif_pro` = ?, `user_derniere_modif` = ? ';
 
@@ -697,31 +692,27 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 	$query .= ' WHERE `id_professionnel` = ?';
 	$terms[] = $pro_id;
 	$terms_type .= "i";
+	$updated = query_update($query,$terms,$terms_type);
 
-	$stmt = mysqli_prepare($conn, $query);
-	$query_params = [];
-	$query_params[] = $terms_type;
-	foreach ($terms as $id => $term) {
-		$query_params[] = &$terms[$id];
-	}
-	call_user_func_array(array($stmt, 'bind_param'), $query_params);
-	check_mysql_error($conn);
-	if (mysqli_stmt_execute($stmt)) {
-		$updated = mysqli_stmt_affected_rows($stmt) > 0;
-		mysqli_stmt_close($stmt);
-	}
-
-	//mise à jour des thèmes (ce sont des checkboxes : on vide et on réimporte)
-	///!\ problème : que fait-on des offres existantes du pro sur les thèmes en question ??
-	$query_d = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ? ';
-	$stmt = mysqli_prepare($conn, $query_d);
-	mysqli_stmt_bind_param($stmt, 'i', $pro_id);
-	check_mysql_error($conn);
-	mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
-
+	//mise à jour des thèmes (ce sont des checkboxes : on enlève les thèmes décochés puis on importe le différentiel)
+	$updated_dt = null;
+	$query_dt = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ? ';
+	$terms_dt[] = $pro_id;
+	$terms_type_dt = 'i';
 	if (isset($themes)){
-		$query_t = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
+		$query_dt .= 'AND `id_theme` NOT IN (';
+		foreach ($themes as $theme_id) {
+			$query_dt .= '?,';
+			$terms_dt[] = $theme_id;
+			$terms_type_dt .= 'i';
+		}
+		$query_dt = substr($query_dt, 0, -1).')';
+	}
+	$updated_dt = query_update($query_dt,$terms_dt,$terms_type_dt);
+	
+	$updated_it = null;
+	if (isset($themes)){
+		$query_t = 'INSERT IGNORE INTO `'.DB_PREFIX.'bsl_professionnel_themes`(`id_professionnel`, `id_theme`) VALUES ';
 		$terms_t = array();
 		$terms_type_t = null;
 		foreach ($themes as $theme_id) {
@@ -730,58 +721,92 @@ function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville,
 			$terms_t[] = $theme_id;
 			$terms_type_t .= "ii";
 		}
-		$query_t = substr($query_t, 0, -2); // tweak pour enlever " '" à la fin de la requête
-		$stmt = mysqli_prepare($conn, $query_t);
-		$query_params_t = [];
-		$query_params_t[] = $terms_type_t;
-		foreach ($terms_t as $id => $term) {
-			$query_params_t[] = &$terms_t[$id];
-		}
-		call_user_func_array(array($stmt, 'bind_param'), $query_params_t);
-
-		check_mysql_error($conn);
-		if (mysqli_stmt_execute($stmt)) {
-			$updated_t = mysqli_stmt_affected_rows($stmt) > 0;
-			mysqli_stmt_close($stmt);
-		}
+		$query_t = substr($query_t, 0, -2); //on enleve " '" à la fin de la requête
+		$updated_it = query_update($query_t,$terms_t,$terms_type_t);
 	}
 
-	//mise à jour des villes (1 checkbox et une liste multiple : on vide et on réimporte)
-	///!\ problème : que fait-on des offres existantes du pro dont la sélection des villes a été personnalisée ?
-	$query_d = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_villes` WHERE `id_professionnel` = ? ';
-	$stmt = mysqli_prepare($conn, $query_d);
-	mysqli_stmt_bind_param($stmt, 'i', $pro_id);
-	check_mysql_error($conn);
-	mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
-	
-	if ($zone && isset($liste_villes)){
-		$query_v = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel_villes`(`id_professionnel`, `code_insee`) VALUES ';
-		$terms_v = array();
-		$terms_type_v = null;
+	//mise à jour des villes (1 checkbox et une liste multiple : on supprime les villes désélectionnées et on importe les villes différentielles)
+	$updated_dv = null;
+	$query_dv = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_villes` WHERE `id_professionnel` = ? ';
+	$terms_dv[] = $pro_id;
+	$terms_type_dv = 'i';
+	if (isset($liste_villes)){
+		$query_dv .= 'AND `code_insee` NOT IN (';
 		foreach ($liste_villes as $code_insee_ville) {
-			$query_v .= '(?, ?), ';
-			$terms_v[] = $pro_id;
-			$terms_v[] = $code_insee_ville;
-			$terms_type_v .= "is";
+			$query_dv .= '?,';
+			$terms_dv[] = $code_insee_ville;
+			$terms_type_dv .= 's';
 		}
-		$query_v = substr($query_v, 0, -2); // tweak pour enlever " '" à la fin de la requête
-		$stmt = mysqli_prepare($conn, $query_v);
-		$query_params_v = [];
-		$query_params_v[] = $terms_type_v;
-		foreach ($terms_v as $id => $term) {
-			$query_params_v[] = &$terms_v[$id];
-		}
-		call_user_func_array(array($stmt, 'bind_param'), $query_params_v);
-
-		check_mysql_error($conn);
-		if (mysqli_stmt_execute($stmt)) {
-			$updated_v = mysqli_stmt_affected_rows($stmt) > 0;
-			mysqli_stmt_close($stmt);
-		}
+		$query_dv = substr($query_dv, 0, -1).')';
 	}
+	$updated_dv = query_update($query_dv,$terms_dv,$terms_type_dv);
+	
+	$updated_iv = null;
+	if ($zone && isset($liste_villes)){
+		$query_iv = 'INSERT IGNORE INTO `'.DB_PREFIX.'bsl_professionnel_villes`(`id_professionnel`, `code_insee`) VALUES ';
+		$terms_iv = array();
+		$terms_type_iv = null;
+		foreach ($liste_villes as $code_insee_ville) {
+			$query_iv .= '(?, ?), ';
+			$terms_iv[] = $pro_id;
+			$terms_iv[] = $code_insee_ville;
+			$terms_type_iv .= "is";
+		}
+		$query_iv = substr($query_iv, 0, -2);
+		$updated_iv = query_update($query_iv,$terms_iv,$terms_type_iv);
+	}
+	
+	return ($updated+$updated_it+$updated_iv+$updated_dt+$updated_dv);
+}
 
-	return ($updated+$updated_t+$updated_v);
+function get_incoherence_offres_by_pro($pro_id, $themes, $villes){
+
+	global $conn;
+	$offres = null;
+	//...
+	return $offres;
+	/*
+	//suite à la mise des jour des thèmes : par précaution, on désactive les offres de service du pro pour les thèmes qui ne seraient plus gérés
+	$updated_ot = null;
+	$query_ot = 'SELECT * FROM `'.DB_PREFIX.'bsl_offre 
+		JOIN `'.DB_PREFIX.'bsl_theme ON id_sous_theme=id_theme 
+		SET actif_offre=0 WHERE id_professionnel = ? ';
+	$terms_ot[] = $pro_id;
+	$terms_type_ot = 'i';
+	if (isset($themes)){
+		$query_ot .= 'AND id_theme_pere NOT IN (';
+		foreach ($themes as $theme_id) {
+			$query_ot .= '?,';
+			$terms_ot[] = $theme_id;
+			$terms_type_ot .= 'i';
+		}
+		$queryx = substr($queryx, 0, -1).')';
+	}
+	$updated_ot = query_update($query_ot,$terms_ot,$terms_type_ot);
+	
+	//suite à la mise des jour des villes : on supprime des zones de compétences des offres du pro les villes qui ne seraient plus gérées
+	$updated_ov = null;
+	$query_ov = 'SELECT * FROM `'.DB_PREFIX.'bsl_offre_criteres` 
+		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.`id_offre`=`'.DB_PREFIX.'bsl_offre_criteres`.`id_theme`  
+		WHERE `nom_critere` = "villes" AND id_professionnel = ? ';
+	$terms_ov[] = $pro_id;
+	$terms_type_ov = 'i';
+	if ($zone){ //si la liste est personnalisée
+		if(isset($liste_villes)){
+			$query_ov .= 'AND `valeur_critere` NOT IN (';
+			foreach ($liste_villes as $code_insee_ville) {
+				$query_ov .= '?,';
+				$terms_ov[] = $code_insee_ville;
+				$terms_type_ov .= 's';
+			}
+			$query_ov = substr($queryx, 0, -1).')';
+		}
+	}else{ // si la liste est celle du territoire
+		$villes_territoire = get_villes_by_territoire((int)$_SESSION['territoire_id']);
+		//là c'est sioux : on doit supprimer des zones de compétences des offres du pro les villes qui ne font pas partie de son territoire ! (puisque son périmètre est maintenant son territoire) 
+	}
+	$updated_ov = query_update($query_ov,$terms_ov,$terms_type_ov);
+	*/
 }
 
 /* Utilisateurs */
@@ -1102,21 +1127,7 @@ function update_villes_territoire($id, $tab_villes) {
 			}
 		}
 		$query_i = substr($query_i, 0, -2); //on enlève le dernier ", "
-		$stmt = mysqli_prepare($conn, $query_i);
-		if(count($params) > 0) {
-			$query_params = [];
-			$query_params[] = $types;
-			foreach ($params as $id => $term) {
-				$query_params[] = &$params[$id];
-			}
-			call_user_func_array(array($stmt, 'bind_param'), $query_params);
-		}
-		check_mysql_error($conn);
-		
-		if (mysqli_stmt_execute($stmt)) {
-			$updated = mysqli_stmt_affected_rows($stmt) > 0;
-			mysqli_stmt_close($stmt);
-		}
+		$updated = query_update($query_i,$params,$types);
 	}
 
 	return $updated;
@@ -1303,11 +1314,20 @@ function get_user_by_id($id){
 	return $user;
 }
 
-
-
-
-
-//************** à voir si toujours utile...
+/*
+*
+*
+*
+*
+*
+* à voir si toujours utile...
+*
+*
+*
+*
+*
+*
+* 
 //liste villes (remplacé depuis la v0 par l'appel à un fichier texte)
 function liste_villes($format){
 

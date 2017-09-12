@@ -57,7 +57,7 @@ if (isset($_POST['maj_id'])) {
 	}
 
 	if (!$msg) {
-		$msg = 'Il y a eu un problème à l\'enregistrement . Contactez l\'administration centrale si le problème perdure.';
+		$msg = 'Il y a eu un problème à l\'enregistrement. Contactez l\'administration centrale si le problème perdure.';
 	}
 }
 
@@ -88,12 +88,13 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires();
 }
 
-$liste_villes_pro = null; //la liste des villes du territoire si $pro['zone_selection_villes'] = 0 / la liste des villes du pro si $pro['zone_selection_villes'] = 1
-if($pro['zone_selection_villes'] == 0){
+if($pro['zone_selection_villes'] == 0){ //la liste des villes du territoire
 	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
-}else{
+}else{ // la liste des villes du pro
 	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel);
 }
+
+$liste_incoherences = get_incoherence_offres_by_pro((int)$id_professionnel, $themes, $liste_villes_pro);
 
 //view
 require 'view/professionnel_detail.tpl.php';
