@@ -22,7 +22,7 @@
 		<form action="post">
 		<input type="hidden" name="id_maj" value="<?php xecho($question['id']); ?>" />
 		
-		<table>
+		<table class="dataTable display compact">
 			<thead>
 			<tr>
 				<th>Nom</th>
@@ -60,7 +60,7 @@
 		
 	<h3>Réponses proposées</h3>
 		
-		<table>
+		<table class="dataTable display compact">
 			<thead>
 			<tr>
 				<th>Ordre</th>

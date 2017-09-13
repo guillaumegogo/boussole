@@ -31,7 +31,7 @@
 	<?php
 	if (count($demandes) > 0) {
 		?>
-		<table id="sortable">
+		<table id="sortable" class="display compact">
 			<thead>
 			<tr>
 				<th>Date de la demande</th>

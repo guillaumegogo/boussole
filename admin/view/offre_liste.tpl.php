@@ -2,8 +2,8 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
@@ -31,7 +31,7 @@
 	<?php
 	if (count($offres) > 0) {
 		?>
-		<table id="sortable">
+		<table id="sortable" class="display compact">
 			<thead>
 			<tr>
 				<th>Nom</th><!--<th>Début</th>-->

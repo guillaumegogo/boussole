@@ -1,11 +1,14 @@
 body { 
 	background-color: white; 
-	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
-	/*"Open Sans", "Helvetica Neue"*/
+	font-family: "Open Sans", sans-serif; /*
+	"Helvetica Neue",Helvetica,Arial,sans-serif;
+	"Open Sans", "Helvetica Neue"*/
 	font-size:100%; 
 	margin:0;
 	padding:0;
 }
+input, select, textarea, button{font-family:inherit;}
+
 h1.bandeau{
 	width:auto;
 	margin:0em; 
@@ -45,9 +48,9 @@ h2 {
 	text-align:right;
     float:right;
     width:20em;
-}
+}/*
 table {
-	border-collapse: collapse;/*background-color: #FFF;*/
+	border-collapse: collapse; //background-color: #FFF;
 }
 table, th, td {
 	border: 1px solid black;
@@ -61,6 +64,17 @@ th{
 tr:nth-child(odd){
   background-color:#edf3f8;
 }
+table#sortable th{
+	padding-left:1.2em;
+	background-image: url("../img/updown.png");
+    background-size: 0.7em 0.7em;
+    background-position: 0.2em 0.6em;
+    background-repeat: no-repeat;
+}
+table#sortable tr:nth-child(even){
+  background-color:#edf3f8;
+}
+*/
 form { 
 	width:100%;
 	margin:0 auto;
@@ -159,16 +173,6 @@ label.court{
 	width:90%;
 	margin:2% auto 0 auto;
     font-size:1.1em;
-}
-table#sortable th{
-	padding-left:1.2em;
-	background-image: url("../img/updown.png");
-    background-size: 0.7em 0.7em;
-    background-position: 0.2em 0.6em;
-    background-repeat: no-repeat;
-}
-table#sortable tr:nth-child(even){
-  background-color:#edf3f8;
 }
 pre{
  background:#eee;

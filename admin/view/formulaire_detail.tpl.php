@@ -3,17 +3,10 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function () {
-			$('#sortable').dataTable( {
-				stateSave: true
-			} );
-		});
-	</script>
 	<title>Boussole des jeunes</title>
 </head>
 
@@ -44,7 +37,7 @@ if ($meta !== null) {
 	</ul>
 	
 	<h3>Pages</h3>
-		<table class="sortable">
+		<table class="dataTable display compact">
 			<thead>
 			<tr>
 				<th>Ordre</th>
@@ -82,7 +75,7 @@ if ($meta !== null) {
 	?>
 	<div style="float:left; width:auto;">
 	<h3>Questions</h3>
-		<table class="sortable">
+		<table class="dataTable display compact">
 			<thead>
 			<tr>
 				<th>Page</th>

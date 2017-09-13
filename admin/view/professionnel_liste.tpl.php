@@ -31,7 +31,7 @@
 	<?php
 	if (count($pros) > 0) {
 		?>
-		<table id="sortable">
+		<table id="sortable" class="display compact">
 			<thead>
 			<tr>
 				<th>Nom</th>
