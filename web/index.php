@@ -27,12 +27,13 @@ if (isset($_POST['ville_selectionnee'])) {
 		$_SESSION['code_postal'] = $row[0]['codes_postaux'];
 	}
 
-	//********* récupération des thèmes disponibles en fonction des données en session
-	$themes = get_themes();
+	//********* récupération des thèmes disponibles pour le code insee indiqué
+	$themes = get_themes_by_ville($_SESSION['code_insee']);
 	
+	//********* a-t-on au moins un thème actif ?
 	$flag_theme=0;
 	foreach ($themes as $theme) { 
-		$flag_theme += $theme['actif'];
+		$flag_theme += ($theme['actif']*$theme['nb']);
 	}
 }
 

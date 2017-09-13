@@ -9,7 +9,7 @@ if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 }
 
 //********* on va chercher les offres et les sous-thèmes
-$t = get_liste_offres();
+$t = get_offres_demandeur($_SESSION['critere'], $_SESSION['type'], $_SESSION['besoin'], $_SESSION['code_insee']);
 $sous_themes = $t[0];
 $offres = $t[1];
 

@@ -118,11 +118,15 @@ if (isset($id_offre)) {
 		}
 
 		//*********** liste des villes accessibles au pro
-		$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
+		if ($row['zone_pro'] == 0) { //la liste des villes du territoire
+			$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
+		}else{ //la compétence du pro est une sélection de villes 
+			$villes = get_villes_by_pro((int)$row['id_professionnel']);
+		}
 
-		//*********** liste des villes liées à l'offre
+		//*********** liste des villes liées à l'offre (si l'off)
 		$willes = null;
-		if ($row['zone_selection_villes']) {
+		if ($row['zone_offre']) {
 			$willes = get_villes_by_offre((int)$id_offre);
 		}
 	}

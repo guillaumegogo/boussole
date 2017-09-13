@@ -83,7 +83,7 @@
 				<div>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?> (<?php xecho($_SESSION['code_postal']) ?>)</b> et je souhaite... </div>
 				<div class="boutonsbesoin">
 				<?php foreach ($themes as $theme) { ?>
-					<input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" <?= ($theme['actif'])? "":"disabled alt=\"Cette thématique n'est pas encore disponible sur ce territoire\" title=\"Cette thématique n'est pas encore disponible sur ce territoire\" " ?>>
+					<input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
 				<?php } ?>
 				</div>
 			<?php }else{ ?>

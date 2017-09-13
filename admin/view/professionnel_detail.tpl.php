@@ -66,29 +66,16 @@
 			}
 		}
 		
-		function alertTheme(that)
-		{
-
-			if (that.checked == false)
-			{
-				alert("Si vous retirez un thème du profil d'un professionnel, ses offres de service liées à ce thème seront désactivées.");
-			}
-		}
-		
 		function displayZone(that)
 		{
-			if(confirm("Attention : si vous retirez une ville de la zone du compétence du professionnel, elle sera également retirée des zones de compétence de toutes ses offres de service."))
-			{
-				
-				var y2 = document.getElementById('div_liste_villes');
+			var y2 = document.getElementById('div_liste_villes');
 
-				if (that.checked == true)
-				{
-					y2.style.display = 'block';
-				} else
-				{
-					y2.style.display = 'none';
-				}
+			if (that.checked == true)
+			{
+				y2.style.display = 'block';
+			} else
+			{
+				y2.style.display = 'none';
 			}
 		}
 		
@@ -149,7 +136,7 @@
 					<label for="theme[]">Thème(s) :</label>
 					<div style="display:inline-table;">
 					<?php foreach($themes as $rowt) { ?>
-						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?> onchange="alertTheme(this);"> <?= $rowt['libelle_theme'] ?></br>
+						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?>> <?= $rowt['libelle_theme'] ?></br>
 					<?php } ?>
 					</div>
 				</div>
@@ -313,6 +300,42 @@ if (isset($territoires)){
 			<input type="reset" value="Reset">
 			<input type="submit" value="Enregistrer">
 		</div>
+		
+		<fieldset>
+			<legend>Offres de service du professionnel</legend>
+<?php if(count($incoherences_themes)+count($incoherences_villes)>0){ ?>
+		<div><span style="color:red; font-weight: bold;">offres incohérentes :</span><br>
+<?php if(count($incoherences_themes)>0){ ?>
+		<span style="color:red; font-weight: bold;">> thèmes</span><ul>
+		<?php 
+		foreach ($incoherences_themes as $row){ ?>
+			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
+		<?php
+		}?>
+		</ul><br>
+<?php } 
+if(count($incoherences_villes)>0){ ?>
+		<span style="font-weight: bold;">> villes</span><ul>
+		<?php 
+		foreach ($incoherences_villes as $row){ ?>
+			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
+		<?php
+		}?>
+		</ul></div>
+<?php }
+} ?>
+		
+<?php if(count($offres)>0){ ?>
+		<div><span style="font-weight: bold;">offres actives :</span><ul>
+		<?php 
+		foreach ($offres as $row){ ?>
+			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
+		<?php
+		}?>
+		</ul></div>
+<?php } ?>
+		</fieldset>
+
 	</form>
 	<?php
 	} else {
@@ -321,6 +344,4 @@ if (isset($territoires)){
 	?>
 </div>
 </body>
-<pre><?php print_r($_POST);?></pre>
-
 </html>

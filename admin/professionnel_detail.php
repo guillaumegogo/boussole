@@ -94,7 +94,10 @@ if($pro['zone_selection_villes'] == 0){ //la liste des villes du territoire
 	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel);
 }
 
-$liste_incoherences = get_incoherence_offres_by_pro((int)$id_professionnel, $themes, $liste_villes_pro);
+$incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes);
+$incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $liste_villes_pro);
+
+$offres = get_liste_offres(1,null, (int)$id_professionnel);
 
 //view
 require 'view/professionnel_detail.tpl.php';

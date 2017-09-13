@@ -223,11 +223,7 @@
 					<label for="delai">Délai garanti de réponse :</label>
 					<select name="delai">
 					<?php for($i = 1; $i <= 7 ;$i++) { ?>
-						<option value="<?= $i ?>" 
-						<?php 
-						if ($row['delai_offre'] == $i) {
-							echo "selected";
-						} ?>><?= $i ?> jour<?= ($i>1) ? "s":"" ?>
+						<option value="<?= $i ?>" <?= ($row['delai_offre'] == $i) ? 'selected':'' ?>><?= $i ?> jour<?= ($i>1) ? 's':'' ?>
 						</option>
 					<?php } ?>
 					</select>
@@ -235,23 +231,13 @@
 				<div class="lab">
 					<label for="zone">Zone concernée :</label>
 					<div style="display:inline-block;">
-						<input type="radio" name="zone" value="0" <?php if ($id_offre) {
-							if (!$row['zone_selection_villes']) {
-								echo "checked";
-							}
-						} else {
-							echo "checked";
-						} ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence
+						<input type="radio" name="zone" value="0" <?= ($id_offre && $row['zone_offre']) ? '':'checked' ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence
 						géographique du pro <?php echo "<small>(" . $geo . ")</small>"; ?><br/>
-						<input type="radio" name="zone" value="1" <?php if ($id_offre) {
-							if ($row['zone_selection_villes']) {
-								echo "checked";
-							}
-						} ?> onchange="document.getElementById('div_liste_villes').style.display = 'block';"> Sélection
+						<input type="radio" name="zone" value="1" <?= ($id_offre && $row['zone_offre']) ? 'checked':'' ?> onchange="document.getElementById('div_liste_villes').style.display = 'block';"> Sélection
 						de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
 					</div>
 				</div>
-				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_selection_villes']) ? "block" : "none" ?>">
+				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">
 					<div style="margin-bottom:1em;">Filtre : 
 						<input id="textbox"
 							value="nom de ville, code postal ou département..."

@@ -51,3 +51,58 @@ function xecho($data)
 	echo xssafe($data);
 }
 
+
+/**
+ * préparation d'une requête préparée
+ * @return stmt
+ */
+function query_prepare($query,$terms,$types){
+	
+	global $conn;
+	$stmt = mysqli_prepare($conn, $query);
+	if(count($terms) > 0) {
+		$query_params = [];
+		$query_params[] = $types;
+		foreach ($terms as $id => $term) {
+			$query_params[] = &$terms[$id];
+		}
+		call_user_func_array(array($stmt, 'bind_param'), $query_params);
+	}
+	return $stmt;
+}
+
+/**
+ * execution d'une requête préparée
+ * @return int
+ */
+function query_do($stmt){
+	
+	global $conn;
+	$affected = null;
+
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$affected = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+	return $affected;
+}
+
+/**
+ * execution d'une requête préparée
+ * @return array
+ */
+function query_get($stmt){
+	
+	global $conn;
+	$rows = [];
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$rows[] = $row;
+		}
+		mysqli_stmt_close($stmt);
+	}
+	return $rows;
+}
