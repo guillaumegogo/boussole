@@ -19,8 +19,8 @@ $liens_activite = '';
 if (secu_is_authorized(DROIT_OFFRE)) {
 	$liens_activite .= '<li><a href=\'offre_liste.php\'>Offres de service</a></li>';
 }
-if (secu_is_authorized(DROIT_OFFRE)) {
-	$liens_activite .= '<li>Mesurier</li>';
+if (secu_is_authorized(DROIT_MESURE)) {
+	$liens_activite .= '<ul><li><a href=\'mesure_liste.php\'>Mesurier</a></li></ul>';
 }
 if (secu_is_authorized(DROIT_DEMANDE)) {
 	$liens_activite .= '<li><a href=\'demande_liste.php\'>Demandes reçues</a> ' . $nb_dmd . '</li>';
