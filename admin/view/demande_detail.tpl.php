@@ -5,6 +5,7 @@
 	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
 </head>
 
 <body>
@@ -20,7 +21,7 @@
 	if ($demande !== null) {
 		?>
 
-		<table>
+		<table class="detail" >
 			<tr>
 				<th>N° demande</th>
 				<td><?php xecho($demande['id_demande']); ?></td>

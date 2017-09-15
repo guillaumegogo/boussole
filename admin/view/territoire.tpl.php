@@ -37,9 +37,7 @@
 
 	<form method="post" class="detail" onsubmit='checkall()'>
 		<fieldset class="centre">
-			<legend><?php echo ($_SESSION['territoire_id']) ? "Modification du" : "Création d'un nouveau"; ?>
-				territoire
-			</legend>
+			<legend><?= ($_SESSION['territoire_id']) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
 			<div class="une_colonne">
 				<label for="libelle_territoire" class="court">Libellé :</label>
 				<input type="text" name="libelle_territoire" value="<?php echo $nom_territoire_choisi; ?>">

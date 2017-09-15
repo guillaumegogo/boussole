@@ -26,7 +26,7 @@
 	<?php echo $select_territoire; ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des offres de service <?php if (!$flag_actif) echo "désactivées"; ?></h2>
+		Liste des offres de service <?php if (!$flag_actif) echo "archivées"; ?></h2>
 
 	<?php
 	if (count($offres) > 0) {
@@ -46,6 +46,7 @@
 			<?php
 			foreach ($offres as $row) {
 				//affichage de la compétence géo du pro (si pas sélection de villes)
+				$zone = '';
 				switch ($row['competence_geo']) {
 					case "territoire":
 						$zone = $row['nom_territoire'];
@@ -66,7 +67,7 @@
 					<!--<td>" . $row['date_debut']. "</td>-->
 					<td><?= $row['date_fin'] ?></td>
 					<td><?= $row['libelle_theme_court'] ?></td>
-					<td><?= $row['nom_pro'] ?></td>
+					<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a></td>
 					<td><?= $zone ?></td>
 				</tr>
 				<?php
@@ -82,7 +83,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href="offre_liste.php<?= ($flag_actif) ? '?actif=non">Liste des offres désactivées' : '">Liste des offres actives'; ?></a></div>
+	<div style="text-align:left"><a href="offre_liste.php<?= ($flag_actif) ? '?actif=non">Liste des offres archivées' : '">Liste des offres actives'; ?></a></div>
 </div>
 
 <div class="button">

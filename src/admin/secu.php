@@ -9,6 +9,7 @@ define('ROLE_CONSULTANT', 4);
 
 define('DROIT_DEMANDE', 'demande');
 define('DROIT_OFFRE', 'offre');
+define('DROIT_MESURE', 'mesure');
 define('DROIT_PROFESSIONNEL', 'professionnel');
 define('DROIT_TERRITOIRE', 'territoire');
 define('DROIT_THEME', 'theme');
@@ -49,7 +50,6 @@ function secu_login($email, $password)
 		if (mysqli_stmt_num_rows($stmt) === 1) {
 			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire, $date_inscription);
 			mysqli_stmt_fetch($stmt);
-
 
 			//Verification du mot de passe saisi
 			if (password_verify(SALT_BOUSSOLE . $password, $hash)) {
@@ -170,6 +170,10 @@ function secu_is_authorized($page)
 						break;
 					case DROIT_OFFRE :
 						if ((int)$acces_offre > 0)
+							$authorized = true;
+						break;
+					case DROIT_MESURE :
+						//if ((int)$acces_mesure > 0) en attendant l'ajout de ce champ en base...
 							$authorized = true;
 						break;
 					case DROIT_PROFESSIONNEL :

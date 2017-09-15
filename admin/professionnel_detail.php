@@ -18,7 +18,15 @@ $last_id = null;
 $msg = '';
 
 //si post du formulaire interne
-if (isset($_POST['maj_id'])) {
+if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
+
+	$restored = archive('pro', (int)$_POST["maj_id"], 1);
+ 
+} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
+
+	$archived = archive('pro', (int)$_POST["maj_id"]);
+ 
+} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
 
 	//récupération du code insee correspondant à la saisie
 	$themes = null;
@@ -42,16 +50,18 @@ if (isset($_POST['maj_id'])) {
 			$id_competence_geo = $_POST['liste_territoires'];
 		}
 	}
+	
+	$visibilite = (isset($_POST['visibilite'])) ? 1:0;
 
 	//requête d'ajout
 	if (!$_POST['maj_id']) {
-		$created = create_pro($_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, secu_get_current_user_id());
+		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, secu_get_current_user_id());
 		$last_id = mysqli_insert_id($conn);
 		if ($created) $msg = 'Création bien enregistrée.';
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], $_POST['desc'], $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['delai'], $_POST['actif'], $_POST['competence_geo'], $id_competence_geo, $themes, $zone, $liste_villes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, $themes, $zone, $liste_villes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
 		if ($updated) $msg = 'Modification bien enregistrée.';
 	}

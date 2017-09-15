@@ -51,6 +51,15 @@ function xecho($data)
 	echo xssafe($data);
 }
 
+/**
+ * Print d'une chaine de caractère bbcode xss safe
+ * @param mixed $data
+ */
+function xbbecho($data)
+{
+	echo bbcode2html(xssafe($data));
+}
+
 
 /**
  * préparation d'une requête préparée
@@ -105,4 +114,54 @@ function query_get($stmt){
 		mysqli_stmt_close($stmt);
 	}
 	return $rows;
+}
+
+/**
+ * transformation du code html en bbcode, et affichage (descriptions wysiwyg)
+ * @return string
+ */
+ 
+function html2bbcode($s) {
+
+	$htmltags = array(
+		'/\<b\>(.*?)\<\/b\>/is',
+		'/\<i\>(.*?)\<\/i\>/is',
+		'/\<u\>(.*?)\<\/u\>/is',
+		'/\<img(.*?) src=\"(.*?)\"(.*?)\>/is',
+		'/\<a href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is',
+		'/\<br(\s*)?\/?\>/is'
+	);
+	$bbtags = array(
+		'[b]$1[/b]',
+		'[i]$1[/i]',
+		'[u]$1[/u]',
+		'[img]$2[/img]',
+		'[url=$1]$3[/url]',
+		'[br]'
+	);
+	$t = preg_replace($htmltags, $bbtags, $s);
+	$t = strip_tags($t);
+	return $t;
+}
+function bbcode2html($s) {
+
+	$bbtags = array(
+		'/\[b\](.*?)\[\/b\]/is',
+		'/\[i\](.*?)\[\/i\]/is',
+		'/\[u\](.*?)\[\/u\]/is',
+		'/\[img\](.*?)\[\/img\]/is',
+		'/\[url\=(.*?)\](.*?)\[\/url\]/is',
+		'/\[br\]/is',
+	);
+
+	$htmltags = array(
+		'<b>$1</b>',
+		'<i>$1</i>',
+		'<u>$1</u>',
+		'<img src="$1"/>',
+		'<a href="$1">$2</a>',
+		'<br />'
+	);
+	$t = preg_replace($bbtags,$htmltags,$s);
+	return $t;
 }

@@ -32,7 +32,7 @@
 		?>
 		<form method="post" class="detail">
 			<fieldset style="margin-bottom:1em;">
-				<legend>Détail du theme</legend>
+				<legend>Description du theme</legend>
 				<div class="une_colonne" style="width:auto; min-width:auto;">
 					<div class="lab">
 						<label for="libelle_theme">Libellé court :</label>

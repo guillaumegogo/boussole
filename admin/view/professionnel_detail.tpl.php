@@ -32,6 +32,35 @@
 		$(function () {
 			$('#list1').filterByText($('#textbox'));
 		});
+		
+		/*editeur de texte*/
+		function commande(nom, argument)
+		{
+			if (typeof argument === 'undefined')
+			{
+				argument = '';
+			}
+			switch (nom)
+			{
+				case "createLink":
+					argument = prompt("Quelle est l'adresse du lien ?");
+					break;
+				case "insertImage":
+					argument = prompt("Quelle est l'adresse de l'image ?");
+					break;
+			}
+			// Exécuter la commande
+			document.execCommand(nom, false, argument);
+			if (nom == "createLink")
+			{
+				var selection = document.getSelection();
+				selection.anchorNode.parentElement.target = '_blank';
+			}
+		}
+		function htmleditor()
+		{
+			document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
+		}
 
 		//fonction affichage listes
 		function displayGeo(that)
@@ -99,7 +128,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des professionnels</a> ></small> 
-		<?= ($id_professionnel) ? 'Modification' : 'Création'; ?> d'un professionnel</h2>
+		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un professionnel  <?= ($id_professionnel && $pro['actif_pro'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -107,11 +136,11 @@
 	if ($pro !== null) {
 	?>
 
-	<form method="post" class="detail" onsubmit='checkall();'>
+	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 		<fieldset>
-			<legend>Détail du professionnel</legend>
+			<legend>Description du professionnel</legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -128,9 +157,15 @@
 				</div>
 				<div class="lab">
 					<label for="desc">Description du professionnel :</label>
-					<textarea rows="5" name="desc"><?php if ($id_professionnel) {
-							echo $pro['description_pro'];
-						} ?></textarea>
+					<div style="display:inline-block;">
+						<input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
+						<input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
+						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
+						<input type="button" value="Lien" onclick="commande('createLink');"/>
+						<input type="button" value="Image" onclick="commande('insertImage');"/>
+						<div id="editeur" contentEditable><?= ($id_professionnel) ? bbcode2html($pro['description_pro']):'' ?></div>
+						<input id="resultat" type="hidden" name="desc"/>
+					</div>
 				</div>
 				<div class="lab">
 					<label for="theme[]">Thème(s) :</label>
@@ -139,20 +174,6 @@
 						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?>> <?= $rowt['libelle_theme'] ?></br>
 					<?php } ?>
 					</div>
-				</div>
-				<div class="lab">
-					<label for="actif">Actif :</label>
-					<input type="radio" name="actif" value="1" <?php if ($id_professionnel) {
-						if ($pro['actif_pro'] == "1") {
-							echo "checked";
-						}
-					} else echo "checked"; ?>> Oui
-					<input type="radio" name="actif" value="0" <?php if ($id_professionnel) {
-						if ($pro['actif_pro'] == "0") {
-							echo "checked";
-						}
-					} ?>> Non
-					</select>
 				</div>
 			</div>
 			<div class="deux_colonnes">
@@ -176,9 +197,27 @@
 				</div>
 				<div class="lab">
 					<label for="tel">Téléphone :</label>
+					<div style="display:inline-table;">
 					<input type="text" name="tel" value="<?php if ($id_professionnel) {
 						echo $pro['telephone_pro'];
 					} ?>"/>
+					<br/><input type="checkbox" name="visibilite" value="1" <?= (isset($pro['visibilite_coordonnees']) && $pro['visibilite_coordonnees']) ? ' checked ':'' ?>> <small><i>Afficher les courriel et téléphone sur le site.</i></small>
+					</div>
+				</div>
+				<div class="lab">
+					<label for="courriel">Courriel référent Boussole :</label>
+					<input type="email" name="courriel_ref" value="<?php if ($id_professionnel) {
+						echo $pro['courriel_referent_boussole'];
+					} ?>"/>
+				</div>
+				<div class="lab">
+					<label for="tel">Téléphone référent Boussole :</label>
+					<div style="display:inline-table;">
+					<input type="text" name="tel_ref" value="<?php if ($id_professionnel) {
+						echo $pro['telephone_referent_boussole'];
+					} ?>"/>
+					<br/><small><i>Ces informations ne sont pas affichées sur le site.</i></small>
+					</div>
 				</div>
 				<div class="lab">
 					<label for="site">Site internet :</label>
@@ -278,9 +317,9 @@ if (isset($territoires)){
 					style=" min-width:14em;">
 			<?php 
 			if(isset($liste_villes_pro)){
-				foreach($liste_villes_pro as $row){ 
+				foreach($liste_villes_pro as $rowl){ 
 			?>
-				<option value="<?= $row['code_insee'] ?>"><?= $row['nom_ville']. ' ' . $row['code_postal'] ?></option>
+				<option value="<?= $rowl['code_insee'] ?>"><?= $rowl['nom_ville']. ' ' . $rowl['code_postal'] ?></option>
 			<?php 
 				}
 			} ?>
@@ -297,8 +336,14 @@ if (isset($territoires)){
 
 		<div class="button">
 			<input type="button" value="Retour" onclick="javascript:location.href='professionnel_liste.php'">
+		<?php if (!$id_professionnel) { ?>
 			<input type="reset" value="Reset">
-			<input type="submit" value="Enregistrer">
+		<?php }else{ if($pro['actif_pro'] == 0){ ?>
+			<input type="submit" name="restaurer" value="Restaurer">
+		<?php }else{ ?>
+			<input type="submit" name="archiver" value="Désactiver">
+		<?php } } ?>
+			<input type="submit" name="enregistrer" value="Enregistrer">
 		</div>
 		
 		<fieldset>

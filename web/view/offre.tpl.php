@@ -20,7 +20,7 @@
 				<table class="offre">
 					<tr>
 						<td>Description</td>
-						<td colspan=2><?php echo($row['description_offre']) //xecho($row['description_offre']) TODO : mise en commentaire temporaire en attendant un éditeur wysiwyg + sécurisé ?></td>
+						<td colspan=2><?php xbbecho($row['description_offre']) ?></td>
 					</tr>
 					<tr>
 						<td>Validité</td>
@@ -94,11 +94,11 @@
 						</tr>
 						<?php if ($row['visibilite_coordonnees']) { ?>
 							<tr>
-								<td>Courriel <span style="font-size:small; color:red;">(à masquer ?)</span></td>
+								<td>Courriel</td>
 								<td><?php echo($courriel_offre) ?></td>
 							</tr>
 							<tr>
-								<td>Téléphone <span style="font-size:small; color:red;">(à masquer ?)</span></td>
+								<td>Téléphone</td>
 								<td><?php if ($id_offre) { xecho($row['telephone_offre']); } ?></td>
 							</tr>
 						<?php } ?>

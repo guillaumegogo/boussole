@@ -16,7 +16,16 @@ if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un
 $last_id = null;
 $msg = '';
 
-if (isset($_POST['maj_id'])) { //si post du formulaire interne
+if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
+
+	$restored = archive('utilisateur', (int)$_POST["maj_id"], 1);
+ 
+} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
+
+	$archived = archive('utilisateur', (int)$_POST["maj_id"]);
+ 
+} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+	
 	if (!$_POST["maj_id"]) { //requête d'ajout
 
 		$maj_attache = "NULL";
@@ -106,7 +115,7 @@ foreach($liste_territoires as $row2) {
 }
 
 $select_professionnel = '<option value="" >A choisir</option>';
-$liste_pro = get_liste_pros_select($param_territoire);
+$liste_pro = get_liste_pros_select("territoire",$param_territoire);
 foreach($liste_pro as $row3) {
 	$select_professionnel .= '<option value="' . $row3['id_professionnel'] . '" ';
 	if (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) {

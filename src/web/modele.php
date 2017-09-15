@@ -109,9 +109,12 @@ function get_formulaire($etape){
 }
 
 //************ construction de LA requête
-/* note: on cherche les offres actives dont le code_insee est en critère, dont le code_insee est 
+/* note: on cherche les offres actives dont le code_insee :
+- est en critère de l'offre (`t`.`villes` LIKE...)
+- est dans la sélection de villes du pro
+- est dans le territoire / le département / la région du pro
 */
-function get_offres_demandeur($criteres, $types, $besoin, $code_insee){
+function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	global $conn;
 	
@@ -132,8 +135,9 @@ function get_offres_demandeur($criteres, $types, $besoin, $code_insee){
 	JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`t`.`id_sous_theme`
 	JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.`id_theme`=`'.DB_PREFIX.'bsl_theme`.`id_theme_pere`
 	JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`t`.`id_professionnel` /* s il n y a pas une liste de villes propre à l offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d où les jointures en dessous ↓ */
+	LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_villes` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_professionnel_villes`.`id_professionnel` AND `'.DB_PREFIX.'bsl_professionnel`.`zone_selection_villes`=1 AND `'.DB_PREFIX.'bsl_professionnel_villes`.`code_insee` = ?
 	LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `t`.`zone_selection_villes`=0 AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
-	LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` ON `'.DB_PREFIX.'bsl_territoire_villes`.`id_territoire`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire`
+	LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` ON `'.DB_PREFIX.'bsl_territoire_villes`.`id_territoire`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire_villes`.`code_insee` = ?
 	LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 	LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `'.DB_PREFIX.'bsl__departement_region` ON `'.DB_PREFIX.'bsl__departement_region`.`id_region`=`'.DB_PREFIX.'bsl__region`.`id_region`
@@ -141,15 +145,17 @@ function get_offres_demandeur($criteres, $types, $besoin, $code_insee){
 	WHERE `t`.`debut_offre` <= CURDATE() AND `t`.`fin_offre` >= CURDATE() 
 	AND `'.DB_PREFIX.'bsl_professionnel`.`actif_pro` = 1
 	AND `theme_pere`.`libelle_theme` = ? 
-	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* soit il y a une liste de villes au niveau de l offre */
+	/* recherche géographique ! */
+	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
+		OR (`'.DB_PREFIX.'bsl_professionnel`.`zone_selection_villes`=1 AND `'.DB_PREFIX.'bsl_professionnel_villes`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
 		OR (`t`.`zone_selection_villes`=0 AND ( /* sinon il faut chercher dans la zone de compétence du pro */
 			`'.DB_PREFIX.'bsl_professionnel`.`competence_geo` = "national"
 			OR `'.DB_PREFIX.'bsl_territoire_villes`.`code_insee` = ?
 			OR `'.DB_PREFIX.'bsl__departement`.`id_departement` = SUBSTR(?,1,2) 
 			OR `'.DB_PREFIX.'bsl__departement_region`.`id_departement` = SUBSTR(?,1,2)
 		)))';
-	$terms = array($besoin, '%'.$code_insee.'%', $code_insee, $code_insee, $code_insee);
-	$terms_type = "sssss";
+	$terms = array($code_insee, $code_insee, $besoin, '%'.$code_insee.'%', $code_insee, $code_insee, $code_insee, $code_insee);
+	$terms_type = "ssssssss";
 
 	//foreach sur les criteres, et en fonction du type on construit la requete...
 	foreach ($criteres as $cle => $valeur) {
@@ -176,7 +182,14 @@ function get_offres_demandeur($criteres, $types, $besoin, $code_insee){
 		}
 	}
 	$query .= ' ORDER BY `'.DB_PREFIX.'bsl_theme`.`ordre_theme`';
-	//todo : rendre dynamique les terms_type... (mettre des i à la place des s quand c'est pertinent) ?
+
+if (DEBUG) {
+	$print_sql = $query;
+	foreach($terms as $term){
+		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	}
+	echo "<!--".$print_sql."-->"; 
+}
 
 	$stmt = query_prepare($query,$terms,$terms_type);
 	check_mysql_error($conn);
@@ -206,7 +219,7 @@ function get_offre($id){
 	global $conn;
 	$row = null;
 	
-	$query = 'SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut, DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `'.DB_PREFIX.'bsl_offre`.`visibilite_coordonnees`, `delai_offre`, `'.DB_PREFIX.'bsl_offre`.`zone_selection_villes`, `nom_pro`  
+	$query = 'SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut, DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `'.DB_PREFIX.'bsl_offre`.`zone_selection_villes`, `nom_pro`, `visibilite_coordonnees`
 		FROM `'.DB_PREFIX.'bsl_offre` 
 		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel 
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`'.DB_PREFIX.'bsl_offre`.id_sous_theme

@@ -48,33 +48,22 @@ h2 {
 	text-align:right;
     float:right;
     width:20em;
-}/*
-table {
-	border-collapse: collapse; //background-color: #FFF;
 }
-table, th, td {
-	border: 1px solid black;
-    padding: 0.5em;
-	margin:2em auto;
-	border-collapse: collapse !important;
+
+table.detail  {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-collapse: collapse; 
+	width:100%;
 }
-th{
-  background-color:#b6cee2;
+.detail th, td {
+	padding: 4px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
 }
-tr:nth-child(odd){
-  background-color:#edf3f8;
-}
-table#sortable th{
-	padding-left:1.2em;
-	background-image: url("../img/updown.png");
-    background-size: 0.7em 0.7em;
-    background-position: 0.2em 0.6em;
-    background-repeat: no-repeat;
-}
-table#sortable tr:nth-child(even){
-  background-color:#edf3f8;
-}
-*/
+.detail tr:nth-child(odd){ background-color:#f9f9f9;}
+.detail tr:hover {background-color: #f6f6f6;}
+
 form { 
 	width:100%;
 	margin:0 auto;
@@ -137,6 +126,9 @@ legend{
 .detail input[type=text].datepick { 
 	width: 8em; 
 }
+.auth input[type=text], .auth input[type=password] { 
+	width: 30em; 
+}
 .input_int { 
 	width: 3em; 
 }
@@ -179,4 +171,8 @@ pre{
  padding:1em;
  margin-top:3em;
  white-space : pre-wrap;
+}
+
+#editeur{
+	width:25em; height:15em;
 }

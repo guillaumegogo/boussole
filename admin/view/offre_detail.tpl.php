@@ -75,7 +75,7 @@
 			switch (nom)
 			{
 				case "createLink":
-					argument = prompt("Quelle est l'adresse du lien ?");
+					argument = prompt("Quelle est l'adresse du lien ?", "http://");
 					break;
 				case "insertImage":
 					argument = prompt("Quelle est l'adresse de l'image ?");
@@ -89,7 +89,6 @@
 				selection.anchorNode.parentElement.target = '_blank';
 			}
 		}
-
 		function htmleditor()
 		{
 			document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
@@ -118,7 +117,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Liste des offres de service</a> ></small> 
-		<?= ($id_offre) ? 'Modification' : 'Création' ?> d'une offre</h2>
+		<?= ($id_offre) ? 'Détail' : 'Création' ?> d'une offre <?= ($id_offre && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?> </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -127,7 +126,7 @@
 		<input type="hidden" name="maj_id" value="<?php echo $id_offre; ?>">
 
 		<fieldset>	
-			<legend>Détail de l'offre de service</legend>
+			<legend>Description de l'offre de service</legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -144,9 +143,7 @@
 						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
 						<input type="button" value="Lien" onclick="commande('createLink');"/>
 						<input type="button" value="Image" onclick="commande('insertImage');"/>
-						<div id="editeur" contentEditable><?php if ($id_offre) {
-								echo $row['description_offre'];
-							} ?></div>
+						<div id="editeur" contentEditable><?= ($id_offre) ? bbcode2html($row['description_offre']):'' ?></div>
 						<input id="resultat" type="hidden" name="desc"/>
 					</div>
 				</div>
@@ -282,18 +279,6 @@
 						</select>
 					</div>
 				</div>
-				<div class="lab">
-					<label for="actif">Offre active :</label>
-					<input type="radio" name="actif" value="1" <?php if ($id_offre) {
-						if ($row['actif_offre'] == "1") {
-							echo "checked";
-						}
-					} else echo "checked"; ?>> Oui <input type="radio" name="actif" value="0" <?php if ($id_offre) {
-						if ($row['actif_offre'] == "0") {
-							echo "checked";
-						}
-					} ?>> Non
-				</div>
 			</div>
 			<?php } ?>
 		</fieldset>
@@ -338,8 +323,14 @@
 
 		<div class="button">
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
+		<?php if (!$id_offre) {	?>
 			<input type="reset" value="Reset">
-			<input type="submit" value="Enregistrer">
+		<?php }else{ if($row['actif_offre'] == 0){ ?>
+			<input type="submit" name="restaurer" value="Restaurer">
+		<?php }else{ ?>
+			<input type="submit" name="archiver" value="Archiver">
+		<?php } } ?>
+			<input type="submit" name="enregistrer" value="Enregistrer">
 		</div>
 	</form>
 </div>
@@ -350,6 +341,8 @@
 if (DEBUG) { 
 	$timestamp_fin = microtime(true);
 	$difference_ms = $timestamp_fin - $timestamp_debut;
-	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.'.'</pre>'; 
+	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.'; 
+	print_r($_POST);
+	echo '</pre>';
 }
 ?>

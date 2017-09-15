@@ -37,7 +37,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Liste des utilisateurs</a> ></small> 
-		<?= ($id_utilisateur) ? "Modification" : "Ajout" ?> d'un utilisateur</h2>
+		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur <?= ($id_utilisateur && $row['actif_utilisateur'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -45,7 +45,7 @@
 
 		<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
 		<fieldset>
-			<legend>Détail de l'utilisateur</legend>
+			<legend>Description de l'utilisateur</legend>
 
 			<div class="une_colonne">
 				<div class="lab">
@@ -120,21 +120,6 @@
 								   disabled/>
 						</div>
 					<?php } ?>
-					<div class="lab">
-						<label for="actif">Actif :</label>
-						<input type="radio" name="actif" value="1" <?php if ($id_utilisateur) {
-							if ($row['actif_utilisateur'] == "1") {
-								echo "checked";
-							}
-						} else echo "checked"; ?>> Oui
-						<input type="radio" name="actif" value="0" <?php if ($id_utilisateur) {
-							if ($row['actif_utilisateur'] == "0") {
-								echo "checked";
-							}
-						} ?>> Non
-						</select>
-					</div>
-
 				<?php }
 				if ($vue == "motdepasse") {
 					?>
@@ -168,7 +153,13 @@
 				   } else {
 					   echo "_liste.php";
 				   } ?>'">
+		<?php if (!$id_utilisateur) { ?>
 			<input type="reset" value="Reset">
+		<?php }else{ if($row['actif_utilisateur'] == 0){ ?>
+			<input type="submit" name="restaurer" value="Restaurer">
+		<?php }else{ ?>
+			<input type="submit" name="archiver" value="Désactiver">
+		<?php } } ?>
 			<input type="submit" value="Enregistrer">
 		</div>
 	</form>
