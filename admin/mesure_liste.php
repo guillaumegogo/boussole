@@ -13,7 +13,14 @@ include('../src/admin/select_territoires.inc.php');
 $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;
 
 //******** liste des mesures
-$mesures = get_liste_mesures($flag_actif);
+$t = get_formulaire_mesure();
+$questions = $t[1];
+$reponses = $t[2];
+
+//******** liste des mesures
+$criteres = null;
+if (isset($_POST['criteres'])) $criteres = $_POST['criteres'];
+$mesures = get_liste_mesures($flag_actif, $criteres);
 
 //view
 require 'view/mesure_liste.tpl.php';

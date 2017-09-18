@@ -26,7 +26,7 @@ if ($etape=='fin') {
 }
 
 //************ récupération des éléments de la page du formulaire
-$t = get_formulaire($etape);
+$t = get_formulaire($_SESSION['besoin'], $etape);
 $meta = $t[0];
 $questions = $t[1];
 $reponses = $t[2];

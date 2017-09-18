@@ -52,6 +52,45 @@
 			}
 		}
 
+		//fonction affichage listes
+		function displayGeo(that)
+		{
+			var w = document.getElementById('liste_regions');
+			var x = document.getElementById('liste_departements');
+			var y = document.getElementById('liste_territoires');
+			var y2 = document.getElementById('div_liste_villes');
+			if (w != null)
+			{
+				w.style.display = 'none';
+			}
+			if (x != null)
+			{
+				x.style.display = 'none';
+			}
+			if (y != null)
+			{
+				y.style.display = 'none';
+			}
+			if (y2 != null)
+			{
+				y2.style.display = 'none';
+			}
+			
+			if (that.value == 'regional')
+			{
+				w.style.display = 'block';
+			} else if (that.value == 'departemental')
+			{
+				x.style.display = 'block';
+			} else if (that.value == 'territoire')
+			{
+				y.style.display = 'block';
+			} else if (that.value == 'communes')
+			{
+				y2.style.display = 'block';
+			}
+		}
+
 		/*montrer ou non la liste des villes*/
 		function cacheVilles()
 		{
@@ -220,59 +259,95 @@
 				<div class="lab">
 					<label for="zone">Zone concernée :</label>
 					<div style="display:inline-block;">
-						<input type="radio" name="zone" value="0" <?= ($id_mesure && $row['zone_mesure']) ? '':'checked' ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence
-						géographique du pro <?php echo "<small>(" . $geo . ")</small>"; ?><br/>
-						<input type="radio" name="zone" value="1" <?= ($id_mesure && $row['zone_mesure']) ? 'checked':'' ?> onchange="document.getElementById('div_liste_villes').style.display = 'block';"> Sélection
-						de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
-					</div>
-				</div>
-				<div class="lab" id="div_liste_villes" style="display:<?= ($id_mesure && $row['zone_mesure']) ? "block" : "none" ?>">
-					<div style="margin-bottom:1em;">Filtre : 
-						<input id="textbox"
-							value="nom de ville, code postal ou département..."
-							type="text" style="width:20em;"
-							onFocus="javascript:this.value='';">
-					</div>
 
-					<div style="display:inline-block; vertical-align:top;">
-						<small><i>Villes correspondant au filtre :</i></small><br/>
-						<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
-					<?php 
-					if(isset($villes)){
-						foreach($villes as $rowv){ 
-					?>
-						<option value="<?= $rowv['code_insee'] ?>"><?= $rowv['nom_ville']. ' ' . $rowv['code_postal'] ?></option>
-					<?php 
-						} 
-					} ?>
-						</select>
-					</div>
+<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;">
+	<option value="">A choisir</option>
+<?php foreach ($competences_geo as $key => $value) { ?>
+	<option value="<?= $key ?>" <?= ($id_mesure && (isset($row['competence_geo']) && $row['competence_geo'] == $key)) ? ' selected ' : '' ?> ><?= $value ?></option>
+<?php } ?>
+</select>
+						
+<?php //liste déroulante des régions
+if (isset($regions)){ 
+	$display_r = ($id_mesure && ($row['competence_geo'] == 'regional')) ? 'block' : 'none';
+?>
+<select name="liste_regions" id="liste_regions" style="display:<?= $display_r ?>" >
+	<option value="">A choisir</option>
+	<?php foreach ($regions as $row_r) { ?>
+	<option value="<?= $row_r['id_region'] ?>" <?= ((isset($row['competence_geo']) && $row['competence_geo'] == 'regional') && ($row_r['id_region'] == $row['id_competence_geo'])) ? ' selected ' : '' ?> ><?= $row_r['nom_region'] ?></option>
+	<?php } ?>
+</select>
+<?php } ?>
 
-					<div style="display:inline-block; margin-top:1em; vertical-align: top;">
-						<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="right" VALUE="&gt;&gt;"
-							   ONCLICK="moveSelectedOptions(this.form['list1'],this.form['list2'],true)">
+<?php //liste déroulante des départements
+if (isset($departements)){ 
+	$display_d = ($id_mesure && ($row['competence_geo'] == 'departemental')) ? 'block' : 'none';
+?>
+<select name="liste_departements" id="liste_departements" style="display:<?= $display_d ?>" >
+	<option value="">A choisir</option>
+	<?php foreach ($departements as $row_d) { ?>
+	<option value="<?= $row_d['id_departement'] ?>" <?= ((isset($row['competence_geo']) && $row['competence_geo'] == 'departemental') && ($row_d['id_departement'] == $row['id_competence_geo'])) ? ' selected ' : '' ?> ><?= $row_d['nom_departement'] ?></option>
+	<?php } ?>
+</select>
+<?php } ?>
 
-						<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;"
-							   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
-					</div>
+<?php //liste déroulante des territoires
+if (isset($territoires)){ 
+	$display_t = ($id_mesure && ($row['competence_geo'] == 'territoire')) ? 'block' : 'none';
+?>
+<select name="liste_territoires" id="liste_territoires" style="display:<?= $display_t ?>" >
+	<option value="">A choisir</option>
+	<?php foreach ($territoires as $row_t) { ?>
+	<option value="<?= $row_t['id_territoire'] ?>" <?= ((isset($row['competence_geo']) && $row['competence_geo'] == 'territoire') && ($row_t['id_territoire'] == $row['id_competence_geo'])) ? ' selected ' : '' ?> ><?= $row_t['nom_territoire'] ?></option>
+	<?php } ?>
+</select>
+<?php } ?>
+</div>
 
-					<div style="display:inline-block;  vertical-align:top;">
-						<small><i>Zone couverte par la mesure :</i></small><br/>
-						<select name="list2[]" id="list2" MULTIPLE SIZE="10"
-								style=" min-width:14em;">
-					<?php 
-					if(isset($willes)){
-						foreach($willes as $roww){ 
-					?>
-						<option value="<?= $roww['code_insee'] ?>"><?= $roww['nom_ville']. ' ' . $roww['code_postal'] ?></option>
-					<?php 
-						}
-					} ?>
-						</select>
-					</div>
+<div style="margin-top:1em">
+	<div class="lab" id="div_liste_villes" style="display:<?= ($id_mesure && ($row['competence_geo'] == 'communes')) ? 'block' : 'none' ?>">
+		<div style="margin-bottom:1em;">Filtre : 
+			<input id="textbox"
+				value="nom de ville, code postal ou département..."
+				type="text" style="width:20em;"
+				onFocus="javascript:this.value='';">
+		</div>
+
+		<div style="display:inline-block; vertical-align:top;">
+			<small><i>Villes correspondant au filtre :</i></small><br/>
+			<select id="list1" MULTIPLE SIZE="10" style=" min-width:20em;">
+				<?php include('../src/admin/villes_options_insee.inc'); //la liste des villes de France... todo : à remplacer par $("#villes").autocomplete ?>
+			</select>
+		</div>
+
+		<div style="display:inline-block; margin-top:1em; vertical-align: top;">
+			<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="right" VALUE="&gt;&gt;"
+				   ONCLICK="moveSelectedOptions(this.form['list1'],this.form['list2'],true)">
+
+			<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;"
+				   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
+		</div>
+
+		<div style="display:inline-block;  vertical-align:top;">
+			<small><i>Villes couvertes par la mesure :</i></small><br/>
+			<select name="list2[]" id="list2" MULTIPLE SIZE="10"
+					style=" min-width:14em;">
+			<?php 
+			if(isset($liste_villes_mesure)){
+				foreach($liste_villes_mesure as $rowl){ 
+			?>
+				<option value="<?= $rowl['code_insee'] ?>"><?= $rowl['nom_ville']. ' ' . $rowl['code_postal'] ?></option>
+			<?php 
+				}
+			} ?>
+			</select>
+		</div>
+	</div>
+</div>
+			<?php } ?>
+
 				</div>
 			</div>
-			<?php } ?>
 		</fieldset>
 
 		<?php
@@ -282,9 +357,32 @@
 
 			<fieldset>
 				<legend>Liste des critères de la mesure</legend>
-				<input type="hidden" name="maj_criteres" value="oui"> <!--est-ce bien utile ?-->
-				
-				<center>A DEFINIR</center>
+				<input type="hidden" name="maj_criteres" value="oui">
+ 				<div class="colonnes">
+
+			<?php
+			foreach ($questions as $question) {
+			?>
+				<div class="lab">
+					<label for="critere[<?= $question['name'] ?>][]"><?= $question['libelle'] ?></label>
+					<select name="critere[<?= $question['name'] ?>][]" multiple
+							size="<?= min(count($reponses[$question['name']]), 10) ?>">
+				<?php
+				foreach ($reponses[$question['name']] as $reponse) {
+					if ($reponse['valeur']) {
+				?>
+					<option value="<?= $reponse['valeur'] ?>" <?= $reponse['selectionne'] ?>><?= $reponse['libelle'] ?></option>
+				<?php
+					}
+				}
+				?>
+					</select>
+				</div>
+			<?php
+			}
+			?>
+				</div>
+				<!--<pre><?php print_r($questions); print_r($reponses)?></pre>-->
 				
 			</fieldset>
 

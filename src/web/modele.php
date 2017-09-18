@@ -65,7 +65,7 @@ function get_ville($saisie){
 }
 
 //************ récupération des éléments de la page du formulaire
-function get_formulaire($etape){
+function get_formulaire($besoin, $etape){
 	
 	global $conn;
 
@@ -82,7 +82,7 @@ function get_formulaire($etape){
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 AND `'.DB_PREFIX.'bsl_theme`.`libelle_theme`= ? AND `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` = ?
 		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'si', $_SESSION['besoin'], $etape);
+	mysqli_stmt_bind_param($stmt, 'si', $besoin, $etape);
 
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);

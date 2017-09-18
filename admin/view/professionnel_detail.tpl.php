@@ -286,9 +286,9 @@ if (isset($territoires)){
 </select></div>
 
 <div style="margin-top:1em"><span id="zone_personnalisee" style="display:<?= $display_t ?>" >
-	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= ($pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence</span>
+	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence</span>
 	
-	<div class="lab" id="div_liste_villes" style="display:<?= ($pro['zone_selection_villes']) ? 'block' : 'none' ?>">
+	<div class="lab" id="div_liste_villes" style="display:<?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'block' : 'none' ?>">
 		<div style="margin-bottom:1em;">Filtre : 
 			<input id="textbox"
 				value="nom de ville, code postal ou département..."

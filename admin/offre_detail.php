@@ -82,7 +82,7 @@ if (isset($id_offre)) {
 
 		//récup du formulaire dynamique
 		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
-			$t = get_criteres($id_offre, $row['id_theme_pere']);
+			$t = get_criteres_offre($id_offre, $row['id_theme_pere']);
 			$questions = $t[0];
 			$reponses = $t[1];
 		}

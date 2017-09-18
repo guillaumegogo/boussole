@@ -87,6 +87,7 @@ $themes = get_liste_themes($id_professionnel, 1);
 $competences_geo = array('territoire' => 'Territoire');
 $regions = null;
 $departements = null;
+$territoires = null;
 if (secu_check_role(ROLE_ADMIN)) {
 	$competences_geo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
 	$regions = get_liste_regions();
@@ -98,7 +99,7 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires();
 }
 
-if($pro['zone_selection_villes'] == 0){ //la liste des villes du territoire
+if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 0){ //la liste des villes du territoire
 	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
 }else{ // la liste des villes du pro
 	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel);

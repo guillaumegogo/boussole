@@ -27,6 +27,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		if ($created) {
 			$msg = "Création bien enregistrée.";
 		}
+
 	} else { //requête de modification
 		$id_mesure = $_POST['maj_id'];
 		$code_postal = substr($_POST['commune'], -5);
@@ -34,16 +35,29 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		$liste_villes=null;
 		if(isset($_POST['list2'])) $liste_villes=$_POST['list2'];
 		
-		$updated = update_mesure((int)$id_mesure, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['zone'], $liste_villes, secu_get_current_user_id());
-		
-		if ($updated[0]) {
-			$msg = "Modification bien enregistrée.";
+		//si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
+		$id_competence_geo = "NULL";
+		if (isset($_POST['competence_geo'])) {
+			if ($_POST['competence_geo'] == 'regional' && $_POST['liste_regions']) {
+				$id_competence_geo = $_POST['liste_regions'];
+			} else if ($_POST['competence_geo'] == 'departemental' && $_POST['liste_departements']) {
+				$id_competence_geo = $_POST['liste_departements'];
+			} else if ($_POST['competence_geo'] == 'territoire' && $_POST['liste_territoires']) {
+				$id_competence_geo = $_POST['liste_territoires'];
+			}
 		}
+	
+		$updated = update_mesure((int)$id_mesure, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['competence_geo'], (int)$id_competence_geo, $liste_villes, secu_get_current_user_id());
+		
+		$updated2 = null;
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères
 			$liste_criteres=null;
 			if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];
-			
 			$updated2 = update_criteres_mesure((int)$id_mesure, $liste_criteres, secu_get_current_user_id());
+		}
+		
+		if ($updated[0] || $updated[1] || $updated2 ) {
+			$msg = "Modification bien enregistrée.";
 		}
 	}
 
@@ -52,41 +66,16 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	}
 }
 
-//********** récupération de l'id de l'mesure (soit celle en paramètre, soit celle qui vient d'être créée/mise à jour)
+//********** récupération de l'id de la mesure (soit celle en paramètre, soit celle qui vient d'être créée/mise à jour)
 if (isset($_GET['id'])) {
 	$id_mesure = $_GET['id'];
 }
 
-//********** affichage de l'mesure
+//********** affichage de la mesure
 if (isset($id_mesure)) {
 	$row = get_mesure_by_id((int)$id_mesure);
 
 	if ($row){
-		//affichage de la compétence géo du pro
-		$geo = "";
-		switch ($row['competence_geo']) {
-			case "territoire":
-				$geo = $row['competence_geo'] . " " . $row['nom_territoire'];
-				break;
-			case "departemental":
-				$geo = $row['competence_geo'] . " " . $row['nom_departement'];
-				break;
-			case "regional":
-				$geo = $row['competence_geo'] . " " . $row['nom_region'];
-				break;
-			case "national":
-				$geo = $row['competence_geo'];
-				break;
-		}
-
-		//récup du formulaire dynamique 
-		/*
-		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
-			$t = get_criteres($id_mesure, $row['id_theme_pere']);
-			$questions = $t[0];
-			$reponses = $t[1];
-		}
-		*/
 
 		//liste déroulante des thèmes / sous-thèmes du pro
 		$select_theme = "";
@@ -99,6 +88,7 @@ if (isset($id_mesure)) {
 		}
 		
 		$tab_js_soustheme = array();
+		
 		$themes = get_themes_by_pro((int)$row['id_professionnel']);
 		foreach($themes as $rowt){
 			if (!isset($rowt['id_theme_pere'])) {
@@ -126,18 +116,21 @@ if (isset($id_mesure)) {
 			}
 		}
 
-		//*********** liste des villes accessibles au pro
-		if ($row['zone_pro'] == 0) { //la liste des villes du territoire
-			$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
-		}else{ //la compétence du pro est une sélection de villes 
-			$villes = get_villes_by_pro((int)$row['id_professionnel']);
-		}
+		//*********** zone...
+		$competences_geo = array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental', 'communes' => 'Communes');
+		$regions = get_liste_regions();
+		$departements = get_liste_departements();
 
-		//*********** liste des villes liées à l'mesure (si l'off)
-		$willes = null;
-		if ($row['zone_mesure']) {
-			$willes = get_villes_by_mesure((int)$id_mesure);
+		//*********** liste des villes liées à la mesure
+		$liste_villes_mesure = null;
+		if ($row['competence_geo']=="communes") {
+			$liste_villes_mesure = get_villes_by_mesure((int)$id_mesure);
 		}
+		
+		//récup du formulaire (et des réponses !)
+		$t = get_criteres_mesure($id_mesure);
+		$questions = $t[0];
+		$reponses = $t[1];
 	}
 
 //********** écran de création simple : récupération de la liste des professionnels en fonction des droits du user

@@ -290,7 +290,7 @@
 
 			<fieldset>
 				<legend>Liste des critères de l'offre de service</legend>
-				<input type="hidden" name="maj_criteres" value="oui"> <!--est-ce bien utile ?-->
+				<input type="hidden" name="maj_criteres" value="oui"> 
 				<div class="colonnes">
 
 			<?php

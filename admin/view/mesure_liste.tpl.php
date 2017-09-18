@@ -28,6 +28,17 @@
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
 		Liste des mesures <?php if (!$flag_actif) echo "désactivées"; ?></h2>
 
+	<form method="post"><div style="margin-bottom:2em">Filtres : 
+	<?php foreach($questions as $row) { ?>
+		<?= $row['que'] ?> : <select name="criteres[<?= $row['que'] ?>]" onChange="this.form.submit()">
+			<option value=''></option>
+			<?php foreach($reponses[$row['id']] as $rowq) { ?>
+			<option value="<?= $rowq['val'] ?>" <?= (isset($_POST['criteres'][$rowq['name']]) && $_POST['criteres'][$rowq['name']]==$rowq['val']) ? 'selected' : '' ?>><?= $rowq['lib'] ?></option>
+			<?php } ?>
+		</select>
+	<?php } ?>
+	</div></form>
+	
 	<?php
 	if (count($mesures) > 0) {
 		?>

@@ -55,14 +55,17 @@
 			<tr>
 				<th>Traité</th>
 				<td>
-					<?php
-					if ($demande['date_traitement']) {
-						$traite = "Traité le " . date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi') . "<br/>Commentaire : " . xssafe($demande['commentaire']);
-					} else {
-						$traite = "<form method=\"post\" class=\"detail\"><input type=\"hidden\" name=\"id_traite\" value=\"" . xssafe($demande['id_demande']) . "\" /><textarea name=\"commentaire\"   style=\"width:100%\"  rows=\"5\" placeholder=\"Conditions et suites données à l'échange (...)\"></textarea> <input type=\"submit\" value=\"Marquer comme traité\"></form> ";
-					}
-					echo $traite;
-					?>
+					<?php if ($demande['date_traitement']) { ?>
+					Traité le <?= date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi')?><br/>
+					Commentaire : <?= xssafe($demande['commentaire']) ?>
+					
+					<?php } else { ?>
+					<form method="post" class="detail">
+					<input type="hidden" name="id_traite" value=<?= xssafe($demande['id_demande']) ?> />
+					<textarea name="commentaire" style="width:100%" rows="5" placeholder="Conditions et suites données à l'échange (...)"></textarea> 
+					<input type="submit" value="Marquer comme traité">
+					</form>
+					<?php } ?>
 			</tr>
 		</table>
 

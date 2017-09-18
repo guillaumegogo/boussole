@@ -19,7 +19,7 @@
 	if ($question !== null) {
 	?>
 		
-		<form action="post">
+		<form method="post">
 		<input type="hidden" name="id_maj" value="<?php xecho($question['id']); ?>" />
 		
 		<table class="dataTable display compact">

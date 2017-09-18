@@ -14,13 +14,13 @@ if (secu_check_role(ROLE_ADMIN)) {
 	}
 }
 
-//******* construction des listes de lien
 $liens_activite = '';
+//******* construction des listes de lien
 if (secu_is_authorized(DROIT_OFFRE)) {
 	$liens_activite .= '<li><a href=\'offre_liste.php\'>Offres de service</a></li>';
 }
 if (secu_is_authorized(DROIT_MESURE)) {
-	$liens_activite .= '<ul><li><a href=\'mesure_liste.php\'>Mesurier</a></li></ul>';
+	$liens_activite .= '<ul><li><a href=\'mesure_liste.php\'>Mesurier</a> <img src="img/help.png" height="16px" title="Les mesures sont à usage interne. Elles ne sont pas visibles sur le site web."></li></ul>';
 }
 if (secu_is_authorized(DROIT_DEMANDE)) {
 	$liens_activite .= '<li><a href=\'demande_liste.php\'>Demandes reçues</a> ' . $nb_dmd . '</li>';
