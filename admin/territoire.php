@@ -30,7 +30,7 @@ if (isset($_POST["submit_villes"])) {
 	
 	$result2 = update_villes_territoire((int)$_POST['maj_id_territoire'], $liste_villes);
 
-	if ($result2) {
+	if (isset($result2)) {
 		$msg = 'Modification bien enregistrée.';
 	} else {
 		$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";

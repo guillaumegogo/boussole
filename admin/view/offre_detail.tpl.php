@@ -11,6 +11,7 @@
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 		//fonction autocomplete commune
 		$(function () {
@@ -131,7 +132,7 @@
 			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="nom">Nom de l'offre de service :</label>
-					<input type="text" name="nom" value="<?php if ($id_offre) {
+					<input type="text" name="nom" required value="<?php if ($id_offre) {
 						echo $row['nom_offre'];
 					} ?>"/>
 				</div>
@@ -178,12 +179,11 @@
 				<div class="lab">
 					<label for="pro">Professionnel :</label>
 					<?php //si création d'une offre de service -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
-					if (isset($id_offre)) {
-						echo "<input type=\"text\" name=\"pro\" value=\"" . $row['nom_pro'] . "\" disabled/>";
-					} else {
-						echo "<select name=\"pro\">" . $liste_pro . "</select>";
-					}
-					?>
+					if (isset($id_offre)) { ?>
+						<input type="text" name="pro" value="<?= $row['nom_pro'] ?>\" disabled />
+					<?php } else { ?>
+						<select name="pro" required ><?= $liste_pro ?></select>
+					<?php } ?>
 				</div>
 				<?php if ($id_offre) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. ?>
 				<div class="lab">

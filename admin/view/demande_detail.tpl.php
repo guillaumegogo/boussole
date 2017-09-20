@@ -6,6 +6,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 
 <body>
@@ -62,7 +63,7 @@
 					<?php } else { ?>
 					<form method="post" class="detail">
 					<input type="hidden" name="id_traite" value=<?= xssafe($demande['id_demande']) ?> />
-					<textarea name="commentaire" style="width:100%" rows="5" placeholder="Conditions et suites données à l'échange (...)"></textarea> 
+					<textarea name="commentaire" required style="width:100%" rows="5" placeholder="Conditions et suites données à l'échange (...)"></textarea> 
 					<input type="submit" value="Marquer comme traité">
 					</form>
 					<?php } ?>

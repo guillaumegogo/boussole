@@ -6,6 +6,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery-ui.css">
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 		//fonction affichage listes
 		function displayAttache(that)
@@ -41,7 +42,11 @@
 
 	<div class="soustitre"><?= $msg ?></div>
 
-	<form method="post" class="detail">
+	<form method="post" class="detail" autocomplete="off" >
+
+<!-- The text and password here are to prevent FF from auto filling my login credentials because it ignores autocomplete="off"-->
+<input type="text" style="display:none">
+<input type="password" style="display:none">
 
 		<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
 		<fieldset>
@@ -52,7 +57,7 @@
 					<label for="courriel">Courriel <?php if ($vue != "creation") {
 							echo "(login)";
 						} ?> :</label>
-					<input type="text" name="courriel" placeholder="Le courriel sert de login"
+					<input type="text" name="courriel" required placeholder="Le courriel sert de login"
 						   value="<?php if ($id_utilisateur) {
 							   echo $row['email'];
 						   } ?>" <?php if ($vue == "motdepasse") {
@@ -62,9 +67,9 @@
 				<?php if ($vue == "modif" || $vue == "creation") { ?>
 					<div class="lab">
 						<label for="nom_pouet">Nom :</label>
-						<input type="text" name="nom_pouet" value="<?php if ($id_utilisateur) {
+						<input type="text" name="nom_pouet" required value="<?php if ($id_utilisateur) {
 							echo $row['nom_utilisateur'];
-						} ?>"/>
+						} ?>" />
 					</div>
 					<div class="lab">
 						<label for="statut">Statut :</label>
@@ -133,7 +138,7 @@
 					<div class="lab">
 						<label for="nouveaumotdepasse"><?php echo ($id_utilisateur) ? "Nouveau mot de passe" : "Mot de passe"; ?>
 							:</label>
-						<input type="password" name="nouveaumotdepasse"/>
+						<input type="password" name="nouveaumotdepasse" />
 					</div>
 					<div class="lab">
 						<label for="nouveaumotdepasse2">Confirmez le mot de passe :</label>

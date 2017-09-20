@@ -25,9 +25,8 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro'], secu_get_current_user_id());
 		$id_offre = mysqli_insert_id($conn);
 		
-		if ($created) {
-			$msg = "Création bien enregistrée.";
-		}
+		if ($created) $msg = "Création bien enregistrée.";
+
 	} else { //requête de modification
 		$id_offre = $_POST['maj_id'];
 		$code_postal = substr($_POST['commune'], -5);
@@ -37,7 +36,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		
 		$updated = update_offre((int)$id_offre, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], $liste_villes, secu_get_current_user_id());
 		
-		if ($updated[0]) {
+		if (isset($updated[0]) || isset($updated[1])) {
 			$msg = "Modification bien enregistrée.";
 		}
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères
@@ -45,6 +44,9 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 			if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];
 			
 			$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres, secu_get_current_user_id());
+			if (isset($updated)) {
+				$msg = "Modification bien enregistrée.";
+			}
 		}
 	}
 

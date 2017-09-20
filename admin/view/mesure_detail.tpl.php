@@ -11,6 +11,7 @@
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 		//fonction autocomplete commune
 		$(function () {
@@ -171,7 +172,7 @@
 			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="nom">Nom de la mesure :</label>
-					<input type="text" name="nom" value="<?php if ($id_mesure) {
+					<input type="text" name="nom" required value="<?php if ($id_mesure) {
 						echo $row['nom_mesure'];
 					} ?>"/>
 				</div>
@@ -218,12 +219,11 @@
 				<div class="lab">
 					<label for="pro">Editeur :</label>
 					<?php //si création d'une mesure -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
-					if (isset($id_mesure)) {
-						echo "<input type=\"text\" name=\"pro\" value=\"" . $row['nom_pro'] . "\" disabled/>";
-					} else {
-						echo "<select name=\"pro\">" . $liste_pro . "</select>";
-					}
-					?>
+					if (isset($id_mesure)) { ?>
+						<input type="text" name="pro" value="<?= $row['nom_pro'] ?>" disabled />
+					<?php } else { ?>
+						<select name="pro" required ><?= $liste_pro ?></select>
+					<?php } ?>
 				</div>
 				<?php if ($id_mesure) { //si création d'une mesure -> on n'affiche pas. si modification -> on affiche. ?>
 				<div class="lab">

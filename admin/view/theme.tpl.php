@@ -7,6 +7,7 @@
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<title>Boussole des jeunes</title>
 </head>
 
@@ -112,7 +113,7 @@
 				<div class="deux_colonnes" style="width:auto; min-width:auto;">
 					<div class="lab">
 						<label for="libelle_nouveau_sous_theme" class="court">Libellé :</label>
-						<input type="text" name="libelle_nouveau_sous_theme" value="">
+						<input type="text" required name="libelle_nouveau_sous_theme" value="">
 					</div>
 				</div>
 				<input type="submit" style="display:inline-block; vertical-align:bottom;"

@@ -32,9 +32,11 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$themes = null;
 	$zone = 0;
 	$liste_villes = null;
+	$check_editeur = null;
 	if (isset($_POST['theme'])) $themes=$_POST['theme'];
 	if (isset($_POST['check_zone'])) $zone=$_POST['check_zone'];
 	if (isset($_POST['list2'])) $liste_villes=$_POST['list2'];
+	if (isset($_POST['check_editeur'])) $check_editeur=$_POST['check_editeur'];
 	$code_postal = substr($_POST['commune'], -5);
 	$ville = substr($_POST['commune'], 0, -6);
 	$code_insee = get_code_insee($code_postal, $ville);
@@ -55,19 +57,19 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 
 	//requête d'ajout
 	if (!$_POST['maj_id']) {
-		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$_POST['editeur'], secu_get_current_user_id());
+		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, secu_get_current_user_id());
 		$last_id = mysqli_insert_id($conn);
-		if ($created) $msg = 'Création bien enregistrée.';
+		if ($created) $msg = "Création bien enregistrée.";
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$_POST['editeur'], $themes, $zone, $liste_villes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
-		if ($updated) $msg = 'Modification bien enregistrée.';
+		if (isset($updated)) $msg = 'Modification bien enregistrée.';
 	}
 
 	if (!$msg) {
-		$msg = 'Il y a eu un problème à l\'enregistrement. Contactez l\'administration centrale si le problème perdure.';
+		$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";
 	}
 }
 
@@ -99,10 +101,11 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires();
 }
 
-if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 0){ //la liste des villes du territoire
-	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
-}else{ // la liste des villes du pro
-	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel);
+$liste_villes_pro=null;
+if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 1){ 
+	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel); // la liste personnalisée des villes du pro
+}else if(isset($pro['competence_geo']) && $pro['competence_geo'] && $pro['id_competence_geo']){ 
+	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']); //la liste des villes du territoire
 }
 
 $incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes);

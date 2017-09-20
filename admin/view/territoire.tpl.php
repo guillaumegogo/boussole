@@ -7,6 +7,7 @@
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 	$(function () {
 		$('#list1').filterByText($('#textbox'));
@@ -40,7 +41,7 @@
 			<legend><?= ($_SESSION['territoire_id']) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
 			<div class="une_colonne">
 				<label for="libelle_territoire" class="court">Libellé :</label>
-				<input type="text" name="libelle_territoire" value="<?php echo $nom_territoire_choisi; ?>">
+				<input type="text" required name="libelle_territoire" value="<?php echo $nom_territoire_choisi; ?>">
 				<input type="hidden" name="maj_id_territoire" value="<?php echo $_SESSION['territoire_id']; ?>">
 			</div>
 			<input type="submit" name="submit_meta" value="Valider">

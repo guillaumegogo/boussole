@@ -10,6 +10,7 @@
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 		//fonction autocomplete commune
 		$(function () {
@@ -145,7 +146,7 @@
 			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="nom">Nom du professionnel :</label>
-					<input type="text" name="nom" value="<?php if ($id_professionnel) {
+					<input type="text" name="nom" required value="<?php if ($id_professionnel) {
 						echo $pro['nom_pro'];
 					} ?>"/>
 				</div>
@@ -177,7 +178,7 @@
 				</div>
 				<div class="lab">
 					<label for="editeur">Éditeur :</label>
-					<input type="checkbox" name="editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?>> Oui <img src="img/help.png" height="16px" title="L'éditeur a le droit de saisir des mesures.">
+					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?>> Oui <img src="img/help.png" height="16px" title="L'éditeur a le droit de saisir des mesures.">
 				</div>
 			</div>
 			<div class="deux_colonnes">
@@ -189,13 +190,13 @@
 				</div>
 				<div class="lab">
 					<label for="code_postal">Code postal :</label>
-					<input type="text" name="commune" id="villes" value="<?php if ($id_professionnel) {
+					<input type="text" name="commune" required id="villes" value="<?php if ($id_professionnel) {
 						echo $pro['ville_pro'] . " " . $pro['code_postal_pro'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel :</label>
-					<input type="email" name="courriel" value="<?php if ($id_professionnel) {
+					<input type="email" name="courriel" required value="<?php if ($id_professionnel) {
 						echo $pro['courriel_pro'];
 					} ?>"/>
 				</div>
@@ -247,12 +248,12 @@
 					<label for="competence_geo">Compétence géographique :</label>
 					<div style="display:inline-block;">
 
-<select name="competence_geo" onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;">
-	<option value="">A choisir</option>
-<?php foreach ($competences_geo as $key => $value) { ?>
-	<option value="<?= $key ?>" <?= ($id_professionnel && (isset($pro['competence_geo']) && $pro['competence_geo'] == $key)) ? ' selected ' : '' ?> ><?= $value ?></option>
-<?php } ?>
-</select>
+					<select name="competence_geo" required onchange="displayGeo(this);" style="display:block; margin-bottom:0.5em;">
+						<option value="">A choisir</option>
+					<?php foreach ($competences_geo as $key => $value) { ?>
+						<option value="<?= $key ?>" <?= ($id_professionnel && (isset($pro['competence_geo']) && $pro['competence_geo'] == $key)) ? ' selected ' : '' ?> ><?= $value ?></option>
+					<?php } ?>
+					</select>
 
 <?php //liste déroulante des régions
 if (isset($regions)){ 
@@ -350,12 +351,12 @@ if (isset($territoires)){
 			<input type="submit" name="enregistrer" value="Enregistrer">
 		</div>
 		
+<?php if(count($offres)+count($incoherences_themes)+count($incoherences_villes)>0){ ?>
 		<fieldset>
 			<legend>Offres de service du professionnel</legend>
-<?php if(count($incoherences_themes)+count($incoherences_villes)>0){ ?>
-		<div><span style="color:red; font-weight: bold;">offres incohérentes :</span><br>
+			<div>
 <?php if(count($incoherences_themes)>0){ ?>
-		<span style="color:red; font-weight: bold;">> thèmes</span><ul>
+		<span style="color:red; font-weight: bold;">offres incohérentes (thèmes)</span><ul>
 		<?php 
 		foreach ($incoherences_themes as $row){ ?>
 			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
@@ -364,26 +365,26 @@ if (isset($territoires)){
 		</ul><br>
 <?php } 
 if(count($incoherences_villes)>0){ ?>
-		<span style="font-weight: bold;">> villes</span><ul>
+		<span style="color:red; font-weight: bold;">offres incohérentes (villes)</span><ul>
 		<?php 
 		foreach ($incoherences_villes as $row){ ?>
 			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
 		<?php
 		}?>
-		</ul></div>
-<?php }
-} ?>
-		
-<?php if(count($offres)>0){ ?>
-		<div><span style="font-weight: bold;">offres actives :</span><ul>
+		</ul><br>
+<?php } 
+if(count($offres)>0){ ?>
+		<span style="font-weight: bold;">offres actives :</span><ul>
 		<?php 
 		foreach ($offres as $row){ ?>
 			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
 		<?php
 		}?>
-		</ul></div>
+		</ul>
 <?php } ?>
+			</div>
 		</fieldset>
+<?php } ?>
 
 	</form>
 	<?php

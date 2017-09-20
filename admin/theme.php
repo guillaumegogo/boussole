@@ -18,12 +18,12 @@ if (isset($_POST["maj_id_theme"])) {
 	//********** mise à jour du theme
 	if (isset($_POST["submit_theme"])) {
 		$updated=update_theme((int)$_POST['maj_id_theme'], $_POST['libelle_theme'], $_POST['actif']);
-		if ($updated) $msg = "Modification bien enregistrée.";
+		if (isset($updated)) $msg = "Modification bien enregistrée.";
 	}
 	//********** mise à jour des sous themes
 	if (isset($_POST["submit_liste_sous_themes"])) {
 		$updated_st=update_sous_themes((int)$_POST['maj_id_theme'], $_POST['sthemes']);
-		if ($updated_st) $msg = "Modification bien enregistrée.";
+		if (isset($updated_st)) $msg = "Modification bien enregistrée.";
 	}
 	
 	//********** création du theme
