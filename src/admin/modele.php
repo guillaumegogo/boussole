@@ -608,7 +608,7 @@ function get_territoires($id = null) {
 	return $t;
 }
 
-function get_liste_pros_select($zone, $zone_id=null, $user_pro_id=null) {
+function get_liste_pros_select($type="pro",$zone=null, $zone_id=null, $user_pro_id=null) {
 
 	$pros = null;
 	$params = [];
@@ -617,14 +617,19 @@ function get_liste_pros_select($zone, $zone_id=null, $user_pro_id=null) {
 	$query = 'SELECT `id_professionnel`, `nom_pro`
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE `actif_pro` = 1 ';
-	if($zone){
+	if($type == "éditeur") {
+		$query .= ' AND `editeur`= ?';
+		$params[] = 1;
+		$types .= 'i';
+	}
+	if(isset($zone) && $zone) {
 		$query .= ' AND `competence_geo`= ?';
 		$params[] = $zone;
 		$types .= 's';
 	}
 	if(isset($zone_id) && $zone_id) {
 		$query .= ' AND `id_competence_geo`= ?';
-		$params[] = (int) $territoire_id;
+		$params[] = (int) $zone_id;
 		$types .= 'i';
 	}
 	if (isset($user_pro_id)) {
@@ -719,10 +724,10 @@ function get_liste_mesures($flag = 1, $tab_criteres = null) {
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`'.DB_PREFIX.'bsl_theme`.`id_theme_pere`
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` ';
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
+		';
 		
 	if(isset($tab_criteres) && count($tab_criteres)){
-		print_r($tab_criteres);
 		$query .= 'JOIN `'.DB_PREFIX.'bsl_mesure_criteres` ON `'.DB_PREFIX.'bsl_mesure_criteres`.id_mesure=`'.DB_PREFIX.'bsl_mesure`.`id_mesure` ';
 		foreach ($tab_criteres as $name => $selected_option) {
 			if($selected_option != ''){
@@ -741,7 +746,7 @@ $print_sql = $query;
 foreach($params as $term){
 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
 }
-echo "<pre>".$print_sql."</pre>"; 
+echo "<!--".$print_sql."-->"; 
 
 	$stmt = query_prepare($query,$params,$types);
 	$t = query_get($stmt);
@@ -820,7 +825,7 @@ function get_pro_by_id($id){
 	global $conn;
 	$pro = null;
 
-	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `actif_pro`, `user_derniere_modif` 
+	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE id_professionnel= ?';
 	$stmt = mysqli_prepare($conn, $query);
@@ -838,18 +843,18 @@ function get_pro_by_id($id){
 	return $pro;
 }
 
-function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $user_id) {
+function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id) {
 
 	global $conn;
 	$created = false;
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
 		(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
-		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`)
-		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
+		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `user_derniere_modif`)
+		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
 
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'sssssssssisssisii', $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $user_id);
+	mysqli_stmt_bind_param($stmt, 'sssssssssisssisiii', $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
 	check_mysql_error($conn);
 	
 	if (mysqli_stmt_execute($stmt)) {
@@ -860,14 +865,14 @@ function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_in
 	return $created;
 }
 
-function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $themes, $zone, $liste_villes, $user_id){
+function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes, $user_id){
 
 	//mise à jour des champs principaux
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel`
-		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `user_derniere_modif` = ? ';
+		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `editeur` = ? , `user_derniere_modif` = ? ';
 
-	$terms = array($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $zone, $user_id);
-	$terms_type = "sssssssssisssiii";
+	$terms = array($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $zone, $editeur, $user_id);
+	$terms_type = "sssssssssisssiiii";
 	if ($competence_geo) {
 		$query .= ', `competence_geo` = ?';
 		$terms[] = $competence_geo;
@@ -1499,7 +1504,7 @@ function get_formulaire_mesure(){
 		`'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, 
 		`'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, 
 		`'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, 
-		`'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, 
+		`'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle` AS `libelle_reponse`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, 
 		`'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` 
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
@@ -1511,7 +1516,7 @@ function get_formulaire_mesure(){
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $idq, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $id_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle_reponse, $valeur, $defaut);
 	$tmp_id = 0;
 	$tmp_que = '';
 	$meta = [];
@@ -1522,11 +1527,11 @@ function get_formulaire_mesure(){
 			$meta = array('id' => $id_formulaire, 'nb' => $nb_pages, 'titre' => $titre, 'etape' => $ordre_page, 'aide' => $aide, 'suite' => ($ordre_page < $nb_pages) ? ($ordre_page + 1) : 'fin');
 			$tmp_id = $id_formulaire;
 		}
-		if ($question != $tmp_que) { //on récupère les questions
-			$questions[] = array('id' => $idq, 'que' => $question, 'name' => $name, 'type' => $type, 'tai' => $taille, 'obl' => $obligatoire);
-			$tmp_que = $question;
+		if ($libelle_question != $tmp_que) { //on récupère les questions
+			$questions[] = array('id' => $id_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire);
+			$tmp_que = $libelle_question;
 		}
-		$reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
+		$reponses[$id_question][] = array('name' => $html_name, 'libelle' => $libelle_reponse, 'valeur' => $valeur, 'defaut' => $defaut);  //on récupère les réponses
 	}
 	mysqli_stmt_close($stmt);
 	return [$meta, $questions, $reponses];

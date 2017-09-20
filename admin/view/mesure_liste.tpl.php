@@ -28,16 +28,19 @@
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
 		Liste des mesures <?php if (!$flag_actif) echo "désactivées"; ?></h2>
 
-	<form method="post"><div style="margin-bottom:2em">Filtres : 
-	<?php foreach($questions as $row) { ?>
-		<?= $row['que'] ?> : <select name="criteres[<?= $row['que'] ?>]" onChange="this.form.submit()">
+	<form method="post">
+		<table class="filtres"><tr>
+		<th>Filtres</th>
+	<?php foreach($questions as $question) { ?>
+		<td><?= ucfirst($question['libelle']) ?><br/>
+		<select name="criteres[<?= $question['name'] ?>]" onChange="this.form.submit()">
 			<option value=''></option>
-			<?php foreach($reponses[$row['id']] as $rowq) { ?>
-			<option value="<?= $rowq['val'] ?>" <?= (isset($_POST['criteres'][$rowq['name']]) && $_POST['criteres'][$rowq['name']]==$rowq['val']) ? 'selected' : '' ?>><?= $rowq['lib'] ?></option>
+			<?php foreach($reponses[$question['id']] as $reponse) { ?>
+			<option value="<?= $reponse['valeur'] ?>" <?= (isset($_POST['criteres'][$question['name']]) && $_POST['criteres'][$question['name']]==$reponse['valeur']) ? 'selected' : '' ?>><?= $reponse['libelle'] ?></option>
 			<?php } ?>
-		</select>
+		</select></td>
 	<?php } ?>
-	</div></form>
+	</tr></table></form>
 	
 	<?php
 	if (count($mesures) > 0) {

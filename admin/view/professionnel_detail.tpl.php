@@ -175,6 +175,10 @@
 					<?php } ?>
 					</div>
 				</div>
+				<div class="lab">
+					<label for="editeur">Éditeur :</label>
+					<input type="checkbox" name="editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?>> Oui <img src="img/help.png" height="16px" title="L'éditeur a le droit de saisir des mesures.">
+				</div>
 			</div>
 			<div class="deux_colonnes">
 				<div class="lab">

@@ -115,7 +115,7 @@ foreach($liste_territoires as $row2) {
 }
 
 $select_professionnel = '<option value="" >A choisir</option>';
-$liste_pro = get_liste_pros_select("territoire",$param_territoire);
+$liste_pro = get_liste_pros_select("pro", "territoire",$param_territoire);
 foreach($liste_pro as $row3) {
 	$select_professionnel .= '<option value="' . $row3['id_professionnel'] . '" ';
 	if (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) {

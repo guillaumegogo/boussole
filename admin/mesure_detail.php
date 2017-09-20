@@ -136,7 +136,7 @@ if (isset($id_mesure)) {
 //********** écran de création simple : récupération de la liste des professionnels en fonction des droits du user
 } else {
 	$liste_pro = "<option value=\"\" >A choisir</option>";
-	$result = get_liste_pros_select("national");
+	$result = get_liste_pros_select("éditeur");
 	if (count($result) > 0) {
 		foreach($result as $rowp) {
 			$liste_pro .= '<option value="' . $rowp['id_professionnel'] . '"';

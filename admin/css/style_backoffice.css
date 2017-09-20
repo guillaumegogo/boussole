@@ -56,7 +56,7 @@ table.detail  {
 	border-collapse: collapse; 
 	width:100%;
 }
-.detail th, td {
+.detail th, .detail td {
 	padding: 4px;
 	text-align: left;
 	border-bottom: 1px solid #ddd;
@@ -77,16 +77,41 @@ legend{
 	text-align:left;
 }
 
+.accueil {
+	width:100%;
+    border-collapse: collapse;
+}
+.accueil td {
+	width:33%;
+	border:none;
+	padding: 0 1em;
+}
+.accueil ul{
+	background:#f9f9f9;
+	border-top:1px solid black;
+	border-bottom:1px solid black;
+	height:9em;
+	margin-top:0.5em; 
+	line-height:2.5em;
+}
+/*
 .colonne_accueil{
 	display:inline-block; 
-	width:25%;
-	min-width:20em;
+	width:28%;
+	min-width:16em;
 	vertical-align:top; 
 	text-align:left;
-	height:100%;
-	margin-right:5%;
-	/*background:#FAFAFA;*/
+	margin-right:1em;
+	padding:1em;
 }
+.colonne_accueil ul{
+	background:#f9f9f9;
+	border-top:1px solid black;
+	border-bottom:1px solid black;
+	height:9em;
+	margin-top:0.5em; 
+	line-height:2.5em;
+}*/
 .derniere{
 	margin-right:0;
 }
@@ -175,4 +200,19 @@ pre{
 
 #editeur{
 	width:25em; height:15em;
+}
+
+.filtres{
+	margin-bottom:2em;
+	border-collapse:collapse;
+	border-right:1px solid black;
+}
+.filtres th{
+	padding-right:0.4em;
+	border-right:1px solid black;
+}
+.filtres td{
+	vertical-align:middle;
+	padding:0.2em 0.4em;
+	background-color:#f9f9f9;
 }

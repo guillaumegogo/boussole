@@ -142,7 +142,7 @@ if (isset($id_offre)) {
 //********** sinon écran de création simple : récupération de la liste des professionnels (avec thème) en fonction des droits du user
 } else {
 	$liste_pro = "<option value=\"\" >A choisir</option>";
-	$result = get_liste_pros_select("territoire",$_SESSION['territoire_id'], $user_pro_id);
+	$result = get_liste_pros_select("pro", "territoire",$_SESSION['territoire_id'], $user_pro_id);
 	if (count($result) > 0) {
 		foreach($result as $rowp) {
 			$liste_pro .= '<option value="' . $rowp['id_professionnel'] . '"';

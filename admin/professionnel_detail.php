@@ -55,13 +55,13 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 
 	//requête d'ajout
 	if (!$_POST['maj_id']) {
-		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, secu_get_current_user_id());
+		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$_POST['editeur'], secu_get_current_user_id());
 		$last_id = mysqli_insert_id($conn);
 		if ($created) $msg = 'Création bien enregistrée.';
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, $themes, $zone, $liste_villes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$_POST['editeur'], $themes, $zone, $liste_villes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
 		if ($updated) $msg = 'Modification bien enregistrée.';
 	}
