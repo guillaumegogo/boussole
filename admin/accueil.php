@@ -22,19 +22,20 @@ if (secu_is_authorized(DROIT_MESURE)) {
 	$offres[] = array('mesure_liste.php', 'Mesurier', '<img src="img/help.png" height="16px" title="Les mesures sont à usage interne. Elles ne sont pas visibles sur le site web.">');
 }
 
-$liens_admin = '';
 if (secu_is_authorized(DROIT_PROFESSIONNEL)) {
 	$acteurs[] = array('professionnel_liste.php', 'Professionnels', '');
 } else if (isset($_SESSION['user_pro_id'])) {
-	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Professionnels', '');
+	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Profil professionnel', '');
 }
 if (secu_is_authorized(DROIT_UTILISATEUR)) {
 	$acteurs[] = array('utilisateur_liste.php', 'Utilisateurs', '');
 } else if (isset($_SESSION['user_pro_id'])) {
-	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Utilisateurs', '');
+	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Profil utilisateur', '');
+}
+if (secu_is_authorized(DROIT_UTILISATEUR)) {
+	$acteurs[] = array('#', 'Gestion des droits d\'accès', '');
 }
 
-$liens_reference = '';
 if (secu_is_authorized(DROIT_TERRITOIRE)) {
 	$references[] = array('territoire.php', 'Territoires', '');
 }

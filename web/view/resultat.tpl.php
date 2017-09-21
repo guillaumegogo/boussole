@@ -7,7 +7,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title><?php xecho(ucfirst($titredusite)); ?></title>
 	<script>
-		function masqueCriteres(){
+		/*function masqueCriteres(){
 			var x = document.getElementById('criteres');
 			var y = document.getElementById('fleche_criteres');
 			if(x.style.display === 'none') {
@@ -17,17 +17,18 @@
 				x.style.display = 'none';
 				y.innerHTML = "&#9662;"; //flèche vers le bas
 			}
-		}
+		}*/
 		function afficheAutres(id){
 			var x = document.getElementById('suite'+id);
 			var y = document.getElementById('lien'+id);
 			if(x.style.display === 'none') {
 				x.style.display = 'block';
-				y.innerHTML = 'Masquer les autres offres';
-			} else {
+				y.style.display = 'none';
+				//y.innerHTML = 'Masquer les autres offres';
+			}/* else {
 				x.style.display = 'none';
 				y.innerHTML = 'Afficher les autres offres';
-			}
+			}*/
 		}
 		function afficheModal(id){
 			var x = document.getElementById('modal'+id);
@@ -48,88 +49,102 @@
 		}
 	</script>
 </head>
-<body>
-<div id="main">
+<body><div id="main">
 	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
-	<div class="soustitre" style="margin-top:3%"><?php xecho($msg); ?></div>
-	<form class="joli resultat">
-		<fieldset class="resultat">
-			<legend  onclick='masqueCriteres()'>Rappel de mes informations <span id="fleche_criteres">&#9662;</span></legend>
-			<div id="criteres" style="display:<?php echo ($nb_offres) ? "none":"block"; ?>">
-				<p>J'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b> </p>
-				<div>
-					<div class="colonnes">
-						<?php echo liste_criteres('<br/>'); ?> <!--todo : à mettre en forme-->
-					</div>
-					<div class="enbasadroite">
-						<a href="javascript:location.href='formulaire.php'">Revenir au formulaire</a>
+	<div class="soustitre" style="margin:3em 0 2em 0;"><?php if (isset($resultat)) echo '<span style="color:red">'.$resultat.'</span><br/><br/>'; xecho($msg); ?></div>
+	
+<?php
+if ($nb_offres) { 
+?>
+	<div class="joli">
+		
+<?php
+	foreach ($sous_themes as $sous_theme_id=>$titre) {
+		$nb_offres_sous_theme = count($offres[$sous_theme_id]);
+		$ancre="ancre_".$sous_theme_id;
+?>
+		<div class="resultat" id="<?= $ancre ?>">
+			<h1><?php xecho($titre) ?> (<?= $nb_offres_sous_theme ?>)</h1>
+	
+<?php
+		$i = 0;
+		foreach ($offres[$sous_theme_id] as $offre) {
+			// découpage des titres trop longs
+			$titre = ((strlen($offre["titre"]) > 80 ) && (strpos($offre["titre"]," ",80))) ? 
+				substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
+			$description_courte = ((strlen($offre["description"]) > 500 ) && (strpos($offre["description"]," ",500))) ? 
+				substr($offre["description"],0,strpos($offre["description"]," ",500))."…" : $offre["description"];
+			$description_courte = str_replace('[br][br]','[br]',$description_courte);
+			
+			if (++$i == $nb_offres_a_afficher+1){ 
+?>
+			<div id="suite<?= $sous_theme_id?>" style="display:none">
+<?php 		} ?> 
+
+				<div class="resultat_offre">
+					<!--<div class="coeur">&#9825;</div>-->
+					<a href="#<?= $ancre ?>" onclick="afficheModal('<?= (int) $offre["id"] ?>');">
+						<b><?php xecho($titre) ?></b></a>
+				</div>
+				<!-- fenêtre modale de l'offre -->
+				<div id="modal<?= (int) $offre["id"] ?>" class="modal" >
+					<div class="modal-content">
+						<span class="close" onclick="cacheModal('<?= (int) $offre["id"] ?>');">&times;</span>
+						<p><b><?php xecho($offre["titre"]) ?></b><br/><?= xecho($offre['nom_pro']) ?> - <?= xecho($offre['ville']) ?></p>
+						<p style="font-size:90%;"><?php xbbecho($description_courte) ?> &rarr; <a href="offre.php?id=<?= (int) $offre["id"] ?>">en savoir plus</a></p>
+						
+						<div style="align:center; border:1px solid red; padding:1em; margin-top:2em;">Si cette offre t'intéresses, demande à être contacté·e par un conseiller d'ici <b><?php xecho($offre['delai']) ?> jours</b> maximum.
+						<form method="post" style="text-align:center; margin:1em auto;">
+							<input type="hidden" name="id_offre" value="<?php xecho($offre["id"]) ?>">
+							<input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"/>
+							<button type="submit" style="background-color:red">Je demande à être contacté·e</button>
+							<br/>
+						<?php 
+						if (ENVIRONMENT !== ENV_PROD) { 
+							if (ENVIRONMENT === ENV_TEST) { 
+						?>
+							<div style="font-size:small; color:red;">En environnement de test, le mail censé être adressé au professionnel est <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>.</div>
+						<?php }else{ ?>
+							<div style="font-size:small; color:red;">Aucun mail n'est envoyé depuis cet environnement.</div>
+						<?php }
+						} ?>
+						</form>
+						</div>
 					</div>
 				</div>
+
+<?php 		if($i==$nb_offres_a_afficher && $nb_offres_sous_theme > $nb_offres_a_afficher) { ?>
+				<div class="center">
+					<span id="lien<?= $sous_theme_id ?>" class="small" onclick="afficheAutres('<?= $sous_theme_id ?>');">
+						Afficher les autres offres <img src="img/sort_desc.png"></span>
+				</div>
+<?php 		}
+			if ($i > $nb_offres_a_afficher && $i==$nb_offres_sous_theme){ ?>
 			</div>
-		</fieldset>
+<?php		}
+		} ?>
+		</div>
+<?php } ?>
 	</form>
-	<?php
-	if ($nb_offres) {
-		?>
-		<form class="joli resultat" style="margin-top:1%;">
-			<?php
-			$sous_offre_precedente='';
-			$compteur_offres=0;
-			foreach ($offres as $offre) {
+<?php } ?>
 
-			//******* affichage des sous thèmes
-			if($offre['sous_theme']!=$sous_offre_precedente){
-			if($sous_offre_precedente){
-				if($compteur_offres>4) echo '</div><div class="center"><a href="#'.$anchor.'" id="lien'.$sous_offre_precedente.'" class="small" onclick="afficheAutres(\''.$sous_offre_precedente.'\');">Afficher les autres offres</a></div>';
-				echo "</div>\n</fieldset>"; //en cas de changement de sous-thème on ferme le fieldset précédent
-			}
-			$sous_offre_precedente=$offre['sous_theme'];
-			$compteur_offres=0;
-			$anchor="a".$offre['sous_theme'];
-			?>
+<div id="criteres" style="border:1px solid #29B297; text-align:center; margin:1em; padding:1em;">Rappel de mes informations : j'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b>.<br/>Mes critères sont les suivants : <?php echo liste_criteres(', '); ?>.
+<div class="enbasadroite">
+	<a href="javascript:location.href='formulaire.php'">Revenir au formulaire</a>
+</div></div>
 
-			<fieldset class="resultat" id="<?= $anchor ?>"><legend><?php xecho($sous_themes[$offre['sous_theme']]['titre']) ?> (<?php xecho($sous_themes[$offre['sous_theme']]['nb']) ?> offre<?= ($sous_themes[$offre['sous_theme']]['nb']>1) ? 's':''; ?>)</legend>
-				<div style="width:100%; margin:auto;">
-					<?php
-					}
+<?php if ($nb_offres) { ?>
+<div style="font-size:small; text-align:center; margin:1em;"><a href="contact.php" target="_blank">Aucune offre ne m'intéresse</a></div>
+<?php } ?>
+	
 
-					//******** découpage des titres trop longs
-					$titre_court = '';
-					if (strlen($offre["titre"]) > 80 ) {
-						if (strpos($offre["titre"]," ",80)) {
-							$titre_court = substr($offre["titre"],0,strpos($offre["titre"]," ",80))."...";
-						}
-					}
-					if($compteur_offres++==4) echo '<div id="suite'.$offre['sous_theme'].'" style="display:none">';
-					?>
-					<!-- affichage des offres -->
-					<div class="resultat_offre"><!--
-			<div class="coeur">&#9825;</div>-->
-						<a href="#<?= $anchor ?>" onclick="afficheModal('<?= (int) $offre["id"] ?>');"><b><?php xecho(($titre_court) ? $titre_court : $offre["titre"]) ?></b></a>
-					</div>
-					<!-- fenêtre modale de l'offre -->
-					<div id="modal<?= (int) $offre["id"] ?>" class="modal" ><div class="modal-content">
-							<span class="close" onclick="cacheModal('<?= (int) $offre["id"] ?>');">&times;</span>
-							<p><b><?php xecho($offre["titre"]) ?></b><br/><?= xecho($offre["nom_pro"]) ?></p>
-							<p><?php echo $offre["description"] //xecho($offre["description"]) TODO : mise en commentaire temporaire en attendant un éditeur wysiwyg + sécurisé ?></p>
-							<div class="center"><a href="offre.php?id=<?= (int) $offre["id"] ?>" class="button">En savoir +</a></div>
-						</div></div>
-					<?php
-					}
-					?>
-				</div>
-			</fieldset>
-		</form>
-		<?php
-	}
-	?>
-	<div class="lienenbas">
-		<?php
-		echo $aucune_offre;
-		?>
-	</div>
-	<div style="height:2em;">&nbsp;</div>  <!--tweak css-->
-	<?php include('../src/web/footer.inc.php'); ?>
+
+
+<div style="height:2em;">&nbsp;</div>  <!--tweak css-->
+
+<?php include('../src/web/footer.inc.php'); ?>
 </div>
 </body>
 </html>
+
+<!--<pre><?php print_r($offres); ?></pre>-->

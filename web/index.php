@@ -28,7 +28,7 @@ if (isset($_POST['ville_selectionnee'])) {
 	}
 
 	//********* récupération des thèmes disponibles pour le code insee indiqué
-	$themes = get_themes_by_ville($_SESSION['code_insee']);
+	if (isset($_SESSION['code_insee'])) $themes = get_themes_by_ville($_SESSION['code_insee']);
 	
 	//********* a-t-on au moins un thème actif ?
 	$flag_theme=0;

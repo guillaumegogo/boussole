@@ -55,54 +55,14 @@ if (isset($_POST['coordonnees'])) {
 
 	//*********** envoi des mails
 	if ($id_demande) {
-		if ((ENVIRONMENT === ENV_PROD) || (ENVIRONMENT === ENV_TEST)) {
-			//au professionnel
-			$to = 'boussole@yopmail.fr';
-			if (ENVIRONMENT === ENV_PROD) {
-				$to = $row['courriel_offre'];
-			}
-			$subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des droits');
-			$message = "<html><p>Un jeune est intéressé par l'offre <b>" . $row['nom_offre'] . "</b>.</p>"
-				. "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
-				. "<p>Son profil est le suivant : " . liste_criteres('<br/>') . "</p>"
-				. "<p>Les coordonnées indiquées sont les suivantes : <b>" . $_POST['coordonnees'] . "</b></p></html>";
-//				. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/\">espace de gestion de la Boussole</a></p>";
-			$headers = 'MIME-Version: 1.0' . "\r\n";
-			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-			$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-			if (ENVIRONMENT !== ENV_PROD) {
-				$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-			}
-			$envoi_mail = mail($to, $subject, $message, $headers);
-
-			//accusé d'envoi au demandeur
-			if (filter_var($_POST['coordonnees'], FILTER_VALIDATE_EMAIL)) {
-				
-				$to = $_POST['coordonnees'];
-				$subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des droits');
-				$message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
-					. "<p>Offre <b>" . $row['nom_offre'] . "</b>.</p>"
-					. "<p>Profil : " . liste_criteres('<br/>') . "</p></html>";
-				$headers = 'MIME-Version: 1.0' . "\r\n";
-				$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-				$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-				if (ENVIRONMENT !== ENV_PROD) {
-					$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-				}
-				$envoi_accuse = mail($to, $subject, $message, $headers);
-			}
-			
-			if ($envoi_mail) {
-				$resultat = "<p><img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> <b>Ta demande a bien été enregistrée et un courriel contenant les informations suivantes à été transmis à l'organisme proposant l'offre de service.</b></p>
-				<div style=\"liste_criteres\">" . liste_criteres('<br/>') . "</div>";
-			} else {
-				$resultat = "<p><img src=\"img/exclamation.png\" width=\"24px\"> Ta demande a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement " . $row['courriel_offre'] . ".</p>";
+		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'] );
+		
+		if (!$resultat){
+				$resultat = "<img src=\"img/exclamation.png\" width=\"24px\"> Ta demande de contact pour l'offre «&nbsp;".$nom_offre."&nbsp;» a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.";
 			}
 		} else {
-			$resultat = "<p><img src=\"img/exclamation.png\" width=\"24px\"> Ta demande a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement " . $row['courriel_offre'] . ".</p>";
+			$resultat = "<img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
 		}
-	} else {
-		$resultat = "<p><img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.</p>";
 	}
 }
 

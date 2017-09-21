@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 /*charte graphisque djepva
 --orange: #E74106;
 --vert:#00AAA9; 
@@ -7,33 +6,35 @@
 */
 
 *{
-	/*explications : https://www.alsacreations.com/astuce/lire/22-Commentfixerunpiedaubasdelapage.html*/
 	-moz-box-sizing: border-box; 
-	box-sizing: border-box; 
+	box-sizing: border-box; /*explications : https://www.alsacreations.com/astuce/lire/22-Commentfixerunpiedaubasdelapage.html */
 }
 html, body {
 	height: 100%;
 	margin:0; padding:0;
 }
 body {
-	/*background: linear-gradient(to bottom right, white, GhostWhite); */
 	background-color: white;
 	font-family: 'Questrial', sans-serif;
-	/*font-family: 'Cabin', sans-serif;
-	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 	font-size:120%;
+	/*
+	background: linear-gradient(to bottom right, white, GhostWhite);
+	padding-bottom:2em;
+	font-family: 'Cabin', sans-serif;
+	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	*/
 }
-#main{
+
+#main{ /*sert à fixer le footer en bas...*/
 	min-height:100%;
 	margin:0 auto;
-	/*padding-bottom:2em;*/
 	position:relative;
 }
+
 form { 
 	width:100%;
 	margin:auto;
 	border:none;
-	/*background-color: white;*/
 }
 table {
 	border-collapse: collapse; background-color: white;
@@ -399,10 +400,31 @@ form.resultat:first-of-type fieldset.resultat p:hover b,
 form.resultat:first-of-type fieldset.resultat p:focus b{
 	color: #29B297;
 }
-fieldset.resultat legend {
-	background-color:white;
-	padding:0 1em;
+
+.resultat {
+	border-left: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	padding: 1em; /*0*/
+	margin:1em;
+	margin-bottom:2em;
 }
+
+.resultat h1 {
+	display: absolute;
+	font-size: 1.2em;
+	line-height: 1;
+	margin: -1.5em 1em 1em 0;
+	/*
+	background-color:#29B297;
+	color:white;*/
+	background-color:white;
+	color:#29B297;
+	padding:0.2em 0.5em 0.2em 0.5em ;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;	
+	border-radius:8px;
+}
+
 /** Résultats des offres **/
 .resultat_offre{
 	display:inline-block; 

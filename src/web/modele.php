@@ -118,7 +118,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	global $conn;
 	
-	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro` /*`t`.*, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
+	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro`, `ville_offre`, `delai_offre` /*`t`.*, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
 	FROM ( SELECT `'.DB_PREFIX.'bsl_offre`.*,   /* on construit ici la liste des critères */
 		GROUP_CONCAT( if(nom_critere= "age_min", valeur_critere, NULL ) SEPARATOR "|") `age_min`, 
 		GROUP_CONCAT( if(nom_critere= "age_max", valeur_critere, NULL ) SEPARATOR "|") `age_max`, 
@@ -197,14 +197,13 @@ if (DEBUG) {
 	$sous_themes = [];
 	$offres = [];
 	if (mysqli_stmt_execute($stmt)) {
-		mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro);
+		mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro, $ville, $delai);
+		
 		while (mysqli_stmt_fetch($stmt)) {
-			if (isset($sous_themes[$id_sous_theme])) {
-				$sous_themes[$id_sous_theme]['nb']++;
-			} else {
-				$sous_themes[$id_sous_theme] = array('id' => $id_sous_theme, 'titre' => $sous_theme_offre, 'nb' => 1);
+			if (!isset($sous_themes[$id_sous_theme])) {
+				$sous_themes[$id_sous_theme] = $sous_theme_offre;
 			}
-			$offres[] = array('id' => $id_offre, 'titre' => $nom_offre, 'description' => $description_offre, 'sous_theme' => $id_sous_theme, 'nom_pro' => $nom_pro);
+			$offres[$id_sous_theme][] = array('id' => $id_offre, 'titre' => $nom_offre, 'description' => $description_offre, 'nom_pro' => $nom_pro, 'ville' => $ville, 'delai' => $delai);
 		}
 	} else {
 		throw new Exception("L'application a rencontré un problème technique. Merci de contacter l'administrateur du site avec le message d'erreur suivant : " . mysqli_error($conn));
@@ -240,7 +239,7 @@ function get_offre($id){
 	return $row;
 }
 
-function create_demande($id_offre, $coord){
+function create_demande($id_offre, $coordonnees){
 
 	global $conn;
 	$id = null;
@@ -250,7 +249,7 @@ function create_demande($id_offre, $coord){
 	$liste = liste_criteres(',');
 	
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coord, $_SESSION['code_insee'], $liste);
+	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coordonnees, $_SESSION['code_insee'], $liste);
 	check_mysql_error($conn);
 
 	if (mysqli_stmt_execute($stmt)) {
