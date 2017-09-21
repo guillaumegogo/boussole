@@ -672,7 +672,7 @@ ul li:last-child{
 
 /* bandeau alpha */
 body:after{
-	content: "beta";
+	content: "test";
 	position: fixed;
 	width: 150px;
 	height: 25px;
