@@ -46,7 +46,7 @@
 			</fieldset>
 			<fieldset>
 				<legend>Demande de contact</legend>
-				<div class="pluspetit">
+				<div class="cadre">
 					<?php
 					if(isset($_POST['coordonnees'])){
 						echo $resultat;
@@ -76,7 +76,7 @@
 			</fieldset>
 			<fieldset class="demande_offre">
 				<legend>Organisme</legend>
-				<div class="pluspetit">
+				<div class="cadre">
 					<p>Cette offre de service est proposée par l'organisme suivant :</p>
 					<div class="map"><iframe src="https://maps.google.it/maps?q=<?= $adresse ?>&output=embed"></iframe></div>
 					<table class="offre" style="width:auto;"> <!--style="width:50%;"-->

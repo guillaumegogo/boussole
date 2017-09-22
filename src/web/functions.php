@@ -8,23 +8,24 @@ function format_insee($saisie)
 }
 
 //********* fonction de présentation (un peu crado) des critères du jeune
-function liste_criteres($separateur = ",")
+function liste_criteres($tab_criteres, $separateur = ", ")
 {
 	$txt_criteres = '';
-	foreach ($_SESSION['critere'] as $index => $valeur) {
-		$txt = "";
+	foreach ($tab_criteres as $index => $valeur) {
+		$txt = '';
 		if ($valeur) {
 			$txt = str_replace("_", " ", $index) . " : ";
 			if (is_array($valeur)) {
 				foreach ($valeur as $index2 => $valeur2)
-					$txt .= $valeur2 . " /";
+					$txt .= $valeur2 . "/";
 				$txt = substr($txt, 0, -1);
 			} else {
 				$txt .= $valeur;
 			}
+			$txt_criteres .= xssafe($txt) . $separateur;
 		}
-		$txt_criteres .= xssafe($txt) . $separateur;
 	}
+	$txt_criteres = substr($txt_criteres, 0, -strlen($separateur));
 	return $txt_criteres;
 }
 
@@ -119,7 +120,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees)
 		$subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des droits');
 		$message = "<html><p>Un jeune est intéressé par l'offre <b>" . $nom_offre . "</b>.</p>"
 			. "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
-			. "<p>Son profil est le suivant : " . liste_criteres('<br/>') . "</p>"
+			. "<p>Son profil est le suivant : " . liste_criteres($_SESSION['critere'], '<br/>') . "</p>"
 			. "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p></html>";
 			//. "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/\">espace de gestion de la Boussole</a></p>";
 		$headers = 'MIME-Version: 1.0' . "\r\n";
@@ -137,7 +138,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees)
 			$subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des droits');
 			$message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
 				. "<p>Offre <b>" . $nom_offre . "</b>.</p>"
-				. "<p>Profil : " . liste_criteres('<br/>') . "</p></html>";
+				. "<p>Profil : " . liste_criteres($_SESSION['critere'], '<br/>') . "</p></html>";
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 			$headers .= 'From: La Boussole des droits <noreply@boussole.jeunes.gouv.fr>' . "\r\n";

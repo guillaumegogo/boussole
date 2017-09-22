@@ -129,6 +129,8 @@ function html2bbcode($s) {
 		'/\<u\>(.*?)\<\/u\>/is',
 		'/\<img(.*?) src=\"(.*?)\"(.*?)\>/is',
 		'/\<a href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is',
+		'/^(\<br(\s*)?\/?\>)*/is',
+		'/(\<br(\s*)?\/?\>)*$/is',
 		'/\<br(\s*)?\/?\>/is'
 	);
 	$bbtags = array(
@@ -137,6 +139,8 @@ function html2bbcode($s) {
 		'[u]$1[/u]',
 		'[img]$2[/img]',
 		'[url=$1]$3[/url]',
+		'',
+		'',
 		'[br]'
 	);
 	$t = preg_replace($htmltags, $bbtags, $s);

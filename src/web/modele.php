@@ -246,7 +246,7 @@ function create_demande($id_offre, $coordonnees){
 	
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_demande`(`id_demande`, `date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) 
 		VALUES (NULL, NOW(), ?, ?, ?, ?)';
-	$liste = liste_criteres(',');
+	$liste = liste_criteres($_SESSION['critere'], ',');
 	
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coordonnees, $_SESSION['code_insee'], $liste);

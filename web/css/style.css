@@ -1,9 +1,4 @@
 @charset "UTF-8";
-/*charte graphisque djepva
---orange: #E74106;
---vert:#00AAA9; 
---vertpale:#B8DEDE;
-*/
 
 *{
 	-moz-box-sizing: border-box; 
@@ -15,14 +10,8 @@ html, body {
 }
 body {
 	background-color: white;
-	font-family: 'Questrial', sans-serif;
+	font-family: 'Questrial', sans-serif; /* 'Cabin', "Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 	font-size:120%;
-	/*
-	background: linear-gradient(to bottom right, white, GhostWhite);
-	padding-bottom:2em;
-	font-family: 'Cabin', sans-serif;
-	font-family:"Gill Sans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	*/
 }
 
 #main{ /*sert à fixer le footer en bas...*/
@@ -49,7 +38,6 @@ fieldset {
 	display:table-cell;
 	min-width: 0; 
 	width: 100%;
-	border: 1px solid #259983;
 	padding: 30px 10px;
 }
 fieldset ~ fieldset{
@@ -301,14 +289,13 @@ form.formulaire{
 fieldset.formulaire {
 	background-color: white; 
 	font-size:0.9em;
-	text-align:center;
-	/*border:none;
-	box-shadow: 0px 2px 5px 0px grey;*/
+	border:1px solid #259983; /*none; 
+	box-shadow: 0px 2px 5px 0px grey; */
+	padding:0em 1em 1em 1em;
 }
 div.centreformulaire {
-	width:80%;
 	min-width:18em;
-	margin:1em auto; 
+	margin:2em 10%; 
 	text-align:left;
 }
 fieldset.formulaire legend {
@@ -401,28 +388,25 @@ form.resultat:first-of-type fieldset.resultat p:focus b{
 	color: #29B297;
 }
 
+.h1resultat {
+	font-size: 1.2em;
+	line-height: 1;
+	margin: -0.5em 1em 1em 2em;
+	background-color:white;
+	color:#29B297;
+	padding:0.2em 0.5em 0.2em 0.5em ;
+	/*background-color:#29B297;
+	color:white;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;	
+	border-radius:8px;*/
+}
 .resultat {
 	border-left: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	padding: 1em; /*0*/
-	margin:1em;
+	margin:-1em 1em 1em 1em;
 	margin-bottom:2em;
-}
-
-.resultat h1 {
-	display: absolute;
-	font-size: 1.2em;
-	line-height: 1;
-	margin: -1.5em 1em 1em 0;
-	/*
-	background-color:#29B297;
-	color:white;*/
-	background-color:white;
-	color:#29B297;
-	padding:0.2em 0.5em 0.2em 0.5em ;
-	-moz-border-radius:8px;
-	-webkit-border-radius:8px;	
-	border-radius:8px;
 }
 
 /** Résultats des offres **/
@@ -520,7 +504,7 @@ form.resultat:first-of-type fieldset.resultat p:focus b{
 .modal-content {
 	background-color: #fefefe;
 	margin: 60px auto; /* 15% from the top and centered */
-	padding: 1.5em;
+	padding: 1.5em 0.5em;
 	border: 1px solid #888;
 	width: 80%; /* Could be more or less, depending on screen size */
 	color: #656665;
@@ -589,19 +573,19 @@ table.offre img{
 .resume {
 	margin-top:3em;
 }
-.pluspetit{
-	font-size:0.9em;
+.cadre{
 	width: 90%;
 	margin: 0 5%;
 }
-.pluspetit > div{
+.cadre > div{
 	margin: 20px 0;
 }
-.pluspetit > div > div{
+.cadre > div > div{
 	margin: 20px 0 0 0;
 }
-.pluspetit button[type="submit"] {
-    background: #29b297 none repeat scroll 0 0;
+.cadre button[type="submit"] {
+    background: red none repeat scroll 0 0;
+/*    background: #29b297 none repeat scroll 0 0;*/
     border: medium none;
     border-radius: 0;
     box-shadow: none;
@@ -615,7 +599,7 @@ table.offre img{
     text-transform: uppercase;
     transition: background 0.3s ease 0s;
 }
-.pluspetit table.offre{
+.cadre table.offre{
 	margin: 0;
 }
 .map{
