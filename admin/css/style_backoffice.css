@@ -1,3 +1,10 @@
+@charset "UTF-8";
+/*charte graphisque djepva
+--orange: #E74106;
+--vert:#00AAA9; 
+--vertpale:#B8DEDE;
+*/
+
 body { 
 	background-color: white; 
 	font-family: "Open Sans", sans-serif; /*
@@ -16,10 +23,14 @@ h1.bandeau{
 	font-size:1.5em;
     font-weight: bold;
 	color:white;
-	background: SteelBlue;
+	background:#00AAA9; /*SteelBlue;*/
 	/*
     padding-left:3.5em; 
 	background: SteelBlue url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;*/
+}
+.bandeau img{
+	float:left;
+	margin:-0.4em 0.5em 0 -0.6em;
 }
 h1 a {
 	text-decoration: none;
@@ -36,7 +47,7 @@ h1 a:hover {
 	font-size:0.9em;
 	text-align:right;
 	margin-bottom:1em;
-	background-color:#b6cee2;
+	background-color:#B8DEDE; /*#b6cee2;*/
 }
 h2 {
 	margin-left:0em;
