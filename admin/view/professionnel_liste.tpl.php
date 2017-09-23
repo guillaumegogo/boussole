@@ -65,7 +65,7 @@
 				<tr>
 					<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a>
 					</td>
-					<td><?= $row['type_pro'] ?></td>
+					<td><?= ($row['type']) ? $row['type'] : $row['type_pro'] ?></td>
 					<td><?php echo $row['ville_pro'] . " (" . $row['code_postal_pro'] . ")"; ?></td>
 					<td><?= $row['themes'] ?></td>
 					<td><?= $geo ?></td>

@@ -151,10 +151,24 @@
 					} ?>"/>
 				</div>
 				<div class="lab">
-					<label for="type">Type :</label>
-					<input type="text" name="type" value="<?php if ($id_professionnel) {
-						echo $pro['type_pro'];
-					} ?>"/>
+					<label for="type_id">Type :</label>
+					<div style="display:inline-block"><select name="type_id">
+						<option value=""></option>
+					<?php foreach ($types as $type) { ?>
+						<option value="<?= $type['id'] ?>" <?= ($id_professionnel && (isset($pro['type_id']) && $pro['type_id'] == $type['id'])) ? ' selected ' : '' ?> ><?= $type['libelle'] ?></option>
+					<?php } ?>
+					</select><?php if (isset($pro['type_pro']) && $pro['type_pro'] && !$pro['type_id']) { ?>
+					<br/><span style="font-size:0.7em">(<?= $pro['type_pro'] ?>)</span>
+					<?php } ?></div>
+				</div>
+				<div class="lab">
+					<label for="statut_id">Statut :</label>
+					<select name="statut_id">
+						<option value=""></option>
+					<?php foreach ($statuts as $statut) { ?>
+						<option value="<?= $statut['id'] ?>" <?= ($id_professionnel && (isset($pro['statut_id']) && $pro['statut_id'] == $statut['id'])) ? ' selected ' : '' ?> ><?= $statut['libelle'] ?></option>
+					<?php } ?>
+					</select>
 				</div>
 				<div class="lab">
 					<label for="desc">Description du professionnel :</label>
@@ -176,10 +190,10 @@
 					<?php } ?>
 					</div>
 				</div>
-				<div class="lab">
+				<!--<div class="lab">
 					<label for="editeur">Éditeur :</label>
 					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?>> Oui <img src="img/help.png" height="16px" title="L'éditeur a le droit de saisir des mesures.">
-				</div>
+				</div>-->
 			</div>
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -195,7 +209,13 @@
 					} ?>"/>
 				</div>
 				<div class="lab">
-					<label for="courriel">Courriel :</label>
+					<label for="site">Site internet :</label>
+					<input type="text" name="site" value="<?php if ($id_professionnel) {
+						echo $pro['site_web_pro'];
+					} ?>"/>
+				</div>
+				<div class="lab">
+					<label for="courriel">Courriel de gestion :</label>
 					<input type="email" name="courriel" required value="<?php if ($id_professionnel) {
 						echo $pro['courriel_pro'];
 					} ?>"/>
@@ -211,24 +231,18 @@
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel référent Boussole :</label>
-					<input type="email" name="courriel_ref" value="<?php if ($id_professionnel) {
+					<input type="email" name="courriel_ref" required value="<?php if ($id_professionnel) {
 						echo $pro['courriel_referent_boussole'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="tel">Téléphone référent Boussole :</label>
 					<div style="display:inline-table;">
-					<input type="text" name="tel_ref" value="<?php if ($id_professionnel) {
+					<input type="text" name="tel_ref" required value="<?php if ($id_professionnel) {
 						echo $pro['telephone_referent_boussole'];
 					} ?>"/>
 					<br/><small><i>Ces informations ne sont pas affichées sur le site.</i></small>
 					</div>
-				</div>
-				<div class="lab">
-					<label for="site">Site internet :</label>
-					<input type="text" name="site" value="<?php if ($id_professionnel) {
-						echo $pro['site_web_pro'];
-					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="delai">Délai de réponse aux offres :</label>
@@ -291,7 +305,7 @@ if (isset($territoires)){
 </select></div>
 
 <div style="margin-top:1em"><span id="zone_personnalisee" style="display:<?= $display_t ?>" >
-	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence</span>
+	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence territoriale</span>
 	
 	<div class="lab" id="div_liste_villes" style="display:<?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'block' : 'none' ?>">
 		<div style="margin-bottom:1em;">Filtre : 

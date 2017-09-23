@@ -693,15 +693,16 @@ function get_liste_offres($flag = 1, $territoire_id = null, $user_pro_id = null)
 	$types = 'i';
 
 	if (isset($territoire_id) && $territoire_id) {
-		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ?';
+		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ? ';
 		$params[] = (int) $territoire_id;
 		$types .= 'i';
 	}
 	if (isset($user_pro_id)) {
-		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ?';
+		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
 		$params[] = (int) $user_pro_id;
 		$types .= 'i';
 	}
+	$query .= 'ORDER BY `id_offre` DESC';
 	$stmt = query_prepare($query,$params,$types);
 	$offres = query_get($stmt);
 	return $offres;
@@ -738,7 +739,8 @@ function get_liste_mesures($flag = 1, $tab_criteres = null) {
 			}
 		}
 	}
-	$query .= 'WHERE actif_mesure= ? ';
+	$query .= 'WHERE actif_mesure= ? 
+	ORDER BY `'.DB_PREFIX.'bsl_mesure`.id_mesure DESC';
 	$params[] = $flag;
 	$types .= 'i';	
 
@@ -789,19 +791,20 @@ function get_liste_pros($flag, $territoire_id) { //tous les professionnel du ter
 	global $conn;
 	$pros = [];
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,
-		GROUP_CONCAT(libelle_theme_court SEPARATOR ", ") AS themes, competence_geo, zone_selection_villes,  nom_departement, nom_region, nom_territoire
+	$query = 'SELECT `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`, `nom_pro`, `type_pro`, `param_type`.`libelle` as `type`, `ville_pro`, `code_postal_pro`, GROUP_CONCAT(libelle_theme_court SEPARATOR ", ") AS `themes`, `competence_geo`, `zone_selection_villes`, `nom_departement`, `nom_region`, `nom_territoire`
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` ON `'.DB_PREFIX.'bsl_professionnel_themes`.`id_professionnel`=`'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_professionnel_themes`.`id_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
+		LEFT JOIN `'.DB_PREFIX.'bsl__parametres` as `param_type` ON `param_type`.`id`=`'.DB_PREFIX.'bsl_professionnel`.`type_id` AND `param_type`.`liste`="type_pro"
 		WHERE `actif_pro`= ? ';
 	if ($territoire_id) {
 		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ?';
 	}
-	$query .= ' GROUP BY `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,competence_geo';
+	$query .= ' GROUP BY `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,competence_geo
+	ORDER BY `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel` DESC';
 	$stmt = mysqli_prepare($conn, $query);
 	if ($territoire_id)
 		mysqli_stmt_bind_param($stmt, 'ii', $flag, $territoire_id);
@@ -825,7 +828,7 @@ function get_pro_by_id($id){
 	global $conn;
 	$pro = null;
 
-	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
+	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE id_professionnel= ?';
 	$stmt = mysqli_prepare($conn, $query);
@@ -843,18 +846,18 @@ function get_pro_by_id($id){
 	return $pro;
 }
 
-function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id) {
+function create_pro($nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id) {
 
 	global $conn;
 	$created = false;
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
-		(`nom_pro`, `type_pro`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
+		(`nom_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
 		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `user_derniere_modif`)
-		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
+		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
 
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'sssssssssisssisiii', $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
+	mysqli_stmt_bind_param($stmt, 'siisssssssisssisiii', $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
 	check_mysql_error($conn);
 	
 	if (mysqli_stmt_execute($stmt)) {
@@ -865,14 +868,14 @@ function create_pro($nom, $type, $desc, $adresse, $code_postal, $ville, $code_in
 	return $created;
 }
 
-function update_pro($pro_id, $nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes, $user_id){
+function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes, $user_id){
 
 	//mise à jour des champs principaux
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel`
-		SET `nom_pro` = ?, `type_pro` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `editeur` = ? , `user_derniere_modif` = ? ';
+		SET `nom_pro` = ?, `type_id` = ?, `statut_id` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `editeur` = ? , `user_derniere_modif` = ? ';
 
-	$terms = array($nom, $type, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $zone, $editeur, $user_id);
-	$terms_type = "sssssssssisssiiii";
+	$terms = array($nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $zone, $editeur, $user_id);
+	$terms_type = "siisssssssisssiiii";
 	if ($competence_geo) {
 		$query .= ', `competence_geo` = ?';
 		$terms[] = $competence_geo;
@@ -1049,16 +1052,18 @@ function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du ter
 function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 
 	global $conn;
-	$formulaires = [];
+	$formulaires= null;
+	$pages= null;
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, `nb_pages` 
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, `nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` 
 		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=? ';
 	if ($territoire_id) 
 		$query .= 'AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=? ';
-	$query .= 'ORDER BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`';
+	$query .= 'ORDER BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`';
 	$stmt = mysqli_prepare($conn, $query);
 	if ($territoire_id)
 		mysqli_stmt_bind_param($stmt, 'ii', $flag_actif, $territoire_id);
@@ -1067,12 +1072,48 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $id_page, $titre, $ordre);
+	$id=0;
 	while (mysqli_stmt_fetch($stmt)) {
-		$formulaires[] = array('id' => $id_formulaire, 'libelle' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages);
+		if($id!=$id_formulaire){
+			$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages);
+			$id=$id_formulaire;
+		}
+		$pages[$id_formulaire][] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre);
 	}
 	mysqli_stmt_close($stmt);
-	return $formulaires;
+	return [$formulaires,$pages];
+}
+
+function get_page_formulaire_by_id($id) {
+
+	global $conn;
+	$formulaires= null;
+	$pages= null;
+
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`, `titre`, `aide`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`, `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`
+		FROM `'.DB_PREFIX.'bsl_formulaire__page` 
+		JOIN `'.DB_PREFIX.'bsl_formulaire` ON `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
+		WHERE `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1 AND `'.DB_PREFIX.'bsl_formulaire__page`.`id_page` = ? 
+		ORDER BY `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`  ';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	mysqli_stmt_execute($stmt);
+	check_mysql_error($conn);
+/*
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $id_page, $titre, $ordre);
+	$id=0;
+	while (mysqli_stmt_fetch($stmt)) {
+		if($id!=$id_formulaire){
+			$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages);
+			$id=$id_formulaire;
+		}
+		$pages[$id_formulaire][] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre);
+	}
+	mysqli_stmt_close($stmt);
+	return [$formulaires,$pages];*/
+	return null;
 }
 
 function get_formulaire_by_id($id){
@@ -1572,4 +1613,21 @@ function archive($objet, $id, $etat = 0){
 		}
 	}
 	return $updated;
+}
+
+function get_liste_parametres($liste) {
+
+	global $conn;
+	$rows = null;
+	$query = 'SELECT `id`, `libelle` FROM `'.DB_PREFIX.'bsl__parametres` WHERE liste = ? ';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 's', $liste);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		while($row = mysqli_fetch_assoc($result)) {
+			$rows[] = $row;
+		}
+	}
+	return $rows;
 }

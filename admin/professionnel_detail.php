@@ -57,13 +57,13 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 
 	//requête d'ajout
 	if (!$_POST['maj_id']) {
-		$created = create_pro($_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, secu_get_current_user_id());
+		$created = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, secu_get_current_user_id());
 		$last_id = mysqli_insert_id($conn);
 		if ($created) $msg = "Création bien enregistrée.";
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes, secu_get_current_user_id());
 		$last_id = $_POST['maj_id'];
 		if (isset($updated)) $msg = 'Modification bien enregistrée.';
 	}
@@ -84,6 +84,8 @@ if (isset($id_professionnel)) {
 }
 
 //********** listes : thèmes et compétences géographiques (régions, départements et/ou territoires )
+$types = get_liste_parametres('type_pro');
+$statuts = get_liste_parametres('statut');
 $themes = get_liste_themes($id_professionnel, 1);
 
 $competences_geo = array('territoire' => 'Territoire');

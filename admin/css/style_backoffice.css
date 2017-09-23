@@ -169,12 +169,12 @@ legend{
 	width: 3em; 
 }
 #editeur{
-  width: 18em;
-  height: 12em;
-  border: 1px solid grey;
-  padding: 0.2em;
-  overflow: auto;
-  font-size:90%;
+	border: 1px solid grey;
+	padding: 0.2em;
+	overflow: auto;
+	font-size:90%;
+	width:33em;
+	height:15em;
 }
 select.age { 
 	width: auto; 
@@ -207,10 +207,6 @@ pre{
  padding:1em;
  margin-top:3em;
  white-space : pre-wrap;
-}
-
-#editeur{
-	width:25em; height:15em;
 }
 
 .filtres{

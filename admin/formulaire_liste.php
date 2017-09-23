@@ -14,7 +14,9 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;
 
 //******** liste de demandes
 $territoire_id = secu_get_territoire_id();
-$formulaires = get_liste_formulaires($flag_actif, $territoire_id);
+$t = get_liste_formulaires($flag_actif, $territoire_id);
+$formulaires = $t[0];
+$pages = $t[1];
 
 //view
 require 'view/formulaire_liste.tpl.php';

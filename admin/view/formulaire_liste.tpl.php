@@ -33,15 +33,31 @@
 	if (count($formulaires) > 0) {
 	?>
 	
-		<ol style="line-height: 200%;">
-	<?php
-	foreach ($formulaires as $formulaire) {
-	?>
-		<li><a href="formulaire_detail.php?id=<?= (int) $formulaire['id'] ?>"><?php xecho($formulaire['libelle']) ?> / <?php xecho($formulaire['territoire']) ?></a></li>
-	<?php
-	}
-	?>
-		</ol>
+		<table id="sortable" class="display compact">
+			<thead>
+			<tr>
+				<th>#</th>
+				<th>Thème</th>
+				<th>Territoire</th>
+				<th>Pages</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
+			<?php
+			foreach ($formulaires as $row) { ?>
+				<tr>
+					<td><!--<a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire --><?= (int) $row['id'] ?><!--</a>--></td>
+					<td><?php xecho($row['theme']) ?></td>
+					<td><?php xecho($row['territoire']) ?></td>
+					<td><?php foreach ($pages[$row['id']] as $key => $rowp) { ?>
+						<?= ($key) ? '|':'' ?> <a href="formulaire_page.php?id=<?= (int) $rowp['id'] ?>"><?= trim($rowp['titre']) ?></a>  (<?=$rowp['ordre']?>/<?=$row['nb_pages']?>) 
+					<?php } ?></td>
+					<td style="color:grey">Désactiver</td>
+				</tr>
+			<?php } ?>
+			</tbody>
+		</table>
 
 	<?php
 	} else {
@@ -51,7 +67,7 @@
 	}
 	?>
 
-	<!--<div style="text-align:left"><a href="? <?= ($flag_actif) ? 'actif=non">Liste des formulaires inactifs' : 'actif=oui">Liste des formulaires actifs'; ?></a></div>-->
+	<div style="text-align:left"><a href="? <?= ($flag_actif) ? 'actif=non">Liste des formulaires inactifs' : 'actif=oui">Liste des formulaires actifs'; ?></a></div>
 
 </div>
 
