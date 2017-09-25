@@ -39,7 +39,7 @@ if (isset($_POST["maj_id_theme"])) {
 
 //********* liste déroulante des thèmes (en haut à droite)
 $select_theme = '';
-$themes = get_liste_themes(null, null);
+$themes = get_liste_themes();
 foreach($themes as $rows) {
 	$select_theme .= '<option value="' . $rows['id_theme'] . '" ';
 	if ($rows['id_theme'] == $id_theme_choisi) {

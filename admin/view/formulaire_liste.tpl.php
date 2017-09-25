@@ -26,8 +26,6 @@
 	<?php echo $select_territoire; ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des formulaires <?= ($flag_actif) ? '' : 'inactifs'; ?></h2>
-
-	<p style='color:red; text-align:center;'>Ce module n'est pour le moment disponible qu'en consultation.</p>
 	
 	<?php
 	if (count($formulaires) > 0) {
@@ -40,6 +38,7 @@
 				<th>Thème</th>
 				<th>Territoire</th>
 				<th>Pages</th>
+				<th>Questions</th>
 				<th>Action</th>
 			</tr>
 			</thead>
@@ -47,12 +46,11 @@
 			<?php
 			foreach ($formulaires as $row) { ?>
 				<tr>
-					<td><!--<a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire --><?= (int) $row['id'] ?><!--</a>--></td>
+					<td><a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire <?= (int) $row['id'] ?></a></td>
 					<td><?php xecho($row['theme']) ?></td>
 					<td><?php xecho($row['territoire']) ?></td>
-					<td><?php foreach ($pages[$row['id']] as $key => $rowp) { ?>
-						<?= ($key) ? '|':'' ?> <a href="formulaire_page.php?id=<?= (int) $rowp['id'] ?>"><?= trim($rowp['titre']) ?></a>  (<?=$rowp['ordre']?>/<?=$row['nb_pages']?>) 
-					<?php } ?></td>
+					<td><?php xecho($row['nb_pages']) ?></td>
+					<td><?php xecho($row['nb_questions']) ?></td>
 					<td style="color:grey">Désactiver</td>
 				</tr>
 			<?php } ?>
@@ -72,7 +70,7 @@
 </div>
 
 <div class="button">
-	<input type="button" value="Créer un formulaire" disabled onclick="javascript:location.href='formulaire_detail.php'">
+	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'">
 </div>
 </body>
 </html>

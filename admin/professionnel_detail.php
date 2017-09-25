@@ -86,7 +86,7 @@ if (isset($id_professionnel)) {
 //********** listes : thèmes et compétences géographiques (régions, départements et/ou territoires )
 $types = get_liste_parametres('type_pro');
 $statuts = get_liste_parametres('statut');
-$themes = get_liste_themes($id_professionnel, 1);
+$themes = get_liste_themes(1, $id_professionnel);
 
 $competences_geo = array('territoire' => 'Territoire');
 $regions = null;

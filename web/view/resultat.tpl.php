@@ -152,7 +152,7 @@ if ($nb_offres) {
 
 <div id="criteres" style="border:1px solid #29B297; text-align:center; margin:1em; padding:1em; color:DimGray;">Rappel de mes informations : j'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b>.
 <br/><span style="font-size:0.8em;">Mes critères sont les suivants &rarr; <?php echo liste_criteres($_SESSION['critere'], ', '); ?></span>.
-<br/><a href="javascript:location.href='formulaire.php'" class="button">Revenir au formulaire</a></div>
+<br/><a href="formulaire.php" class="button">Revenir au formulaire</a></div>
 
 <?php if ($nb_offres) { ?>
 <div style="font-size:small; text-align:center; margin:1em;"><a href="contact.php" target="_blank">Aucune offre ne m'intéresse</a></div>

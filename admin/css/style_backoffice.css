@@ -4,7 +4,6 @@
 --vert:#00AAA9; 
 --vertpale:#B8DEDE;
 */
-
 body { 
 	background-color: white; 
 	font-family: "Open Sans", sans-serif; /*
@@ -15,7 +14,6 @@ body {
 	padding:0;
 }
 input, select, textarea, button{font-family:inherit;}
-
 h1.bandeau{
 	width:auto;
 	margin:0em; 
@@ -60,7 +58,6 @@ h2 {
     float:right;
     width:20em;
 }
-
 table.detail  {
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
@@ -74,7 +71,6 @@ table.detail  {
 }
 .detail tr:nth-child(odd){ background-color:#f9f9f9;}
 .detail tr:hover {background-color: #f6f6f6;}
-
 form { 
 	width:100%;
 	margin:0 auto;
@@ -87,7 +83,6 @@ fieldset {
 legend{
 	text-align:left;
 }
-
 .accueil {
 	width:100%;
     border-collapse: collapse;
@@ -126,7 +121,6 @@ legend{
 .derniere{
 	margin-right:0;
 }
-
 .centre{ 
 	text-align:center;
 }
@@ -152,21 +146,23 @@ legend{
 	column-width: 28em;
 	column-rule:1px solid grey;
 }
-
 /*input[type=text], input[type=email],input[list], textarea, select { 
 	width: auto; 
 }*/
 .detail input[type=text], .detail input[type=password], .detail input[type=email], .detail  input[list], .detail textarea, .detail select { 
 	width: 18em; 
 }
+.detail input[type=text].input_int { 
+	width: 3em; 
+}
 .detail input[type=text].datepick { 
 	width: 8em; 
 }
-.auth input[type=text], .auth input[type=password] { 
+.detail input[type=text].input_long { 
 	width: 30em; 
 }
-.input_int { 
-	width: 3em; 
+.auth input[type=text], .auth input[type=password] { 
+	width: 30em; 
 }
 #editeur{
 	border: 1px solid grey;
@@ -208,7 +204,6 @@ pre{
  margin-top:3em;
  white-space : pre-wrap;
 }
-
 .filtres{
 	margin-bottom:2em;
 	border-collapse:collapse;
@@ -222,4 +217,7 @@ pre{
 	vertical-align:middle;
 	padding:0.2em 0.4em;
 	background-color:#f9f9f9;
+}
+.page{
+	border-top:1px solid black !important;
 }

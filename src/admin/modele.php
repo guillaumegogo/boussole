@@ -36,7 +36,8 @@ function get_criteres_offre($id_offre, $id_theme){
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_question`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_question` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
+		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_offre_criteres` ON `'.DB_PREFIX.'bsl_offre_criteres`.`nom_critere`=`'.DB_PREFIX.'bsl_formulaire__question`.`html_name` AND `'.DB_PREFIX.'bsl_offre_criteres`.`valeur_critere`=`'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur` AND `'.DB_PREFIX.'bsl_offre_criteres`.`id_offre`= ?
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`type`="offre" AND `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 AND `'.DB_PREFIX.'bsl_theme`.`id_theme`= ?
 		ORDER BY `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
@@ -73,10 +74,12 @@ function get_criteres_mesure($id_mesure){
 		`'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`,
 		`'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`,
 		`'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`,
-		`'.DB_PREFIX.'bsl_mesure_criteres`.`id_mesure` FROM `'.DB_PREFIX.'bsl_formulaire`
+		`'.DB_PREFIX.'bsl_mesure_criteres`.`id_mesure` 
+		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_question`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_question` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_mesure_criteres` ON `'.DB_PREFIX.'bsl_mesure_criteres`.`nom_critere`=`'.DB_PREFIX.'bsl_formulaire__question`.`html_name` AND `'.DB_PREFIX.'bsl_mesure_criteres`.`valeur_critere`=`'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur` AND `'.DB_PREFIX.'bsl_mesure_criteres`.`id_mesure`= ?
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`type`="mesure" AND `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 
 		ORDER BY `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
@@ -1053,17 +1056,18 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 
 	global $conn;
 	$formulaires= null;
-	$pages= null;
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, `nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` 
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`) as `nb_pages`,  count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`) as `nb_questions`
 		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=? ';
 	if ($territoire_id) 
 		$query .= 'AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=? ';
-	$query .= 'ORDER BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`';
+	$query .= 'GROUP BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`
+		ORDER BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`';
 	$stmt = mysqli_prepare($conn, $query);
 	if ($territoire_id)
 		mysqli_stmt_bind_param($stmt, 'ii', $flag_actif, $territoire_id);
@@ -1072,17 +1076,13 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $id_page, $titre, $ordre);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $nb_questions);
 	$id=0;
 	while (mysqli_stmt_fetch($stmt)) {
-		if($id!=$id_formulaire){
-			$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages);
-			$id=$id_formulaire;
-		}
-		$pages[$id_formulaire][] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre);
+		$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages, 'nb_questions' => $nb_questions);
 	}
 	mysqli_stmt_close($stmt);
-	return [$formulaires,$pages];
+	return $formulaires;
 }
 
 function get_page_formulaire_by_id($id) {
@@ -1125,11 +1125,13 @@ function get_formulaire_by_id($id){
 	$pages = [];
 	$questions = [];
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`,`'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre` AS `ordre_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire` FROM `'.DB_PREFIX.'bsl_formulaire`
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`,`'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire`.`actif`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre` AS `ordre_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`, `'.DB_PREFIX.'bsl_formulaire__reponse`.`libelle` AS `reponse`
+		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` = ?
 		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
@@ -1137,17 +1139,17 @@ function get_formulaire_by_id($id){
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_theme_court, $nom_territoire, $nb_pages, $id_page, $titre, $ordre_page, $aide, $id_question, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_theme_court, $nom_territoire, $nb_pages, $actif, $id_page, $titre, $ordre_page, $aide, $id_question, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $id_reponse, $reponse);
 	while (mysqli_stmt_fetch($stmt)) {
 		if ($id_formulaire != $tmp_id) { //données du formulaire
-			$meta = array('id' => $id_formulaire, 'theme' => $libelle_theme_court, 'territoire' => ($nom_territoire) ? $nom_territoire : 'national', 'nb' => $nb_pages);
+			$meta = array('id' => $id_formulaire, 'theme' => $libelle_theme_court, 'territoire' => ($nom_territoire) ? $nom_territoire : 'national', 'actif' => $actif, 'nb' => $nb_pages);
 			$tmp_id = $id_formulaire;
 		}
 		if ($id_page != $tmp_p) { //données des pages du formulaire
 			$pages[] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre_page, 'aide' => $aide);
 			$tmp_p = $id_page;
 		}
-		$questions[$id_page][] = array('id' => $id_question, 'ordre' => $ordre_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire);
+		$questions[$id_page][] = array('id' => $id_question, 'ordre' => $ordre_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire, 'id_reponse' => $id_reponse, 'reponse' => $reponse);
 	}
 	mysqli_stmt_close($stmt);
 	return [$meta, $pages, $questions];
@@ -1160,8 +1162,10 @@ function get_question_by_id($id) {
 	$question = [];
 	$reponses = [];
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre` AS `ordre_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre` AS `ordre_valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire__question`
-		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_question`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_question` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre` AS `ordre_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre` AS `ordre_valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` 
+		FROM `'.DB_PREFIX.'bsl_formulaire__question`
+		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
+		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page`
 		WHERE `'.DB_PREFIX.'bsl_formulaire__question`.`id_question` = ?
 		ORDER BY `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
@@ -1208,7 +1212,7 @@ function get_liste_regions() {
 	global $conn;
 	$regions = null;
 	$query = 'SELECT `id_region`, `nom_region` FROM `'.DB_PREFIX.'bsl__region` WHERE 1 ';
-	$result = mysqli_query($conn, $query); // [OK]
+	$result = mysqli_query($conn, $query);
 	while($row = mysqli_fetch_assoc($result)) {
 		$regions[] = $row;
 	}
@@ -1220,14 +1224,14 @@ function get_liste_departements() {
 	global $conn;
 	$departements = null;
 	$query = 'SELECT `id_departement`, `nom_departement` FROM `'.DB_PREFIX.'bsl__departement` WHERE 1 ';
-	$result = mysqli_query($conn, $query); // [OK]
+	$result = mysqli_query($conn, $query);
 	while($row = mysqli_fetch_assoc($result)) {
 		$departements[] = $row;
 	}
 	return $departements;
 }
 
-function get_liste_themes($pro_id = null, $actif = null) {
+function get_liste_themes($actif = null, $pro_id = null) {
 
 	global $conn;
 	$themes = null;
@@ -1285,6 +1289,18 @@ function get_liste_sous_themes($theme_pere) {
 	}
 
 	return $themes;
+}
+
+function get_reponses() {
+
+	global $conn;
+	$reponses = null;
+	$query = 'SELECT `id_reponse`, `libelle` FROM `'.DB_PREFIX.'bsl_formulaire__reponse` WHERE 1 ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$reponses[] = $row;
+	}
+	return $reponses;
 }
 
 /* Territoires */
@@ -1541,15 +1557,15 @@ function get_formulaire_mesure(){
 	
 	global $conn;
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, 
-		`'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, 
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, 
 		`'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, 
 		`'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, 
-		`'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle` AS `libelle_reponse`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, 
-		`'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` 
+		`'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle` AS `libelle_reponse`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` 
+		FROM `'.DB_PREFIX.'bsl_formulaire` 
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_question`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_question` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_reponse`
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 AND `'.DB_PREFIX.'bsl_formulaire`.`type`="mesure"
 		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
@@ -1631,3 +1647,137 @@ function get_liste_parametres($liste) {
 	}
 	return $rows;
 }
+
+function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+
+	return null;
+}
+
+function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+
+	global $conn;
+	$updated = false;
+	
+	//update questions
+	if (isset($id_q)) {
+		foreach($id_q as $key_p=>$id_qp){
+			foreach($id_qp as $key=>$id){
+			
+				if ($ordre_q[$key_p][$key] && $titre_q[$key_p][$key]){
+					$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__question` 
+						SET `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
+						WHERE `id_question`= ? ';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'isisi', $ordre_q[$key_p][$key], $titre_q[$key_p][$key], $reponse_q[$key_p][$key], $type_q[$key_p][$key], $id);
+				
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}
+				if (!$ordre_q[$key_p][$key] && !$titre_q[$key_p][$key]){
+					//ajouter test pour vérifier qu'il n'y a plus de questions
+					$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__question` 
+						WHERE `id_question`= ? ';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'i', $id);
+					
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}
+			}
+		}
+	}
+
+	//update et delete pages
+	if (isset($id_p)) {
+		foreach($id_p as $key=>$id){
+			if ($ordre_p[$key] && $titre_p[$key]){
+				$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__page` 
+					SET `ordre`= ?, `titre` = ?
+					WHERE `id_page`= ? ';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'isi', $ordre_p[$key], $titre_p[$key], $id);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+			if (!$ordre_p[$key] && !$titre_p[$key]){
+				//ajouter test pour vérifier qu'il n'y a plus de questions
+				$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__page` 
+					WHERE `id_page`= ? ';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'i', $id);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+		}
+	}
+	
+	//create pages
+	if (isset($titre_p)) {
+		foreach($titre_p as $key=>$titre){
+			if ($titre && $ordre_p[$key] && !$id_p[$key]){
+				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__page`(`id_formulaire`, `titre`, `ordre`)
+					VALUES (?, ?, ?)';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'isii', $formulaire_id, $titre, $ordre_p[$key]);
+				
+$print_sql = $query;
+foreach(array($formulaire_id, $titre, $ordre_p[$key]) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<pre>".$print_sql."</pre>";
+
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+		}
+	}
+	return $updated;
+}
+
+/*
+function update_criteres_offre($id, $tab_criteres, $user_id) { 
+
+	global $conn;
+	$updated = false;
+
+	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ?';
+	$stmt = mysqli_prepare($conn, $query1);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+	check_mysql_error($conn);
+
+	if (isset($tab_criteres)) {
+		$query2 = 'INSERT INTO `'.DB_PREFIX.'bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) 
+			VALUES ';
+		$params = [];
+		$types = '';
+		foreach ($tab_criteres as $name => $tab_critere) {
+			foreach ($tab_critere as $key => $selected_option) {
+				$query2 .= '( ?, ? , ? ), ';
+				$params[] = (int) $id;
+				$params[] = $name;
+				$params[] = $selected_option;
+				$types .= 'iss';
+			}
+		}
+		$query2 = substr($query2, 0, -2); //on enlève ", " à la fin de la requête
+		$stmt = query_prepare($query2,$params,$types);
+		$updated = query_do($stmt);
+	}
+	
+	return $updated;
+}
+*/

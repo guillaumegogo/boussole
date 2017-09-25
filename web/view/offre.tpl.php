@@ -110,7 +110,7 @@
 				</div>
 			</fieldset>
 		</form>
-		<p class="lienenbas"><a href="resultat.php">Revenir à la liste des offres</a></p>
+		<p class="lienenbas"><a href="resultat.php" class="button">Revenir à la liste des offres</a></p>
 		<?php
 	}else{ //pas d'offre
 		?>

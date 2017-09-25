@@ -16,113 +16,105 @@
 
 <div class="container">
 <?php
-if ($meta !== null) {
+//if ($meta !== null) {
 ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
 		Détail du formulaire</h2> 
 
-	<?php echo $msg; ?>
-
+	<div class="soustitre"><?php echo $msg; ?></div>
+	
+	<form method="post" class="detail">
+	<fieldset>
+		<legend>Détails</legend> <!--(<?= $meta['theme'].' '.$meta['territoire'] ?>)-->
+		Thème : <select name="theme" <?= (isset($meta['theme'])) ? 'disabled':'' ?>>
+		<?php foreach($themes as $row) { ?>
+			<option required value="<?= $row['id_theme'] ?>" <?= (isset($meta['theme']) && $row['libelle_theme_court']==$meta['theme']) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'] ?></option>
+		<?php } ?>
+			</select>
+		&#8231; Territoire : <select name="territoire" <?= (isset($meta['territoire'])) ? 'disabled':'' ?>>
+		<?php foreach($territoires as $row) { ?>
+			<option required value="<?= $row['id_territoire'] ?>" <?= (isset($meta['territoire']) && $row['nom_territoire']==$meta['territoire']) ? ' selected ':'' ?>> <?= $row['nom_territoire'] ?></option>
+		<?php } ?>
+			</select>
+	</fieldset>
+	
+	<fieldset>
+		<legend>Pages et questions</legend>
 	<?php
-	if (count($pages) > 0) {
+	//if (count($pages) > 0) {
 	?>
-	
-	<div>
-	<div style="float:left; width:25%; min-width:30em;">
-	<h3>Identifiants</h3>
-	<ul>
-		<li>Thème : <?= xecho($meta['theme']) ?></li>
-		<li>Zone : <?= xecho($meta['territoire']) ?></li>
-	</ul>
-	
-	<h3>Pages</h3>
-		<table class="dataTable display compact">
-			<thead>
-			<tr>
-				<th>Ordre</th>
-				<th>Titre</th>
-			</thead>
-			<tbody>
-			<?php
-			foreach ($pages as $page) {
-			?>
-				<tr>
-					<td><input name="ordre_maj_<?= $page['id'] ?>" type="text" value="<?php xecho($page['ordre']); ?>" class="input_int"></td>
-					<td><input name="titre_maj_<?= $page['id'] ?>" type="text" value="<?php xecho($page['titre']); ?>"></td>
-				</tr>
-				<?php
-			}
-			?>
-				<tr>
-					<td><input name="ordre_maj_nv" type="text" value="" class="input_int"></td>
-					<td><input name="titre_maj_nv" type="text" value="" placeholder="Nouvelle page"></td>
-				</tr>
-			</tbody>
-		</table>
 		
-		<div class="button"><input type="submit" value="Enregistrer" disabled></div>
-	</div>
-	
-	<?php
-	} else {
-	?>
-	<div style="margin:1em; width:70%; min-width:30em; text-align:center">Aucun résultat</div>
-	<?php
-	}
-	
-	if (count($questions) > 0) {
-	?>
-	<div style="float:left; width:auto;">
-	<h3>Questions</h3>
 		<table class="dataTable display compact">
 			<thead>
 			<tr>
-				<th>Page</th>
+				<th>Type</th>
 				<th>Ordre</th>
-				<th>Identifiant</th>
 				<th>Libellé</th>
+				<th>Identifiant</th>
+				<th colspan=2>Réponses</th>
 			</thead>
 			<tbody>
 			<?php
-			foreach ($pages as $page) {
-				foreach ($questions[$page['id']] as $question) {
+			//foreach ($pages as $page) {
+			for ($i = 0; $i < $max_pages; $i++) {
+				$pid= (isset($pages[$i]['id'])) ? $pages[$i]['id'] : null;
 			?>
 				<tr>
-					<td><?php xecho($page['ordre']) ?></td>
-					<td><?php xecho($question['ordre']) ?></td>
-					<td><a href="formulaire_question.php?id=<?= (int) $question['id'] ?>"><?php xecho($question['name']) ?></a></td>
-					<td><?php xecho($question['libelle']) ?></td>
+					<td class="page">Page <input name="id_p[<?= $i ?>]" type="hidden" value="<?= $pid ?>"></td>
+					<td class="page"><input name="ordre_p[<?= $i ?>]" type="text" style="width:2em" 
+						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>"></td>
+					<td class="page"><input name="titre_p[<?= $i ?>]" type="text" class="input_long" 
+						value="<?php if(isset($pages[$i]['titre'])) { xecho($pages[$i]['titre']); } ?>"></td>
+					<td class="page"></td>
+					<td colspan=2 class="page"></td>
+				</tr>
+				
+				<?php
+				//foreach ($questions[$pid] as $question) {
+				for ($j = 0; $j < $max_questions_par_page; $j++) {
+				?>
+				<tr>
+					<td>&#8735; question <input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(isset($questions[$pid][$j]['id'])) { xecho($questions[$pid][$j]['id']); } ?>"</td>
+					<td><input name="ordre_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:2em" 
+						value="<?php if(isset($questions[$pid][$j]['ordre'])) { xecho($questions[$pid][$j]['ordre']); } else { echo $j+1;} ?>" ></td>
+					<td><input name="titre_q[<?= $i ?>][<?= $j ?>]" type="text" class="input_long"
+						 value="<?php if(isset($questions[$pid][$j]['libelle'])) xecho($questions[$pid][$j]['libelle']); ?>"></td>
+					<td><input name="name_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:10em" placeholder="identifiant unique du champ" <?= (isset($questions[$pid][$j]['name'])) ? 'disabled' : '' ?>
+						 value="<?php if(isset($questions[$pid][$j]['name'])) xecho($questions[$pid][$j]['name']); ?>"></td>
+					<td><select name="reponse_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
+						<?php foreach($reponses as $row) { ?>
+							<option value="<?= $row['id_reponse'] ?>" <?= (isset($questions[$pid][$j]['id_reponse']) && $row['id_reponse']==$questions[$pid][$j]['id_reponse']) ? ' selected ':'' ?>> <?= $row['libelle'] ?></option>
+						<?php } ?>
+						</select> <?php if(isset($questions[$pid][$j]['id_reponse'])){?> <a href="formulaire_reponse.php?id=<?= $questions[$pid][$j]['id_reponse'] ?>">>></a><?php } ?></td>
+					<td><select name="type_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
+					<?php foreach($types as $key=>$val){ ?>
+						<option value="<?= $key ?>" <?php if (isset($questions[$pid][$j]['type']) && $questions[$pid][$j]['type']==$key) echo 'selected'; ?>><?= $val ?></option>
+					<?php } ?>
+					</select></td>
 				</tr>
 				<?php
 				}
 			}
 			?>
 			</tbody>
-		</table>
-	</div>
-	</div>
-
-	<?php
-	} else {
-	?>
-	<div style="margin:1em;text-align:center">Aucun résultat</div>
-	<?php
-	}
-	?>
+		</table>	
+	</fieldset>
 	
-<?php
-} else {
-	echo "N° de demande non valide.";
-}
-?>
-		
-	<!--<div class="button">
-		<input type="button" value="Ajouter une page" onclick="javascript:location.href='formulaire_xxx.php?f=<?= $meta['id'] ?>'">
-		<input type="button" value="Ajouter une question" onclick="javascript:location.href='formulaire_question.php?f=<?= $meta['id'] ?>'">
-	</div>-->
-
-	<div style="clear:both" class="button"><a href="formulaire_liste.php">Retour à la liste des formulaires</a></div>
+	<div class="button">
+		<input type="hidden" name="maj_id" value=<?= xssafe($id_formulaire) ?> />
+		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'">
+	<?php if (!$id_formulaire) {	?>
+		<input type="reset" value="Reset">
+	<?php }else{ if($meta['actif'] == 0){ ?>
+		<input type="submit" name="restaurer" value="Restaurer">
+	<?php }else{ ?>
+		<input type="submit" name="archiver" value="Archiver">
+	<?php } } ?>
+		<input type="submit" name="enregistrer" value="Enregistrer">
+	</div>
+	
+	</form>
 </div>
 </body>
 </html>
