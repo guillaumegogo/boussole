@@ -149,6 +149,10 @@ legend{
 /*input[type=text], input[type=email],input[list], textarea, select { 
 	width: auto; 
 }*/
+input[readonly] {
+	background-color: whitesmoke;
+	color: #666;
+}
 .detail input[type=text], .detail input[type=password], .detail input[type=email], .detail  input[list], .detail textarea, .detail select { 
 	width: 18em; 
 }
@@ -161,6 +165,7 @@ legend{
 .detail input[type=text].input_long { 
 	width: 30em; 
 }
+
 .auth input[type=text], .auth input[type=password] { 
 	width: 30em; 
 }

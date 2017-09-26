@@ -15,9 +15,6 @@
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-<?php
-//if ($meta !== null) {
-?>
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
 		Détail du formulaire</h2> 
@@ -41,9 +38,6 @@
 	
 	<fieldset>
 		<legend>Pages et questions</legend>
-	<?php
-	//if (count($pages) > 0) {
-	?>
 		
 		<table class="dataTable display compact">
 			<thead>
@@ -52,7 +46,8 @@
 				<th>Ordre</th>
 				<th>Libellé</th>
 				<th>Identifiant</th>
-				<th colspan=2>Réponses</th>
+				<th>Réponses</th>
+				<th>Affichage <img src="img/help.png" height="16px" title="Conseils : option pour choix unique avec nombre limité de choix | liste déroulante pour choix unique avec de nombreux choix | coche pour choix multiple avec nombre limité de choix..."></th>
 			</thead>
 			<tbody>
 			<?php
@@ -61,7 +56,7 @@
 				$pid= (isset($pages[$i]['id'])) ? $pages[$i]['id'] : null;
 			?>
 				<tr>
-					<td class="page">Page <input name="id_p[<?= $i ?>]" type="hidden" value="<?= $pid ?>"></td>
+					<td class="page">page <input name="id_p[<?= $i ?>]" type="hidden" value="<?= $pid ?>"></td>
 					<td class="page"><input name="ordre_p[<?= $i ?>]" type="text" style="width:2em" 
 						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>"></td>
 					<td class="page"><input name="titre_p[<?= $i ?>]" type="text" class="input_long" 
@@ -80,13 +75,17 @@
 						value="<?php if(isset($questions[$pid][$j]['ordre'])) { xecho($questions[$pid][$j]['ordre']); } else { echo $j+1;} ?>" ></td>
 					<td><input name="titre_q[<?= $i ?>][<?= $j ?>]" type="text" class="input_long"
 						 value="<?php if(isset($questions[$pid][$j]['libelle'])) xecho($questions[$pid][$j]['libelle']); ?>"></td>
-					<td><input name="name_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:10em" placeholder="identifiant unique du champ" <?= (isset($questions[$pid][$j]['name'])) ? 'disabled' : '' ?>
+					<td><input <?= (isset($questions[$pid][$j]['name'])) ? 'readonly' : '' ?> name="name_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:10em" placeholder="identifiant unique du champ"
 						 value="<?php if(isset($questions[$pid][$j]['name'])) xecho($questions[$pid][$j]['name']); ?>"></td>
 					<td><select name="reponse_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
 						<?php foreach($reponses as $row) { ?>
 							<option value="<?= $row['id_reponse'] ?>" <?= (isset($questions[$pid][$j]['id_reponse']) && $row['id_reponse']==$questions[$pid][$j]['id_reponse']) ? ' selected ':'' ?>> <?= $row['libelle'] ?></option>
 						<?php } ?>
-						</select> <?php if(isset($questions[$pid][$j]['id_reponse'])){?> <a href="formulaire_reponse.php?id=<?= $questions[$pid][$j]['id_reponse'] ?>">>></a><?php } ?></td>
+						</select>
+						<?php if(isset($questions[$pid][$j]['id_reponse'])){?>
+							<a href="formulaire_reponse.php?id=<?= $questions[$pid][$j]['id_reponse'] ?>"><img src="img/find.png"></a>
+						<?php } ?>
+					</td>
 					<td><select name="type_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
 					<?php foreach($types as $key=>$val){ ?>
 						<option value="<?= $key ?>" <?php if (isset($questions[$pid][$j]['type']) && $questions[$pid][$j]['type']==$key) echo 'selected'; ?>><?= $val ?></option>
@@ -98,12 +97,14 @@
 			}
 			?>
 			</tbody>
-		</table>	
+		</table>
 	</fieldset>
 	
 	<div class="button">
 		<input type="hidden" name="maj_id" value=<?= xssafe($id_formulaire) ?> />
-		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'">
+		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
+		<input type="button" disabled value="Créer de nouvelles réponses" onclick="javascript:location.href='formulaire_reponse.php'"> 
+		
 	<?php if (!$id_formulaire) {	?>
 		<input type="reset" value="Reset">
 	<?php }else{ if($meta['actif'] == 0){ ?>

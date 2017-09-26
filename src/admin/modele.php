@@ -1085,37 +1085,6 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 	return $formulaires;
 }
 
-function get_page_formulaire_by_id($id) {
-
-	global $conn;
-	$formulaires= null;
-	$pages= null;
-
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`, `titre`, `aide`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`, `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`
-		FROM `'.DB_PREFIX.'bsl_formulaire__page` 
-		JOIN `'.DB_PREFIX.'bsl_formulaire` ON `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		WHERE `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1 AND `'.DB_PREFIX.'bsl_formulaire__page`.`id_page` = ? 
-		ORDER BY `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`  ';
-	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'i', $id);
-	mysqli_stmt_execute($stmt);
-	check_mysql_error($conn);
-/*
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $id_page, $titre, $ordre);
-	$id=0;
-	while (mysqli_stmt_fetch($stmt)) {
-		if($id!=$id_formulaire){
-			$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages);
-			$id=$id_formulaire;
-		}
-		$pages[$id_formulaire][] = array('id' => $id_page, 'titre' => $titre, 'ordre' => $ordre);
-	}
-	mysqli_stmt_close($stmt);
-	return [$formulaires,$pages];*/
-	return null;
-}
-
 function get_formulaire_by_id($id){
 
 	global $conn;
@@ -1129,9 +1098,9 @@ function get_formulaire_by_id($id){
 		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` = ?
 		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
@@ -1155,36 +1124,32 @@ function get_formulaire_by_id($id){
 	return [$meta, $pages, $questions];
 }
 
-function get_question_by_id($id) {
+function get_reponse_by_id($id){
 
 	global $conn;
-	$tmp_q = 0;
-	$question = [];
-	$reponses = [];
+	$valeurs = [];
+	$libelle = null;
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre` AS `ordre_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, `'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre` AS `ordre_valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` 
-		FROM `'.DB_PREFIX.'bsl_formulaire__question`
-		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
-		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page`
-		WHERE `'.DB_PREFIX.'bsl_formulaire__question`.`id_question` = ?
-		ORDER BY `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__reponse`.`libelle` as `libelle_reponse`, `id_valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle` as `libelle_valeur`, `valeur`, `ordre`, `defaut`, `actif`
+		FROM `'.DB_PREFIX.'bsl_formulaire__reponse` 
+		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`= `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
+		WHERE `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`= ?';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
-	mysqli_stmt_execute($stmt);
-	check_mysql_error($conn);
-
-	mysqli_stmt_bind_result($stmt, $id_question, $id_formulaire, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $libelle, $valeur, $ordre_valeur, $defaut);
-	while (mysqli_stmt_fetch($stmt)) {
-		if ($id_question != $tmp_q) {
-			$question = array('id' => $id_question, 'id_formulaire' => $id_formulaire, 'ordre' => $ordre_question, 'libelle' => $libelle_question, 'name' => $html_name, 'type' => $type, 'taille' => $taille, 'obligatoire' => $obligatoire);
-			$tmp_q = $id_question;
+	
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		while ($row = mysqli_fetch_assoc($result)) {
+			if(!$libelle) $libelle=$row['libelle_reponse'];
+			$valeurs[] = array('id_valeur' => $row['id_valeur'], 'libelle_valeur' => $row['libelle_valeur'], 'valeur' => $row['valeur'], 'ordre' => $row['ordre'], 'defaut' => $row['defaut'], 'actif' => $row['actif']);
 		}
-		$reponses[] = array('libelle' => $libelle, 'valeur' => $valeur, 'ordre' => $ordre_valeur, 'defaut' => $defaut);
+		mysqli_stmt_close($stmt);
 	}
-	mysqli_stmt_close($stmt);
-	return [$question, $reponses];
+	return [$libelle, $valeurs];
 }
+
+
+/* autres */
 
 function get_code_insee($code_postal, $ville){
 
@@ -1295,7 +1260,9 @@ function get_reponses() {
 
 	global $conn;
 	$reponses = null;
-	$query = 'SELECT `id_reponse`, `libelle` FROM `'.DB_PREFIX.'bsl_formulaire__reponse` WHERE 1 ';
+	$query = 'SELECT `id_reponse`, `libelle` 
+		FROM `'.DB_PREFIX.'bsl_formulaire__reponse` WHERE 1 
+		ORDER BY `libelle` ASC';
 	$result = mysqli_query($conn, $query);
 	while($row = mysqli_fetch_assoc($result)) {
 		$reponses[] = $row;
@@ -1564,7 +1531,7 @@ function get_formulaire_mesure(){
 		FROM `'.DB_PREFIX.'bsl_formulaire` 
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_reponse`
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 AND `'.DB_PREFIX.'bsl_formulaire`.`type`="mesure"
 		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
@@ -1663,6 +1630,7 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 		foreach($id_q as $key_p=>$id_qp){
 			foreach($id_qp as $key=>$id){
 			
+				//si on a un ordre et un titre, on met à jour
 				if ($ordre_q[$key_p][$key] && $titre_q[$key_p][$key]){
 					$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__question` 
 						SET `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
@@ -1675,6 +1643,8 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 						mysqli_stmt_close($stmt);
 					}
 				}
+				
+				//si l'ordre et le titre ont été effacés, on supprime la question
 				if (!$ordre_q[$key_p][$key] && !$titre_q[$key_p][$key]){
 					//ajouter test pour vérifier qu'il n'y a plus de questions
 					$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__question` 
@@ -1687,6 +1657,19 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 						mysqli_stmt_close($stmt);
 					}
 				}
+				
+				//si on n'a pas d'id mais toutes les infos, c'est une nouvelle question à créer
+				if(!$id && $ordre_q[$key_p][$key] && $titre_q[$key_p][$key] && $name_q[$key_p][$key] && $reponse_q[$key_p][$key] && $type_q[$key_p][$key]){
+					$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__question`(`id_page`, `libelle`, `html_name`, `ordre`, `type`, `id_reponse`)
+						VALUES (?, ?, ?, ?, ?, ?) ';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'issisi', $id_p[$key_p], $titre_q[$key_p][$key], $name_q[$key_p][$key], $ordre_q[$key_p][$key], $type_q[$key_p][$key], $reponse_q[$key_p][$key]);
+				
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}
 			}
 		}
 	}
@@ -1694,6 +1677,8 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 	//update et delete pages
 	if (isset($id_p)) {
 		foreach($id_p as $key=>$id){
+			
+			//si on a un ordre et un titre, on met à jour
 			if ($ordre_p[$key] && $titre_p[$key]){
 				$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__page` 
 					SET `ordre`= ?, `titre` = ?
@@ -1706,8 +1691,10 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 					mysqli_stmt_close($stmt);
 				}
 			}
+			
+			//si l'ordre et le titre ont été effacés, on supprime la question
 			if (!$ordre_p[$key] && !$titre_p[$key]){
-				//ajouter test pour vérifier qu'il n'y a plus de questions
+				//ajouter test pour vérifier qu'il n'y a plus de questions ?
 				$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__page` 
 					WHERE `id_page`= ? ';
 				$stmt = mysqli_prepare($conn, $query);
@@ -1718,66 +1705,28 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 					mysqli_stmt_close($stmt);
 				}
 			}
-		}
-	}
-	
-	//create pages
-	if (isset($titre_p)) {
-		foreach($titre_p as $key=>$titre){
-			if ($titre && $ordre_p[$key] && !$id_p[$key]){
+			
+			//si pas d'id mais un titre et un ordre, on crée
+			if ($titre_p[$key] && $ordre_p[$key] && !$id){
 				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__page`(`id_formulaire`, `titre`, `ordre`)
 					VALUES (?, ?, ?)';
 				$stmt = mysqli_prepare($conn, $query);
-				mysqli_stmt_bind_param($stmt, 'isii', $formulaire_id, $titre, $ordre_p[$key]);
+				mysqli_stmt_bind_param($stmt, 'isi', $formulaire_id, $titre_p[$key], $ordre_p[$key]);
 				
 $print_sql = $query;
-foreach(array($formulaire_id, $titre, $ordre_p[$key]) as $term){
+foreach(array($formulaire_id, $titre_p[$key], $ordre_p[$key]) as $term){
 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
 }
-echo "<pre>".$print_sql."</pre>";
+echo "<pre>".$print_sql."</pre>"; 
 
 				if (mysqli_stmt_execute($stmt)) {
 					$updated += mysqli_stmt_affected_rows($stmt) > 0;
 					mysqli_stmt_close($stmt);
 				}
 			}
+			
 		}
-	}
-	return $updated;
-}
-
-/*
-function update_criteres_offre($id, $tab_criteres, $user_id) { 
-
-	global $conn;
-	$updated = false;
-
-	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ?';
-	$stmt = mysqli_prepare($conn, $query1);
-	mysqli_stmt_bind_param($stmt, 'i', $id);
-	mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
-	check_mysql_error($conn);
-
-	if (isset($tab_criteres)) {
-		$query2 = 'INSERT INTO `'.DB_PREFIX.'bsl_offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) 
-			VALUES ';
-		$params = [];
-		$types = '';
-		foreach ($tab_criteres as $name => $tab_critere) {
-			foreach ($tab_critere as $key => $selected_option) {
-				$query2 .= '( ?, ? , ? ), ';
-				$params[] = (int) $id;
-				$params[] = $name;
-				$params[] = $selected_option;
-				$types .= 'iss';
-			}
-		}
-		$query2 = substr($query2, 0, -2); //on enlève ", " à la fin de la requête
-		$stmt = query_prepare($query2,$params,$types);
-		$updated = query_do($stmt);
 	}
 	
 	return $updated;
 }
-*/

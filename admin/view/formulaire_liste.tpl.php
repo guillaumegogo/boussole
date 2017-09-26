@@ -65,12 +65,12 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href="? <?= ($flag_actif) ? 'actif=non">Liste des formulaires inactifs' : 'actif=oui">Liste des formulaires actifs'; ?></a></div>
+	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"actif=oui">Liste des formulaires actifs'; ?></a></div>
 
 </div>
 
 <div class="button">
-	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'">
+	<input type="button" disabled value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'"> 
 </div>
 </body>
 </html>
