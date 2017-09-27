@@ -57,7 +57,7 @@
 			?>
 				<tr>
 					<td class="page">page <input name="id_p[<?= $i ?>]" type="hidden" value="<?= $pid ?>"></td>
-					<td class="page"><input name="ordre_p[<?= $i ?>]" type="text" style="width:2em" 
+					<td class="page"><input name="ordre_p[<?= $i ?>]" type="text" style="width:1em" 
 						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>"></td>
 					<td class="page"><input name="titre_p[<?= $i ?>]" type="text" class="input_long" 
 						value="<?php if(isset($pages[$i]['titre'])) { xecho($pages[$i]['titre']); } ?>"></td>
@@ -70,8 +70,10 @@
 				for ($j = 0; $j < $max_questions_par_page; $j++) {
 				?>
 				<tr>
-					<td>&#8735; question <input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(isset($questions[$pid][$j]['id'])) { xecho($questions[$pid][$j]['id']); } ?>"</td>
-					<td><input name="ordre_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:2em" 
+					<td>&#8735; question <input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(isset($questions[$pid][$j]['id'])) { xecho($questions[$pid][$j]['id']); } ?>"></td>
+					<td><input name="page_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
+						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } ?>" >. 
+						<input name="ordre_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
 						value="<?php if(isset($questions[$pid][$j]['ordre'])) { xecho($questions[$pid][$j]['ordre']); } else { echo $j+1;} ?>" ></td>
 					<td><input name="titre_q[<?= $i ?>][<?= $j ?>]" type="text" class="input_long"
 						 value="<?php if(isset($questions[$pid][$j]['libelle'])) xecho($questions[$pid][$j]['libelle']); ?>"></td>

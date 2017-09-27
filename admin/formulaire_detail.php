@@ -21,14 +21,14 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	if(isset($_POST['name_q'])) $name_q = $_POST['name_q'];
 
 	if (!$_POST["maj_id"]) { //requête d'ajout
-		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
+		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
 		$id_formulaire = mysqli_insert_id($conn);
 		
 		if ($created) $msg = "Création bien enregistrée.";
 
 	} else { //requête de modification
 		$id_formulaire = $_POST['maj_id'];
-		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
+		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
 		
 		if ($updated) {
 			$msg = 'Le formulaire a été mise à jour.';

@@ -1133,7 +1133,8 @@ function get_reponse_by_id($id){
 	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__reponse`.`libelle` as `libelle_reponse`, `id_valeur`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle` as `libelle_valeur`, `valeur`, `ordre`, `defaut`, `actif`
 		FROM `'.DB_PREFIX.'bsl_formulaire__reponse` 
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`= `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`
-		WHERE `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`= ?';
+		WHERE `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`= ?
+		ORDER BY `ordre` ASC';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
 	
@@ -1615,12 +1616,12 @@ function get_liste_parametres($liste) {
 	return $rows;
 }
 
-function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
 
 	return null;
 }
 
-function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
 
 	global $conn;
 	$updated = false;
@@ -1629,14 +1630,21 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 	if (isset($id_q)) {
 		foreach($id_q as $key_p=>$id_qp){
 			foreach($id_qp as $key=>$id){
+				
+				$new_page_id = null;
+				foreach($ordre_p as $k=>$o){ 
+					if ($o==$page_q[$key_p][$key]){
+						$new_page_id=$id_p[$k];
+					}
+				}
 			
 				//si on a un ordre et un titre, on met à jour
 				if ($ordre_q[$key_p][$key] && $titre_q[$key_p][$key]){
 					$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__question` 
-						SET `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
+						SET `id_page`= ?, `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
 						WHERE `id_question`= ? ';
 					$stmt = mysqli_prepare($conn, $query);
-					mysqli_stmt_bind_param($stmt, 'isisi', $ordre_q[$key_p][$key], $titre_q[$key_p][$key], $reponse_q[$key_p][$key], $type_q[$key_p][$key], $id);
+					mysqli_stmt_bind_param($stmt, 'iisisi', $new_page_id, $ordre_q[$key_p][$key], $titre_q[$key_p][$key], $reponse_q[$key_p][$key], $type_q[$key_p][$key], $id);
 				
 					if (mysqli_stmt_execute($stmt)) {
 						$updated += mysqli_stmt_affected_rows($stmt) > 0;
@@ -1646,7 +1654,7 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 				
 				//si l'ordre et le titre ont été effacés, on supprime la question
 				if (!$ordre_q[$key_p][$key] && !$titre_q[$key_p][$key]){
-					//ajouter test pour vérifier qu'il n'y a plus de questions
+					//ajouter test pour vérifier qu'il n'y a plus de questions ?
 					$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__question` 
 						WHERE `id_question`= ? ';
 					$stmt = mysqli_prepare($conn, $query);
@@ -1663,7 +1671,7 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $or
 					$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__question`(`id_page`, `libelle`, `html_name`, `ordre`, `type`, `id_reponse`)
 						VALUES (?, ?, ?, ?, ?, ?) ';
 					$stmt = mysqli_prepare($conn, $query);
-					mysqli_stmt_bind_param($stmt, 'issisi', $id_p[$key_p], $titre_q[$key_p][$key], $name_q[$key_p][$key], $ordre_q[$key_p][$key], $type_q[$key_p][$key], $reponse_q[$key_p][$key]);
+					mysqli_stmt_bind_param($stmt, 'issisi', $new_page_id, $titre_q[$key_p][$key], $name_q[$key_p][$key], $ordre_q[$key_p][$key], $type_q[$key_p][$key], $reponse_q[$key_p][$key]);
 				
 					if (mysqli_stmt_execute($stmt)) {
 						$updated += mysqli_stmt_affected_rows($stmt) > 0;
