@@ -35,9 +35,9 @@ function secu_login($email, $password)
 	global $conn;
 	$logged = false;
 
-	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`, `nom_pro`, `nom_territoire`, `date_inscription`
+	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `nom_pro`, `nom_territoire`, `date_inscription`
 			FROM `'.DB_PREFIX.'bsl_utilisateur` 
-			JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+			JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 			LEFT JOIN  `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire`
 			LEFT JOIN  `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`
 			WHERE `email` = ? AND `actif_utilisateur` = 1';
@@ -48,7 +48,7 @@ function secu_login($email, $password)
 	if (mysqli_stmt_execute($stmt)) {
 		mysqli_stmt_store_result($stmt);
 		if (mysqli_stmt_num_rows($stmt) === 1) {
-			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_metier, $id_statut, $libelle_statut, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere, $nom_pro, $nom_territoire, $date_inscription);
+			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_metier, $id_statut, $libelle_statut, $nom_pro, $nom_territoire, $date_inscription);
 			mysqli_stmt_fetch($stmt);
 
 			//Verification du mot de passe saisi
@@ -130,7 +130,7 @@ function secu_check_login($page = null)
 	}
 
 	if ($page !== null) {
-		if (secu_is_authorized($page) !== true) {
+		if (!secu_is_authorized($page)) {
 			header('Location: accueil.php');
 			exit();
 		}
@@ -138,72 +138,86 @@ function secu_check_login($page = null)
 }
 
 /**
- * Verifie que l'utilisateur courant à les droits pour accéder à une page en particulier
- * @param string $page
+ * Verifie que l'utilisateur courant à les droits pour accéder à un domaine (page de liste)
+ * @param string $domaine
  * @return bool
  */
-function secu_is_authorized($page)
+function secu_is_authorized($domaine)
 {
 	global $conn;
 	$authorized = false;
 
 	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
-		$sql = 'SELECT `acces_territoire`, `acces_professionnel`, `acces_offre`, `acces_theme`, `acces_utilisateur`, `acces_demande`, `acces_critere`
+		$sql = 'SELECT `demande_r`, `offre_r`, `mesure_r`, `professionnel_r`, `utilisateur_r`, `formulaire_r`, `theme_r`, `territoire_r`
 			FROM `'.DB_PREFIX.'bsl_utilisateur` 
-			JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+			JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 			WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
 		$stmt = mysqli_prepare($conn, $sql);
 		$id = (int)$_SESSION['user_id'];
 		mysqli_stmt_bind_param($stmt, 'i', $id);
-
+		check_mysql_error($conn);
+		
 		if (mysqli_stmt_execute($stmt)) {
-			mysqli_stmt_store_result($stmt);
-			if (mysqli_stmt_num_rows($stmt) === 1) {
-				mysqli_stmt_bind_result($stmt, $acces_territoire, $acces_professionnel, $acces_offre, $acces_theme, $acces_utilisateur, $acces_demande, $acces_critere);
-				mysqli_stmt_fetch($stmt);
-				check_mysql_error($conn);
-
-				switch ($page) {
+			$result = mysqli_stmt_get_result($stmt);
+			if (mysqli_num_rows($result) === 1) {
+				$droits = mysqli_fetch_assoc($result);
+				
+				switch ($domaine) {
 					case DROIT_DEMANDE :
-						if ((int)$acces_demande > 0)
-							$authorized = true;
+						if((int)$droits['demande_r'] > 0)
+							$authorized = $droits['demande_r'];
 						break;
 					case DROIT_OFFRE :
-						if ((int)$acces_offre > 0)
-							$authorized = true;
+						if((int)$droits['offre_r'] > 0)
+							$authorized = $droits['offre_r'];
 						break;
 					case DROIT_MESURE :
-						//if ((int)$acces_mesure > 0) en attendant l'ajout de ce champ en base...
-							$authorized = true;
+						if((int)$droits['mesure_r'] > 0)
+							$authorized = $droits['mesure_r'];
 						break;
 					case DROIT_PROFESSIONNEL :
-						if ((int)$acces_professionnel > 0)
-							$authorized = true;
+						if((int)$droits['professionnel_r'] > 0)
+							$authorized = $droits['professionnel_r'];
 						break;
 					case DROIT_TERRITOIRE :
-						if ((int)$acces_territoire > 0)
-							$authorized = true;
+						if((int)$droits['territoire_r'] > 0)
+							$authorized = $droits['territoire_r'];
 						break;
 					case DROIT_THEME :
-						if ((int)$acces_theme > 0)
-							$authorized = true;
+						if((int)$droits['theme_r'] > 0)
+							$authorized = $droits['theme_r'];
 						break;
 					case DROIT_UTILISATEUR :
-						if ((int)$acces_utilisateur > 0)
-							$authorized = true;
+						if((int)$droits['utilisateur_r'] > 0)
+							$authorized = $droits['utilisateur_r'];
 						break;
 					case DROIT_CRITERE :
-						if ((int)$acces_critere > 0)
-							$authorized = true;
+						if((int)$droits['formulaire_r'] > 0)
+							$authorized = $droits['formulaire_r'];
 						break;
 				}
-
-				mysqli_stmt_close($stmt);
 			}
 		}
+		mysqli_stmt_close($stmt);
 	}
 
 	return $authorized;
+}
+
+/**
+ * Verifie que l'utilisateur courant à les droits pour accéder à une page en particulier
+ * @param string $domaine
+ * @param int $id
+ * @return int
+ */
+function secu_which_right($domaine, $id)
+{
+	global $conn;
+	$right = false;
+
+	/* ici on va checker selon le domaine et l'id demandé si l'utilisateur a un droit de lecture et/ou d'écriture */
+
+	return $right;
 }
 
 /**

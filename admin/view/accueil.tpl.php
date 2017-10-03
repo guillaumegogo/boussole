@@ -21,7 +21,7 @@
 	<table class="accueil">
 		<tr>
 			<td colspan="3">
-			<?php if (count($activites)) { ?>
+			<?php if (isset($activites) && count($activites)) { ?>
 				<b>Tableau de bord</b>
 				<ul><?php foreach ($activites as $row){ ?>
 					<li><a href="<?= $row[0] ?>"><?= $row[1] ?></a> <?= $row[2] ?></li>
@@ -31,7 +31,7 @@
 		</tr>
 		<tr>
 			<td>
-			<?php if (count($offres)) { ?>
+			<?php if (isset($offres) && count($offres)) { ?>
 				<b>Offres</b>
 				<ul><?php foreach ($offres as $row){ ?>
 					<li><a href="<?= $row[0] ?>"><?= $row[1] ?></a> <?= $row[2] ?></li>
@@ -39,7 +39,7 @@
 			<?php } ?>
 			</td>
 			<td>
-			<?php if (count($acteurs)) { ?>
+			<?php if (isset($acteurs) && count($acteurs)) { ?>
 				<b>Acteurs</b>
 				<ul><?php foreach ($acteurs as $row){ ?>
 					<li><a href="<?= $row[0] ?>"><?= $row[1] ?></a> <?= $row[2] ?></li>
@@ -47,7 +47,7 @@
 			<?php } ?>
 			</td>
 			<td>
-			<?php if (count($references)) { ?>
+			<?php if (isset($references) && count($references)) { ?>
 				<b>Données de référence</b>
 				<ul><?php foreach ($references as $row){ ?>
 					<li><a href="<?= $row[0] ?>"><?= $row[1] ?></a> <?= $row[2] ?></li>

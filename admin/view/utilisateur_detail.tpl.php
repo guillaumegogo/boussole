@@ -54,67 +54,42 @@
 
 			<div class="une_colonne">
 				<div class="lab">
-					<label for="courriel">Courriel <?php if ($vue != "creation") {
-							echo "(login)";
-						} ?> :</label>
+					<label for="courriel">Courriel <?= ($vue != 'creation') ? '(login)' : '' ?> :</label>
 					<input type="text" name="courriel" required placeholder="Le courriel sert de login"
-						   value="<?php if ($id_utilisateur) {
-							   echo $row['email'];
-						   } ?>" <?php if ($vue == "motdepasse") {
-						echo "disabled";
-					} ?> />
+						value="<?= ($id_utilisateur) ? $row['email'] : '' ?>" <?= ($vue == 'motdepasse') ? 'disabled':'' ?> />
 				</div>
 				<?php if ($vue == "modif" || $vue == "creation") { ?>
 					<div class="lab">
 						<label for="nom_pouet">Nom :</label>
-						<input type="text" name="nom_pouet" required value="<?php if ($id_utilisateur) {
-							echo $row['nom_utilisateur'];
-						} ?>" />
+						<input type="text" name="nom_pouet" required value="<?= ($id_utilisateur) ? $row['nom_utilisateur']:'' ?>" />
 					</div>
 					<div class="lab">
 						<label for="statut">Statut :</label>
-						<select name="statut" <?php if ($vue == "modif") {
-							echo "disabled";
-						} ?> onchange="displayAttache(this);">
+						<select name="statut" <?= ($vue == 'modif') ? 'disabled':''; ?> onchange="displayAttache(this);">
 							<option value="">A choisir</option>
-							<option value="1" <?php if ($id_utilisateur) {
-								if ($row['id_statut'] == "1") {
-									echo "selected";
-								}
-							} ?>>Administrateur national
-							</option>
-							<option value="2" <?php if ($id_utilisateur) {
-								if ($row['id_statut'] == "2") {
-									echo "selected";
-								}
-							} ?>>Animateur territorial
-							</option>
-							<option value="3" <?php if ($id_utilisateur) {
-								if ($row['id_statut'] == "3") {
-									echo "selected";
-								}
-							} ?>>Professionnel
-							</option>
+						<?php foreach($liste_statuts as $key=>$statut) { ?>
+							<option value="<?= $key ?>" <?= ($id_utilisateur && ($row['id_statut'] == $key)) ? 'selected':'' ?>>
+								<?= $statut ?></option>
+						<?php } ?>
 						</select>
 					</div>
 					<div class="lab">
 						<label for="attache">Attache :</label>
 						<div style="display:inline-block;">
-							<select name="attache"
-									id="liste_territoires" <?php if ($id_utilisateur && $row['id_statut'] == "2") {
-								echo "disabled";
-							} else {
-								echo "style=\"display:none\"";
-							} ?>>
-								<?php echo $select_territoire; ?>
+							<select name="attache" id="liste_territoires" 
+								<?= ($id_utilisateur && $row['id_statut'] == '2') ? 'disabled' : 'style="display:none"' ?>>
+							<option value="">A choisir</option>
+						<?php foreach($liste_territoires as $row2) { ?>
+							<option value="<?= $row2['id_territoire'] ?>" <?= (isset($row['id_territoire']) && ($row2['id_territoire'] == $row['id_territoire'])) ? 'selected':'' ?>><?= $row2['nom_territoire'] ?></option>
+						<?php } ?>
 							</select>
-							<select name="attache_p"
-									id="liste_professionnels" <?php if ($id_utilisateur && $row['id_statut'] == "3") {
-								echo "disabled";
-							} else {
-								echo "style=\"display:none\"";
-							} ?>>
-								<?php echo $select_professionnel; ?>
+							
+							<select name="attache_p" id="liste_professionnels" 
+								<?php ($id_utilisateur && $row['id_statut'] == '3') ? 'disabled' : 'style="display:none"'; ?>>
+							<option value="">A choisir</option>
+						<?php foreach($liste_pro as $row3) { ?>
+							<option value="<?= $row3['id_professionnel'] ?>" <?= (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) ? 'selected':'' ?>><?= $row3['nom_pro'] ?></option>
+						<?php } ?>
 							</select></div>
 					</div>
 					<?php if ($vue == "modif") { ?>
@@ -165,7 +140,7 @@
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Désactiver">
 		<?php } } ?>
-			<input type="submit" value="Enregistrer">
+			<input type="submit" name="enregistrer" value="Enregistrer">
 		</div>
 	</form>
 </div>

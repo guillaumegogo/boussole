@@ -28,7 +28,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	
 	if (!$_POST["maj_id"]) { //requête d'ajout
 
-		$maj_attache = "NULL";
+		$maj_attache = NULL;
 		if (isset($_POST["statut"])) {
 			if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
 				$maj_attache = $_POST["attache"];
@@ -104,33 +104,24 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$param_territoire = $_SESSION['territoire_id'];
 }
 
-$select_territoire = '<option value="" >A choisir</option>';
-$liste_territoires = get_territoires($param_territoire);
-foreach($liste_territoires as $row2) {
-	$select_territoire .= '<option value="' . $row2['id_territoire'] . '" ';
-	if (isset($row['id_territoire']) && ($row2['id_territoire'] == $row['id_territoire'])) {
-		$select_territoire .= 'selected';
-	}
-	$select_territoire .= '>' . $row2['nom_territoire'] . '</option>';
-}
+$liste_statuts = null;
+if (secu_check_role(ROLE_ADMIN)) $liste_statuts = array('1' => 'Administrateur national', '2' => 'Animateur territorial', '5' => 'Administrateur régional');
+if (secu_check_role(ROLE_ANIMATEUR)) $liste_statuts = array('2' => 'Animateur territorial');
+$liste_statuts['3'] = 'Professionnel';
+$liste_statuts['4'] = 'Consultant';
+asort($liste_statuts);
 
-$select_professionnel = '<option value="" >A choisir</option>';
-$liste_pro = get_liste_pros_select("pro", "territoire",$param_territoire);
-foreach($liste_pro as $row3) {
-	$select_professionnel .= '<option value="' . $row3['id_professionnel'] . '" ';
-	if (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) {
-		$select_professionnel .= 'selected';
-	}
-	$select_professionnel .= '>' . $row3['nom_pro'] . '</option>';
-}
+$liste_territoires = get_territoires($param_territoire);
+
+$liste_pro = get_liste_pros_select('pro', 'territoire',$param_territoire);
 
 //type de formulaire à afficher
-if (isset($_GET["do"]) && $_GET["do"] == "mdp") {
-	$vue = "motdepasse";
+if (isset($_GET['do']) && $_GET['do'] == 'mdp') {
+	$vue = 'motdepasse';
 } else if ($id_utilisateur) {
-	$vue = "modif";
+	$vue = 'modif';
 } else {
-	$vue = "creation";
+	$vue = 'creation';
 }
 
 //view

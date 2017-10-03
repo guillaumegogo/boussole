@@ -34,22 +34,7 @@
 			<input type="submit" value="Se connecter">
 		</div>
 	</form>
-
-	<div style="text-align:center; color:red; margin:2em auto; font-size:0.8em;">
-		ML Reims : boussole@mission-locale-reims.jeunes-ca.fr<br/>
-		Animateur Grand Reims : boussole@grandreims.fr
-	</div>
-	<!-- le temps des tests
-	<div style="width:100%; margin:1em auto;">
-		<div class="une_colonne" style="border:1px solid grey; padding:1em;">
-			<b>Se connecter en tant que</b>
-			<ul style="line-height:2em;">
-				<li><a href="?user_id=1">Utilisateur #1</a> (administrateur national)</li>
-				<li><a href="?user_id=2">Utilisateur #2</a> (animateur territorial Grand Reims)</li>
-				<li><a href="?user_id=3">Utilisateur #3</a> (professionnel Mission locale de Reims)</li>
-			</ul>
-		</div>
-	</div> -->
+	
 </div>
 </body>
 </html>

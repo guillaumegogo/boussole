@@ -133,37 +133,38 @@ function get_demande_by_id($id){
 	return $demande;
 }
 
-function get_liste_demandes($flag_traite, $territoire_id = null, $user_pro_id = null){
+function get_liste_demandes($flag_traite, $territoire_id = null){
 
-	$demandes = [];
-	$params = [];
-	$types = '';
+	$demandes = null;
+	$perimetre = secu_is_authorized(DROIT_DEMANDE);
 
-	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `profil`, `'.DB_PREFIX.'bsl_offre`.nom_offre,
-		`'.DB_PREFIX.'bsl_offre`.id_professionnel, `'.DB_PREFIX.'bsl_professionnel`.nom_pro
-		FROM `'.DB_PREFIX.'bsl_demande`
-		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre = `'.DB_PREFIX.'bsl_demande`.id_offre
-		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel = `'.DB_PREFIX.'bsl_professionnel`.id_professionnel
-		WHERE 1 ';
-	if ($flag_traite) {
-		$query .= "AND date_traitement IS NOT NULL ";
-	} else {
-		$query .= "AND date_traitement IS NULL ";
+	if ($perimetre) {
+		$params = [];
+		$types = '';
+		$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `profil`, `'.DB_PREFIX.'bsl_offre`.nom_offre,
+			`'.DB_PREFIX.'bsl_offre`.id_professionnel, `'.DB_PREFIX.'bsl_professionnel`.nom_pro
+			FROM `'.DB_PREFIX.'bsl_demande`
+			JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre = `'.DB_PREFIX.'bsl_demande`.id_offre
+			JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel = `'.DB_PREFIX.'bsl_professionnel`.id_professionnel
+			WHERE date_traitement IS '.(($flag_traite) ? 'NOT' : '').' NULL ';
+		if ((int) $territoire_id > 0) {
+			$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`= ?';
+			$params[] = (int) $territoire_id;
+			$types .= 'i';
+		}
+		if ($perimetre == 1) {
+			$user_pro_id = secu_get_user_pro_id();
+			if((int) $user_pro_id > 0){
+				$query .= 'AND `'.DB_PREFIX.'bsl_offre`.id_professionnel = ? ';
+				$params[] = (int) $user_pro_id;
+				$types .= 'i';
+			}
+		}
+		$query .= ' ORDER BY date_demande DESC';
+		
+		$stmt = query_prepare($query,$params,$types);
+		$demandes = query_get($stmt);
 	}
-	if ((int) $territoire_id > 0) {
-		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`= ?';
-		$params[] = (int) $territoire_id;
-		$types .= 'i';
-	}
-	if ((int) $user_pro_id > 0) {
-		$query .= 'AND `'.DB_PREFIX.'bsl_offre`.id_professionnel = ? ';
-		$params[] = (int) $user_pro_id;
-		$types .= 'i';
-	}
-	$query .= ' ORDER BY date_demande DESC';
-	
-	$stmt = query_prepare($query,$params,$types);
-	$demandes = query_get($stmt);
 	return $demandes;
 }
 
@@ -679,35 +680,43 @@ function get_offre_by_id($id){
 
 /* Offre */
 function get_liste_offres($flag = 1, $territoire_id = null, $user_pro_id = null) {
+	
+	$offres = null;
+	$perimetre = secu_is_authorized(DROIT_OFFRE);
 
-	$query = 'SELECT `id_offre`, `nom_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS `date_debut`,
-		DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS `date_fin`, `theme_pere`.`libelle_theme_court`, 
-		`'.DB_PREFIX.'bsl_offre`.`zone_selection_villes`, `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`, 
-		`nom_pro`, `competence_geo`, `id_competence_geo`, `nom_departement`, `nom_region`, `nom_territoire`
-		FROM `'.DB_PREFIX.'bsl_offre`
-		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.`id_professionnel`
-		LEFT JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.id_theme=`'.DB_PREFIX.'bsl_offre`.`id_sous_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`'.DB_PREFIX.'bsl_theme`.`id_theme_pere`
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-		WHERE actif_offre= ? ';
-	$params[] = (int) $flag;
-	$types = 'i';
+	if ($perimetre) {
+		$query = 'SELECT `id_offre`, `nom_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS `date_debut`,
+			DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS `date_fin`, `theme_pere`.`libelle_theme_court`, 
+			`'.DB_PREFIX.'bsl_offre`.`zone_selection_villes`, `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`, 
+			`nom_pro`, `competence_geo`, `id_competence_geo`, `nom_departement`, `nom_region`, `nom_territoire`
+			FROM `'.DB_PREFIX.'bsl_offre`
+			JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.`id_professionnel`
+			LEFT JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.id_theme=`'.DB_PREFIX.'bsl_offre`.`id_sous_theme`
+			LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`'.DB_PREFIX.'bsl_theme`.`id_theme_pere`
+			LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
+			LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
+			WHERE actif_offre= ? ';
+		$params[] = (int) $flag;
+		$types = 'i';
 
-	if (isset($territoire_id) && $territoire_id) {
-		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ? ';
-		$params[] = (int) $territoire_id;
-		$types .= 'i';
+		if (isset($territoire_id) && $territoire_id > 0) {
+			$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ? ';
+			$params[] = (int) $territoire_id;
+			$types .= 'i';
+		}
+		if ($perimetre == 1 && !$user_pro_id) { //si l'utilisateur est limité à ses offres
+			$user_pro_id = secu_get_user_pro_id();
+		}
+		if((int) $user_pro_id > 0){
+			$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
+			$params[] = (int) $user_pro_id;
+			$types .= 'i';
+		}
+		$query .= 'ORDER BY `id_offre` DESC';
+		$stmt = query_prepare($query,$params,$types);
+		$offres = query_get($stmt);
 	}
-	if (isset($user_pro_id)) {
-		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
-		$params[] = (int) $user_pro_id;
-		$types .= 'i';
-	}
-	$query .= 'ORDER BY `id_offre` DESC';
-	$stmt = query_prepare($query,$params,$types);
-	$offres = query_get($stmt);
 	return $offres;
 }
 
@@ -1021,7 +1030,7 @@ function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du ter
 	$query = 'SELECT `id_utilisateur`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `nom_utilisateur`,
 		`email`, `libelle_statut`, `nom_pro`, `nom_territoire`
 		FROM `'.DB_PREFIX.'bsl_utilisateur`
-		JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+		JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		WHERE `actif_utilisateur`= ?';
@@ -1426,6 +1435,7 @@ function create_user($nom_utilisateur, $courriel, $mdp, $statut, $attache) {
 		VALUES (? , ? , ? ,NOW(), ? , ?)';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sssss', $nom_utilisateur, $courriel, $mdp, $statut, $attache);
+	
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$created = mysqli_stmt_affected_rows($stmt) > 0;
@@ -1501,7 +1511,7 @@ function get_user_by_id($id){
 
 	$query = 'SELECT `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `nom_utilisateur`, `email`, `date_inscription`, `actif_utilisateur`, `id_professionnel`, `nom_pro`, `id_territoire` , `nom_territoire`
 		FROM `'.DB_PREFIX.'bsl_utilisateur` 
-		JOIN `'.DB_PREFIX.'bsl__statut` ON `'.DB_PREFIX.'bsl__statut`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+		JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		WHERE `id_utilisateur`= ?';

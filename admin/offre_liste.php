@@ -14,8 +14,7 @@ $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;
 
 //******** liste des offres de service
 $territoire_id = secu_get_territoire_id();
-$user_pro_id = secu_get_user_pro_id();
-$offres = get_liste_offres($flag_actif, $territoire_id, $user_pro_id);
+$offres = get_liste_offres($flag_actif, $territoire_id);
 
 //view
 require 'view/offre_liste.tpl.php';
