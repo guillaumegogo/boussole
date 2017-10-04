@@ -6,6 +6,7 @@ define('ROLE_ADMIN', 1);
 define('ROLE_ANIMATEUR', 2);
 define('ROLE_PRO', 3);
 define('ROLE_CONSULTANT', 4);
+define('ROLE_ADMIN_REGIONAL', 5);
 
 define('DROIT_DEMANDE', 'demande');
 define('DROIT_OFFRE', 'offre');
@@ -35,11 +36,12 @@ function secu_login($email, $password)
 	global $conn;
 	$logged = false;
 
-	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `id_metier`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `nom_pro`, `nom_territoire`, `date_inscription`
+	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `date_inscription`, `id_metier`, `nom_pro`, `t_u`.`nom_territoire`, `competence_geo`, `id_competence_geo`, `t_p`.`nom_territoire_pro` 
 			FROM `'.DB_PREFIX.'bsl_utilisateur` 
 			JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
-			LEFT JOIN  `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire`
+			LEFT JOIN  `'.DB_PREFIX.'bsl_territoire` AS `t_u` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`t1`.`id_territoire`
 			LEFT JOIN  `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`
+			LEFT JOIN  `'.DB_PREFIX.'bsl_territoire` AS `t_p` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`=`t_p`.`id_territoire`
 			WHERE `email` = ? AND `actif_utilisateur` = 1';
 	$stmt = mysqli_prepare($conn, $sql);
 	mysqli_stmt_bind_param($stmt, 's', $email);
@@ -48,29 +50,36 @@ function secu_login($email, $password)
 	if (mysqli_stmt_execute($stmt)) {
 		mysqli_stmt_store_result($stmt);
 		if (mysqli_stmt_num_rows($stmt) === 1) {
-			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_metier, $id_statut, $libelle_statut, $nom_pro, $nom_territoire, $date_inscription);
+			mysqli_stmt_bind_result($stmt, $id_utilisateur, $nom_utilisateur, $hash, $id_statut, $libelle_statut, $date_inscription, $id_metier, $nom_pro, $nom_territoire, , $competence_geo, $id_competence_geo, $nom_territoire_pro);
 			mysqli_stmt_fetch($stmt);
 
 			//Verification du mot de passe saisi
 			if (password_verify(SALT_BOUSSOLE . $password, $hash)) {
 				$_SESSION['user_id'] = $id_utilisateur;
 				$_SESSION['user_checksum'] = secu_user_checksum($id_utilisateur, $email, $date_inscription);
-
-				secu_set_territoire_id(null);
-				if ($id_statut == ROLE_ANIMATEUR)
-					secu_set_territoire_id($id_metier);
-
-				if ($id_statut == ROLE_PRO)
-					secu_set_user_pro_id($id_metier);
-
+				
 				//accroche statut
 				$_SESSION['accroche'] = 'Bonjour ' . $nom_utilisateur . ', vous êtes ' . $libelle_statut;
-
-				if ($id_statut == ROLE_ANIMATEUR)
-					$_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
-
-				if ($id_statut == ROLE_PRO)
-					$_SESSION['accroche'] .= ' (' . $nom_pro . ')';
+				
+				//récup des id pro et territoire
+				$_SESSION['territoire_id'] = null;
+				secu_set_user_pro_id(null);
+				
+				switch($id_statut){
+					case(ROLE_ANIMATEUR):
+					case(ROLE_CONSULTANT):
+						$_SESSION['territoire_id'] = $id_metier;
+						$_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
+						break;
+					case(ROLE_PRO):
+						secu_set_user_pro_id($id_metier);
+						if($competence_geo=="territoire") $_SESSION['territoire_id'] = $id_competence_geo); 
+						$_SESSION['accroche'] .= ' (' . $nom_pro . ')';
+						break;
+					case(ROLE_ADMIN):
+					case(ROLE_ADMIN_REGIONAL):
+						break;
+				}
 
 				$logged = true;
 			}
@@ -130,9 +139,12 @@ function secu_check_login($page = null)
 	}
 
 	if ($page !== null) {
-		if (!secu_is_authorized($page)) {
+		$perimetre = secu_is_authorized($page);
+		if (!$perimetre) {
 			header('Location: accueil.php');
 			exit();
+		}else{
+			return $perimetre;
 		}
 	}
 }
@@ -366,10 +378,11 @@ function secu_get_current_user_id()
  */
 function secu_set_territoire_id($id)
 {
-	if ((int)$id > 0)
-		$_SESSION['territoire_id'] = (int)$id;
-	else
-		$_SESSION['territoire_id'] = null;
+	if ((int)$id > 0) {
+		$_SESSION['territoire_choisi'] = (int)$id;
+	} else {
+		$_SESSION['territoire_choisi'] = null;
+	}
 }
 
 /**

@@ -23,7 +23,7 @@
 <div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php echo $select_territoire; ?>
+	<?php include('view/select_territoires.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
 		Liste des demandes <?= ($flag_traite) ? 'traitées' : 'à traiter' ?></h2>

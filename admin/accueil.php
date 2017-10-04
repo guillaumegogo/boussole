@@ -48,10 +48,8 @@ if (secu_is_authorized(DROIT_CRITERE)) {
 
 //********** sélection territoire
 if (isset($_POST['choix_territoire'])) {
-	$_SESSION['territoire_id'] = $_POST['choix_territoire'];
+	$_SESSION['territoire_choisi'] = $_POST['choix_territoire'];
 }
-
-include('../src/admin/select_territoires.inc.php');
 
 //view
 require 'view/accueil.tpl.php';

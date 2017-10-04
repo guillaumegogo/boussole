@@ -30,7 +30,7 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php echo $select_territoire; ?>
+	<?php include('view/select_territoires.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> Gestion des territoires</h2>
 
@@ -41,7 +41,7 @@
 			<legend><?= ($_SESSION['territoire_id']) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
 			<div class="une_colonne">
 				<label for="libelle_territoire" class="court">Libellé :</label>
-				<input type="text" required name="libelle_territoire" value="<?php echo $nom_territoire_choisi; ?>">
+				<input type="text" required name="libelle_territoire" value="<?= (isset($territoire)) ? $territoire['nom_territoire']:'' ?>">
 				<input type="hidden" name="maj_id_territoire" value="<?php echo $_SESSION['territoire_id']; ?>">
 			</div>
 			<input type="submit" name="submit_meta" value="Valider">

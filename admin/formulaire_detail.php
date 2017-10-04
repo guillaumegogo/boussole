@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_CRITERE);
+$perimetre = secu_check_login(DROIT_CRITERE);
 
 //********* variables
 $id_formulaire = null;

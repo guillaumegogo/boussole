@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_DEMANDE);
+$perimetre = secu_check_login(DROIT_DEMANDE);
 
 //********* variables
 $msg = "";

@@ -2,24 +2,18 @@
 $timestamp_debut = microtime(true);
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_TERRITOIRE);
+$perimetre = secu_check_login(DROIT_TERRITOIRE);
 
-//********* variables
-$msg = "";
-
-//********* territoire sélectionné
-if (isset($_POST['choix_territoire'])) {
-	$_SESSION['territoire_id'] = securite_bdd($conn, $_POST['choix_territoire']);
-}
+$msg = '';
 
 //********** mise à jour/création du territoire
-if (isset($_POST["submit_meta"])) {
-	if ($_POST["maj_id_territoire"]) {
+if (isset($_POST['submit_meta'])) {
+	if ($_POST['maj_id_territoire']) {
 		$updated=update_territoire((int)$_POST['maj_id_territoire'], $_POST['libelle_territoire']);
-		$_SESSION['territoire_id'] = $_POST['maj_id_territoire'];
+		$_SESSION['territoire_choisi'] = $_POST['maj_id_territoire'];
 	} else {
 		$created=create_territoire($_POST['libelle_territoire']);
-		$_SESSION['territoire_id'] = mysqli_insert_id($conn);
+		$_SESSION['territoire_choisi'] = mysqli_insert_id($conn);
 	}
 }
 
@@ -37,18 +31,23 @@ if (isset($_POST["submit_villes"])) {
 	}
 }
 
+//********* territoire sélectionné
+if (isset($_POST['choix_territoire'])) {
+	$_SESSION['territoire_choisi'] = $_POST['choix_territoire'];
+}
+
 //si territoire sélectionné -> on va chercher les listes de villes du territoire
-if (isset($_SESSION['territoire_id']) && $_SESSION['territoire_id']) {
+if (isset($_SESSION['territoire_choisi']) && $_SESSION['territoire_choisi']) {
+	$territoire = get_territoires($_SESSION['territoire_choisi'])[0];
+	
 	$liste_villes_territoire = '';
-	$villes = get_villes_by_territoire((int)$_SESSION['territoire_id']);
+	$villes = get_villes_by_territoire((int)$_SESSION['territoire_choisi']);
 	if (isset($villes)){
 		foreach($villes as $row){
 			$liste_villes_territoire .= '<option value="' . $row['code_insee'] . '">' . $row['nom_ville'] . ' ' . $row['code_postal'] . '</option>';
 		}
 	}
 }
-
-include('../src/admin/select_territoires.inc.php');
 
 //view
 require 'view/territoire.tpl.php';
