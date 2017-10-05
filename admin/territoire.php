@@ -10,10 +10,10 @@ $msg = '';
 if (isset($_POST['submit_meta'])) {
 	if ($_POST['maj_id_territoire']) {
 		$updated=update_territoire((int)$_POST['maj_id_territoire'], $_POST['libelle_territoire']);
-		$_SESSION['territoire_choisi'] = $_POST['maj_id_territoire'];
+		$_SESSION['perimetre'] = $_POST['maj_id_territoire'];
 	} else {
 		$created=create_territoire($_POST['libelle_territoire']);
-		$_SESSION['territoire_choisi'] = mysqli_insert_id($conn);
+		$_SESSION['perimetre'] = mysqli_insert_id($conn);
 	}
 }
 
@@ -33,15 +33,15 @@ if (isset($_POST["submit_villes"])) {
 
 //********* territoire sélectionné
 if (isset($_POST['choix_territoire'])) {
-	$_SESSION['territoire_choisi'] = $_POST['choix_territoire'];
+	$_SESSION['perimetre'] = $_POST['choix_territoire'];
 }
 
 //si territoire sélectionné -> on va chercher les listes de villes du territoire
-if (isset($_SESSION['territoire_choisi']) && $_SESSION['territoire_choisi']) {
-	$territoire = get_territoires($_SESSION['territoire_choisi'])[0];
+if (isset($_SESSION['perimetre']) && $_SESSION['perimetre']) {
+	$territoire = get_territoires($_SESSION['perimetre'])[0];
 	
 	$liste_villes_territoire = '';
-	$villes = get_villes_by_territoire((int)$_SESSION['territoire_choisi']);
+	$villes = get_villes_by_territoire((int)$_SESSION['perimetre']);
 	if (isset($villes)){
 		foreach($villes as $row){
 			$liste_villes_territoire .= '<option value="' . $row['code_insee'] . '">' . $row['nom_ville'] . ' ' . $row['code_postal'] . '</option>';

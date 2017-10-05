@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_UTILISATEUR);
+//secu_check_login(DROIT_UTILISATEUR);
 /* todo...
 if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
 	if($_SESSION['territoire_id']){

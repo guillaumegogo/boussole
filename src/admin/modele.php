@@ -133,7 +133,7 @@ function get_demande_by_id($id){
 	return $demande;
 }
 
-function get_liste_demandes($flag_traite, $territoire_id = null, $user_pro_id = null){
+function get_liste_demandes($flag_traite = 1, $territoire_id = null, $user_pro_id = null){
 
 	$demandes = null;
 	$params = [];
@@ -583,7 +583,7 @@ function get_territoires($id = null) {
 	global $conn;
 	$t = null;
 
-	$sql = 'SELECT `id_territoire`, `nom_territoire`, `code_territoire`
+	$sql = 'SELECT `id_territoire`, `nom_territoire`
 		FROM `'.DB_PREFIX.'bsl_territoire`
 		WHERE `actif_territoire` = 1 AND `nom_territoire` != "" ';
 	if (isset($id) && $id) {
@@ -786,7 +786,7 @@ function get_mesure_by_id($id){
 }
 
 /* Pros */
-function get_liste_pros($flag, $territoire_id) { //tous les professionnel du territoire
+function get_liste_pros($flag, $territoire_id, $user_pro_id = null) { //tous les professionnel du territoire
 
 	global $conn;
 	$pros = [];
@@ -800,26 +800,25 @@ function get_liste_pros($flag, $territoire_id) { //tous les professionnel du ter
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl__parametres` as `param_type` ON `param_type`.`id`=`'.DB_PREFIX.'bsl_professionnel`.`type_id` AND `param_type`.`liste`="type_pro"
 		WHERE `actif_pro`= ? ';
-	if ($territoire_id) {
-		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ?';
+	$params[] = (int) $flag;
+	$types = 'i';
+
+	if (isset($territoire_id) && $territoire_id > 0) {
+		$query .= 'AND `competence_geo`="territoire" AND `id_competence_geo`= ? ';
+		$params[] = (int) $territoire_id;
+		$types .= 'i';
+	}
+	if (isset($user_pro_id) && (int) $user_pro_id > 0){
+		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
+		$params[] = (int) $user_pro_id;
+		$types .= 'i';
 	}
 	$query .= ' GROUP BY `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`,nom_pro,type_pro,ville_pro,code_postal_pro,competence_geo
 	ORDER BY `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel` DESC';
-	$stmt = mysqli_prepare($conn, $query);
-	if ($territoire_id)
-		mysqli_stmt_bind_param($stmt, 'ii', $flag, $territoire_id);
-	else
-		mysqli_stmt_bind_param($stmt, 'i', $flag);
-	check_mysql_error($conn);
-	
-	if (mysqli_stmt_execute($stmt)) {
-		$result = mysqli_stmt_get_result($stmt);
-		while ($pro = mysqli_fetch_assoc($result)) {
-			$pros[] = $pro;
-		}
-		mysqli_stmt_close($stmt);
-	}
 
+	$stmt = query_prepare($query,$params,$types);
+	$pros = query_get($stmt);
+	
 	return $pros;
 }
 
@@ -1010,7 +1009,7 @@ function get_incoherences_villes_by_pro($pro_id, $row){
 }
 
 /* Utilisateurs */
-function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du territoire
+function get_liste_users($flag, $territoire_id, $user_pro_id = null) { //tous les utilisateurs du territoire
 
 	global $conn;
 	$users = [];
@@ -1022,28 +1021,26 @@ function get_liste_users($flag, $territoire_id) { //tous les utilisateurs du ter
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		WHERE `actif_utilisateur`= ?';
-	if ($territoire_id) {
+	$params[] = (int) $flag;
+	$types = 'i';
+
+	if (isset($territoire_id) && $territoire_id > 0) {
 		$query .= ' AND (`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=2 AND `id_metier`= ?)
 			OR (`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=3 AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire"
 				AND `id_competence_geo`= ?)';
+		$params[] = (int) $territoire_id;
+		$params[] = (int) $territoire_id;
+		$types .= 'ii';
+	}
+	if (isset($user_pro_id) && (int) $user_pro_id > 0){
+		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
+		$params[] = (int) $user_pro_id;
+		$types .= 'i';
 	}
 	$query .= ' ORDER BY `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` ASC,`id_metier` ASC';
-
-	$stmt = mysqli_prepare($conn, $query);
-
-	if ($territoire_id)
-		mysqli_stmt_bind_param($stmt, 'iii', $flag, $territoire_id, $territoire_id);
-	else
-		mysqli_stmt_bind_param($stmt, 'i', $flag);
-	check_mysql_error($conn);
-	if (mysqli_stmt_execute($stmt)) {
-		$result = mysqli_stmt_get_result($stmt);
-		while ($user = mysqli_fetch_assoc($result)) {
-			$users[] = $user;
-		}
-		mysqli_stmt_close($stmt);
-	}
-
+	$stmt = query_prepare($query,$params,$types);
+	$users = query_get($stmt);
+	
 	return $users;
 }
 

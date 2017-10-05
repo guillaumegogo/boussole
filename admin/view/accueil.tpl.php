@@ -14,7 +14,7 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php include('view/select_territoires.inc.php'); ?>
+	<?php //include('view/select_perimetre.inc.php'); //a priori pas d'intérêt ici. ou alors juste pour les admins ??>
 
 	<h2>Accueil</h2>
 	

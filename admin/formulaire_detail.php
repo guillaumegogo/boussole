@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre = secu_check_login(DROIT_CRITERE);
+$perimetre_lecture = secu_check_login(DROIT_CRITERE);
 
 //********* variables
 $id_formulaire = null;
@@ -56,11 +56,14 @@ if (isset($id_formulaire)) {
 }
 
 $themes = get_liste_themes(1);
-$territoires = get_territoires();
-array_unshift($territoires, array('id_territoire'=>'', 'nom_territoire'=>'National', 'code_territoire'=>''));
+
+$territoires = array('id_territoire'=>'', 'nom_territoire'=>'National');
+$territoires += get_territoires();
+
 $types = array('radio'=>'Boutons d\'option', 'select'=>'Liste déroulante', 'checkbox'=>'Cases à cocher', 'multiple'=>'Liste à choix multiples');
-$reponses = get_reponses();
-array_unshift($reponses, array('id_reponse'=>'', 'libelle'=>''));
+
+$reponses = array('id_reponse'=>'', 'libelle'=>'');
+$reponses += get_reponses();
 
 $max_pages = 3;
 $max_questions_par_page = 5;

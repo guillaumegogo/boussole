@@ -23,7 +23,7 @@
 <div class="statut"><?php echo $_SESSION["accroche"]; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php include('view/select_territoires.inc.php'); ?>
+	<?php include('view/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
 		Liste des utilisateurs <?php if (!$flag_actif) echo "inactifs"; ?></h2>
@@ -75,7 +75,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><?php echo $lien_desactives; ?></div>
+	<div style="text-align:left"><a href="utilisateur_liste.php<?= ($flag_actif) ? '?actif=non':''?>">Liste des utilisateurs <?= ($flag_actif) ? 'inactifs':''?></a></div>
 </div>
 
 <div class="button">

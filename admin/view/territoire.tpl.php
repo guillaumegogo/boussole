@@ -30,7 +30,7 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php include('view/select_territoires.inc.php'); ?>
+	<?php include('view/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> Gestion des territoires</h2>
 

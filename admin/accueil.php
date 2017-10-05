@@ -24,15 +24,13 @@ if (secu_is_authorized(DROIT_MESURE)) {
 
 if (secu_is_authorized(DROIT_PROFESSIONNEL)) {
 	$acteurs[] = array('professionnel_liste.php', 'Professionnels', '');
-} else if (isset($_SESSION['user_pro_id'])) {
-	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Profil professionnel', '');
 }
 if (secu_is_authorized(DROIT_UTILISATEUR)) {
 	$acteurs[] = array('utilisateur_liste.php', 'Utilisateurs', '');
-} else if (isset($_SESSION['user_pro_id'])) {
-	$acteurs[] = array('professionnel_detail.php?id=' . $_SESSION['user_pro_id'], 'Profil utilisateur', '');
+} else if (isset($_SESSION['user_id'])) { 
+	$acteurs[] = array('utilisateur_detail.php?id=' . $_SESSION['user_id'], 'Profil utilisateur', ''); // même si on n'a pas les droits sur les utilisateurs, on doit pouvoir voir son propre profil - CA NE FONCTIONNE PAS POUR LE MOMENT. Voir secu_check_login
 }
-if (secu_is_authorized(DROIT_UTILISATEUR)) {
+if (secu_is_authorized(DROIT_CRITERE)) {
 	$acteurs[] = array('#', 'Gestion des droits d\'accès', '');
 }
 
@@ -48,7 +46,7 @@ if (secu_is_authorized(DROIT_CRITERE)) {
 
 //********** sélection territoire
 if (isset($_POST['choix_territoire'])) {
-	$_SESSION['territoire_choisi'] = $_POST['choix_territoire'];
+	$_SESSION['perimetre'] = $_POST['choix_territoire'];
 }
 
 //view

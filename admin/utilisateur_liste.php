@@ -1,20 +1,25 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre = secu_check_login(DROIT_UTILISATEUR);
+$perimetre_lecture = secu_check_login(DROIT_UTILISATEUR);
 
 //********* territoire sélectionné
 if (isset($_POST['choix_territoire'])) {
-	secu_set_territoire_id($_POST["choix_territoire"]);
+	$_SESSION['perimetre'] = $_POST['choix_territoire'];
+}
+if ($perimetre_lecture <= PERIMETRE_ZONE && !$_SESSION['perimetre']) {
+	$_SESSION['perimetre'] = secu_get_territoire_id();
 }
 
 //********* affichage liste résultats 
 $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == 'non') ? 0 : 1;
-$territoire_id = secu_get_territoire_id();
-$users = get_liste_users($flag_actif, $territoire_id); //tous les utilisateurs actifs, du territoire le cas échéant
+$territoire_id = (is_numeric($_SESSION['perimetre'])) ? $_SESSION['perimetre'] : null;
 
-//********** lien actifs/inactifs
-$lien_desactives = ($flag_actif) ? '<a href=\'utilisateur_liste.php?actif=non\'>Liste des utilisateurs inactifs</a>' : '<a href=\'utilisateur_liste.php\'>Liste des utilisateurs actifs</a>';
+if ($perimetre_lecture == PERIMETRE_PRO || $_SESSION['perimetre']=='PRO') {
+	$users = get_liste_users($flag_actif, '', secu_get_user_pro_id()); //todo
+} else if ($perimetre_lecture >= PERIMETRE_ZONE) { 
+	$users = get_liste_users($flag_actif, $territoire_id);
+}
 
 //view
 require 'view/utilisateur_liste.tpl.php';

@@ -4,9 +4,9 @@ include('../src/admin/bootstrap.php');
 $perimetre = secu_check_login(DROIT_MESURE);
 
 //********* territoire sélectionné
-if (isset($_POST["choix_territoire"])) {
-	$_SESSION['territoire_choisi'] = $_POST['choix_territoire'];
-}
+/*if (isset($_POST["choix_territoire"])) {
+	$_SESSION['perimetre'] = $_POST['choix_territoire'];
+}*/
 
 //******** liste des mesures
 $flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;

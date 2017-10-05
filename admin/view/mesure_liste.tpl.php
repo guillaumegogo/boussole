@@ -23,7 +23,7 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php include('view/select_territoires.inc.php'); ?>
+	<?php //include('view/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
 		Liste des mesures <?php if (!$flag_actif) echo "désactivées"; ?></h2>
@@ -40,6 +40,8 @@
 			<?php } ?>
 		</select></td>
 	<?php } ?>
+		<td style="color:#999">Code postal<br/>
+		<input type="text" size="5" disabled></td>
 	</tr></table></form>
 	
 	<?php
