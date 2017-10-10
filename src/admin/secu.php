@@ -137,44 +137,39 @@ function secu_is_logged()
 }
 
 /**
- * Verifie si l'utilisateur courant a les droits pour accéder au BO ou plus spécifiquement à une page
- * Redirige automatiquement si ce n'est pas le cas
- * @param null|string $page
- * @return int $perimetre
- */
-function secu_check_login($page = null)
-{
-	if (secu_is_logged() !== true) {
-		header('Location: index.php');
-		exit();
-	}
-
-	if ($page !== null) {
-		$perimetre = secu_is_authorized($page);
-		if (!$perimetre) {
-			header('Location: accueil.php');
-			exit();
-		}else{
-			return $perimetre;
-		}
-	}
-}
-
-/**
- * Verifie que l'utilisateur courant à les droits pour accéder à un domaine (page de liste)
+ * Verifie que l'utilisateur courant à les droits demandés
  * @param string $domaine
- * @return bool
+ * @return array
  */
 function secu_is_authorized($domaine)
 {
 	global $conn;
-	$authorized = false;
+	$authorized = null;
 
 	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
-		$sql = 'SELECT `demande_r`, `offre_r`, `mesure_r`, `professionnel_r`, `utilisateur_r`, `formulaire_r`, `theme_r`, `territoire_r`
-			FROM `'.DB_PREFIX.'bsl_utilisateur` 
-			JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
-			WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
+		switch ($domaine) {
+			case DROIT_DEMANDE :
+				$champs = '`demande_r` as `lecture`, `demande_w` as `ecriture`'; break;
+			case DROIT_OFFRE :
+				$champs = '`offre_r` as `lecture`, `offre_w` as `ecriture`'; break;
+			case DROIT_MESURE :
+				$champs = '`mesure_r` as `lecture`, `mesure_w` as `ecriture`'; break;
+			case DROIT_PROFESSIONNEL :
+				$champs = '`professionnel_r` as `lecture`, `professionnel_w` as `ecriture`'; break;
+			case DROIT_TERRITOIRE :
+				$champs = '`territoire_r` as `lecture`, `territoire_w` as `ecriture`'; break;
+			case DROIT_THEME :
+				$champs = '`theme_r` as `lecture`, `theme_w` as `ecriture`'; break;
+			case DROIT_UTILISATEUR :
+				$champs = '`utilisateur_r` as `lecture`, `utilisateur_w` as `ecriture`'; break;
+			case DROIT_CRITERE :
+				$champs = '`formulaire_r` as `lecture`, `formulaire_w` as `ecriture`'; break;
+			case 'accueil' :
+				$champs = '`demande_r` as `'.DROIT_DEMANDE.'`, `offre_r` as `'.DROIT_OFFRE.'`, `mesure_r` as `'.DROIT_MESURE.'`, `professionnel_r` as `'.DROIT_PROFESSIONNEL.'`, `utilisateur_r` as `'.DROIT_UTILISATEUR.'`, `formulaire_r` as `'.DROIT_CRITERE.'`, `theme_r` as `'.DROIT_THEME.'`, `territoire_r` as `'.DROIT_TERRITOIRE.'`'; break;
+		}
+		$sql = 'SELECT '.$champs.' FROM `'.DB_PREFIX.'bsl__droits` 
+			JOIN `'.DB_PREFIX.'bsl_utilisateur` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+			WHERE `id_utilisateur` = ? ';
 		$stmt = mysqli_prepare($conn, $sql);
 		$id = (int)$_SESSION['user_id'];
 		mysqli_stmt_bind_param($stmt, 'i', $id);
@@ -183,42 +178,7 @@ function secu_is_authorized($domaine)
 		if (mysqli_stmt_execute($stmt)) {
 			$result = mysqli_stmt_get_result($stmt);
 			if (mysqli_num_rows($result) === 1) {
-				$droits = mysqli_fetch_assoc($result);
-				
-				switch ($domaine) {
-					case DROIT_DEMANDE :
-						if((int)$droits['demande_r'] > 0)
-							$authorized = $droits['demande_r'];
-						break;
-					case DROIT_OFFRE :
-						if((int)$droits['offre_r'] > 0)
-							$authorized = $droits['offre_r'];
-						break;
-					case DROIT_MESURE :
-						if((int)$droits['mesure_r'] > 0)
-							$authorized = $droits['mesure_r'];
-						break;
-					case DROIT_PROFESSIONNEL :
-						if((int)$droits['professionnel_r'] > 0)
-							$authorized = $droits['professionnel_r'];
-						break;
-					case DROIT_TERRITOIRE :
-						if((int)$droits['territoire_r'] > 0)
-							$authorized = $droits['territoire_r'];
-						break;
-					case DROIT_THEME :
-						if((int)$droits['theme_r'] > 0)
-							$authorized = $droits['theme_r'];
-						break;
-					case DROIT_UTILISATEUR :
-						if((int)$droits['utilisateur_r'] > 0)
-							$authorized = $droits['utilisateur_r'];
-						break;
-					case DROIT_CRITERE :
-						if((int)$droits['formulaire_r'] > 0)
-							$authorized = $droits['formulaire_r'];
-						break;
-				}
+				$authorized = mysqli_fetch_assoc($result);
 			}
 		}
 		mysqli_stmt_close($stmt);
@@ -228,19 +188,67 @@ function secu_is_authorized($domaine)
 }
 
 /**
- * Verifie que l'utilisateur courant à les droits pour accéder à une page en particulier
+ * Verifie si l'utilisateur courant a les droits pour accéder au BO ou plus spécifiquement à un domaine
+ * Redirige automatiquement si ce n'est pas le cas
+ * @param null|string $domaine
+ * @return int $perimetre
+ */
+function secu_check_login($domaine = null)
+{
+	if (secu_is_logged() !== true) {
+		header('Location: index.php');
+		exit();
+	}
+
+	if ($domaine !== null) {
+		$perimetre = secu_is_authorized($domaine);
+		if (!isset($perimetre['lecture']) || $perimetre['lecture']==0) {
+			header('Location: accueil.php');
+			exit();
+		}else{
+			return $perimetre;
+		}
+	}
+}
+
+/**
+ * Verifie que l'utilisateur courant à les droits d'écriture ou lecture sur un item particulier
  * @param string $domaine
  * @param int $id
- * @return int
+ * @return W = écriture / R = lecture / false
  */
-function secu_which_right($domaine, $id)
+function secu_check_level($domaine, $id)
 {
 	global $conn;
-	$right = false;
-
-	/* ici on va checker selon le domaine et l'id demandé si l'utilisateur a un droit de lecture et/ou d'écriture */
-
-	return $right;
+	
+	$check = secu_is_authorized($domaine);
+	
+	if(isset($check['ecriture'])){
+		if($check['ecriture']==PERIMETRE_NATIONAL){
+			return 'W';
+		}
+		if($check['ecriture']==PERIMETRE_ZONE){
+			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return W
+		}
+		if($check['ecriture']==PERIMETRE_PRO){
+			//on checke les pro_id de user_id et $domaine+$id. si c'est les mêmes return W
+		}
+	}
+	if(isset($check['lecture'])){
+		if($check['lecture']==PERIMETRE_NATIONAL){
+			return 'R';
+		}
+		if($check['lecture']==PERIMETRE_ZONE){
+			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return R
+		}
+		if($check['lecture']==PERIMETRE_PRO){
+			//***inusité***
+		}
+	}
+	if (!isset($check['lecture']) || $check['lecture']==0) {
+		header('Location: accueil.php');
+		exit();
+	}
 }
 
 /**
@@ -390,9 +398,9 @@ function secu_get_current_user_id()
 function secu_set_territoire_id($id)
 {
 	if ((int)$id > 0) {
-		$_SESSION['perimetre'] = (int)$id;
+		$_SESSION['territoire_id'] = (int)$id;
 	} else {
-		$_SESSION['perimetre'] = null;
+		$_SESSION['territoire_id'] = null;
 	}
 }
 

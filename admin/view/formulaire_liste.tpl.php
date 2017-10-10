@@ -37,9 +37,8 @@
 				<th>#</th>
 				<th>Thème</th>
 				<th>Territoire</th>
-				<th>Pages</th>
-				<th>Questions</th>
-				<th>Action</th>
+				<th>Nb de pages</th>
+				<th>Nb de questions</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -48,10 +47,9 @@
 				<tr>
 					<td><a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire <?= (int) $row['id'] ?></a></td>
 					<td><?php xecho($row['theme']) ?></td>
-					<td><?php xecho($row['territoire']) ?></td>
+					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
 					<td><?php xecho($row['nb_pages']) ?></td>
 					<td><?php xecho($row['nb_questions']) ?></td>
-					<td style="color:grey">Désactiver</td>
 				</tr>
 			<?php } ?>
 			</tbody>
@@ -65,7 +63,7 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"actif=oui">Liste des formulaires actifs'; ?></a></div>
+	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"?actif=oui">Liste des formulaires actifs'; ?></a></div>
 
 </div>
 

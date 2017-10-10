@@ -30,24 +30,22 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
-	<?php include('view/select_perimetre.inc.php'); ?>
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> Gestion des territoires</h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="territoire_liste.php">Liste des territoires</a> ></small> 
+		<?= ($id_territoire) ? 'Détail' : 'Création'; ?> d'un territoire  <?= ($id_territoire && $territoire['actif'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<form method="post" class="detail" onsubmit='checkall()'>
 		<fieldset class="centre">
-			<legend><?= ($_SESSION['territoire_id']) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
-			<div class="une_colonne">
-				<label for="libelle_territoire" class="court">Libellé :</label>
-				<input type="text" required name="libelle_territoire" value="<?= (isset($territoire)) ? $territoire['nom_territoire']:'' ?>">
-				<input type="hidden" name="maj_id_territoire" value="<?php echo $_SESSION['territoire_id']; ?>">
-			</div>
+			<legend><?= ($id_territoire) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
+			<label for="libelle_territoire" class="court">Libellé :</label>
+			<input type="text" required name="libelle_territoire" value="<?= (isset($territoire)) ? $territoire['nom_territoire']:'' ?>">
+			<input type="hidden" name="maj_id_territoire" value="<?php echo $id_territoire; ?>">
 			<input type="submit" name="submit_meta" value="Valider">
 		</fieldset>
 
-		<?php if ($_SESSION['territoire_id']) { ?>
+		<?php if ($id_territoire) { ?>
 
 			<fieldset class="centre">
 				<legend>Sélection des villes du territoire</legend>
@@ -74,7 +72,15 @@
 
 					<div style="display:inline-block;  vertical-align:top;">
 						<select name="list2[]" id="list2" MULTIPLE SIZE="20"
-								style=" min-width:20em;"><?php echo $liste_villes_territoire; ?></select>
+								style=" min-width:20em;">
+					<?php 
+					if (isset($villes)){
+						foreach($villes as $row){ ?>
+							<option value="<?= $row['code_insee'] ?>"><?= $row['nom_ville'].' '. $row['code_postal'] ?></option>
+					<?php
+						}
+					} ?>
+						</select>
 					</div>
 
 					<input style="display:block; margin:2em auto 0 auto;" type="submit" name="submit_villes"

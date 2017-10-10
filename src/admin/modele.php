@@ -578,30 +578,32 @@ function get_villes_by_pro($id) {
 	return $row;
 }
 
-function get_territoires($id = null) {
+function get_territoires($id = null, $actif = null) {
 
 	global $conn;
 	$t = null;
 
-	$sql = 'SELECT `id_territoire`, `nom_territoire`
+	$query = 'SELECT `'.DB_PREFIX.'bsl_territoire`.`id_territoire`, `nom_territoire`, `actif_territoire` as `actif`, COUNT(`code_insee`) as `c`, GROUP_CONCAT(DISTINCT(LEFT(`code_insee`,2)) SEPARATOR ", ") AS `dep`
 		FROM `'.DB_PREFIX.'bsl_territoire`
-		WHERE `actif_territoire` = 1 AND `nom_territoire` != "" ';
-	if (isset($id) && $id) {
-		$sql .= ' AND `id_territoire`= ?';
-		$stmt = mysqli_prepare($conn, $sql);
-		mysqli_stmt_bind_param($stmt, 'i', $id);
-	}else{
-		$stmt = mysqli_prepare($conn, $sql);
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` ON `'.DB_PREFIX.'bsl_territoire_villes`.`id_territoire`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire`
+		WHERE `nom_territoire` != "" ';
+	$params = array();
+	$types = '';
+	if (isset($actif)) {
+		$query .= ' AND `actif_territoire` = ? ';
+		$params[] = (int) $actif;
+		$types .= 'i';
 	}
-	check_mysql_error($conn);
+	if (isset($id) && $id > 0) {
+		$query .= ' AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`= ? ';
+		$params[] = (int) $id;
+		$types .= 'i';
+	}
+	$query .= 'GROUP BY `id_territoire`, `nom_territoire` 
+		ORDER BY `nom_territoire` ASC';
+	$stmt = query_prepare($query,$params,$types);
+	$t = query_get($stmt);
 	
-	if (mysqli_stmt_execute($stmt)) {
-		$result = mysqli_stmt_get_result($stmt);
-		while ($row = mysqli_fetch_assoc($result)) {
-			$t[] = $row;
-		}
-		mysqli_stmt_close($stmt);
-	}
 	return $t;
 }
 
@@ -743,12 +745,6 @@ function get_liste_mesures($flag = 1, $tab_criteres = null) {
 	ORDER BY `'.DB_PREFIX.'bsl_mesure`.id_mesure DESC';
 	$params[] = $flag;
 	$types .= 'i';	
-
-$print_sql = $query;
-foreach($params as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo "<!--".$print_sql."-->"; 
 
 	$stmt = query_prepare($query,$params,$types);
 	$t = query_get($stmt);
@@ -1050,32 +1046,29 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 
 	global $conn;
 	$formulaires= null;
+	$types='';
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`) as `nb_pages`,  count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`) as `nb_questions`
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` as `id`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court` as `theme`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`, count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`) as `nb_pages`,  count(DISTINCT `'.DB_PREFIX.'bsl_formulaire__question`.`id_question`) as `nb_questions`
 		FROM `'.DB_PREFIX.'bsl_formulaire`
 		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_formulaire`.`id_territoire` /*AND `'.DB_PREFIX.'bsl_territoire`.`actif_territoire`=1*/ ';
+	if (isset($territoire_id) && $territoire_id > 0) {
+		$query .= 'AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=? ';
+		$params[] = (int) $territoire_id;
+		$types .= 'i';
+	}
+	$query .= 'LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
 		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=? ';
-	if ($territoire_id) 
-		$query .= 'AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=? ';
+	$params[] = (int) $flag_actif;
+	$types .= 'i';
+	
 	$query .= 'GROUP BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme_court`, `'.DB_PREFIX.'bsl_territoire`.`nom_territoire`
 		ORDER BY `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire__page`.`id_page`';
-	$stmt = mysqli_prepare($conn, $query);
-	if ($territoire_id)
-		mysqli_stmt_bind_param($stmt, 'ii', $flag_actif, $territoire_id);
-	else
-		mysqli_stmt_bind_param($stmt, 'i', $flag_actif);
-	mysqli_stmt_execute($stmt);
-	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle, $territoire, $nb_pages, $nb_questions);
-	$id=0;
-	while (mysqli_stmt_fetch($stmt)) {
-		$formulaires[] = array('id' => $id_formulaire, 'theme' => $libelle, 'territoire' => ($territoire) ? $territoire : 'national', 'nb_pages' => $nb_pages, 'nb_questions' => $nb_questions);
-	}
-	mysqli_stmt_close($stmt);
+	$stmt = query_prepare($query,$params,$types);
+	$formulaires = query_get($stmt);
+	
 	return $formulaires;
 }
 
@@ -1577,6 +1570,11 @@ function archive($objet, $id, $etat = 0){
 			$champ_a = 'actif_'.$objet;
 			$champ_i = 'id_professionnel';
 			break;
+		case 'formulaire':
+			$table = 'bsl_'.$objet;
+			$champ_a = 'actif';
+			$champ_i = 'id_'.$objet;
+			break;
 	}
 	
 	if($table){
@@ -1608,6 +1606,18 @@ function get_liste_parametres($liste) {
 		while($row = mysqli_fetch_assoc($result)) {
 			$rows[] = $row;
 		}
+	}
+	return $rows;
+}
+
+function get_liste_droits() {
+
+	global $conn;
+	$rows = null;
+	$query = 'SELECT `id_statut`, `libelle_statut`, `demande_r`, `demande_w`, `offre_r`, `offre_w`, `mesure_r`, `mesure_w`, `professionnel_r`, `professionnel_w`, `utilisateur_r`, `utilisateur_w`, `formulaire_r`, `formulaire_w`, `theme_r`, `theme_w`, `territoire_r`, `territoire_w` FROM `'.DB_PREFIX.'bsl__droits` WHERE 1 ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$rows[] = $row;
 	}
 	return $rows;
 }
@@ -1717,12 +1727,6 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 				$stmt = mysqli_prepare($conn, $query);
 				mysqli_stmt_bind_param($stmt, 'isi', $formulaire_id, $titre_p[$key], $ordre_p[$key]);
 				
-$print_sql = $query;
-foreach(array($formulaire_id, $titre_p[$key], $ordre_p[$key]) as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo "<pre>".$print_sql."</pre>"; 
-
 				if (mysqli_stmt_execute($stmt)) {
 					$updated += mysqli_stmt_affected_rows($stmt) > 0;
 					mysqli_stmt_close($stmt);

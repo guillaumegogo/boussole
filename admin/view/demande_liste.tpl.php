@@ -2,18 +2,31 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+	<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css"/>
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+	<script type="text/javascript" language="javascript" src="js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/buttons.html5.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function () {
 			$('#sortable').dataTable( {
-				stateSave: true
+				stateSave: true,
+				dom: 'lfrtipB',
+				buttons: [
+					'copy', 'csv', 'excel', 'pdf', 'print'
+				]
 			} );
 		});
 	</script>
+	<style>div.dt-buttons { clear: both; margin:0 40%; }</style>
 
 	<title>Boussole des jeunes</title>
 </head>

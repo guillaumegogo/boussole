@@ -67,12 +67,13 @@
 				
 				<?php
 				//foreach ($questions[$pid] as $question) {
-				for ($j = 0; $j < $max_questions_par_page; $j++) {
+				$nb_questions = (isset($questions[$pid])) ? count($questions[$pid]) : 0;
+				for ($j = 0; $j < max($max_questions_par_page, $nb_questions); $j++) {
 				?>
 				<tr>
 					<td>&#8735; question <input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(isset($questions[$pid][$j]['id'])) { xecho($questions[$pid][$j]['id']); } ?>"></td>
 					<td><input name="page_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
-						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } ?>" >. 
+						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>" >. 
 						<input name="ordre_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
 						value="<?php if(isset($questions[$pid][$j]['ordre'])) { xecho($questions[$pid][$j]['ordre']); } else { echo $j+1;} ?>" ></td>
 					<td><input name="titre_q[<?= $i ?>][<?= $j ?>]" type="text" class="input_long"
@@ -80,7 +81,8 @@
 					<td><input <?= (isset($questions[$pid][$j]['name'])) ? 'readonly' : '' ?> name="name_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:10em" placeholder="identifiant unique du champ"
 						 value="<?php if(isset($questions[$pid][$j]['name'])) xecho($questions[$pid][$j]['name']); ?>"></td>
 					<td><select name="reponse_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
-						<?php foreach($reponses as $row) { ?>
+						<?php print_r($reponses);
+						foreach($reponses as $row) { ?>
 							<option value="<?= $row['id_reponse'] ?>" <?= (isset($questions[$pid][$j]['id_reponse']) && $row['id_reponse']==$questions[$pid][$j]['id_reponse']) ? ' selected ':'' ?>> <?= $row['libelle'] ?></option>
 						<?php } ?>
 						</select>

@@ -80,13 +80,7 @@ include('../src/web/bootstrap.php');
 			identité, à l’adresse suivante&nbsp;:<br>Ministère de l’éducation nationale<br>Direction de la jeunesse, de
 			l’éducation populaire et de la vie associative<br>Division des Systèmes d'information<br>95, avenue de
 			France<br>75013 Paris 13e</p>
-
-		<h3>Crédits de la photo de la page d'accueil</h3>
-		Par Rod Waddington from Kergunyah, Australia (Helping Hands, Adigrat) [CC BY-SA 2.0
-		(http://creativecommons.org/licenses/by-sa/2.0)], via Wikimedia Commons
-
-		<!--<h3>Données statistiques&nbsp;: traçabilité et profilage</h3>
-		<p>Lors de leur navigation sur le site, les internautes laissent des traces informatiques. Cet ensemble d’informations est recueilli à l’aide d’un témoin de connexion appelé cookie qui ne contient, toutefois, aucune information personnelle.<br>Dans le but d’améliorer l’ergonomie, la navigation au sein du site, le contenu éditorial et le service aux internautes, l’outil gestionnaire des statistiques du site <a class="spip_url spip_out" href='http://www.jeunes.gouv.fr' rel="nofollow external">www.jeunes.gouv.fr</a> des informations relatives au profil des internautes&nbsp;: équipement, navigateur utilisé, origine géographique des requêtes, date et heure de la connexion, navigation sur le site, fréquence des visites, etc. Ces données de connexion permettent des extractions statistiques et sont conservées pendant un an.<br>Tout internaute a la possibilité de refuser l’enregistrement de ces données en modifiant la configuration du navigateur de son ordinateur qui autorise ou non l’enregistrement de cookies. Il vous est possible de les refuser ou de les supprimer sans que cela ait une quelconque influence sur votre accès aux pages du site. Pour vous opposer à l’enregistrement de cookies ou être prévenu avant d’accepter les cookies, nous vous recommandons la lecture de la rubrique d’aide de votre navigateur qui vous précisera la marche à suivre.</p>-->
+			
 	</div>
 
 	<?php include('../src/web/footer.inc.php'); ?>

@@ -57,13 +57,13 @@ if (isset($id_formulaire)) {
 
 $themes = get_liste_themes(1);
 
-$territoires = array('id_territoire'=>'', 'nom_territoire'=>'National');
-$territoires += get_territoires();
+$territoires[] = array('id_territoire'=>'', 'nom_territoire'=>'National');
+$territoires = array_merge($territoires, get_territoires(null, 1));
 
 $types = array('radio'=>'Boutons d\'option', 'select'=>'Liste déroulante', 'checkbox'=>'Cases à cocher', 'multiple'=>'Liste à choix multiples');
 
-$reponses = array('id_reponse'=>'', 'libelle'=>'');
-$reponses += get_reponses();
+$reponses[] = array('id_reponse'=>'', 'libelle'=>'');
+$reponses = array_merge($reponses, get_reponses());
 
 $max_pages = 3;
 $max_questions_par_page = 5;
