@@ -1614,7 +1614,7 @@ function get_liste_droits() {
 
 	global $conn;
 	$rows = null;
-	$query = 'SELECT `id_statut`, `libelle_statut`, `demande_r`, `demande_w`, `offre_r`, `offre_w`, `mesure_r`, `mesure_w`, `professionnel_r`, `professionnel_w`, `utilisateur_r`, `utilisateur_w`, `formulaire_r`, `formulaire_w`, `theme_r`, `theme_w`, `territoire_r`, `territoire_w` FROM `'.DB_PREFIX.'bsl__droits` WHERE 1 ';
+	$query = 'SELECT `id_statut`, `libelle_statut`, `demande_r`, `demande_w`, `offre_r`, `offre_w`, `mesure_r`, `mesure_w`, `professionnel_r`, `professionnel_w`, `utilisateur_r`, `utilisateur_w`, `formulaire_r`, `formulaire_w`, `theme_r`, `theme_w`, `territoire_r`, `territoire_w` FROM `'.DB_PREFIX.'bsl__droits` WHERE 1 ORDER BY `demande_r` DESC, `id_statut`';
 	$result = mysqli_query($conn, $query);
 	while($row = mysqli_fetch_assoc($result)) {
 		$rows[] = $row;

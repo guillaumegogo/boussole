@@ -21,12 +21,12 @@
 				stateSave: true,
 				dom: 'lfrtipB',
 				buttons: [
-					'copy', 'csv', 'excel', 'pdf', 'print'
+					'csv', 'excel', 'pdf', 'print'
 				]
 			} );
 		});
 	</script>
-	<style>div.dt-buttons { clear: both; margin:0 40%; }</style>
+	<style>div.dt-buttons { clear: both; float:none; margin: 0 auto !important; width: 20em;  }</style>
 
 	<title>Boussole des jeunes</title>
 </head>

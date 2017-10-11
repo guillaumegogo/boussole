@@ -2,7 +2,7 @@
 $timestamp_debut = microtime(true);
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_OFFRE);
+$droit_ecriture = secu_check_level(DROIT_OFFRE, $_GET['id']);
 
 //********* variables
 $id_offre = null;
@@ -103,24 +103,9 @@ if (isset($id_offre)) {
 		$themes = get_themes_by_pro((int)$row['id_professionnel']);
 		foreach($themes as $rowt){
 			if (!isset($rowt['id_theme_pere'])) {
-				if ($rowt['id_professionnel'] == $row['id_professionnel']) {
-					$select_theme .= '<option value="' . $rowt['id_theme'] . '" ';
-					if ($rowt['id_theme'] == $row['id_theme_pere']) {
-						$select_theme .= ' selected ';
-					}
-					$select_theme .= '>' . $rowt['libelle_theme'] . '</option>';
-				}
 				$tab_js_soustheme[$rowt['id_theme']] = '';
-				//liste des sous-thèmes (par défaut les sous-thèmes du thème-père sélectionné)
 			} else {
-				if ($rowt['id_theme_pere'] == $row['id_theme_pere']) {
-					$select_sous_theme .= '<option value="' . $rowt['id_theme'] . '" ';
-					if ($rowt['id_theme'] == $row['id_sous_theme']) {
-						$select_sous_theme .= ' selected ';
-					}
-					$select_sous_theme .= '>' . $rowt['libelle_theme'] . '</option>';
-				}
-				//tableau des listes pour fonction javascript ci-dessous
+				//tableau des listes pour fonction javascript 
 				if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
 					$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
 				}
@@ -157,4 +142,7 @@ if (isset($id_offre)) {
 }
 
 //view
-require 'view/offre_detail.tpl.php';
+if ($droit_ecriture)
+	require 'view/offre_detail.tpl.php';
+else
+	require 'view/offre_detail_r.tpl.php';

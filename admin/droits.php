@@ -6,7 +6,7 @@ if (!secu_check_role(ROLE_ADMIN)) {
 }
 
 $droits = get_liste_droits();
-$traduction = array('<center>-</center>', 'Pro', 'Territoire', 'Toutes');
+$traduction = array('<center>-</center>', 'Pro.', 'Territoire', 'Tout');
 
 //view
 require 'view/droits.tpl.php';

@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$droit = secu_check_level(DROIT_DEMANDE, $_GET['id']);
+$droit_ecriture = secu_check_level(DROIT_DEMANDE, $_GET['id']);
 
 //********* variables
 $msg = "";
@@ -15,7 +15,6 @@ if (isset($_POST["id_traite"]) && !empty($_POST["id_traite"]) && isset($_POST['c
 if (isset($_GET["id"]) && !empty($_GET['id'])) {
 	$demande = get_demande_by_id((int)$_GET['id']);
 }
-
 
 //view
 require 'view/demande_detail.tpl.php';

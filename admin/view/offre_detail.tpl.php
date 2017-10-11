@@ -117,6 +117,7 @@
 <div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
+
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Liste des offres de service</a> ></small> 
 		<?= ($id_offre) ? 'Détail' : 'Création' ?> d'une offre <?= ($id_offre && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?> </h2>
 
@@ -124,7 +125,7 @@
 
 	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
-		<input type="hidden" name="maj_id" value="<?php echo $id_offre; ?>">
+		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
 
 		<fieldset>	
 			<legend>Description de l'offre de service</legend>
@@ -132,9 +133,7 @@
 			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="nom">Nom de l'offre de service :</label>
-					<input type="text" name="nom" required value="<?php if ($id_offre) {
-						echo $row['nom_offre'];
-					} ?>"/>
+					<input type="text" name="nom" required value="<?= ($id_offre) ? $row['nom_offre']:'' ?>"/>
 				</div>
 				<div class="lab">
 					<label for="desc">Description de l'offre :</label>
@@ -144,7 +143,7 @@
 						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
 						<input type="button" value="Lien" onclick="commande('createLink');"/>
 						<input type="button" value="Image" onclick="commande('insertImage');"/>
-						<div id="editeur" contentEditable><?= ($id_offre) ? bbcode2html($row['description_offre']):'' ?></div>
+						<div id="editeur" contentEditable ><?= ($id_offre) ? bbcode2html($row['description_offre']):'' ?></div>
 						<input id="resultat" type="hidden" name="desc"/>
 					</div>
 				</div>
@@ -153,7 +152,8 @@
 					<input type="text" name="du" size="10" class="datepick" value="<?php if ($id_offre) {
 						echo $row['date_debut'];
 					} else echo date("d/m/Y"); ?>"/>
-					au <input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) {
+					au 
+					<input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) {
 						echo $row['date_fin'];
 					} else echo date("d/m/Y", strtotime("+1 year")); ?>"/>
 				</div>
@@ -163,14 +163,32 @@
 					<div class="lab">
 						<label for="theme">Thème :</label>
 						<select id="select_themes" name="theme" onchange="choixTheme(this)">
-							<?php echo $select_theme; ?>
+						<?php 
+						foreach($themes as $rowt){
+							if (!isset($rowt['id_theme_pere'])) {
+								if ($rowt['id_professionnel'] == $row['id_professionnel']) { ?>
+							<option value="<?= $rowt['id_theme'] ?>" <?= ($rowt['id_theme'] == $row['id_theme_pere']) ? ' selected ':'' ?>> <?= $rowt['libelle_theme'] ?></option>
+						<?php			
+								}
+							}
+						}
+						?>
 						</select>
 					</div>
 					<div class="lab">
 						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème(s)</abbr>
 							:</label>
 						<select id="select_sous_themes" name="sous_theme">
-							<?php echo $select_sous_theme; ?>
+						<?php 
+						foreach($themes as $rowt){
+							if (isset($rowt['id_theme_pere'])) {
+								if ($rowt['id_theme_pere'] == $row['id_theme_pere']) { ?>
+							<option value="<?= $rowt['id_theme'] ?>" <?= ($rowt['id_theme'] == $row['id_sous_theme']) ? ' selected ':'' ?>> <?= $rowt['libelle_theme'] ?></option>
+						<?php
+								}
+							}
+						}
+						?>
 						</select>
 					</div>
 				<?php } ?>
@@ -218,7 +236,7 @@
 				</div>
 				<div class="lab">
 					<label for="delai">Délai garanti de réponse :</label>
-					<select name="delai">
+					<select name="delai" >
 					<?php for($i = 1; $i <= 7 ;$i++) { ?>
 						<option value="<?= $i ?>" <?= ($row['delai_offre'] == $i) ? 'selected':'' ?>><?= $i ?> jour<?= ($i>1) ? 's':'' ?>
 						</option>
@@ -228,10 +246,12 @@
 				<div class="lab">
 					<label for="zone">Zone concernée :</label>
 					<div style="display:inline-block;">
-						<input type="radio" name="zone" value="0" <?= ($id_offre && $row['zone_offre']) ? '':'checked' ?> onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence
-						géographique du pro <?php echo "<small>(" . $geo . ")</small>"; ?><br/>
-						<input type="radio" name="zone" value="1" <?= ($id_offre && $row['zone_offre']) ? 'checked':'' ?> onchange="document.getElementById('div_liste_villes').style.display = 'block';"> Sélection
-						de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
+						<input type="radio" name="zone" value="0" <?= ($id_offre && $row['zone_offre']) ? '':'checked' ?> 
+							onchange="document.getElementById('div_liste_villes').style.display = 'none';"> 
+							Compétence géographique du pro. <?php echo "<small>(" . $geo . ")</small>"; ?><br/>
+						<input type="radio" name="zone" value="1" <?= ($id_offre && $row['zone_offre']) ? 'checked':'' ?> 
+							onchange="document.getElementById('div_liste_villes').style.display = 'block';"> 
+							Sélection de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
 					</div>
 				</div>
 				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">

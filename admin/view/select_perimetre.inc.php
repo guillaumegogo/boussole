@@ -1,6 +1,7 @@
 <?php
 //accès par défaut à national + tous les territoires
 $ld_territoires = [];
+echo '<!--'.$perimetre_lecture.'-->';
 if (isset($perimetre_lecture)){
 	switch($perimetre_lecture){
 		case PERIMETRE_NATIONAL :

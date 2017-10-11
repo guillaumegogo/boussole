@@ -206,49 +206,101 @@ function secu_check_login($domaine = null)
 			header('Location: accueil.php');
 			exit();
 		}else{
-			return $perimetre;
+			return $perimetre['lecture'];
 		}
 	}
 }
 
 /**
- * Verifie que l'utilisateur courant à les droits d'écriture ou lecture sur un item particulier
+ * Verifie les droits de lecture/écriture de l'utilisateur courant sur un item particulier
  * @param string $domaine
  * @param int $id
- * @return W = écriture / R = lecture / false
+ * @return bool
  */
 function secu_check_level($domaine, $id)
 {
 	global $conn;
 	
 	$check = secu_is_authorized($domaine);
+	$user_id = (int)$_SESSION['user_id'];
+	$droit_ecriture = false;
 	
 	if(isset($check['ecriture'])){
 		if($check['ecriture']==PERIMETRE_NATIONAL){
-			return 'W';
-		}
-		if($check['ecriture']==PERIMETRE_ZONE){
-			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return W
-		}
-		if($check['ecriture']==PERIMETRE_PRO){
-			//on checke les pro_id de user_id et $domaine+$id. si c'est les mêmes return W
+			$droit_ecriture = true;
+		
+		} else if($check['ecriture']==PERIMETRE_ZONE){
+			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return true
+			if($domaine=='demande') {
+				$query='SELECT id_demande as `id` FROM `bsl_demande`
+					JOIN bsl_offre ON bsl_offre.id_offre=bsl_demande.id_offre
+					JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
+					JOIN `bsl_utilisateur` ON `bsl_utilisateur`.`id_metier`=bsl_professionnel.id_competence_geo
+					WHERE bsl_utilisateur.id_utilisateur=? AND id_demande=? ';
+			
+			} else if($domaine=='offre') {
+				$query='SELECT id_offre as `id` FROM `bsl_offre`
+					JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
+					JOIN `bsl_utilisateur` ON `bsl_utilisateur`.`id_metier`=bsl_professionnel.id_competence_geo
+					WHERE bsl_utilisateur.id_utilisateur=? AND id_offre=? ';
+				
+			} else if($domaine=='mesure') {
+				$query='SELECT id_mesure as `id` FROM `bsl_mesure`
+					JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_mesure.id_professionnel AND competence_geo="territoire"
+					JOIN `bsl_utilisateur` ON `bsl_utilisateur`.`id_metier`=bsl_professionnel.id_competence_geo
+					WHERE bsl_utilisateur.id_utilisateur=? AND id_mesure=? ';
+				
+			} else if($domaine=='professionnel') {
+				$query='SELECT id_professionnel as `id` FROM `bsl_professionnel`
+					JOIN `bsl_utilisateur` ON `bsl_utilisateur`.`id_metier`=bsl_professionnel.id_competence_geo
+					WHERE competence_geo="territoire" AND bsl_utilisateur.id_utilisateur=? AND id_professionnel=? ';
+				
+			} else if($domaine=='utilisateur') {
+				
+			} else if($domaine=='formulaire') {
+				
+			} else if($domaine=='theme') {
+				
+			} else if($domaine=='territoire') {
+				
+			}
+			$stmt = mysqli_prepare($conn, $query);
+			mysqli_stmt_bind_param($stmt, 'ii', $user_id, $id);
+			check_mysql_error($conn);
+			
+			if (mysqli_stmt_execute($stmt)) {
+				$result = mysqli_stmt_get_result($stmt);
+				if (mysqli_num_rows($result) === 1) {
+					$droit_ecriture = true;
+				}
+			}
+			mysqli_stmt_close($stmt);
+			
+
+		} else if($check['ecriture']==PERIMETRE_PRO){
+			//on checke les pro_id de user_id et $domaine+$id. si c'est les mêmes return true
 		}
 	}
 	if(isset($check['lecture'])){
+		/* utilité incertaine du bloc suivant : l'accès en lecture est le comportement par défaut 
 		if($check['lecture']==PERIMETRE_NATIONAL){
-			return 'R';
-		}
+			$droit_ecriture=false;
+
+		}*/ 
 		if($check['lecture']==PERIMETRE_ZONE){
-			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return R
-		}
-		if($check['lecture']==PERIMETRE_PRO){
+			//on checke les territoires de user_id et $domaine+$id. si c'est les mêmes return false, sinon on renvoie vers l'accueil
+
+		} else if($check['lecture']==PERIMETRE_PRO){
 			//***inusité***
 		}
 	}
+	// si on a pas les droits d'accès à cette page - on retourne à l'accueil directement
 	if (!isset($check['lecture']) || $check['lecture']==0) {
 		header('Location: accueil.php');
 		exit();
 	}
+	
+	return $droit_ecriture;
 }
 
 /**
