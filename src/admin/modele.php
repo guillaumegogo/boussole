@@ -824,8 +824,9 @@ function get_pro_by_id($id){
 	global $conn;
 	$pro = null;
 
-	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
+	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `type_id`, `param_type`.`libelle` as `type`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
 		FROM `'.DB_PREFIX.'bsl_professionnel`
+		LEFT JOIN `'.DB_PREFIX.'bsl__parametres` as `param_type` ON `param_type`.`id`=`'.DB_PREFIX.'bsl_professionnel`.`type_id` AND `param_type`.`liste`="type_pro"
 		WHERE id_professionnel= ?';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);

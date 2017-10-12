@@ -29,7 +29,7 @@
 				</div>
 				<div class="lab">
 					<label for="desc">Description de l'offre :</label>
-					<div style="display:inline-block; margin-left:1em; /*margin:0.5em 0; padding:0.25em; border:1px solid #CCC;*/ ">
+					<div style="display:inline-block; margin-left:1em;">
 						<?= ($id_offre) ? bbcode2html($row['description_offre']):'' ?>
 					</div>
 				</div>
