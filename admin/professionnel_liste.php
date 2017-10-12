@@ -7,7 +7,7 @@ $perimetre_lecture = secu_check_login(DROIT_PROFESSIONNEL);
 if (isset($_POST["choix_territoire"])) {
 	$_SESSION['perimetre'] = $_POST['choix_territoire'];
 }
-if ($perimetre_lecture <= PERIMETRE_ZONE && !$_SESSION['perimetre']) {
+if ($perimetre_lecture <= PERIMETRE_ZONE && $_SESSION['perimetre']!='PRO' ) { 
 	$_SESSION['perimetre'] = secu_get_territoire_id();
 }
 

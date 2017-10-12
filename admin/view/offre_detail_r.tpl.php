@@ -24,12 +24,12 @@
 
 			<div class="deux_colonnes">
 				<div class="lab">
-					<label for="nom">Nom de l'offre de service :</label>
-					<?= $row['nom_offre']; ?>
+					<label for="nom" style="margin-right:-1em;">Nom de l'offre de service :</label>
+					<div style="display:inline-block; margin-left:1em; "><?= $row['nom_offre']; ?></div>
 				</div>
 				<div class="lab">
 					<label for="desc">Description de l'offre :</label>
-					<div style="display:inline-block; padding:0.25em; margin:0.5em 0; border:1px solid #CCC; ">
+					<div style="display:inline-block; margin-left:1em; /*margin:0.5em 0; padding:0.25em; border:1px solid #CCC;*/ ">
 						<?= ($id_offre) ? bbcode2html($row['description_offre']):'' ?>
 					</div>
 				</div>
@@ -41,31 +41,11 @@
 				</div>
 					<div class="lab">
 						<label for="theme">Thème :</label>
-						<?php 
-						foreach($themes as $rowt){
-							if (!isset($rowt['id_theme_pere'])) {
-								if ($rowt['id_professionnel'] == $row['id_professionnel']) { 
-									if($rowt['id_theme'] == $row['id_theme_pere']) {
-										echo $rowt['libelle_theme']; 
-									}		
-								}
-							}
-						}
-						?>
+						<?= $row['libelle_theme_pere'] ?>
 					</div>
 					<div class="lab">
-						<label for="sous_theme">Sous-thème(s) :</label>
-						<?php 
-						foreach($themes as $rowt){
-							if (isset($rowt['id_theme_pere'])) {
-								if ($rowt['id_theme_pere'] == $row['id_theme_pere']) { 
-									if ($rowt['id_theme'] == $row['id_sous_theme']) { 
-										echo $rowt['libelle_theme']; 
-									}
-								}
-							}
-						}
-						?>
+						<label for="sous_theme">Sous-thème :</label>
+						<?= $row['libelle_sous_theme'] ?>
 					</div>
 			</div>
 			<div class="deux_colonnes">
@@ -91,7 +71,12 @@
 				</div>
 				<div class="lab">
 					<label for="site">Site internet :</label>
-					<?=  $row['site_web_offre'] ?>
+					<?php
+					$url = $row['site_web_offre'];
+					if (filter_var($url, FILTER_VALIDATE_URL)) {
+						$url = '<a href="' . $url . '" target="_blank">' . str_replace(array("http://", "https://"), "", $url) . '</a>';
+					}
+					echo $url;?>
 				</div>
 				<div class="lab">
 					<label for="delai">Délai garanti de réponse :</label>
@@ -99,16 +84,16 @@
 				</div>
 				<div class="lab">
 					<label for="zone">Zone concernée :</label>
-					<?= ($row['zone_offre']) ? 'Sélection de villes':'Compétence géographique du pro.' ?>
+					<?= ($row['zone_offre']) ? 'Sélection de villes':$geo ?>
 					
+					<?php if(isset($willes)){ ?>					
 					<div class="lab" style="display:inline-block; font-size:0.8em; border:1px solid #CCC; padding:0.25em;">
 					<?php 
-					if(isset($willes)){
 						foreach($willes as $roww){ 
 							echo $roww['nom_ville']. ' ' . $roww['code_postal'].', ';
-						}
-					} ?>
+						} ?>
 					</div>
+					<?php } ?>
 				</div>
 			</div>
 		</fieldset>

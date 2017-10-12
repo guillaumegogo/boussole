@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_MESURE);
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_MESURE, $_GET['id']) : true;
 
 //********* variables
 $id_mesure = null;

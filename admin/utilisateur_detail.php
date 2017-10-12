@@ -1,16 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-//secu_check_login(DROIT_UTILISATEUR);
-/* todo...
-if (secu_check_auth(DROIT_UTILISATEUR)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
-	if($_SESSION['territoire_id']){
-		$result = verif_territoire_user($_SESSION['territoire_id'], $_GET['id']);
-		if (mysqli_num_rows($result) == 0) { header('Location: utilisateur_liste.php'); }
-	}
-}else{ //autrement, le seul cas possible est la consultation de ses propres infos
-	$_GET['id'] = secu_get_current_user_id();
-}*/
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_UTILISATEUR, $_GET['id']) : true;
 
 //********* variables
 $last_id = null;

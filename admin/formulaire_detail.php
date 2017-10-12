@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre_lecture = secu_check_login(DROIT_CRITERE);
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_CRITERE, $_GET['id']) : true;
 
 //********* variables
 $id_formulaire = null;

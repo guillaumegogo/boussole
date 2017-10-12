@@ -1,17 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_PROFESSIONNEL);
-/* todo...
-if (!secu_check_auth(DROIT_PROFESSIONNEL)){ // si on a les droits, on fait juste un test sur le territoire (cas des animateurs territoriaux notamment)
-	if($_SESSION['territoire_id']){
-		$result = verif_territoire_pro($_SESSION['territoire_id'], $_GET['id']);
-		if (mysqli_num_rows($result) == 0) { header('Location: professionnel_liste.php'); }
-	}
-}else{ //autrement, le seul cas possible est la consultation de ses propres infos
-	$_GET['id'] = $_SESSION['user_pro_id'];
-}
-*/
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_PROFESSIONNEL, $_GET['id']) : true;
 
 //********* variables
 $last_id = null;
@@ -116,4 +106,7 @@ $incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $l
 $offres = get_liste_offres(1,null, (int)$id_professionnel);
 
 //view
-require 'view/professionnel_detail.tpl.php';
+if ($droit_ecriture)
+	require 'view/professionnel_detail.tpl.php';
+else
+	require 'view/professionnel_detail_r.tpl.php';

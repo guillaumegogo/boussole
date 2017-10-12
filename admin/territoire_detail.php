@@ -1,6 +1,8 @@
 <?php
 $timestamp_debut = microtime(true);
+
 include('../src/admin/bootstrap.php');
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_TERRITOIRE, $_GET['id']) : true;
 
 $msg = '';
 

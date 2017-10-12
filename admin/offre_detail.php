@@ -2,7 +2,7 @@
 $timestamp_debut = microtime(true);
 
 include('../src/admin/bootstrap.php');
-$droit_ecriture = secu_check_level(DROIT_OFFRE, $_GET['id']);
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_OFFRE, $_GET['id']) : true;
 
 //********* variables
 $id_offre = null;
@@ -89,34 +89,29 @@ if (isset($id_offre)) {
 			$reponses = $t[1];
 		}
 
-		//liste déroulante des thèmes / sous-thèmes du pro
-		$select_theme = "";
-		$select_sous_theme = "";
-		if (!$row['id_theme_pere']) {
-			$select_theme = "<option value=\"\">A choisir</option>";
-		}
-		if (!$row['id_sous_theme']) {
-			$select_sous_theme = "<option value=\"\">A choisir</option>";
-		}
 		
-		$tab_js_soustheme = array();
-		$themes = get_themes_by_pro((int)$row['id_professionnel']);
-		foreach($themes as $rowt){
-			if (!isset($rowt['id_theme_pere'])) {
-				$tab_js_soustheme[$rowt['id_theme']] = '';
-			} else {
-				//tableau des listes pour fonction javascript 
-				if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
-					$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
+		//données intéressantes en écriture uniquement
+		if ($droit_ecriture) {
+			//liste déroulante des thèmes / sous-thèmes du pro		
+			$tab_js_soustheme = array();
+			$themes = get_themes_by_pro((int)$row['id_professionnel']);
+			foreach($themes as $rowt){
+				if (!isset($rowt['id_theme_pere'])) {
+					$tab_js_soustheme[$rowt['id_theme']] = '';
+				} else {
+					//tableau des listes pour fonction javascript 
+					if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
+						$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
+					}
 				}
 			}
-		}
 
-		//*********** liste des villes accessibles au pro
-		if ($row['zone_pro'] == 0) { //la liste des villes du territoire
-			$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
-		}else{ //la compétence du pro est une sélection de villes 
-			$villes = get_villes_by_pro((int)$row['id_professionnel']);
+			//*********** liste des villes accessibles au pro
+			if ($row['zone_pro'] == 0) { //la liste des villes du territoire
+				$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
+			}else{ //la compétence du pro est une sélection de villes 
+				$villes = get_villes_by_pro((int)$row['id_professionnel']);
+			}
 		}
 
 		//*********** liste des villes liées à l'offre (si l'off)

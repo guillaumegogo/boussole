@@ -649,11 +649,12 @@ function get_offre_by_id($id){
 	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut,
 		DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `id_sous_theme`, `adresse_offre`, `code_postal_offre`, `ville_offre`,
 		`courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `'.DB_PREFIX.'bsl_offre`.`zone_selection_villes` as `zone_offre`, `actif_offre`, `'.DB_PREFIX.'bsl_professionnel`.id_professionnel, `nom_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`,
-		`competence_geo`, `id_theme_pere`, `nom_departement`, `nom_region`, `nom_territoire`, `id_competence_geo`, 
+		`competence_geo`, t1.`libelle_theme` as `libelle_sous_theme`, t1.`id_theme_pere`, t2.`libelle_theme` as `libelle_theme_pere`, `nom_departement`, `nom_region`, `nom_territoire`, `id_competence_geo`, 
 		`'.DB_PREFIX.'bsl_professionnel`.`zone_selection_villes` as `zone_pro` 
 		FROM `'.DB_PREFIX.'bsl_offre`
 		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel
-		LEFT JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.id_theme=`'.DB_PREFIX.'bsl_offre`.id_sous_theme
+		LEFT JOIN `'.DB_PREFIX.'bsl_theme` as `t1` ON `t1`.id_theme=`'.DB_PREFIX.'bsl_offre`.id_sous_theme
+		LEFT JOIN `'.DB_PREFIX.'bsl_theme` as `t2` ON `t2`.id_theme=`t1`.id_theme_pere 
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
@@ -1016,20 +1017,20 @@ function get_liste_users($flag, $territoire_id, $user_pro_id = null) { //tous le
 		JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_utilisateur`.`id_metier`
-		WHERE `actif_utilisateur`= ?';
+		WHERE `actif_utilisateur`= ? ';
 	$params[] = (int) $flag;
 	$types = 'i';
 
 	if (isset($territoire_id) && $territoire_id > 0) {
-		$query .= ' AND (`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=2 AND `id_metier`= ?)
+		$query .= 'AND (`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=2 AND `id_metier`= ?)
 			OR (`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=3 AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire"
-				AND `id_competence_geo`= ?)';
+				AND `id_competence_geo`= ?) ';
 		$params[] = (int) $territoire_id;
 		$params[] = (int) $territoire_id;
 		$types .= 'ii';
 	}
 	if (isset($user_pro_id) && (int) $user_pro_id > 0){
-		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
+		$query .= 'AND `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? AND `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`=3 ';
 		$params[] = (int) $user_pro_id;
 		$types .= 'i';
 	}

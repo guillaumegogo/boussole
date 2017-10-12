@@ -164,6 +164,9 @@
 						<label for="theme">Thème :</label>
 						<select id="select_themes" name="theme" onchange="choixTheme(this)">
 						<?php 
+						if (!$row['id_theme_pere']) { ?>
+							<option value="">A choisir</option>
+						<?php }
 						foreach($themes as $rowt){
 							if (!isset($rowt['id_theme_pere'])) {
 								if ($rowt['id_professionnel'] == $row['id_professionnel']) { ?>
@@ -176,10 +179,13 @@
 						</select>
 					</div>
 					<div class="lab">
-						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème(s)</abbr>
+						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème</abbr>
 							:</label>
 						<select id="select_sous_themes" name="sous_theme">
 						<?php 
+						if (!$row['id_sous_theme']) { ?>
+							<option value="">A choisir</option>
+						<?php }
 						foreach($themes as $rowt){
 							if (isset($rowt['id_theme_pere'])) {
 								if ($rowt['id_theme_pere'] == $row['id_theme_pere']) { ?>
@@ -248,14 +254,14 @@
 					<div style="display:inline-block;">
 						<input type="radio" name="zone" value="0" <?= ($id_offre && $row['zone_offre']) ? '':'checked' ?> 
 							onchange="document.getElementById('div_liste_villes').style.display = 'none';"> 
-							Compétence géographique du pro. <?php echo "<small>(" . $geo . ")</small>"; ?><br/>
+							<?= $geo ?> <small>(compétence géographique du professionnel)</small><br/>
 						<input type="radio" name="zone" value="1" <?= ($id_offre && $row['zone_offre']) ? 'checked':'' ?> 
 							onchange="document.getElementById('div_liste_villes').style.display = 'block';"> 
-							Sélection de villes <abbr title="Liste des villes de la zone de compétence géographique du professionnel">&#9888;</abbr>
+							Sélection de villes 
 					</div>
 				</div>
 				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">
-					<div style="margin-bottom:1em;">Filtre : 
+					<div style="margin-bottom:1em;">Filtre <abbr title="La liste des villes proposées dépend de la zone de compétence géographique du professionnel">&#9888;</abbr> : 
 						<input id="textbox"
 							value="nom de ville, code postal ou département..."
 							type="text" style="width:20em;"
