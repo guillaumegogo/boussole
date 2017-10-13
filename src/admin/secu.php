@@ -375,7 +375,7 @@ function secu_check_level($domaine, $id)
 		exit();
 	}
 	
-	echo 'check '.$check['lecture'].' / '.$check['ecriture'].' → ecriture : '.(($droit_ecriture)?'oui':'non');
+	//echo 'check '.$check['lecture'].' / '.$check['ecriture'].' → ecriture : '.(($droit_ecriture)?'oui':'non');
 	return $droit_ecriture;
 }
 
