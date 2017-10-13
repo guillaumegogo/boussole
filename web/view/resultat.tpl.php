@@ -83,8 +83,8 @@ if ($nb_offres) {
 			$titre = ((strlen($offre["titre"]) > 80 ) && (strpos($offre["titre"]," ",80))) ? 
 				substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
 			$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre["description"]);
-			$description_courte = ((strlen($description_courte) > 500 ) && (strpos($description_courte," ",500))) ? 
-				substr($description_courte,0,strpos($description_courte," ",500))."…" : $description_courte;;
+			$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte," ",1500))) ? 
+				substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;;
 			
 			if (++$i == $nb_offres_a_afficher+1){ 
 ?>
@@ -107,7 +107,7 @@ if ($nb_offres) {
 						<span class="close" onclick="masqueId('modal<?= (int) $offre['id'] ?>');">&times;</span>
 						
 						<p style="margin-top:0;"><b><?php xecho($offre["titre"]) ?></b><br/><?= xecho($offre['nom_pro']) ?> - <?= xecho($offre['ville']) ?></p>
-						<p style="font-size:90%;"><?php xbbecho($description_courte) ?> &rarr; <a href="offre.php?id=<?= (int) $offre['id'] ?>">en savoir plus</a></p>
+						<p style="font-size:90%;"><?php xbbecho($description_courte) ?> (<a href="offre.php?id=<?= (int) $offre['id'] ?>">en savoir plus</a>)</p>
 						
 						<div style="align:center; border:1px solid red; padding:1em; margin-top:2em;">Si cette offre t'intéresse, demande à être contacté·e par un conseiller d'ici <b><?php xecho($offre['delai']) ?> jours</b> maximum.
 						<form method="post" style="text-align:center; margin:1em auto;">
