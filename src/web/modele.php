@@ -182,7 +182,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 			}
 		}
 	}
-	$query .= ' ORDER BY `'.DB_PREFIX.'bsl_theme`.`ordre_theme`';
+	$query .= ' ORDER BY `'.DB_PREFIX.'bsl_theme`.`ordre_theme`, RAND()'; //le RAND permet de ne pas afficher toujours les mêmes offres en premier... en attendant un meilleur critère de tri
 
 if (DEBUG) {
 	$print_sql = $query;
