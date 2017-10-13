@@ -231,6 +231,7 @@ function secu_check_level($domaine, $id)
 		} 
 		if(($check['ecriture']==PERIMETRE_ZONE || $check['lecture']==PERIMETRE_ZONE) && $zone_id=secu_get_territoire_id()){
 			//on checke les territoires de user_id et $domaine/$id. si c'est les mêmes return true
+			
 			if($domaine=='territoire' && $zone_id == $id) {
 				if($check['ecriture']==PERIMETRE_ZONE) {
 					$droit_ecriture = true;
@@ -240,45 +241,45 @@ function secu_check_level($domaine, $id)
 			
 			}else{
 				if($domaine=='demande') {
-					$query='SELECT id_demande as `id` FROM `bsl_demande`
-						JOIN bsl_offre ON bsl_offre.id_offre=bsl_demande.id_offre
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
-						WHERE bsl_professionnel.id_competence_geo=? AND id_demande=? ';
+					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
+						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_demande=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 				
 				} else if($domaine=='offre') {
-					$query='SELECT id_offre as `id` FROM `bsl_offre`
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
-						WHERE bsl_professionnel.id_competence_geo=? AND id_offre=? ';
+					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_offre=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine=='mesure') {
-					$query='SELECT id_mesure as `id` FROM `bsl_mesure`
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_mesure.id_professionnel AND bsl_professionnel.competence_geo="territoire"
-						WHERE bsl_professionnel.id_competence_geo=? AND id_mesure=? ';
+					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'bsl_mesure`
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_mesure`.id_professionnel AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_mesure=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine=='professionnel') {
-					$query='SELECT id_professionnel as `id` FROM `bsl_professionnel`
+					$query='SELECT id_professionnel as `id` FROM `'.DB_PREFIX.'bsl_professionnel`
 						WHERE competence_geo="territoire" AND id_competence_geo=? AND id_professionnel=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine=='utilisateur') {
-					$query='SELECT id_utilisateur as `id` FROM `bsl_utilisateur`
-						WHERE id_statut IN (2,4) AND id_metier=? AND id_professionnel=? 
+					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
+						WHERE id_statut IN (2,4) AND id_metier=? AND id_utilisateur=? 
 						UNION
-						SELECT id_utilisateur as `id` FROM `bsl_utilisateur`
-						LEFT JOIN `bsl_professionnel` ON bsl_utilisateur.id_metier=bsl_professionnel.id_professionnel 
-						WHERE id_statut =3 AND competence_geo="territoire" AND id_competence_geo=? AND id_professionnel=? ';
+						SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
+						LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.id_metier=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel 
+						WHERE id_statut =3 AND competence_geo="territoire" AND id_competence_geo=? AND id_utilisateur=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'iiii', $zone_id, $id, $zone_id, $id);
 					
 				} else if($domaine=='formulaire') {
-					$query='SELECT `id_formulaire` FROM `bsl_formulaire`
+					$query='SELECT `id_formulaire` FROM `'.DB_PREFIX.'bsl_formulaire`
 						WHERE `id_territoire`=? AND `id_formulaire`= ?';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
@@ -298,8 +299,8 @@ function secu_check_level($domaine, $id)
 							$droit_ecriture += false;
 						}
 					}
+					mysqli_stmt_close($stmt);
 				}
-				mysqli_stmt_close($stmt);
 			}
 		} 
 		if(($check['ecriture']==PERIMETRE_PRO || $check['lecture']==PERIMETRE_PRO) && $pro_id=secu_get_user_pro_id()){
@@ -314,30 +315,30 @@ function secu_check_level($domaine, $id)
 			
 			}else {
 				if($domaine=='demande') {
-					$query='SELECT id_demande as `id` FROM `bsl_demande`
-						JOIN bsl_offre ON bsl_offre.id_offre=bsl_demande.id_offre
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
-						WHERE bsl_professionnel.id_professionnel=? AND id_demande=? ';
+					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
+						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel.id_professionnel=? AND id_demande=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 				
 				} else if($domaine=='offre') {
-					$query='SELECT id_offre as `id` FROM `bsl_offre`
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_offre.id_professionnel AND competence_geo="territoire"
-						WHERE bsl_professionnel.id_professionnel=? AND id_offre=? ';
+					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_offre=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 					
 				} else if($domaine=='mesure') {
-					$query='SELECT id_mesure as `id` FROM `bsl_mesure`
-						JOIN bsl_professionnel ON bsl_professionnel.id_professionnel=bsl_mesure.id_professionnel AND bsl_professionnel.competence_geo="territoire"
-						WHERE bsl_professionnel.id_professionnel=? AND id_mesure=? ';
+					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'bsl_mesure`
+						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_mesure`.id_professionnel AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_mesure=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 				
 				} else if($domaine=='utilisateur') {
-					$query='SELECT id_utilisateur as `id` FROM `bsl_utilisateur`
-						LEFT JOIN `bsl_professionnel` ON bsl_utilisateur.id_metier=bsl_professionnel.id_professionnel 
+					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
+						LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.id_metier=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel 
 						WHERE id_statut =3 AND id_professionnel=? AND id_utilisateur=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
@@ -370,8 +371,8 @@ function secu_check_level($domaine, $id)
 	
 	// si on a pas les droits d'accès à cette page - on retourne à l'accueil directement
 	if ($droit_ecriture===null) {
-		/*header('Location: accueil.php');
-		exit();*/
+		header('Location: accueil.php');
+		exit();
 	}
 	
 	echo 'check '.$check['lecture'].' / '.$check['ecriture'].' → ecriture : '.(($droit_ecriture)?'oui':'non');

@@ -154,16 +154,19 @@ input[readonly] {
 	color: #666;
 }
 .detail input[type=text], .detail input[type=password], .detail input[type=email], .detail  input[list], .detail textarea, .detail select { 
-	width: 18em; 
+	width: 22em; 
 }
 .detail input[type=text].input_int { 
 	width: 3em; 
 }
 .detail input[type=text].datepick { 
-	width: 8em; 
+	width: 10em; 
 }
 .detail input[type=text].input_long { 
 	width: 30em; 
+}
+.criteres{
+	width:16em !important; 
 }
 
 .auth input[type=text], .auth input[type=password] { 
@@ -174,7 +177,7 @@ input[readonly] {
 	padding: 0.2em;
 	overflow: auto;
 	font-size:90%;
-	width:33em;
+	width:37em;
 	height:15em;
 }
 select.age { 

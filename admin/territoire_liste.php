@@ -4,7 +4,7 @@ include('../src/admin/bootstrap.php');
 $perimetre_lecture = secu_check_login(DROIT_TERRITOIRE);
 
 //********* territoire sélectionné
-//$_SESSION['perimetre'] = null;
+$_SESSION['perimetre'] = null;
 if ($perimetre_lecture <= PERIMETRE_ZONE) {
 	$_SESSION['perimetre'] = secu_get_territoire_id();
 }

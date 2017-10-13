@@ -6,6 +6,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery-ui.css">
+	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">
 		//fonction affichage listes
@@ -21,15 +22,19 @@
 			{
 				x.style.display = 'none';
 			}
-			if (that.value == "2")
+			if (that.value == <?=ROLE_ANIMATEUR ?> || that.value == <?=ROLE_CONSULTANT ?> )
 			{
 				w.style.display = "block";
-			} else if (that.value == "3")
+			} else if (that.value == <?=ROLE_PRO ?>)
 			{
 				x.style.display = "block";
 			}
 		}
 	</script>
+	<?php } else { ?>
+	<link rel="stylesheet" type="text/css" href="css/readonlyform.css" media="screen" />
+	<script type="text/javascript" language="javascript" src="js/readonlyform.js"></script>
+	<?php } ?>	
 </head>
 
 <body>
@@ -49,7 +54,7 @@
 <input type="password" style="display:none">
 
 		<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
-		<fieldset>
+		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 			<legend>Description de l'utilisateur</legend>
 
 			<div class="une_colonne">
@@ -77,7 +82,7 @@
 						<label for="attache">Attache :</label>
 						<div style="display:inline-block;">
 							<select name="attache" id="liste_territoires" 
-								<?= ($id_utilisateur && $row['id_statut'] == '2') ? 'disabled' : 'style="display:none"' ?>>
+								<?= ($id_utilisateur && $row['id_statut'] == ROLE_ANIMATEUR) ? 'disabled' : 'style="display:none"' ?>>
 							<option value="">A choisir</option>
 						<?php foreach($liste_territoires as $row2) { ?>
 							<option value="<?= $row2['id_territoire'] ?>" <?= (isset($row['id_territoire']) && ($row2['id_territoire'] == $row['id_territoire'])) ? 'selected':'' ?>><?= $row2['nom_territoire'] ?></option>
@@ -85,7 +90,7 @@
 							</select>
 							
 							<select name="attache_p" id="liste_professionnels" 
-								<?php ($id_utilisateur && $row['id_statut'] == '3') ? 'disabled' : 'style="display:none"'; ?>>
+								<?= ($id_utilisateur && $row['id_statut'] == ROLE_PRO) ? 'disabled' : 'style="display:none"'; ?>>
 							<option value="">A choisir</option>
 						<?php foreach($liste_pro as $row3) { ?>
 							<option value="<?= $row3['id_professionnel'] ?>" <?= (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) ? 'selected':'' ?>><?= $row3['nom_pro'] ?></option>
@@ -133,7 +138,8 @@
 				   } else {
 					   echo "_liste.php";
 				   } ?>'">
-		<?php if (!$id_utilisateur) { ?>
+		<?php if($droit_ecriture) { 
+			if (!$id_utilisateur) { ?>
 			<input type="reset" value="Reset">
 		<?php }else{ if($row['actif_utilisateur'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
@@ -141,6 +147,7 @@
 			<input type="submit" name="archiver" value="Désactiver">
 		<?php } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
+		<?php } ?>
 		</div>
 	</form>
 </div>

@@ -6,6 +6,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/jquery-ui.css">
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
@@ -110,6 +111,10 @@
 			document.getElementById("select_sous_themes").innerHTML = tab[x];
 		}
 	</script>
+	<?php } else { ?>
+	<link rel="stylesheet" type="text/css" href="css/readonlyform.css" media="screen" />
+	<script type="text/javascript" language="javascript" src="js/readonlyform.js"></script>
+	<?php } ?>	
 </head>
 
 <body>
@@ -123,11 +128,11 @@
 
 	<div class="soustitre"><?= $msg ?></div>
 
-	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
+	<form method="post" class="detail" onsubmit='htmleditor(); checkall();' id="for>
 
 		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
 
-		<fieldset>	
+		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
 			<legend>Description de l'offre de service</legend>
 
 			<div class="deux_colonnes">
@@ -137,7 +142,7 @@
 				</div>
 				<div class="lab">
 					<label for="desc">Description de l'offre :</label>
-					<div style="display:inline-block;">
+					<div style="display:inline-block;" id="div-editeur">
 						<input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
 						<input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
 						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
@@ -224,7 +229,7 @@
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel :</label>
-					<input type="email" name="courriel" value="<?php if ($id_offre) {
+					<input type="text" name="courriel" value="<?php if ($id_offre) {
 						echo $row['courriel_offre'];
 					} ?>"/>
 				</div>
@@ -261,6 +266,7 @@
 					</div>
 				</div>
 				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">
+				<?php if($droit_ecriture) { ?>
 					<div style="margin-bottom:1em;">Filtre <abbr title="La liste des villes proposées dépend de la zone de compétence géographique du professionnel">&#9888;</abbr> : 
 						<input id="textbox"
 							value="nom de ville, code postal ou département..."
@@ -270,7 +276,7 @@
 
 					<div style="display:inline-block; vertical-align:top;">
 						<small><i>Villes correspondant au filtre :</i></small><br/>
-						<select id="list1" MULTIPLE SIZE="10" style=" min-width:14em;">
+						<select id="list1" MULTIPLE SIZE="10" style="width:18em;">
 					<?php 
 					if(isset($villes)){
 						foreach($villes as $rowv){ 
@@ -289,11 +295,12 @@
 						<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;"
 							   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
 					</div>
+				<?php } ?>
 
 					<div style="display:inline-block;  vertical-align:top;">
 						<small><i>Zone couverte par l'offre :</i></small><br/>
 						<select name="list2[]" id="list2" MULTIPLE SIZE="10"
-								style=" min-width:14em;">
+								style="width:18em;">
 					<?php 
 					if(isset($willes)){
 						foreach($willes as $roww){ 
@@ -314,7 +321,7 @@
 		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
 		?>
 
-			<fieldset>
+			<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 				<legend>Liste des critères de l'offre de service</legend>
 				<input type="hidden" name="maj_criteres" value="oui"> 
 				<div class="colonnes">
@@ -325,7 +332,7 @@
 						<div class="lab">
 							<label for="critere[<?= $question['name'] ?>][]"><?= $question['libelle'] ?></label>
 							<select name="critere[<?= $question['name'] ?>][]" multiple
-									size="<?= min(count($reponses[$question['name']]), 10) ?>">
+									size="<?= min(count($reponses[$question['name']]), 10) ?>" class="criteres">
 				<?php
 				foreach ($reponses[$question['name']] as $reponse) {
 					if ($reponse['valeur']) {
@@ -349,7 +356,8 @@
 
 		<div class="button">
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
-		<?php if (!$id_offre) {	?>
+		<?php if($droit_ecriture) {
+			if (!$id_offre) {	?>
 			<input type="reset" value="Reset">
 		<?php }else{ if($row['actif_offre'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
@@ -357,6 +365,7 @@
 			<input type="submit" name="archiver" value="Archiver">
 		<?php } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
+		<?php } ?>
 		</div>
 	</form>
 </div>

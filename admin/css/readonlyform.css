@@ -1,0 +1,5 @@
+form input[type='text'] { display: none !important;}
+form textarea { display: none !important; }
+form select { display: none !important; }
+form select[multiple] { display: inline-block !important; }
+#div-editeur input[type='button']  { display: none !important; }

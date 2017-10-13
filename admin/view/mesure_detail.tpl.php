@@ -6,6 +6,7 @@
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/jquery-ui.css">
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
@@ -150,6 +151,10 @@
 			document.getElementById("select_sous_themes").innerHTML = tab[x];
 		}
 	</script>
+	<?php } else { ?>
+	<link rel="stylesheet" type="text/css" href="css/readonlyform.css" media="screen" />
+	<script type="text/javascript" language="javascript" src="js/readonlyform.js"></script>
+	<?php } ?>	
 </head>
 
 <body>
@@ -166,7 +171,7 @@
 
 		<input type="hidden" name="maj_id" value="<?php echo $id_mesure; ?>">
 
-		<fieldset>	
+		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
 			<legend>Description de la mesure</legend>
 
 			<div class="deux_colonnes">
@@ -240,7 +245,7 @@
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel :</label>
-					<input type="email" name="courriel" value="<?php if ($id_mesure) {
+					<input type="text" name="courriel" value="<?php if ($id_mesure) {
 						echo $row['courriel_mesure'];
 					} ?>"/>
 				</div>
@@ -306,6 +311,7 @@ if (isset($territoires)){
 
 <div style="margin-top:1em">
 	<div class="lab" id="div_liste_villes" style="display:<?= ($id_mesure && ($row['competence_geo'] == 'communes')) ? 'block' : 'none' ?>">
+		<?php if($droit_ecriture) { ?>
 		<div style="margin-bottom:1em;">Filtre : 
 			<input id="textbox"
 				value="nom de ville, code postal ou département..."
@@ -327,6 +333,7 @@ if (isset($territoires)){
 			<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;"
 				   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
 		</div>
+		<?php } ?>
 
 		<div style="display:inline-block;  vertical-align:top;">
 			<small><i>Villes couvertes par la mesure :</i></small><br/>
@@ -355,7 +362,7 @@ if (isset($territoires)){
 		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
 		?>
 
-			<fieldset>
+			<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 				<legend>Liste des critères de la mesure</legend>
 				<input type="hidden" name="maj_criteres" value="oui">
  				<div class="colonnes">
@@ -392,7 +399,8 @@ if (isset($territoires)){
 
 		<div class="button">
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='mesure_liste.php'">
-		<?php if (!$id_mesure) {	?>
+		<?php if($droit_ecriture) {
+			if (!$id_mesure) {	?>
 			<input type="reset" value="Reset">
 		<?php }else{ if($row['actif_mesure'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
@@ -400,6 +408,7 @@ if (isset($territoires)){
 			<input type="submit" name="archiver" value="Archiver">
 		<?php } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
+		<?php } ?>
 		</div>
 	</form>
 </div>

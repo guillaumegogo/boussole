@@ -22,7 +22,7 @@
 	<div class="soustitre"><?php echo $msg; ?></div>
 	
 	<form method="post" class="detail">
-	<fieldset>
+	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 		<legend>Détails</legend> <!--(<?= $meta['theme'].' '.$meta['territoire'] ?>)-->
 		Thème : <select name="theme" <?= (isset($meta['theme'])) ? 'disabled':'' ?>>
 		<?php foreach($themes as $row) { ?>
@@ -36,7 +36,7 @@
 			</select>
 	</fieldset>
 	
-	<fieldset>
+	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 		<legend>Pages et questions</legend>
 		
 		<table class="dataTable display compact">
@@ -86,7 +86,7 @@
 							<option value="<?= $row['id_reponse'] ?>" <?= (isset($questions[$pid][$j]['id_reponse']) && $row['id_reponse']==$questions[$pid][$j]['id_reponse']) ? ' selected ':'' ?>> <?= $row['libelle'] ?></option>
 						<?php } ?>
 						</select>
-						<?php if(isset($questions[$pid][$j]['id_reponse'])){?>
+						<?php if($droit_ecriture && isset($questions[$pid][$j]['id_reponse'])){?>
 							<a href="formulaire_reponse.php?id=<?= $questions[$pid][$j]['id_reponse'] ?>"><img src="img/find.png"></a>
 						<?php } ?>
 					</td>
@@ -107,8 +107,9 @@
 	<div class="button">
 		<input type="hidden" name="maj_id" value=<?= xssafe($id_formulaire) ?> />
 		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
-		<input type="button" disabled value="Créer de nouvelles réponses" onclick="javascript:location.href='formulaire_reponse.php'"> 
 		
+	<?php if($droit_ecriture) { ?>
+		<input type="button" disabled value="Créer de nouvelles réponses" onclick="javascript:location.href='formulaire_reponse.php'"> 
 	<?php if (!$id_formulaire) {	?>
 		<input type="reset" value="Reset">
 	<?php }else{ if($meta['actif'] == 0){ ?>
@@ -117,6 +118,7 @@
 		<input type="submit" name="archiver" value="Archiver">
 	<?php } } ?>
 		<input type="submit" name="enregistrer" value="Enregistrer">
+	<?php } ?>
 	</div>
 	
 	</form>

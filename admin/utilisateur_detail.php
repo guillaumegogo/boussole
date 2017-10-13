@@ -41,7 +41,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 
 	} else { //requête de modification
 		if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
-			$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"], $_POST["actif"]);
+			$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"]);
 
 			if ($updated) {
 				$msg = 'Modification bien enregistrée.';

@@ -5,6 +5,7 @@
 	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<?php if($droit_ecriture) { ?>
 	<link rel="stylesheet" href="css/jquery-ui.css">
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
@@ -121,6 +122,10 @@
 			}
 		}
 	</script>
+	<?php } else { ?>
+	<link rel="stylesheet" type="text/css" href="css/readonlyform.css" media="screen" />
+	<script type="text/javascript" language="javascript" src="js/readonlyform.js"></script>
+	<?php } ?>	
 </head>
 
 <body>
@@ -140,7 +145,7 @@
 	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
-		<fieldset>
+		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 			<legend>Description du professionnel</legend>
 
 			<div class="deux_colonnes">
@@ -172,7 +177,7 @@
 				</div>
 				<div class="lab">
 					<label for="desc">Description du professionnel :</label>
-					<div style="display:inline-block;">
+					<div style="display:inline-block;" id="div-editeur">
 						<input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
 						<input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
 						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
@@ -308,6 +313,7 @@ if (isset($territoires)){
 	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence territoriale</span>
 	
 	<div class="lab" id="div_liste_villes" style="display:<?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'block' : 'none' ?>">
+		<?php if($droit_ecriture) { ?>
 		<div style="margin-bottom:1em;">Filtre : 
 			<input id="textbox"
 				value="nom de ville, code postal ou département..."
@@ -329,7 +335,8 @@ if (isset($territoires)){
 			<INPUT TYPE="button" style="display:block; margin:1em 0.2em;" NAME="left" VALUE="&lt;&lt;"
 				   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
 		</div>
-
+		<?php } ?>
+		
 		<div style="display:inline-block;  vertical-align:top;">
 			<small><i>Villes de compétence du professionnel :</i></small><br/>
 			<select name="list2[]" id="list2" MULTIPLE SIZE="20"
@@ -355,7 +362,8 @@ if (isset($territoires)){
 
 		<div class="button">
 			<input type="button" value="Retour" onclick="javascript:location.href='professionnel_liste.php'">
-		<?php if (!$id_professionnel) { ?>
+		<?php if($droit_ecriture) {
+			if (!$id_professionnel) { ?>
 			<input type="reset" value="Reset">
 		<?php }else{ if($pro['actif_pro'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
@@ -363,6 +371,7 @@ if (isset($territoires)){
 			<input type="submit" name="archiver" value="Désactiver">
 		<?php } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
+		<?php } ?>
 		</div>
 		
 <?php if(count($offres)+count($incoherences_themes)+count($incoherences_villes)>0){ ?>

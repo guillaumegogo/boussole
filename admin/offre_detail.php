@@ -89,29 +89,25 @@ if (isset($id_offre)) {
 			$reponses = $t[1];
 		}
 
-		
-		//données intéressantes en écriture uniquement
-		if ($droit_ecriture) {
-			//liste déroulante des thèmes / sous-thèmes du pro		
-			$tab_js_soustheme = array();
-			$themes = get_themes_by_pro((int)$row['id_professionnel']);
-			foreach($themes as $rowt){
-				if (!isset($rowt['id_theme_pere'])) {
-					$tab_js_soustheme[$rowt['id_theme']] = '';
-				} else {
-					//tableau des listes pour fonction javascript 
-					if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
-						$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
-					}
+		//liste déroulante des thèmes / sous-thèmes du pro		
+		$tab_js_soustheme = array();
+		$themes = get_themes_by_pro((int)$row['id_professionnel']);
+		foreach($themes as $rowt){
+			if (!isset($rowt['id_theme_pere'])) {
+				$tab_js_soustheme[$rowt['id_theme']] = '';
+			} else {
+				//tableau des listes pour fonction javascript 
+				if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
+					$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
 				}
 			}
+		}
 
-			//*********** liste des villes accessibles au pro
-			if ($row['zone_pro'] == 0) { //la liste des villes du territoire
-				$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
-			}else{ //la compétence du pro est une sélection de villes 
-				$villes = get_villes_by_pro((int)$row['id_professionnel']);
-			}
+		//*********** liste des villes accessibles au pro
+		if ($row['zone_pro'] == 0) { //la liste des villes du territoire
+			$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);
+		}else{ //la compétence du pro est une sélection de villes 
+			$villes = get_villes_by_pro((int)$row['id_professionnel']);
 		}
 
 		//*********** liste des villes liées à l'offre (si l'off)
@@ -137,7 +133,6 @@ if (isset($id_offre)) {
 }
 
 //view
-if ($droit_ecriture)
-	require 'view/offre_detail.tpl.php';
-else
-	require 'view/offre_detail_r.tpl.php';
+//if ($droit_ecriture)
+require 'view/offre_detail.tpl.php';
+// else require 'view/offre_detail_r.tpl.php';

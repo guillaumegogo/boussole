@@ -106,7 +106,5 @@ $incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $l
 $offres = get_liste_offres(1,null, (int)$id_professionnel);
 
 //view
-if ($droit_ecriture)
-	require 'view/professionnel_detail.tpl.php';
-else
-	require 'view/professionnel_detail_r.tpl.php';
+require 'view/professionnel_detail.tpl.php';
+// else require 'view/professionnel_detail_r.tpl.php';
