@@ -355,9 +355,9 @@ function create_mesure($nom, $desc, $date_debut, $date_fin, $pro_id) {
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_mesure`(`nom_mesure`, `description_mesure`, `debut_mesure`, `fin_mesure`, `id_professionnel`,
 		`adresse_mesure`, `code_postal_mesure`, `ville_mesure`, `code_insee_mesure`, `courriel_mesure`,
-		`telephone_mesure`, `site_web_mesure`, `competence_geo`, `id_competence_geo`, `user_derniere_modif`)
+		`telephone_mesure`, `site_web_mesure`, `competence_geo`, `id_competence_geo`, `creation_date`, `creation_user_id`)
 		SELECT ?, ?, ?, ?, ?,`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`,
-		`telephone_pro`, `site_web_pro`, `competence_geo`, `id_competence_geo`, ?
+		`telephone_pro`, `site_web_pro`, `competence_geo`, `id_competence_geo`, NOW(), ?
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
 
@@ -410,7 +410,7 @@ function update_mesure($id_mesure, $nom, $desc, $date_debut, $date_fin, $sous_th
 		SET `nom_mesure` = ?, `description_mesure`= ?, `debut_mesure` = ?, `fin_mesure` = ?,
 		`id_sous_theme` = ?, `adresse_mesure` = ?, `code_postal_mesure`= ?, `ville_mesure`= ?, 
 		`code_insee_mesure`= ?, `courriel_mesure` = ?, `telephone_mesure` = ?, `site_web_mesure` = ?, 
-		`competence_geo`= ?,`id_competence_geo`= ?, `user_derniere_modif` = ?
+		`competence_geo`= ?,`id_competence_geo`= ?, `last_edit_date` = NOW(), `last_edit_user_id` = ?
 		WHERE `id_mesure` = ?';
 		
 	$stmt = mysqli_prepare($conn, $req);
@@ -1678,15 +1678,20 @@ function get_liste_droits() {
 	return $rows;
 }
 
-function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) {
 
-	return null;
+	global $conn;
+	$created = false;
+	$user_id=secu_get_current_user_id();
+	/* ... */	
+	return $created;
 }
 
-function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $user_id) {
+function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) {
 
 	global $conn;
 	$updated = false;
+	$user_id=secu_get_current_user_id();
 	
 	//update questions
 	if (isset($id_q)) {
@@ -1789,6 +1794,60 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 				}
 			}
 			
+		}
+	}
+	
+	return $updated;
+}
+
+function update_reponse($reponse_id, $libelle, $id_v, $libelle_v, $valeur_v, $ordre_v, $actif, $defaut_id) {
+
+	global $conn;
+	$updated = false;
+	$user_id=secu_get_current_user_id();
+	
+	//update questions
+	if (isset($libelle_v)) {
+		foreach($libelle_v as $key=>$libelle){
+			if($libelle){
+				$defaut = (isset($defaut_id) && ($id_v[$key] == $defaut_id)) ? '1':'0';
+				$thisactif = (isset($actif[$key])) ? '1':'0';				
+				
+				if(isset($id_v[$key]) && $id_v[$key]){
+					$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__valeur` 
+						SET `libelle`= ? ,`valeur`= ? ,`ordre`= ? ,`defaut`= ? ,`actif`= ? 
+						WHERE `id_valeur`= ? ';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'ssiiii', $libelle, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif, $id_v[$key]);
+					
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}else{
+					$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__valeur`(`id_reponse`, `libelle`, `valeur`, `ordre`, `defaut`, `actif`)
+						VALUES (?, ?, ?, ?, ?, ?)';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'issiii', $reponse_id, $libelle, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif);
+										
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}/* // pour l'instant désactivation uniquement. 
+			}else{
+				if(isset($id_v[$key]) && $id_v[$key]){
+					
+					$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__valeur` WHERE `id_valeur`= ? ';
+					$stmt = mysqli_prepare($conn, $query);
+					mysqli_stmt_bind_param($stmt, 'i', $id_v[$key]);
+					
+					if (mysqli_stmt_execute($stmt)) {
+						$updated += mysqli_stmt_affected_rows($stmt) > 0;
+						mysqli_stmt_close($stmt);
+					}
+				}*/
+			}
 		}
 	}
 	

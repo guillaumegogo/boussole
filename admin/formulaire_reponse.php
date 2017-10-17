@@ -9,25 +9,21 @@ $msg = "";
 
 //********** si post du formulaire interne
 if (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
-/*	
-	echo "<!--<pre>"; print_r($_POST); echo "</pre>-->";
-	$name_q = null;
-	if(isset($_POST['name_q'])) $name_q = $_POST['name_q'];
 
 	if (!$_POST["maj_id"]) { //requête d'ajout
-		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
-		$id_formulaire = mysqli_insert_id($conn);
 		
+		$created = null; /* todo */
 		if ($created) $msg = "Création bien enregistrée.";
 
 	} else { //requête de modification
-		$id_formulaire = $_POST['maj_id'];
-		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
+		$id_reponse = $_POST['maj_id'];
+		$defaut= (isset($_POST['defaut'])) ? $_POST['defaut']:null;
+		$updated = update_reponse($id_reponse, $_POST['libelle'], $_POST['id_v'], $_POST['libelle_v'], $_POST['valeur_v'], $_POST['ordre_v'], $_POST['actif'], $defaut);
 		
 		if ($updated) {
-			$msg = 'Le formulaire a été mise à jour.';
+			$msg = 'La liste de réponses a été mise à jour.';
 		}
-	}*/
+	}
 }
 
 if (isset($_GET['id'])) {

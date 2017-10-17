@@ -11,7 +11,7 @@
 	function ajoutLigne() {
 		var table = document.getElementById("tableau");
 		var row = table.insertRow(-1);
-		var x = document.getElementById("tableau").rows.length;
+		var x = document.getElementById("tableau").rows.length-2;
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
@@ -21,7 +21,7 @@
 		cell2.innerHTML = "<input name=\"valeur_v["+x+"]\" type=\"text\" class=\"input_long\" value=\"\">";
 		cell3.innerHTML = "<input name=\"ordre_v["+x+"]\" type=\"text\" style=\"width:2em\" value=\"\">";
 		cell4.innerHTML = "<input type=\"radio\" name=\"defaut\" value=\"\" >";
-		cell5.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" >";
+		cell5.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" checked >";
 	}
 	</script>
 	<title>Boussole des jeunes</title>
@@ -41,7 +41,7 @@
 	<form method="post" class="detail">
 	<fieldset>
 		<legend>Détails</legend>
-		Identifiant de la réponse : <input type="text" required placeholder="Libellé unique du groupe de valeurs" value="<?= $libelle_reponse ?>">
+		Identifiant de la réponse : <input type="text" name="libelle" required placeholder="Libellé unique du groupe de valeurs" value="<?= $libelle_reponse ?>">
 	</fieldset>
 	
 	<fieldset>
@@ -83,9 +83,9 @@
 	</fieldset>
 	
 	<div class="button">
-		<input type="hidden" name="maj_id" value=<?= xssafe($id_reponse) ?> />
+		<input type="hidden" name="maj_id" value="<?= xssafe($id_reponse) ?>" />
 		<input type="button" value="Retour" onclick="history.go(-1)">
-		<input type="submit" disabled name="enregistrer" value="Enregistrer">
+		<input type="submit" name="enregistrer" value="Enregistrer">
 	</div>
 	
 	</form>

@@ -20,15 +20,15 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$name_q = null;
 	if(isset($_POST['name_q'])) $name_q = $_POST['name_q'];
 
-	if (!isset($_POST["maj_id"])) { //requête d'ajout
-		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
+	if (!($_POST["maj_id"])) { //requête d'ajout
+		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q);
 		$id_formulaire = mysqli_insert_id($conn);
 		
 		if ($created) $msg = "Création bien enregistrée.";
 
 	} else { //requête de modification
 		$id_formulaire = $_POST['maj_id'];
-		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
+		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q);
 		
 		if ($updated) {
 			$msg = 'Le formulaire a été mise à jour.';
@@ -60,7 +60,7 @@ $themes = get_liste_themes(1);
 $territoires[] = array('id_territoire'=>'', 'nom_territoire'=>'National');
 $territoires = array_merge($territoires, get_territoires(null, 1));
 
-$types = array('radio'=>'Boutons d\'option', 'select'=>'Liste déroulante', 'checkbox'=>'Cases à cocher', 'multiple'=>'Liste à choix multiples');
+$types = array(''=>'', 'radio'=>'Boutons d\'option', 'select'=>'Liste déroulante', 'checkbox'=>'Cases à cocher', 'multiple'=>'Liste à choix multiples');
 
 $reponses[] = array('id_reponse'=>'', 'libelle'=>'');
 $reponses = array_merge($reponses, get_reponses());
