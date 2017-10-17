@@ -7,9 +7,26 @@ function get_nb_nouvelles_demandes() {
 
 	$query = 'SELECT count(`id_demande`) AS nb
 		FROM `'.DB_PREFIX.'bsl_demande`
-		WHERE date_traitement IS NULL';
-
-	$stmt = mysqli_prepare($conn, $query);
+		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre ';
+	
+	if($pro_id = secu_get_user_pro_id()) {
+		$query .= 'AND `'.DB_PREFIX.'bsl_offre`.id_professionnel = ? 
+		WHERE date_traitement IS NULL ';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'i', $pro_id);
+	
+	}else if($territoire_id = secu_get_territoire_id()) {
+		$query .= 'JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel 
+		AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo = "territoire" AND `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo = ? 
+		WHERE date_traitement IS NULL ';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
+	
+	}else {
+		$query .= 'WHERE date_traitement IS NULL ';
+		$stmt = mysqli_prepare($conn, $query);	
+	}
+		
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);

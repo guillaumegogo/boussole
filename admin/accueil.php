@@ -4,15 +4,13 @@ include('../src/admin/bootstrap.php');
 secu_check_login();
 
 //******** calcul du nb de demandes (todo : à adapter pour pros et animateurs)
-$nb = '';
-if (secu_check_role(ROLE_ADMIN)) {
-	$nb = '('.get_nb_nouvelles_demandes().')';
-}
+$nb = get_nb_nouvelles_demandes();
+//$nb = ($nb>0) ? '('.$nb.')':'(aucune)';
 
 if($is_authorized = secu_is_authorized('accueil')){
 	//******* construction des listes de lien
 	if (isset($is_authorized[DROIT_DEMANDE]) && $is_authorized[DROIT_DEMANDE]) {
-		$activites[] = array('demande_liste.php', 'Demandes à traiter', $nb);
+		$activites[] = array('demande_liste.php', 'Demandes à traiter', '('.$nb.')');
 	}
 
 	//******* construction des listes de lien
