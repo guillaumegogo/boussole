@@ -110,9 +110,8 @@
 		
 	<?php if($droit_ecriture) { ?>
 		<input type="button" disabled value="Créer de nouvelles réponses" onclick="javascript:location.href='formulaire_reponse.php'"> 
-	<?php if (!$id_formulaire) {	?>
-		<input type="reset" value="Reset">
-	<?php }else{ if($meta['actif'] == 0){ ?>
+	<?php if ($id_formulaire) {
+		if($meta['actif'] == 0){ ?>
 		<input type="submit" name="restaurer" value="Restaurer">
 	<?php }else{ ?>
 		<input type="submit" name="archiver" value="Archiver">

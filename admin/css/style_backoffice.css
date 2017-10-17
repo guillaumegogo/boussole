@@ -100,24 +100,6 @@ legend{
 	margin-top:0.5em; 
 	line-height:2.5em;
 }
-/*
-.colonne_accueil{
-	display:inline-block; 
-	width:28%;
-	min-width:16em;
-	vertical-align:top; 
-	text-align:left;
-	margin-right:1em;
-	padding:1em;
-}
-.colonne_accueil ul{
-	background:#f9f9f9;
-	border-top:1px solid black;
-	border-bottom:1px solid black;
-	height:9em;
-	margin-top:0.5em; 
-	line-height:2.5em;
-}*/
 .derniere{
 	margin-right:0;
 }
@@ -195,6 +177,7 @@ label.court{
 }
 .lab {
 	margin-top:0.5em;
+	display:inline-block;
 }
 .button {
 	text-align:center;

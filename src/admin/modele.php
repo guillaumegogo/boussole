@@ -178,10 +178,11 @@ function get_liste_demandes($flag_traite = 1, $territoire_id = null, $user_pro_i
 	return $demandes;
 }
 
-function update_demande($id, $commentaire, $user_id){
+function update_demande($id, $commentaire){
 
 	global $conn;
 	$updated = false;
+	$user_id=secu_get_current_user_id();
 
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_demande`
 		SET `date_traitement` = NOW(),
@@ -202,16 +203,17 @@ function update_demande($id, $commentaire, $user_id){
 }
 
 /* Offres */
-function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
+function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id ) {
 
 	global $conn;
 	$created = false;
+	$user_id= secu_get_current_user_id();
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_offre`(`nom_offre`, `description_offre`, `debut_offre`, `fin_offre`, `id_professionnel`,
 		`adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`,
-		`telephone_offre`, `site_web_offre`, `delai_offre`, `user_derniere_modif`)
+		`telephone_offre`, `site_web_offre`, `delai_offre`, `creation_date`, `creation_user_id`)
 		SELECT ?, ?, ?, ?, ?,`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`,
-		`telephone_pro`, `site_web_pro`, `delai_pro`, ?
+		`telephone_pro`, `site_web_pro`, `delai_pro`, NOW(), ?
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel = ? ';
 
@@ -219,6 +221,7 @@ function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
 	$date_d = date('Y-m-d', strtotime(str_replace('/', '-', $date_debut)));
 	$date_f = date('Y-m-d', strtotime(str_replace('/', '-', $date_fin)));
 	mysqli_stmt_bind_param($stmt, 'ssssiii', $nom, $desc, $date_d, $date_f, $pro_id, $user_id, $pro_id);
+	
 	check_mysql_error($conn);
 
 	if (mysqli_stmt_execute($stmt)) {
@@ -229,9 +232,10 @@ function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
 	return $created;
 }
 
-function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $delai, $zone, $tab_villes, $user_id){
+function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $delai, $zone, $tab_villes){
 
 	global $conn;
+	$user_id= secu_get_current_user_id();
 	$updated = false;
 	$updated_v = false;
 	$code_insee = '';
@@ -263,7 +267,7 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 		SET `nom_offre` = ?, `description_offre`= ?, `debut_offre` = ?, `fin_offre` = ?,
 		`id_sous_theme` = ?, `adresse_offre` = ?, `code_postal_offre`= ?, `ville_offre`= ?, `code_insee_offre`= ?,
 		`courriel_offre` = ?, `telephone_offre` = ?, `site_web_offre` = ?, `delai_offre` = ?,
-		`zone_selection_villes` = ?, `user_derniere_modif` = ?
+		`zone_selection_villes` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ?
 		WHERE `id_offre` = ?';
 
 	$stmt = mysqli_prepare($conn, $req);
@@ -294,9 +298,10 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 	return [$updated, $updated_v];
 }
 
-function update_criteres_offre($id, $tab_criteres, $user_id) { 
+function update_criteres_offre($id, $tab_criteres) { 
 
 	global $conn;
+	$user_id= secu_get_current_user_id();
 	$updated = false;
 
 	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ?';
@@ -325,15 +330,28 @@ function update_criteres_offre($id, $tab_criteres, $user_id) {
 		$updated = query_do($stmt);
 	}
 	
+	if($updated){
+		$query3 = 'UPDATE `'.DB_PREFIX.'bsl_offre`
+			SET `last_edit_date` = NOW(), `last_edit_user_id` = ?
+			WHERE `id_offre` = ?';
+
+		$stmt = mysqli_prepare($conn, $query3);
+		mysqli_stmt_bind_param($stmt, 'ii', $user_id, $id);
+		check_mysql_error($conn);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	}
+	
 	return $updated;
 }
 
 /* mesure */
 
-function create_mesure($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
+function create_mesure($nom, $desc, $date_debut, $date_fin, $pro_id) {
 
 	global $conn;
 	$created = false;
+	$user_id = secu_get_current_user_id();
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_mesure`(`nom_mesure`, `description_mesure`, `debut_mesure`, `fin_mesure`, `id_professionnel`,
 		`adresse_mesure`, `code_postal_mesure`, `ville_mesure`, `code_insee_mesure`, `courriel_mesure`,
@@ -357,12 +375,13 @@ function create_mesure($nom, $desc, $date_debut, $date_fin, $pro_id, $user_id) {
 	return $created;
 }
 
-function update_mesure($id_mesure, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $competence_geo, $competence_geo_id, $tab_villes, $user_id){
+function update_mesure($id_mesure, $nom, $desc, $date_debut, $date_fin, $sous_theme, $adresse, $code_postal, $ville, $courriel, $tel, $url, $competence_geo, $competence_geo_id, $tab_villes){
 
 	global $conn;
 	$updated = false;
 	$updated_v = false;
 	$code_insee = '';
+	$user_id = secu_get_current_user_id();
 
 	$query = 'SELECT code_insee
 		FROM `'.DB_PREFIX.'bsl__ville`
@@ -422,10 +441,11 @@ function update_mesure($id_mesure, $nom, $desc, $date_debut, $date_fin, $sous_th
 	return [$updated, $updated_v];
 }
 
-function update_criteres_mesure($id, $tab_criteres, $user_id) { 
+function update_criteres_mesure($id, $tab_criteres) { 
 
 	global $conn;
 	$updated = false;
+	$user_id=secu_get_current_user_id();
 
 	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_mesure_criteres` WHERE `id_mesure` = ? AND `nom_critere` NOT LIKE "villes" ';
 	$stmt = mysqli_prepare($conn, $query1);
@@ -860,15 +880,16 @@ function get_pro_by_id($id){
 	return $pro;
 }
 
-function create_pro($nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id) {
+function create_pro($nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes) {
 
 	global $conn;
 	$created = false;
+	$user_id= secu_get_current_user_id();
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
 		(`nom_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
-		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `user_derniere_modif`)
-		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )';
+		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `creation_date`, `creation_user_id`)
+		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , NOW(), ? )';
 
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'siisssssssisssisiii', $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
@@ -877,16 +898,21 @@ function create_pro($nom, $type, $statut, $desc, $adresse, $code_postal, $ville,
 	if (mysqli_stmt_execute($stmt)) {
 		$created = mysqli_stmt_affected_rows($stmt) > 0;
 		mysqli_stmt_close($stmt);
+		
+		$last_id = mysqli_insert_id($conn);		
+		$created2 = update_listes_pro($last_id, $themes, $zone, $liste_villes);
 	}
-
-	return $created;
+	
+	return $last_id;
 }
 
-function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes, $user_id){
+function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes){
 
+	$user_id= secu_get_current_user_id();
+	
 	//mise à jour des champs principaux
 	$query = 'UPDATE `'.DB_PREFIX.'bsl_professionnel`
-		SET `nom_pro` = ?, `type_id` = ?, `statut_id` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `editeur` = ? , `user_derniere_modif` = ? ';
+		SET `nom_pro` = ?, `type_id` = ?, `statut_id` = ?, `description_pro` = ?, `adresse_pro` = ?, `code_postal_pro` = ?, `ville_pro` = ?, `code_insee_pro` = ?, `courriel_pro` = ?, `telephone_pro` = ?, `visibilite_coordonnees` = ?, `courriel_referent_boussole` = ?, `telephone_referent_boussole` = ?, `site_web_pro` = ?, `delai_pro` = ?, `zone_selection_villes` = ?, `editeur` = ? , `last_edit_date` = NOW(), `last_edit_user_id` = ? ';
 
 	$terms = array($nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $zone, $editeur, $user_id);
 	$terms_type = "siisssssssisssiiii";
@@ -906,7 +932,14 @@ function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal
 	$stmt = query_prepare($query,$terms,$terms_type);
 	$updated = query_do($stmt);
 	
-	//mise à jour des thèmes (ce sont des checkboxes : on enlève les thèmes décochés puis on importe le différentiel)
+	$updated_listes = update_listes_pro($pro_id, $themes, $zone, $liste_villes);
+	
+	return ($updated+$updated_listes);
+}
+
+function update_listes_pro($pro_id, $themes, $zone, $liste_villes){
+
+//mise à jour des thèmes (ce sont des checkboxes : on enlève les thèmes décochés puis on importe le différentiel)
 	$query_dt = 'DELETE FROM `'.DB_PREFIX.'bsl_professionnel_themes` WHERE `id_professionnel` = ? ';
 	$terms_dt[] = $pro_id;
 	$terms_type_dt = 'i';
@@ -970,7 +1003,7 @@ function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal
 		$updated_iv = query_do($stmt);
 	}
 	
-	return ($updated+$updated_it+$updated_iv+$updated_dt+$updated_dv);
+	return ($updated_it+$updated_iv+$updated_dt+$updated_dv);
 }
 
 function get_incoherences_themes_by_pro($pro_id, $themes){
@@ -1427,12 +1460,13 @@ function create_user($nom_utilisateur, $courriel, $mdp, $statut, $attache) {
 
 	global $conn;
 	$created = false;
+	$user_id= secu_get_current_user_id();
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`
-		(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`) 
-		VALUES (? , ? , ? ,NOW(), ? , ?)';
+		(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`, `creation_user_id`)
+		VALUES (? , ? , ? , NOW(), ? , ?, ?)';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'sssss', $nom_utilisateur, $courriel, $mdp, $statut, $attache);
+	mysqli_stmt_bind_param($stmt, 'sssssi', $nom_utilisateur, $courriel, $mdp, $statut, $attache, $user_id);
 	
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
@@ -1447,10 +1481,13 @@ function update_user($id, $nom, $courriel){
 
 	global $conn;
 	$updated = false;
+	$user_id= secu_get_current_user_id();
 	
-	$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` SET `nom_utilisateur` = ?, `email` = ? WHERE `id_utilisateur` = ?';
+	$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
+		SET `nom_utilisateur` = ?, `email` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
+		WHERE `id_utilisateur` = ?';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'ssi', $nom, $courriel, $id);
+	mysqli_stmt_bind_param($stmt, 'ssii', $nom, $courriel, $id, $user_id);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$updated = mysqli_stmt_affected_rows($stmt) > 0;
@@ -1476,12 +1513,12 @@ function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse, $actif){
 		
 		if (password_verify(SALT_BOUSSOLE . $motdepasseactuel, $nouveaumotdepasse)) {
 			$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
-				SET `motdepasse` = ? 
+				SET `motdepasse` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
 				WHERE `id_utilisateur` = ?';
 			//pas de modif du statut autorisée. sinon il faudrait ajouter : `id_statut` = \"".$_POST["statut"]."\"
 			$stmt2 = mysqli_prepare($conn, $query);
 			$hache = secu_password_hash($nouveaumotdepasse);
-			mysqli_stmt_bind_param($stmt2, 'si', $hache, $id);
+			mysqli_stmt_bind_param($stmt2, 'sii', $hache, $user_id, $id);
 			check_mysql_error($conn);
 			
 			if (mysqli_stmt_execute($stmt2)) {

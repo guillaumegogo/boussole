@@ -14,13 +14,13 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 } elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
 	$archived = archive('formulaire', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['enregistrer'])) {
 
 	echo "<!--<pre>"; print_r($_POST); echo "</pre>-->";
 	$name_q = null;
 	if(isset($_POST['name_q'])) $name_q = $_POST['name_q'];
 
-	if (!$_POST["maj_id"]) { //requête d'ajout
+	if (!isset($_POST["maj_id"])) { //requête d'ajout
 		$created = create_formulaire($_POST['theme'], $_POST['territoire'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, secu_get_current_user_id());
 		$id_formulaire = mysqli_insert_id($conn);
 		

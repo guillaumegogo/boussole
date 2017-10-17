@@ -6,7 +6,7 @@ $droit_ecriture = secu_check_level(DROIT_DEMANDE, $_GET['id']);
 //********* variables
 $msg = "";
 if (isset($_POST["id_traite"]) && !empty($_POST["id_traite"]) && isset($_POST['commentaire'])) {
-	$updated = update_demande((int)$_POST["id_traite"], $_POST["commentaire"], secu_get_current_user_id());
+	$updated = update_demande((int)$_POST["id_traite"], $_POST["commentaire"]);
 	if ($updated) {
 		$msg = '<div class="soustitre">La demande a été mise à jour.</div>';
 	}

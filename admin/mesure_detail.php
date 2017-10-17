@@ -10,18 +10,18 @@ $user_pro_id = null;
 if (isset($_SESSION['user_pro_id'])) $user_pro_id=$_SESSION['user_pro_id'];
 
 //********** si post du formulaire interne
-if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
+if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$restored = archive('mesure', (int)$_POST["maj_id"], 1);
  
-} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$archived = archive('mesure', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['enregistrer'])) {
 	
 	if (!$_POST["maj_id"]) { //requête d'ajout
-		$created = create_mesure($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro'], secu_get_current_user_id());
+		$created = create_mesure($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro']);
 		$id_mesure = mysqli_insert_id($conn);
 		
 		if ($created) $msg = "Création bien enregistrée.";
@@ -45,13 +45,13 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 			}
 		}
 	
-		$updated = update_mesure((int)$id_mesure, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['competence_geo'], (int)$id_competence_geo, $liste_villes, secu_get_current_user_id());
+		$updated = update_mesure((int)$id_mesure, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], $_POST['competence_geo'], (int)$id_competence_geo, $liste_villes);
 		
 		$updated2 = null;
 		if (isset($_POST['maj_criteres']) && $_POST['maj_criteres']) { //mise à jour des critères
 			$liste_criteres=null;
 			if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];
-			$updated2 = update_criteres_mesure((int)$id_mesure, $liste_criteres, secu_get_current_user_id());
+			$updated2 = update_criteres_mesure((int)$id_mesure, $liste_criteres);
 		}
 		
 		if (isset($updated[0]) || isset($updated[1]) || isset($updated2) ) {

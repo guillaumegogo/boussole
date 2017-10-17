@@ -85,9 +85,6 @@
 	<div class="button">
 		<input type="hidden" name="maj_id" value=<?= xssafe($id_reponse) ?> />
 		<input type="button" value="Retour" onclick="history.go(-1)">
-	<?php if (!$id_reponse) {	?>
-		<input type="reset" value="Reset">
-	<?php } ?>
 		<input type="submit" disabled name="enregistrer" value="Enregistrer">
 	</div>
 	

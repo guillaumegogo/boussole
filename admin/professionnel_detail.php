@@ -8,15 +8,15 @@ $last_id = null;
 $msg = '';
 
 //si post du formulaire interne
-if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
+if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$restored = archive('pro', (int)$_POST["maj_id"], 1);
  
-} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$archived = archive('pro', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['enregistrer'])) {
 
 	//récupération du code insee correspondant à la saisie
 	$themes = null;
@@ -46,14 +46,14 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$visibilite = (isset($_POST['visibilite'])) ? 1:0;
 
 	//requête d'ajout
-	if (!$_POST['maj_id']) {
-		$created = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, secu_get_current_user_id());
-		$last_id = mysqli_insert_id($conn);
-		if ($created) $msg = "Création bien enregistrée.";
+	if (!$_POST["maj_id"]) {
+		$last_id = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
+		
+		if ($last_id) $msg = "Création bien enregistrée.";
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes, secu_get_current_user_id());
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
 		$last_id = $_POST['maj_id'];
 		if (isset($updated)) $msg = 'Modification bien enregistrée.';
 	}
@@ -103,7 +103,7 @@ if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 1){
 $incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes);
 $incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $liste_villes_pro);
 
-$offres = get_liste_offres(1,null, (int)$id_professionnel);
+$offres = ($id_professionnel) ? get_liste_offres(1,null, (int)$id_professionnel) : null;
 
 //view
 require 'view/professionnel_detail.tpl.php';

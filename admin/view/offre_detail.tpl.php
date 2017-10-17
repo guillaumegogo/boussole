@@ -128,7 +128,7 @@
 
 	<div class="soustitre"><?= $msg ?></div>
 
-	<form method="post" class="detail" onsubmit='htmleditor(); checkall();' id="for>
+	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
 		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
 
@@ -209,7 +209,7 @@
 					<label for="pro">Professionnel :</label>
 					<?php //si création d'une offre de service -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
 					if (isset($id_offre)) { ?>
-						<input type="text" name="pro" value="<?= $row['nom_pro'] ?>\" disabled />
+						<input type="text" name="pro" value="<?= $row['nom_pro'] ?>" readonly />
 					<?php } else { ?>
 						<select name="pro" required ><?= $liste_pro ?></select>
 					<?php } ?>
@@ -357,9 +357,8 @@
 		<div class="button">
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
 		<?php if($droit_ecriture) {
-			if (!$id_offre) {	?>
-			<input type="reset" value="Reset">
-		<?php }else{ if($row['actif_offre'] == 0){ ?>
+			if ($id_offre) {
+				if($row['actif_offre'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Archiver">
@@ -376,8 +375,7 @@
 if (DEBUG) { 
 	$timestamp_fin = microtime(true);
 	$difference_ms = $timestamp_fin - $timestamp_debut;
-	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.'; 
-	print_r($_POST);
-	echo '</pre>';
+	echo '<pre>Exécution du script : ' . substr($difference_ms,0,6) . ' secondes.</pre>';
+	echo '<!--'; print_r($_POST); echo '-->';
 }
 ?>

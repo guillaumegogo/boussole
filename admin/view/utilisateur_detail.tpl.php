@@ -139,9 +139,8 @@
 					   echo "_liste.php";
 				   } ?>'">
 		<?php if($droit_ecriture) { 
-			if (!$id_utilisateur) { ?>
-			<input type="reset" value="Reset">
-		<?php }else{ if($row['actif_utilisateur'] == 0){ ?>
+			if (!$id_utilisateur) { 
+				if($row['actif_utilisateur'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Désactiver">

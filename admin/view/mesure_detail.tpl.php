@@ -373,7 +373,7 @@ if (isset($territoires)){
 				<div class="lab">
 					<label for="critere[<?= $question['name'] ?>][]"><?= $question['libelle'] ?></label>
 					<select name="critere[<?= $question['name'] ?>][]" multiple
-							size="<?= min(count($reponses[$question['name']]), 10) ?>">
+							size="<?= min(count($reponses[$question['name']]), 10) ?>" class="criteres">
 				<?php
 				foreach ($reponses[$question['name']] as $reponse) {
 					if ($reponse['valeur']) {
@@ -400,9 +400,8 @@ if (isset($territoires)){
 		<div class="button">
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='mesure_liste.php'">
 		<?php if($droit_ecriture) {
-			if (!$id_mesure) {	?>
-			<input type="reset" value="Reset">
-		<?php }else{ if($row['actif_mesure'] == 0){ ?>
+			if ($id_mesure) {
+				if($row['actif_mesure'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Archiver">

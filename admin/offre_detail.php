@@ -11,18 +11,18 @@ $user_pro_id = null;
 if (isset($_SESSION['user_pro_id'])) $user_pro_id=$_SESSION['user_pro_id'];
 
 //********** si post du formulaire interne
-if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
+if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$restored = archive('offre', (int)$_POST["maj_id"], 1);
  
-} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['archiver']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	$archived = archive('offre', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+} elseif (isset($_POST['enregistrer'])) {
 
 	if (!$_POST["maj_id"]) { //requête d'ajout
-		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro'], secu_get_current_user_id());
+		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro']);
 		$id_offre = mysqli_insert_id($conn);
 		
 		if ($created) $msg = "Création bien enregistrée.";
@@ -34,7 +34,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		$liste_villes=null;
 		if(isset($_POST['list2'])) $liste_villes=$_POST['list2'];
 		
-		$updated = update_offre((int)$id_offre, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], $liste_villes, secu_get_current_user_id());
+		$updated = update_offre((int)$id_offre, $_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], $_POST['sous_theme'], $_POST["adresse"], $code_postal, $ville, $_POST['courriel'], $_POST['tel'], $_POST['site'], (int)$_POST['delai'], (int)$_POST['zone'], $liste_villes);
 		
 		if (isset($updated[0]) || isset($updated[1])) {
 			$msg = "Modification bien enregistrée.";
@@ -43,7 +43,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 			$liste_criteres=null;
 			if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];
 			
-			$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres, secu_get_current_user_id());
+			$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres);
 			if (isset($updated)) {
 				$msg = "Modification bien enregistrée.";
 			}
@@ -133,6 +133,4 @@ if (isset($id_offre)) {
 }
 
 //view
-//if ($droit_ecriture)
 require 'view/offre_detail.tpl.php';
-// else require 'view/offre_detail_r.tpl.php';
