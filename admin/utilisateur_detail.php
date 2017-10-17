@@ -102,7 +102,11 @@ $liste_statuts['3'] = 'Professionnel';
 $liste_statuts['4'] = 'Consultant';
 asort($liste_statuts);
 
-$liste_territoires = get_territoires($param_territoire);
+if ($id_utilisateur) {
+	$liste_territoires = get_territoires();
+}else{
+	$liste_territoires = get_territoires($param_territoire,1);
+}
 
 $liste_pro = get_liste_pros_select('pro', 'territoire',$param_territoire);
 
