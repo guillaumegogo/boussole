@@ -221,7 +221,7 @@
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel de gestion :</label>
-					<input type="email" name="courriel" required value="<?php if ($id_professionnel) {
+					<input type="text" name="courriel" required value="<?php if ($id_professionnel) {
 						echo $pro['courriel_pro'];
 					} ?>"/>
 				</div>
@@ -236,7 +236,7 @@
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel référent Boussole :</label>
-					<input type="email" name="courriel_ref" required value="<?php if ($id_professionnel) {
+					<input type="text" name="courriel_ref" required value="<?php if ($id_professionnel) {
 						echo $pro['courriel_referent_boussole'];
 					} ?>"/>
 				</div>
