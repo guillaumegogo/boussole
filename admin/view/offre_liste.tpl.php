@@ -65,7 +65,8 @@
 				<tr>
 					<td><a href="offre_detail.php?id=<?= $row['id_offre'] ?>"><?= $row['nom_offre'] ?></a></td>
 					<!--<td>" . $row['date_debut']. "</td>-->
-					<td><?= $row['date_fin'] ?></td>
+					<td><span style="display:none"><?=substr($row['date_fin'], 6, 4).substr($row['date_fin'], 3, 2).substr($row['date_fin'], 0, 2) ?></span><!--clé de tri-->
+						<?= $row['date_fin'] ?></td>
 					<td><?= $row['libelle_theme_court'] ?></td>
 					<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a></td>
 					<td><?= $zone ?></td>

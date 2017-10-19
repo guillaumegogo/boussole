@@ -61,7 +61,7 @@ if (isset($_POST['coordonnees'])) {
 		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'], $token);
 		
 		if ($resultat){
-			$msg_depot ="<img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> Ta demande de contact pour l'offre «&nbsp;".$nom_offre."&nbsp;» a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service."
+			$msg_depot ="<img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service.";
 		}else{
 			$msg_depot = "<img src=\"img/exclamation.png\" width=\"24px\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.";
 		}

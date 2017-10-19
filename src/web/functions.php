@@ -126,9 +126,9 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 		$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-		if (ENVIRONMENT !== ENV_PROD) {
+		//if (ENVIRONMENT !== ENV_PROD) {
 			$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-		}
+		//}
 		$envoi_mail = mail($to, $subject, $message, $headers);
 
 		//accusé d'envoi au demandeur
@@ -142,9 +142,9 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 			$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-			if (ENVIRONMENT !== ENV_PROD) {
+			//if (ENVIRONMENT !== ENV_PROD) {
 				$headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-			}
+			//}
 			$envoi_accuse = mail($to, $subject, $message, $headers);
 		}
 		
