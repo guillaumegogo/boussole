@@ -1,7 +1,10 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$droit_ecriture = secu_check_level(DROIT_DEMANDE, $_GET['id']);
+
+if (isset($_GET["id"]) && !empty($_GET['id']) || !isset($_GET['hash'])) {
+	$droit_ecriture = secu_check_level(DROIT_DEMANDE, $_GET['id']);
+}
 
 //********* variables
 $msg = "";
@@ -14,6 +17,15 @@ if (isset($_POST["id_traite"]) && !empty($_POST["id_traite"]) && isset($_POST['c
 
 if (isset($_GET["id"]) && !empty($_GET['id'])) {
 	$demande = get_demande_by_id((int)$_GET['id']);
+
+}else if(isset($_GET['hash'])){ // cas de l'acces direct à la demande depuis le mail
+	$demande = get_demande_by_id($_GET['hash'], "hash");
+	
+	if ($demande) {
+		$droit_ecriture = true;	
+	} else {
+		header('Location:index.php');
+	}
 }
 
 //view

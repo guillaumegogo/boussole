@@ -60,7 +60,7 @@
 </head>
 <body><div id="main">
 	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
-	<div class="soustitre" style="margin-bottom:2em;"><?php if (isset($resultat)) echo '<span style="color:red">'.$resultat.'</span><br/><br/>'; xecho($msg); ?>
+	<div class="soustitre" style="margin-bottom:2em;"><?php if (isset($msg_depot)) echo '<span style="color:red">'.$msg_depot.'</span><br/><br/>'; xecho($msg); ?>
 		<br/><span style="font-size:0.4em" onclick="masqueClasse('resultat')">(regrouper les thèmes)</span></div> 
 	
 <?php
@@ -112,7 +112,8 @@ if ($nb_offres) {
 						<div style="align:center; border:1px solid red; padding:1em; margin-top:2em;">Si cette offre t'intéresse, demande à être contacté·e par un conseiller d'ici <b><?php xecho($offre['delai']) ?> jours</b> maximum.
 						<form method="post" style="text-align:center; margin:1em auto;">
 							<input type="hidden" name="id_offre" value="<?php xecho($offre['id']) ?>">
-							<input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"/>
+							<input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone" 
+								<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
 							<button type="submit" style="background-color:red">Je demande à être contacté·e</button>
 							<br/>
 						<?php 
@@ -165,4 +166,4 @@ if ($nb_offres) {
 </body>
 </html>
 
-<!--<pre><?php print_r($offres); ?></pre>-->
+<!--<pre><?php print_r($offres); echo 'besoin '.$_SESSION['besoin'];?></pre>-->

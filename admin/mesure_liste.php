@@ -1,7 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre = secu_check_login(DROIT_MESURE);
+$check = secu_check_login(DROIT_MESURE);
+$perimetre = $check['lecture'];
 
 //********* territoire sélectionné
 /*if (isset($_POST["choix_territoire"])) {

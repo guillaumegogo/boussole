@@ -1,7 +1,9 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre_lecture = secu_check_login(DROIT_PROFESSIONNEL);
+$check = secu_check_login(DROIT_PROFESSIONNEL);
+$perimetre_lecture = $check['lecture'];
+$check_ajout = ($check['ecriture']>= PERIMETRE_ZONE) ? true:false; // bouton ajout ?
 
 //********* territoire sélectionné
 if (isset($_POST["choix_territoire"])) {

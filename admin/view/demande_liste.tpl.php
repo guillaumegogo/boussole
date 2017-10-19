@@ -58,6 +58,7 @@
 				?>
 				<tr>
 					<td>
+						<span style="display:none"><?=strtotime($demande['date_demande']) ?></span><!--clé de tri-->
 						<a href="demande_detail.php?id=<?= (int) $demande['id_demande'] ?>"><?= date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi') ?>
 					</td>
 					<td><?php xecho($demande['contact_jeune']) ?></td>

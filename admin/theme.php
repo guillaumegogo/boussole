@@ -1,7 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre = secu_check_login(DROIT_THEME);
+$check = secu_check_login(DROIT_THEME);
+$perimetre = $check['lecture'];
 
 //********* variable
 $msg = "";

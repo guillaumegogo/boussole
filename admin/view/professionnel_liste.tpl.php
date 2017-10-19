@@ -84,11 +84,13 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href="professionnel_liste.php?<?= ($flag_actif) ? 'actif=non">Liste des professionnels désactivés' : '>Liste des professionnels actifs' ?></a></div>
+	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"professionnel_liste.php?actif=non">Liste des professionnels désactivés' : '"professionnel_liste.php">Liste des professionnels actifs' ?></a></div>
 </div>
 
+<?php if($check_ajout){ ?>
 <div class="button">
 	<input type="button" value="Ajouter un professionnel" onclick="javascript:location.href='professionnel_detail.php'">
 </div>
+<?php } ?>
 </body>
 </html>

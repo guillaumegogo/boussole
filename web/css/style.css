@@ -298,11 +298,18 @@ div.centreformulaire {
 	margin:2em 10%; 
 	text-align:left;
 }
-fieldset.formulaire legend {
+fieldset.formulaire>legend {
 	/*margin-top:-0.5em;*/
 	background-color:white; 
 	text-align:left;
 	padding:0 1em;
+}
+fieldset.formulaire>legend>a{
+	color: #165b4e;
+	text-decoration:none;
+}
+fieldset.formulaire>legend>a:hover{
+	text-decoration:underline;
 }
 .lab {
 	margin:1em 0;

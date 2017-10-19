@@ -43,7 +43,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Liste des utilisateurs</a> ></small> 
-		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur <?= ($id_utilisateur && $row['actif_utilisateur'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></h2>
+		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur <?= ($id_utilisateur && $user['actif_utilisateur'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -61,19 +61,19 @@
 				<div class="lab">
 					<label for="courriel">Courriel <?= ($vue != 'creation') ? '(login)' : '' ?> :</label>
 					<input type="text" name="courriel" required placeholder="Le courriel sert de login"
-						value="<?= ($id_utilisateur) ? $row['email'] : '' ?>" <?= ($vue == 'motdepasse') ? 'disabled':'' ?> />
+						value="<?= ($id_utilisateur) ? $user['email'] : '' ?>" <?= ($vue == 'motdepasse') ? 'disabled':'' ?> />
 				</div>
 				<?php if ($vue == "modif" || $vue == "creation") { ?>
 					<div class="lab">
 						<label for="nom_pouet">Nom :</label>
-						<input type="text" name="nom_pouet" required value="<?= ($id_utilisateur) ? $row['nom_utilisateur']:'' ?>" />
+						<input type="text" name="nom_pouet" required value="<?= ($id_utilisateur) ? $user['nom_utilisateur']:'' ?>" />
 					</div>
 					<div class="lab">
 						<label for="statut">Statut :</label>
 						<select name="statut" <?= ($vue == 'modif') ? 'disabled':''; ?> onchange="displayAttache(this);">
 							<option value="">A choisir</option>
 						<?php foreach($liste_statuts as $key=>$statut) { ?>
-							<option value="<?= $key ?>" <?= ($id_utilisateur && ($row['id_statut'] == $key)) ? 'selected':'' ?>>
+							<option value="<?= $key ?>" <?= ($id_utilisateur && ($user['id_statut'] == $key)) ? 'selected':'' ?>>
 								<?= $statut ?></option>
 						<?php } ?>
 						</select>
@@ -82,18 +82,18 @@
 						<label for="attache">Attache :</label>
 						<div style="display:inline-block;">
 							<select name="attache" id="liste_territoires" 
-								<?= ($id_utilisateur && $row['id_statut'] == ROLE_ANIMATEUR) ? 'disabled' : 'style="display:none"' ?>>
+								<?= ($id_utilisateur && $user['id_statut'] == ROLE_ANIMATEUR) ? 'disabled' : 'style="display:none"' ?>>
 							<option value="">A choisir</option>
-						<?php foreach($liste_territoires as $row2) { ?>
-							<option value="<?= $row2['id_territoire'] ?>" <?= (isset($row['id_territoire']) && ($row2['id_territoire'] == $row['id_territoire'])) ? 'selected':'' ?>><?= $row2['nom_territoire'] ?></option>
+						<?php foreach($liste_territoires as $user2) { ?>
+							<option value="<?= $user2['id_territoire'] ?>" <?= (isset($user['id_territoire']) && ($user2['id_territoire'] == $user['id_territoire'])) ? 'selected':'' ?>><?= $user2['nom_territoire'] ?></option>
 						<?php } ?>
 							</select>
 							
 							<select name="attache_p" id="liste_professionnels" 
-								<?= ($id_utilisateur && $row['id_statut'] == ROLE_PRO) ? 'disabled' : 'style="display:none"'; ?>>
+								<?= ($id_utilisateur && $user['id_statut'] == ROLE_PRO) ? 'disabled' : 'style="display:none"'; ?>>
 							<option value="">A choisir</option>
-						<?php foreach($liste_pro as $row3) { ?>
-							<option value="<?= $row3['id_professionnel'] ?>" <?= (isset($row['id_professionnel']) && ($row3['id_professionnel'] == $row['id_professionnel'])) ? 'selected':'' ?>><?= $row3['nom_pro'] ?></option>
+						<?php foreach($liste_pro as $user3) { ?>
+							<option value="<?= $user3['id_professionnel'] ?>" <?= (isset($user['id_professionnel']) && ($user3['id_professionnel'] == $user['id_professionnel'])) ? 'selected':'' ?>><?= $user3['nom_pro'] ?></option>
 						<?php } ?>
 							</select></div>
 					</div>
@@ -101,7 +101,7 @@
 						<div class="lab">
 							<label for="date">Date d'inscription :</label>
 							<input type="text" name="date" class="datepick"
-								   value="<?php echo date_format(date_create($row['date_inscription']), 'd/m/Y'); ?>"
+								   value="<?php echo date_format(date_create($user['date_inscription']), 'd/m/Y'); ?>"
 								   disabled/>
 						</div>
 					<?php } ?>
@@ -139,8 +139,8 @@
 					   echo "_liste.php";
 				   } ?>'">
 		<?php if($droit_ecriture) { 
-			if (!$id_utilisateur) { 
-				if($row['actif_utilisateur'] == 0){ ?>
+			if ($id_utilisateur) { 
+				if($user['actif_utilisateur'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Désactiver">

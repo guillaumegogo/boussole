@@ -1,7 +1,9 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-$perimetre_lecture = secu_check_login(DROIT_TERRITOIRE);
+$check = secu_check_login(DROIT_TERRITOIRE);
+$perimetre_lecture = $check['lecture'];
+$check_ajout = ($check['ecriture']>= PERIMETRE_ZONE) ? true:false; // bouton ajout ?
 
 //********* territoire sélectionné
 $_SESSION['perimetre'] = null;

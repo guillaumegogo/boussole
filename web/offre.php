@@ -9,7 +9,7 @@ $url = '';
 $courriel_offre = '';
 $zone = '';
 $row = array();
-$resultat = '';
+$msg = null;
 
 //********* l'id de l'offre peut arriver en GET ou en POST selon d'où on vient
 $id_offre = 0;
@@ -51,17 +51,22 @@ if (isset($id_offre)) {
 if (isset($_POST['coordonnees'])) {
 
 	//*********** création de la demande
-	$id_demande = create_demande($id_offre, $_POST['coordonnees']);
+	$recherche_associee = (isset($_SESSION['recherche_id']) && (int)$_SESSION['recherche_id']>0 ) ? $_SESSION['recherche_id'] : null;
+	$demande = create_demande($id_offre, $_POST['coordonnees'], $recherche_associee);
+	$id_demande = $demande[0];
+	$token = $demande[1];
 
 	//*********** envoi des mails
 	if ($id_demande) {
-		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'] );
+		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'], $token);
 		
-		if (!$resultat){
-			$resultat = "<img src=\"img/exclamation.png\" width=\"24px\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.";
-		} else {
-			$resultat = "<img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
+		if ($resultat){
+			$msg_depot ="<img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> Ta demande de contact pour l'offre «&nbsp;".$nom_offre."&nbsp;» a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service."
+		}else{
+			$msg_depot = "<img src=\"img/exclamation.png\" width=\"24px\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.";
 		}
+	} else {
+		$msg_depot = "<img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
 	}
 }
 

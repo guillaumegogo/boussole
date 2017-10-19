@@ -106,7 +106,19 @@ function get_formulaire($besoin, $etape){
 		$reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
 	}
 	mysqli_stmt_close($stmt);
-	return [$meta, $questions, $reponses];
+	
+	//on récupère le nom des autres pages pour construire le fil d'ariane
+	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`
+		FROM `'.DB_PREFIX.'bsl_formulaire__page` 
+		JOIN `'.DB_PREFIX.'bsl_formulaire` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
+		WHERE `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1 AND `'.DB_PREFIX.'bsl_theme`.`libelle_theme`= ? 
+		ORDER BY `ordre`';		
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 's', $besoin);
+	$liste_pages = query_get($stmt);
+	
+	return [$meta, $questions, $reponses, $liste_pages];
 }
 
 //************ construction de LA requête
@@ -197,6 +209,7 @@ if (DEBUG) {
 
 	$sous_themes = [];
 	$offres = [];
+	$nb_offres = 0;
 	if (mysqli_stmt_execute($stmt)) {
 		mysqli_stmt_bind_result($stmt, $id_offre, $nom_offre, $description_offre, $id_sous_theme, $sous_theme_offre, $nom_pro, $ville, $delai);
 		
@@ -205,13 +218,17 @@ if (DEBUG) {
 				$sous_themes[$id_sous_theme] = $sous_theme_offre;
 			}
 			$offres[$id_sous_theme][] = array('id' => $id_offre, 'titre' => $nom_offre, 'description' => $description_offre, 'nom_pro' => $nom_pro, 'ville' => $ville, 'delai' => $delai);
+			$nb_offres ++;
 		}
 	} else {
 		throw new Exception("L'application a rencontré un problème technique. Merci de contacter l'administrateur du site avec le message d'erreur suivant : " . mysqli_error($conn));
 	}
 
 	mysqli_stmt_close($stmt);
-	return [$sous_themes, $offres];
+	
+	$id_recherche = (!isset($_SESSION['recherche_id'])) ? create_recherche($nb_offres) : null;
+	
+	return [$sous_themes, $offres, $id_recherche];
 }
 
 function get_offre($id){
@@ -240,17 +257,15 @@ function get_offre($id){
 	return $row;
 }
 
-function create_demande($id_offre, $coordonnees){
+function create_recherche($nb){
 
 	global $conn;
-	$id = null;
 	
-	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_demande`(`id_demande`, `date_demande`, `id_offre`, `contact_jeune`, `code_insee_jeune`, `profil`) 
-		VALUES (NULL, NOW(), ?, ?, ?, ?)';
-	$liste = liste_criteres($_SESSION['critere'], ',');
-	
+	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_recherche`(`date_recherche`, `code_insee`, `besoin`, `criteres`, `nb_offres`)
+		VALUES (NOW(), ?, ?, ?, ?)';
+	$criteres = json_encode($_SESSION['critere'], JSON_UNESCAPED_SLASHES); //façon de charger le tableau simplement en base de données
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'isss', $id_offre, $coordonnees, $_SESSION['code_insee'], $liste);
+	mysqli_stmt_bind_param($stmt, 'sssi', $_SESSION['code_insee'], $_SESSION['besoin'], $criteres, $nb);
 	check_mysql_error($conn);
 
 	if (mysqli_stmt_execute($stmt)) {
@@ -258,4 +273,24 @@ function create_demande($id_offre, $coordonnees){
 		mysqli_stmt_close($stmt);
 	}
 	return $id;
+}
+
+function create_demande($id_offre, $coordonnees, $id_recherche=null){
+
+	global $conn;
+	$id = null;
+	$token = hash('sha256', $coordonnees . time() . rand(0, 1000000));
+	
+	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_demande`(`date_demande`, `id_offre`, `contact_jeune`, `id_recherche`, `id_hashe`) 
+		VALUES (NOW(), ?, ?, ?, ?)';
+	
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'isis', $id_offre, $coordonnees, $id_recherche, $token);
+	check_mysql_error($conn);
+
+	if (mysqli_stmt_execute($stmt)) {
+		$id = mysqli_stmt_insert_id($stmt);
+		mysqli_stmt_close($stmt);
+	}
+	return [$id, $token];
 }

@@ -57,7 +57,7 @@
 </head>
 <body><div id="main">
 	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
-	<div class="soustitre"><strong>Rencontre un conseiller</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
+	<div class="soustitre"><strong>Rencontre un professionnel</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
 	<?php
 	//********* 1er affichage de la page (ou mauvaise saise)
 	if ($nb_villes!=1) {

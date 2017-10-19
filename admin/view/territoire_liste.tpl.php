@@ -62,11 +62,13 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href="?<?= ($flag_actif) ? 'actif=non">Liste des territoires désactivés' : 'actif=oui">Liste des territoires actifs' ?></a></div>
+	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des territoires désactivés' : '"?actif=oui">Liste des territoires actifs' ?></a></div>
 </div>
 
+<?php if($check_ajout){ ?>
 <div class="button">
 	<input type="button" value="Créer un nouveau territoire" onclick="javascript:location.href='territoire_detail.php'">
 </div>
+<?php } ?>
 </body>
 </html>

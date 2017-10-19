@@ -206,7 +206,7 @@ function secu_check_login($domaine = null)
 			header('Location: accueil.php');
 			exit();
 		}else{
-			return $perimetre['lecture'];
+			return $perimetre;
 		}
 	}
 }
@@ -306,8 +306,8 @@ function secu_check_level($domaine, $id)
 		if(($check['ecriture']==PERIMETRE_PRO || $check['lecture']==PERIMETRE_PRO) && $pro_id=secu_get_user_pro_id()){
 			//on checke les pro_id de user_id et $domaine+$id. si c'est les mêmes return true
 			
-			if($domaine=='professionnel' && $pro_id == $id) {
-				if($check['ecriture']==PERIMETRE_PRO) {
+			if($domaine=='professionnel') {
+				if($pro_id == $id && $check['ecriture']==PERIMETRE_PRO) {
 					$droit_ecriture = true;
 				}else{
 					$droit_ecriture += false;
@@ -318,9 +318,10 @@ function secu_check_level($domaine, $id)
 					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
 						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
 						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel.id_professionnel=? AND id_demande=? ';
+						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_demande=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
+					//echo $query.' '.$pro_id.' '.$id;
 				
 				} else if($domaine=='offre') {
 					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`

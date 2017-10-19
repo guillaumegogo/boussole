@@ -124,18 +124,22 @@ function get_criteres_mesure($id_mesure){
 
 
 /* Demandes */
-function get_demande_by_id($id){
+function get_demande_by_id($id, $type_id=null){
 
 	global $conn;
 	$demande = null;
 
-	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `profil`, `commentaire`,
+	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `criteres` as `profil`, `commentaire`,
 		`'.DB_PREFIX.'bsl_offre`.nom_offre, `'.DB_PREFIX.'bsl_professionnel`.nom_pro
 		FROM `'.DB_PREFIX.'bsl_demande`
+		LEFT JOIN `'.DB_PREFIX.'bsl_recherche` ON `'.DB_PREFIX.'bsl_recherche`.id_recherche=`'.DB_PREFIX.'bsl_demande`.id_recherche
 		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
-		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel
-		WHERE id_demande = ?';
-
+		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel ';
+	if ($type_id=="hash"){
+		$query .= 'WHERE id_hashe = ?';
+	}else{
+		$query .= 'WHERE id_demande = ?';
+	}
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
 	check_mysql_error($conn);
@@ -155,9 +159,10 @@ function get_liste_demandes($flag_traite = 1, $territoire_id = null, $user_pro_i
 	$demandes = null;
 	$params = [];
 	$types = '';
-	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `profil`, `'.DB_PREFIX.'bsl_offre`.nom_offre,
+	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `criteres` as `profil`, `'.DB_PREFIX.'bsl_offre`.nom_offre,
 		`'.DB_PREFIX.'bsl_offre`.id_professionnel, `'.DB_PREFIX.'bsl_professionnel`.nom_pro
 		FROM `'.DB_PREFIX.'bsl_demande`
+		LEFT JOIN `'.DB_PREFIX.'bsl_recherche` ON `'.DB_PREFIX.'bsl_recherche`.id_recherche=`'.DB_PREFIX.'bsl_demande`.id_recherche
 		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre = `'.DB_PREFIX.'bsl_demande`.id_offre
 		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_offre`.id_professionnel = `'.DB_PREFIX.'bsl_professionnel`.id_professionnel
 		WHERE date_traitement IS '.(($flag_traite) ? 'NOT' : '').' NULL ';
@@ -176,6 +181,23 @@ function get_liste_demandes($flag_traite = 1, $territoire_id = null, $user_pro_i
 	$stmt = query_prepare($query,$params,$types);
 	$demandes = query_get($stmt);
 	return $demandes;
+}
+
+function get_liste_recherches(){
+
+	global $conn;
+
+	$recherches = null;
+	$query = 'SELECT `'.DB_PREFIX.'bsl_recherche`.`id_recherche`, `date_recherche`, `code_insee`, `besoin`, `criteres`, `nb_offres`, GROUP_CONCAT(`id_demande` SEPARATOR "," ) as `demandes`
+		FROM `'.DB_PREFIX.'bsl_recherche`
+		LEFT JOIN `'.DB_PREFIX.'bsl_demande` ON `'.DB_PREFIX.'bsl_recherche`.id_recherche=`'.DB_PREFIX.'bsl_demande`.id_recherche
+		GROUP BY `id_recherche`, `date_recherche`, `code_insee`, `besoin`, `criteres`, `nb_offres`
+		ORDER BY date_recherche DESC';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$recherches[] = $row;
+	}
+	return $recherches;
 }
 
 function update_demande($id, $commentaire){
@@ -654,25 +676,26 @@ function get_liste_pros_select($type="pro",$zone=null, $zone_id=null, $user_pro_
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		WHERE `actif_pro` = 1 ';
 	if($type == "éditeur") {
-		$query .= ' AND `editeur`= ?';
+		$query .= ' AND `editeur`= ? ';
 		$params[] = 1;
 		$types .= 'i';
 	}
 	if(isset($zone) && $zone) {
-		$query .= ' AND `competence_geo`= ?';
+		$query .= ' AND `competence_geo`= ? ';
 		$params[] = $zone;
 		$types .= 's';
 	}
 	if(isset($zone_id) && $zone_id) {
-		$query .= ' AND `id_competence_geo`= ?';
+		$query .= ' AND `id_competence_geo`= ? ';
 		$params[] = (int) $zone_id;
 		$types .= 'i';
 	}
 	if (isset($user_pro_id)) {
-		$query .= ' AND id_professionnel = = ?';
+		$query .= ' AND id_professionnel = ? ';
 		$params[] = (int) $user_pro_id;
 		$types .= 'i';
 	}
+	$query;
 	$stmt = query_prepare($query,$params,$types);
 	$pros = query_get($stmt);
 	return $pros;
@@ -861,7 +884,7 @@ function get_pro_by_id($id){
 	global $conn;
 	$pro = null;
 
-	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `type_id`, `param_type`.`libelle` as `type`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `user_derniere_modif` 
+	$query = 'SELECT `id_professionnel`, `nom_pro`, `type_pro`, `type_id`, `param_type`.`libelle` as `type`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`, `courriel_pro`, `telephone_pro`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `visibilite_coordonnees`, `delai_pro`, `competence_geo`, `id_competence_geo`, `zone_selection_villes`, `editeur`, `actif_pro`, `last_edit_user_id` 
 		FROM `'.DB_PREFIX.'bsl_professionnel`
 		LEFT JOIN `'.DB_PREFIX.'bsl__parametres` as `param_type` ON `param_type`.`id`=`'.DB_PREFIX.'bsl_professionnel`.`type_id` AND `param_type`.`liste`="type_pro"
 		WHERE id_professionnel= ?';

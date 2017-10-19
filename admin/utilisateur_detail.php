@@ -72,13 +72,13 @@ if (isset($_GET['id'])) {
 	$id_utilisateur = $_GET['id'];
 }
 if (isset($id_utilisateur)) {
-	$row = get_user_by_id((int)$id_utilisateur);
+	$user = get_user_by_id((int)$id_utilisateur);
 
-	if (count($row) > 0) {
-		if ($row['id_statut'] == ROLE_ANIMATEUR) {
-			$attache = $row['nom_territoire'];
-		} else if ($row['id_statut'] == ROLE_PRO) {
-			$attache = $row['nom_pro'];
+	if (count($user) > 0) {
+		if ($user['id_statut'] == ROLE_ANIMATEUR) {
+			$attache = $user['nom_territoire'];
+		} else if ($user['id_statut'] == ROLE_PRO) {
+			$attache = $user['nom_pro'];
 		}
 
 	} else {
@@ -96,11 +96,9 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 }
 
 $liste_statuts = null;
-if (secu_check_role(ROLE_ADMIN)) $liste_statuts = array('1' => 'Administrateur national', '2' => 'Animateur territorial', '5' => 'Administrateur régional');
-if (secu_check_role(ROLE_ANIMATEUR)) $liste_statuts = array('2' => 'Animateur territorial');
-$liste_statuts['3'] = 'Professionnel';
-$liste_statuts['4'] = 'Consultant';
-asort($liste_statuts);
+if (secu_check_role(ROLE_ADMIN)) $liste_statuts = array('1' => 'Administrateur national', '2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant'); //+ '5' => 'Administrateur régional'
+if (secu_check_role(ROLE_ANIMATEUR)) $liste_statuts = array('2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant');
+if (secu_check_role(ROLE_PRO)) $liste_statuts = array('3' => 'Professionnel');
 
 if ($id_utilisateur) {
 	$liste_territoires = get_territoires();

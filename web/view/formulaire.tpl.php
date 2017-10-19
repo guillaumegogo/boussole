@@ -20,7 +20,13 @@
 		<form action="formulaire.php" method="post" class="joli formulaire">
 
 			<fieldset class="formulaire">
-				<legend><?php xecho($meta['titre']) ?> (<?php xecho($meta['etape']) ?>/<?php xecho($meta['nb']) ?>)</legend>
+				<legend><?php  /*xecho($meta['titre']) ?> (<?php xecho($meta['etape']) ?>/<?php xecho($meta['nb']) ?>) */
+				foreach($liste_pages as $page){ 
+					if ($page['ordre']>$meta['etape']) echo $page['titre'];
+					else if ($page['ordre']==$meta['etape']) echo '<b>'.$page['titre'].'</b>';
+					else if ($page['ordre']<$meta['etape']) echo '<a href="formulaire.php?etape='.$page['ordre'].'">'.$page['titre'].'</a>';
+					if($page['ordre']<$meta['nb']) echo ' > ';
+				} ?></legend>
 				<div class="aide"><img src="img/ci_help.png" title="<?php xecho($meta['aide']) ?>"></div>
 
 				<div class="centreformulaire">

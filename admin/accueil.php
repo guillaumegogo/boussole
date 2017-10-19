@@ -5,12 +5,14 @@ secu_check_login();
 
 //******** calcul du nb de demandes (todo : à adapter pour pros et animateurs)
 $nb = get_nb_nouvelles_demandes();
-//$nb = ($nb>0) ? '('.$nb.')':'(aucune)';
 
 if($is_authorized = secu_is_authorized('accueil')){
 	//******* construction des listes de lien
 	if (isset($is_authorized[DROIT_DEMANDE]) && $is_authorized[DROIT_DEMANDE]) {
 		$activites[] = array('demande_liste.php', 'Demandes à traiter', '('.$nb.')');
+	}
+	if (secu_check_role(ROLE_ADMIN)) {
+		$activites[] = array('recherche_liste.php', 'Liste des recherches effectuées', '');
 	}
 
 	//******* construction des listes de lien
