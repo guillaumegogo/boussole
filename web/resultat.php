@@ -9,9 +9,9 @@ if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
 }
 
 //********* si demande de contact
-if (isset($_POST['coordonnees']) && isset($_POST['id_offre'])) {
+if (isset($_POST['coordonnees']) && $_POST['coordonnees'] && isset($_POST['id_offre'])) {
 	
-	$_SESSION['coordonnees']=$_POST['coordonnees'];
+	$_SESSION['coordonnees'] = $_POST['coordonnees'];
 	
 	//*********** création de la demande
 	$recherche_associee = (isset($_SESSION['recherche_id']) && (int)$_SESSION['recherche_id']>0 ) ? $_SESSION['recherche_id'] : null;
