@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title><?php xecho(ucfirst($titredusite)); ?></title>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script>
 		function afficheId(id){
 			var x = document.getElementById(id);
@@ -112,7 +113,7 @@ if ($nb_offres) {
 						<div style="align:center; border:1px solid red; padding:1em; margin-top:2em;">Si cette offre t'intéresse, demande à être contacté·e par un conseiller d'ici <b><?php xecho($offre['delai']) ?> jours</b> maximum.
 						<form method="post" style="text-align:center; margin:1em auto;">
 							<input type="hidden" name="id_offre" value="<?php xecho($offre['id']) ?>">
-							<input type="text" name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone" 
+							<input type="text" required name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone" 
 								<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
 							<button type="submit" style="background-color:red">Je demande à être contacté·e</button>
 							<br/>
