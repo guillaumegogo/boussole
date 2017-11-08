@@ -4,6 +4,8 @@
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title><?php xecho(ucfirst($titredusite)); ?></title>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
@@ -59,46 +61,84 @@
 		}*/
 	</script>
 </head>
-<body><div id="main">
-	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite); ?></a></div></div>
-	<div class="soustitre" style="margin-bottom:2em;"><?php if (isset($msg_depot)) echo '<span style="color:red">'.$msg_depot.'</span><br/><br/>'; xecho($msg); ?>
-		<br/><span style="font-size:0.4em" onclick="masqueClasse('resultat')">(regrouper les thèmes)</span></div> 
+<body><div id="main" class="body-color">
+	<?php include('../src/web/header.inc.php'); ?>
+
+	<div class="wrapper container">
+		<div class="row bordure-bas">
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="retour-page-wrapper">
+					<a href="etape3.html"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="localisation-wrapper">						
+					<img src="img/localisation.svg" alt=""><span>Grenoble, 38000</span> 			
+				</div>
+			</div>				
+		</div>
+	</div>
+	<div class="wrapper container btn-modifier-demande">
+		<a href="#" class="btn-block-inline">
+			<img src="img/edit-pen.svg" alt="" >
+			<div class="wrapper-modif-btn-texte ">
+				<p class="btn-texte-1">modifier ma demande</p>
+				<p class="btn-texte-2">trouver un emploi</p>
+			</div>				
+		</a>
+		<a href="#" class="btn-block-inline">
+			<img src="img/edit-pen.svg" alt="" >
+			<div class="wrapper-modif-btn-texte">
+				<p class="btn-texte-1">modifier ma situation</p>
+				<p class="btn-texte-2">étudiant</p>
+			</div>				
+		</a>			
+		<h1>33 offres correspondent à ma recherche.</h1>
+	</div>
 	
 <?php
 if ($nb_offres) { 
 ?>
-	<div class="joli">
+<div class="joli wrapper container marge-inf">
 		
 <?php
 	foreach ($sous_themes as $sous_theme_id=>$titre) {
 		$nb_offres_sous_theme = count($offres[$sous_theme_id]);
 		$ancre="ancre_".$sous_theme_id;
 ?>
-		<h1 class="h1resultat" onclick="displayId('<?= $ancre ?>');"><?php xecho($titre) ?> (<?= $nb_offres_sous_theme ?>)</h1>
-		<div class="resultat" id="<?= $ancre ?>">
-	
-<?php
-		$i = 0;
-		foreach ($offres[$sous_theme_id] as $offre) {
-			// découpage des titres trop longs
-			$titre = ((strlen($offre["titre"]) > 80 ) && (strpos($offre["titre"]," ",80))) ? 
-				substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
-			$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre["description"]);
-			$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte," ",1500))) ? 
-				substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;;
-			
-			if (++$i == $nb_offres_a_afficher+1){ 
-?>
-			<div id="suite<?= $sous_theme_id?>" style="display:none">
-<?php 		} ?> 
+	<div class="row">
+		<div class="wrapper-titre-catgs">
+			<div class="wrapper-titre-de-catg">
+				<h2 class="h1resultat" onclick="displayId('<?= $ancre ?>');"><?php xecho($titre) ?></h2>
+			</div>
+			<div class="wrapper-nbr-rech">
+				<span><?= $nb_offres_sous_theme ?></span>
+			</div>
+		</div>
+	</div>
 
-				<div class="resultat_offre">
-					<!--<div class="coeur">&#9825;</div>-->
-					<a href="#<?= $ancre ?>" onclick="afficheId('modal<?= (int) $offre['id'] ?>');">
-						<b><?php xecho($titre) ?></b></a>
-				</div>
-				<!-- fenêtre modale de l'offre -->
-				<div id="modal<?= (int) $offre['id'] ?>" class="modal" >
+	<div class="wrapper-liste-details-catg">	
+		<?php
+			$i = 0;
+			foreach ($offres[$sous_theme_id] as $offre) {
+				// découpage des titres trop longs
+				$titre = ((strlen($offre["titre"]) > 80 ) && (strpos($offre["titre"]," ",80))) ? 
+					substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
+				$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre["description"]);
+				$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte," ",1500))) ? 
+					substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;;
+				
+				if (++$i == $nb_offres_a_afficher+1){ 
+		?>
+	</div>
+	<div id="suite<?= $sous_theme_id?>" style="display:none">
+	<?php 		} ?> 
+		<div class="row">
+			<div class="wrapper-detail-catg">
+				<a href="offre.php?id=<?= (int) $offre['id'] ?>" ><?php xecho($titre) ?></a>
+			</div>
+		</div>
+				<!-- <div id="modal<?= (int) $offre['id'] ?>" class="modal" >
 					<div class="modal-content" style="display:table;">
 						<div style="display:table-cell;height:100%; width:2em; vertical-align:middle;">
 						<?php if(isset($offres[$sous_theme_id][$i-2]['id'])){ ?>
@@ -135,7 +175,7 @@ if ($nb_offres) {
 						<?php } ?>
 						</div>
 					</div>
-				</div>
+				</div> -->
 
 <?php 		if($i==$nb_offres_a_afficher && $nb_offres_sous_theme > $nb_offres_a_afficher) { ?>
 				<div class="center">
@@ -151,16 +191,6 @@ if ($nb_offres) {
 <?php } ?>
 	</form>
 <?php } ?>
-
-<div id="criteres" style="border:1px solid #29B297; text-align:center; margin:1em; padding:1em; color:DimGray;">Rappel de mes informations : j'habite à <b><?php xecho($_SESSION['ville_habitee']) ?></b> et je souhaite <b><?php xecho(strtolower($_SESSION['besoin'])) ?></b>.
-<br/><span style="font-size:0.8em;">Mes critères sont les suivants &rarr; <?php echo liste_criteres($_SESSION['critere'], ', '); ?></span>.
-<br/><a href="formulaire.php" class="button">Revenir au formulaire</a></div>
-
-<?php if ($nb_offres) { ?>
-<div style="font-size:small; text-align:center; margin:1em;"><a href="contact.php" target="_blank">Aucune offre ne m'intéresse</a></div>
-<?php } ?>
-
-<div style="height:2em;">&nbsp;</div>  <!--tweak css-->
 
 <?php include('../src/web/footer.inc.php'); ?>
 </div>

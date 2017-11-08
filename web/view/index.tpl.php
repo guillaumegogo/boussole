@@ -4,9 +4,10 @@
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/jquery-ui.css" />
-	<link href="https://fonts.googleapis.com/css?family=Cabin|Questrial" rel="stylesheet"> 
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script>$( function() {
@@ -56,8 +57,32 @@
 	<title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
-	<div class="soustitre"><strong>Rencontre un professionnel</strong> près de chez toi,<br>pour trouver un <strong>emploi</strong>, un <strong>métier</strong>, une <strong>formation</strong>, un <strong>logement</strong>... </div>
+	<header id="bandeau-home-page">
+		<div class="wrapper">
+			<div class="wrapper-bandeau-homepage">
+
+				<img src="img/logo-ministere.svg" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
+				<a  href="index.php"><img src="img/logo-boussole.svg" alt="logo la boussole des jeunes" class="logo-boussole-homepage"></a>
+
+				<div class="container bonhomme-section-header">
+					<div class="row">
+						<div class="col-md-4 col-sm-4 col-xs-4">
+							<img src="img/bonhomme1.svg" alt="">
+						</div>
+
+						<div class="col-md-4 col-sm-4 col-xs-4">
+							<img src="img/bonhomme2.svg" alt="">
+						</div>
+
+						<div class="col-md-4 col-sm-4 col-xs-4">
+							<img src="img/bonhomme3.svg" alt="">
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</header>
 	<?php
 	//********* 1er affichage de la page (ou mauvaise saise)
 	if ($nb_villes!=1) {
@@ -94,10 +119,9 @@
 		<?php
 	}
 	?>
-	<div class="div123">
-		<div class="block123 pro">En 5 minutes je trouve le bon professionnel.</div>
-		<div class="block123 contact">Je suis recontacté·e dans les jours qui suivent.</div>
-		<div class="block123 rdv">J'obtiens un rendez-vous et une réponse à mon besoin.</div>
+
+	<div class=" wrapper soustitre">
+		<h1>Rencontrer des professionnel·le·s près de chez moi qui m'aident dans mes recherches.</h1>
 	</div>
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="13px" viewBox="0 0 19 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>ico/back@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Web-Design-V1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Page4-4" transform="translate(-963.000000, -297.000000)" fill="#191B1B">
+            <g id="Contenu-Pages" transform="translate(46.000000, 172.000000)">
+                <g id="Partie-Supp">
+                    <g id="Mes-boutons" transform="translate(90.000000, 99.000000)">
+                        <g id="Ville-:-Grenoble" transform="translate(798.000000, 0.000000)">
+                            <g id="ico/back" transform="translate(29.000000, 26.000000)">
+                                <path d="M10,0 C7.704,0 5.518,0.879 3.855,2.442 L1.707,0.293 C1.42,0.007 0.991,-0.078 0.617,0.076 C0.244,0.231 0,0.596 0,1 L0,12 C0,12.552 0.448,13 1,13 L12,13 C12.404,13 12.769,12.756 12.924,12.383 C13.079,12.009 12.993,11.579 12.707,11.293 L9.197,7.784 C9.717,6.145 11.245,5 13,5 C15.205,5 16.998,6.793 17,8.998 L17,9 C17,9.552 17.448,10 18,10 C18.552,10 19,9.552 19,9 L19,8.995 C18.998,4.035 14.961,0 10,0"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
