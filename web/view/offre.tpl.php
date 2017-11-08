@@ -4,115 +4,154 @@
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title><?php xecho(ucfirst($titredusite)) ?></title>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
-<body><div id="main">
-	<div class="bandeau"><img src="img/marianne.png" width="93px" style="float:left;"><div class="titrebandeau"><a href="index.php"><?php xecho($titredusite) ?></a></div></div>
+<body><div id="main" class="body-color">
+	<?php include('../src/web/header.inc.php'); ?>
+
+	<div class="wrapper container">
+		<div class="row bordure-bas">
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="retour-page-wrapper">
+					<a href="etape3.html"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="localisation-wrapper">						
+					<img src="img/localisation.svg" alt=""><span>Grenoble, 38000</span> 			
+				</div>
+			</div>				
+		</div>
+	</div>
+	<div class="wrapper container btn-modifier-demande">
+		<a href="#" class="btn-block-inline">
+			<img src="img/edit-pen.svg" alt="" >
+			<div class="wrapper-modif-btn-texte ">
+				<p class="btn-texte-1">modifier ma demande</p>
+				<p class="btn-texte-2">trouver un emploi</p>
+			</div>				
+		</a>
+		<a href="#" class="btn-block-inline">
+			<img src="img/edit-pen.svg" alt="" >
+			<div class="wrapper-modif-btn-texte">
+				<p class="btn-texte-1">modifier ma situation</p>
+				<p class="btn-texte-2">étudiant</p>
+			</div>				
+		</a>
+		<a href="#" class="btn-block-inline margin-left-btn btn-jaune">
+			<img src="img/icon-fleche-black.svg" alt="" class="padding-icon-noir" >
+			<div class="wrapper-modif-btn-texte">
+				<p class="btn-texte-1">retour aux</p>
+				<p class="btn-texte-2">33 résultats</p>
+			</div>				
+		</a>			
+	</div>
+
+	<div class="wrapper container btns-navigation nav-desktop">
+		<div class="row">
+			<div class="col-md-6 col-sm-6 col-xs-6 border-milieu">
+				<div class="wrapper-img-fleche">
+					<a href="#">
+						<img src="img/path.png" alt="" class="img-fleche-gauche">
+						<span>offre précédente</span>
+					</a>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-6 text-right">		
+				<div class="wrapper-img-fleche float-droite">			
+					<a href="#">
+						<img src="img/path.png" alt="" class="img-fleche-droite">
+						<span>offre suivante</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<?php
 	if($row['nom_offre']) { //si on a une offre
 		?>
-		<div class="soustitre"  style="margin-top:3%">Je suis intéressé par l'offre de service &laquo;&nbsp;<b><?php xecho($row['nom_offre']) ?></b>&nbsp;&raquo;.</div>
-		<form class="joli resultat" style="margin-top:2%" action="offre.php" method="post">
-			<fieldset>
-				<legend>Détail de l'offre</legend>
-				<table class="offre">
-					<tr>
-						<td>Description</td>
-						<td colspan=2><?php xbbecho($row['description_offre']) ?></td>
-					</tr>
-					<tr>
-						<td>Validité</td>
-						<td><?php xecho($row['date_debut']) ?> au <?php xecho($row['date_fin']) ?></td>
-						<td rowspan=2>
-							<div style=" text-align:center; padding:0.5em;">
-								<p style="margin:0.5em"><i>Partage-cette offre :</i></p>
-								<a target="_blank" title="Twitter" href="https://twitter.com/share?url=<?= $url_toshare ?>&text=La Boussole des jeunes : <?= $row['nom_offre'] ?>&via=la Boussole des jeunes" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;"><img src="img/ci_twitter.png" width="32px" alt="Twitter" /></a>
-								<a target="_blank" title="Facebook" href="https://www.facebook.com/sharer.php?u=<?= $url_toshare ?>&t=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;"><img src="img/ci_facebook.png" width="32px" alt="Facebook" /></a>
-								<a target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $url_toshare ?>&title=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img src="img/ci_linkedin.png" width="32px" alt="Linkedin" /></a>
-								<a target="_blank" title="Envoyer par mail" href="mailto:?subject=La Boussole des jeunes : <?= $row['nom_offre'] ?>&body=<?= $url_toshare ?>" rel="nofollow"><img src="img/ci_mail.png" width="32px" alt="email" /></a>
-							</div></td>
-					</tr>
-					<!--<tr>
-			<td style="padding:0.5em;">Thème</td>
-			<td style="padding:0.5em;"><?php xecho($row['theme_offre']) ?></td>
-		</tr>-->
-					<tr>
-						<td style="padding:0.5em;">Thèmatique</td>
-						<td style="padding:0.5em;"><?php xecho($row['sous_theme_offre']) ?></td>
-					</tr>
-				</table>
-			</fieldset>
-			<fieldset>
-				<legend>Demande de contact</legend>
-				<div class="cadre">
-					<?php
-					if(isset($_POST['coordonnees'])){
-						echo $msg_depot;
-					} else {
-						?>
-						<p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller d'ici <b><?php xecho($row['delai_offre']) ?> jours</b> maximum.</p>
-						<div style="text-align:center; margin:1em auto;">
-							<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
-							<input type="text" required name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone"
-								<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
-							<button type="submit">Je demande à être contacté·e</button>
-							<br/>
-						<?php 
-						if (ENVIRONMENT !== ENV_PROD) { 
-							if (ENVIRONMENT === ENV_TEST) { 
-						?>
-							<div style="font-size:small; color:red;">En environnement de test, le mail censé être adressé au professionnel est <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>.</div>
-						<?php }else{ ?>
-							<div style="font-size:small; color:red;">Aucun mail n'est envoyé depuis cet environnement.</div>
-						<?php }
-						} ?>
-							</select>
+
+		<div class="wrapper container detail-contenu bg-white bg-shadow">
+			<div class="row">
+				<div class="col-md-8 col-sm-8 col-xs-12 wrapper-titre-offre">
+					<div class="row">
+						<div class="col-md-9 col-sm-8 col-xs-12">
+							<p class="titre-offre">Titre de l'offre</p>
 						</div>
-						<?php
-					}
-					?>
+						<div class="col-md-3 col-sm-4 col-xs-12 texte-validite-align">
+							<div class="bloc-validite">
+								<span class="bloc-validite-titre">Validité jusqu’au</span>
+								<span class="bloc-validite-date"><?php xecho($row['date_fin']) ?></span>
+							</div>					
+						</div>
+					</div>
+					<div class="row">
+						<div class="wrapper-offre-desc">
+							<p class="offre-desc"><?php xbbecho($row['description_offre']) ?></p>
+						</div>
+					</div>
+					<div class="row">
+						<p class="offre-service-titre">Je suis intéressé par l'offre de service</p>
+					</div>
+					<div class="row">
+						<div class="wrapper-offre-service-from">
+								<?php
+								if(isset($_POST['coordonnees'])){
+									echo $msg_depot;
+								} else {
+									?>
+									<div class="col-md-6 col-sm-12 col-xs-12">
+										<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
+										<input type="text" required name="coordonnees" class="input-adresse-mail" placeholder="Mon adresse courriel ou n° de téléphone"
+											<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
+									</div>
+									<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
+										<button type="submit" class="submit-connexion-offre">Je demande à être contacté·e</button>									
+									</div>
+									<?php
+								}
+								?>						
+						</div>
+					</div>
+					<div class="row">
+						<div class="offre-service-bloc-desc">
+							<p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller <mark>d'ici 5 jours maximum.</mark></p>
+						</div>
+					</div>
 				</div>
-			</fieldset>
-			<fieldset class="demande_offre">
-				<legend>Organisme</legend>
-				<div class="cadre">
-					<p>Cette offre de service est proposée par l'organisme suivant :</p>
-					<div class="map"><iframe src="https://maps.google.it/maps?q=<?= $adresse ?>&output=embed"></iframe></div>
-					<table class="offre" style="width:auto;"> <!--style="width:50%;"-->
-						<tr>
-							<td style="width:15em;">Professionnel</td>
-							<td><b><?php xecho($row['nom_pro']) ?></b></td>
-						</tr>
-						<tr>
-							<td>Adresse</td>
-							<td><?php xecho($adresse) ?></td>
-						</tr>
-						<tr>
-							<td>Site internet</td>
-							<td><?php echo($url) ?></td>
-						</tr>
-						<?php if ($row['visibilite_coordonnees']) { ?>
-							<tr>
-								<td>Courriel</td>
-								<td><?php echo($courriel_offre) ?></td>
-							</tr>
-							<tr>
-								<td>Téléphone</td>
-								<td><?php if ($id_offre) { xecho($row['telephone_offre']); } ?></td>
-							</tr>
-						<?php } ?>
-						<!--<tr>
-				<td>Zone concernée</td>
-				<td><?php xecho($zone) ?></td>
-			</tr>-->
-					</table>
+
+				<div class="col-md-4 col-sm-4 col-xs-12">
+					<div class="row">
+						<div class="adresse-offre">
+							<p class="adresse-offre-titre">Proposée par l'organisme</p>
+							<h3><?php xecho($row['nom_pro']) ?></h3>
+							<p class="adresse-offre-adresse"><?php xecho($adresse) ?></p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="wrapper-map">
+							<iframe src="https://maps.google.it/maps?q=<?= $adresse ?>&output=embed" width="100%" height="213" frameborder="0" style="border:0" allowfullscreen></iframe>
+						</div>
+					</div>
+					<div class="row google-bloc">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<a href="https://maps.google.it/maps?q=<?= $adresse ?>" class="lien-google" target="_blank">Ouvrir dans Google Map</a>
+						</div>
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="lien-google-http">Voir le site internet <br>
+							<?php echo($url) ?>
+							</div>
+						</div>
+					</div>
 				</div>
-			</fieldset>
-		</form>
-		<p class="lienenbas"><a href="resultat.php" class="button">Revenir à la liste des offres</a></p>
+			</div>
+		</div>
+		
 		<?php
 	}else{ //pas d'offre
 		?>
@@ -120,7 +159,24 @@
 		<?php
 	}
 	?>
-	<div style="height:2em;">&nbsp;</div> <!--tweak css-->
+
+
+		
+
+
+	<div class="wrapper container">
+		<div class="reseau-sociaux">
+			<span>Je partage cet offre sur </span>
+			<div class="reseau-sociaux-liens">
+				<a target="_blank" title="Twitter" href="https://twitter.com/share?url=<?= $url_toshare ?>&text=La Boussole des jeunes : <?= $row['nom_offre'] ?>&via=la Boussole des jeunes" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="icon-twitter"></a>
+				<a target="_blank" title="Google plus" href="https://plus.google.com/share?url={URL}" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="icon-googleplus"></a>
+				<a target="_blank" title="Facebook" href="https://www.facebook.com/sharer.php?u=<?= $url_toshare ?>&t=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" class="icon-facebook"></a>
+				<a target="_blank" title="Viadeo" href="#" rel="nofollow" onclick="window.open('https://www.viadeo.com/fr/widgets/share/preview?url=' + encodeURIComponent(window.location.href) + '&language=en', '_blank', 'toolbar=no, scrollbars=yes, resizable=yes, top=300, left=300, width=540, height=420'); return false;" class="icon-viadeo"></a>
+				<a target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $url_toshare ?>&title=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;" class="icon-linkedin"></a>
+			</div>
+		</div>			
+	</div>
+
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>
 </body>

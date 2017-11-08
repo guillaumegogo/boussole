@@ -55,18 +55,18 @@ function affiche_valeur($ele, $type)
 	$t = '';
 	switch ($type) {
 		case 'radio':
-			$t = '<input type="radio" name="' . $ele['name'] . '" value="' . $ele['val'] . '" ';
+			$t = '<input type="radio" name="' . $ele['name'] . '" value="' . $ele['val'] . '" id="' . $ele['val'] . $ele['name'] . '" ';
 			if (isset($_SESSION['critere'][$ele['name']])) {
 				if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' checked ';
 			} else if ($ele['def'] == 1) $t .= ' checked ';
-			$t .= '> ' . xssafe($ele['lib']) . "\n";
+			$t .= '> ' . '<label for="' . $ele['val'] . $ele['name'] .'">' . xssafe($ele['lib']). '</label>' . "\n";
 			break;
 		case 'checkbox':
-			$t = '<input type="checkbox" name="' . $ele['name'] . '[]" value="' . $ele['val'] . '" ';
+			$t = '<input type="checkbox" name="' . $ele['name'] . '[]" value="' . $ele['val'] . '" ' . '" id="' . $ele['val'] . $ele['name'] . '" ';
 			if (isset($_SESSION['critere'][$ele['name']])) {
 				if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' checked ';
 			} else if ($ele['def'] == 1) $t .= ' checked ';
-			$t .= '> ' . xssafe($ele['lib']) . '</br>' . "\n";
+			$t .= '> ' . '<label for="' . $ele['val'] . $ele['name'] .'">' . xssafe($ele['lib']) . '</label>' . '</br>' . "\n";
 			break;
 		case 'select':
 			$t = '<option value="' . $ele['val'] . '" ';
