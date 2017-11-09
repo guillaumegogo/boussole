@@ -903,7 +903,11 @@ label.label_long{
 
 .formulaire input[type="radio"],
 .formulaire input[type="checkbox"]{
-	display: none;
+	opacity: 0;
+}
+.formulaire input[type="radio"]:focus + label,
+.formulaire input[type="checkbox"]:focus + label{
+	outline: 1px dotted grey;
 }
 .formulaire input[type="radio"] ~ label,
 .formulaire input[type="checkbox"] ~ label{
