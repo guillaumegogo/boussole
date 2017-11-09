@@ -17,12 +17,12 @@
 		<div class="row bordure-bas">
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="retour-page-wrapper">
-					<a href="etape3.html"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
+					<a href="index.php"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="localisation-wrapper">						
-					<img src="img/localisation.svg" alt=""><span>Grenoble, 38000</span> 			
+					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?></span> 			
 				</div>
 			</div>				
 		</div>

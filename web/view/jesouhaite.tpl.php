@@ -57,33 +57,22 @@
 	<title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
-	<header id="bandeau-home-page">
-		<div class="wrapper">
-			<div class="wrapper-bandeau-homepage">
+	<?php include('../src/web/header.inc.php'); ?>
 
-				<img src="img/logo-ministere.svg" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
-				<a  href="index.php"><img src="img/logo-boussole.svg" alt="logo la boussole des jeunes" class="logo-boussole-homepage"></a>
-
-				<div class="container bonhomme-section-header">
-					<div class="row">
-						<div class="col-md-4 col-sm-4 col-xs-4">
-							<img src="img/bonhomme1.svg" alt="">
-						</div>
-
-						<div class="col-md-4 col-sm-4 col-xs-4">
-							<img src="img/bonhomme2.svg" alt="">
-						</div>
-
-						<div class="col-md-4 col-sm-4 col-xs-4">
-							<img src="img/bonhomme3.svg" alt="">
-						</div>
-					</div>
+	<div class="wrapper container">
+		<div class="row bordure-bas">
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="retour-page-wrapper">
+					<a href="index.php"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
 				</div>
-
 			</div>
+			<div class="col-md-6 col-sm-6 col-xs-6">
+				<div class="localisation-wrapper">						
+					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?></span> 			
+				</div>
+			</div>				
 		</div>
-	</header>
-		<!-- old form working -->
+	</div>
 		<form class="joli accueil vert" method="post" id="searchForm">
 			<fieldset class="accueil_choix_ville">
 				<?php if (isset($message)) { ?>
@@ -95,34 +84,31 @@
 			</fieldset>
 			&nbsp;
 		</form>
-		<!-- new form not working -->
-		<div class="wrapper container accueil-recherche">
-			<div class="row">
-				<form class="joli accueil" method="post" id="searchForm">
-					<div class="col-md-3 col-sm-3 col-xs-12">
-						<div class="wrapper-jhabite">
-							<img src="img/localisation-gris.svg" alt="">
-							<label for="ville_selectionnee">J'habite à</label>
-						</div>						
+		<form class="joli accueil vert" method="post">
+			<fieldset class="accueil_choix_besoin">
+			<?php if($flag_theme){ ?>
+				<div class="wrapper container">
+					<div class="wrapper-options">
+						<h1>Je souhaite</h1>
 					</div>
-					<div class="col-md-6 col-sm-5 col-xs-12">
-						<div class="wrapper-input-ville">
-							<input type="text" id="villes" name="ville_selectionnee" class="input-villes" placeholder="ville ou code postal">
-						</div>
+				</div>
+				<div class="boutonsbesoin container">
+					<div class="row">
+						<?php foreach ($themes as $theme) { ?>
+							<div class="col-md-4 col-sm-4 col-xs-12 spacing-besoins">
+								<div class="wrapper-submit-besoins <?php xecho($theme['libelle']) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
+									<input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
+								</div>
+							</div>
+						<?php } ?>
 					</div>
-					<div class="col-md-3 col-sm-4 col-xs-12">
-						<div class="wrapper-submit-ville">
-							<input type="submit" value="Rechercher" class="submit-ville">
-						</div>
-					</div>
-					&nbsp;
-				</form>
-			</div>
-		</div>
+				</div>
+			<?php }else{ ?>
+				<div>La boussole n'est pas encore disponible sur ton territoire.<br/><br/>Tu peux cependant contacter <a href="http://www.crij.org/france" target="_blank">le réseau d'information jeunesse le plus proche de chez toi</a>.</div>
+			<?php } ?>
+			</fieldset>
+		</form>
 
-	<div class=" wrapper soustitre">
-		<h1>Rencontrer des professionnel·le·s près de chez moi qui m'aident dans mes recherches.</h1>
-	</div>
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>
 </body>
