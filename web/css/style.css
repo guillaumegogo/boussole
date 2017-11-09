@@ -546,24 +546,17 @@ form.joli{
     -webkit-filter: grayscale(100%); 
     cursor: not-allowed;
 }
-.boutonsbesoin{
-	margin-top: 170px;
-	margin-bottom: 30px;
+/*.boutonsbesoin{
+}*/
+.boutonsbesoin .row .col-md-4{
+	/*display: table-cell;
+	width: 1%;
+	float: none;
+*/	margin-top: 220px;
+	margin-bottom: 80px;
 }
 
 .wrapper-submit-besoins.emploi:before{
-	content: '';
-	background-image: url('../img/homme-small-1.png');
-	background-repeat: no-repeat;
-	background-size: 100%;
-	position: absolute;
-	bottom: 82px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 200px;
-	height: 256px;
-}
-.wrapper-submit-besoins.loger:before{
 	content: '';
 	background-image: url('../img/femme-small.png');
 	background-repeat: no-repeat;
@@ -574,6 +567,18 @@ form.joli{
 	transform: translateX(-50%);
 	width: 145px;
 	height: 250px;
+}
+.wrapper-submit-besoins.loger:before{
+	content: '';
+	background-image: url('../img/homme-small-1.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	position: absolute;
+	bottom: 82px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 200px;
+	height: 256px;
 }
 .wrapper-submit-besoins.soigner:before{
 	content: '';
@@ -595,12 +600,16 @@ form.joli{
 
 /*TABLETTE & MOBILE*/
 @media(max-width: 991px){
-	.wrapper-submit-besoins.emploi:before{width: 100px; height: 128px; bottom: 102px;}
-	.wrapper-submit-besoins.loger:before{width: 73px; height: 125px; bottom: 95px;}
+	.wrapper-submit-besoins.loger:before{width: 100px; height: 128px; bottom: 102px;}
+	.wrapper-submit-besoins.emploi:before{width: 73px; height: 125px; bottom: 95px;}
 	.wrapper-submit-besoins.soigner:before{width: 80px; height: 130px; bottom: 100px;}
 	.submit-besoins{
 		font-size: 1.4em;
 		height: 52px;
+	}
+	.boutonsbesoin .row .col-md-4{
+		margin-top: 120px;
+		margin-bottom: 20px;
 	}
 }
 @media screen and (max-width: 1200px){
@@ -637,8 +646,9 @@ form.joli{
 	}
 }
 @media(max-width: 767px){
-	.boutonsbesoin{
-		margin: 0;
+	.boutonsbesoin .row .col-md-4{
+		margin-top: 0px;
+		margin-bottom: 0px;
 	}
 	.wrapper-submit-besoins{
 		margin: 100px 0 20px 0;
@@ -1633,6 +1643,11 @@ label.label_long{
 
 .wrapper-offre-service-from{
 	margin-bottom: 100px;
+}
+.wrapper-offre-service-from p{
+	font-size: 16px;
+	line-height: 1.4;
+	padding: 0 15px;
 }
 .wrapper-offre-service-from .col-md-6{
 	width: 50%;

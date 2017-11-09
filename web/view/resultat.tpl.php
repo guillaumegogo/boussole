@@ -93,7 +93,7 @@
 				<p class="btn-texte-2">étudiant</p>
 			</div>				
 		</a>			
-		<h1>33 offres correspondent à ma recherche.</h1>
+		<h1><?= $nb_offres?> offres correspondent à ma recherche.</h1>
 	</div>
 	
 <?php

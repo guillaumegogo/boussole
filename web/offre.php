@@ -61,12 +61,12 @@ if (isset($_POST['coordonnees'])) {
 		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'], $token);
 		
 		if ($resultat){
-			$msg_depot ="<img src=\"img/ok_circle.png\" width=\"24px\" style=\"margin-bottom:-0.3em;\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service.";
+			$msg_depot ="<p class='msg'>Ta demande de contact pour l'offre <strong>&nbsp;".$row['nom_offre']."&nbsp;</strong> a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service.</p>";
 		}else{
-			$msg_depot = "<img src=\"img/exclamation.png\" width=\"24px\"> Ta demande de contact pour l'offre «&nbsp;".$row['nom_offre']."&nbsp;» a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.";
+			$msg_depot = "<p class='msg'>Ta demande de contact pour l'offre <strong>&nbsp;".$row['nom_offre']."&nbsp;</strong> a bien été enregistrée mais aucun courriel complémentaire n'a été envoyé. Tu peux contacter directement le professionnel.</p>";
 		}
 	} else {
-		$msg_depot = "<img src=\"img/exclamation.png\" width=\"24px\"> L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
+		$msg_depot = "<p class='msg'>L'application a rencontré un problème. Ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.</p>";
 	}
 }
 
