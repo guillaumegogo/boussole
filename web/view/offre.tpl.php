@@ -42,7 +42,7 @@
 				<p class="btn-texte-2">étudiant</p>
 			</div>				
 		</a>
-		<a href="#" class="btn-block-inline margin-left-btn btn-jaune">
+		<a href="resultat.php" class="btn-block-inline margin-left-btn btn-jaune">
 			<img src="img/icon-fleche-black.svg" alt="" class="padding-icon-noir" >
 			<div class="wrapper-modif-btn-texte">
 				<p class="btn-texte-1">retour aux</p>
