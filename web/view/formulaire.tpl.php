@@ -41,17 +41,17 @@
 		<div id="formulaire-etapes-recherche" class="wrapper container">
 			<div class=" row wrapper-etapes">
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-un">
-					<a href="formulaire.php?etape=1">
+					<a href="formulaire.php?etape=1" <?php echo $etape == 1 ? 'class="active"' : '' ?>>
 						<span class="nom-etape">étape #1</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-deux">
-					<a href="formulaire.php?etape=2">
+					<a href="formulaire.php?etape=2" <?php echo $etape == 2 ? 'class="active"' : '' ?>>
 						<span class="nom-etape">étape #2</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-trois">
-					<a href="formulaire.php?etape=3">
+					<a href="formulaire.php?etape=3" <?php echo $etape == 3 ? 'class="active"' : '' ?>>
 						<span class="nom-etape">étape #3</span>
 					</a>
 				</div>				
@@ -87,11 +87,17 @@
 									}
 									?>
 									<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
+                                    <?php if($etape == 1) { ?>
+                                        <a href="jesouhaite.php" style="float:left">Précédent</a>
+                                    <?php }else if($etape == 2){ ?>
+                                        <a href="formulaire.php?etape=1" style="float:left">Précédent</a>
+                                    <?php }else if($etape == 3){ ?>
+                                        <a href="formulaire.php?etape=2" style="float:left">Précédent</a>
+                                    <?php } ?>
 								</div>
 							</fieldset>						
 					</div>
 				</form>
-
 				<?php
 			}else{
 				?>

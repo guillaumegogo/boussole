@@ -59,7 +59,7 @@ if (isset($_POST['coordonnees']) && $_POST['coordonnees']) {
 	//*********** envoi des mails
 	if ($id_demande) {
 		$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'], $token);
-		
+
 		if ($resultat){
 			$msg_depot ="<p class='msg'>Ta demande de contact pour l'offre <strong>&nbsp;".$row['nom_offre']."&nbsp;</strong> a bien été enregistrée et un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service.</p>";
 		}else{

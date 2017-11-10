@@ -145,11 +145,13 @@
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<a href="https://maps.google.it/maps?q=<?= $adresse ?>" class="lien-google" target="_blank">Ouvrir dans Google Map</a>
 						</div>
+                        <?php if($url && $url != ''){ ?>
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="lien-google-http">Voir le site internet <br>
 							<?php echo($url) ?>
 							</div>
 						</div>
+                        <?php } ?>
 					</div>
 				</div>
 			</div>
