@@ -15,7 +15,6 @@ switch (ENVIRONMENT)
 		define('DB_USERNAME', 'apache');
 		define('DB_PASSWD', 'cpvaprplf');
 		define('DB_NAME', 'boussole');
-		define('DB_NAME', 'boussole');
 		define('DB_PREFIX', '');
 		break;
 	case ENV_GUILLAUME :

@@ -29,11 +29,11 @@
 		</div>
 
 		<div class="wrapper container btn-modifier-demande">
-			<a href="#">
+			<a href="jesouhaite.php">
 				<img src="img/edit-pen.svg" alt="" >
 				<div class="wrapper-modif-btn-texte">
 					<p class="btn-texte-1">modifier ma demande</p>
-					<p class="btn-texte-2">trouver un emploi</p>
+                    <!--<p class="btn-texte-2">trouver un emploi</p>-->
 				</div>				
 			</a>			
 		</div>

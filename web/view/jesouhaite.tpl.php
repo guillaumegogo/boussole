@@ -73,41 +73,30 @@
 			</div>				
 		</div>
 	</div>
-		<form class="joli accueil vert" method="post" id="searchForm">
-			<fieldset class="accueil_choix_ville">
-				<?php if (isset($message)) { ?>
-					<p class="message"><?php xecho($message) ?></p>
-				<?php } ?>
-				<label for="ville_selectionnee">J'habite à</label>
-				<input type="text" id="villes" name="ville_selectionnee" placeholder="ville ou code postal">
-				<input type="submit" value="Démarrer">
-			</fieldset>
-			&nbsp;
-		</form>
-		<form class="joli accueil vert" method="post">
-			<fieldset class="accueil_choix_besoin">
-			<?php if($flag_theme){ ?>
-				<div class="wrapper container">
-					<div class="wrapper-options">
-						<h1>Je souhaite</h1>
-					</div>
-				</div>
-				<div class="boutonsbesoin container">
-					<div class="row">
-						<?php foreach ($themes as $theme) { ?>
-							<div class="col-md-4 col-sm-4 col-xs-12 spacing-besoins">
-								<div class="wrapper-submit-besoins <?php xecho($theme['libelle']) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
-									<input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
-								</div>
-							</div>
-						<?php } ?>
-					</div>
-				</div>
-			<?php }else{ ?>
-				<div>La boussole n'est pas encore disponible sur ton territoire.<br/><br/>Tu peux cependant contacter <a href="http://www.crij.org/france" target="_blank">le réseau d'information jeunesse le plus proche de chez toi</a>.</div>
-			<?php } ?>
-			</fieldset>
-		</form>
+    <form class="joli accueil vert" method="post">
+        <fieldset class="accueil_choix_besoin">
+        <?php if($flag_theme){ ?>
+            <div class="wrapper container">
+                <div class="wrapper-options">
+                    <h1>Je souhaite</h1>
+                </div>
+            </div>
+            <div class="boutonsbesoin container">
+                <div class="row">
+                    <?php foreach ($themes as $theme) { ?>
+                        <div class="col-md-4 col-sm-4 col-xs-12 spacing-besoins">
+                            <div class="wrapper-submit-besoins <?php xecho($theme['libelle']) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
+                                <input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        <?php }else{ ?>
+            <div>La boussole n'est pas encore disponible sur ton territoire.<br/><br/>Tu peux cependant contacter <a href="http://www.crij.org/france" target="_blank">le réseau d'information jeunesse le plus proche de chez toi</a>.</div>
+        <?php } ?>
+        </fieldset>
+    </form>
 
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>

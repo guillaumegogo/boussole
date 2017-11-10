@@ -83,22 +83,10 @@
 			</div>
 		</div>
 	</header>
-		<!-- old form working -->
-		<form class="joli accueil vert" method="post" id="searchForm">
-			<fieldset class="accueil_choix_ville">
-				<?php if (isset($message)) { ?>
-					<p class="message"><?php xecho($message) ?></p>
-				<?php } ?>
-				<label for="ville_selectionnee">J'habite à</label>
-				<input type="text" id="villes" name="ville_selectionnee" placeholder="ville ou code postal">
-				<input type="submit" value="Démarrer">
-			</fieldset>
-			&nbsp;
-		</form>
 		<!-- new form not working -->
 		<div class="wrapper container accueil-recherche">
 			<div class="row">
-				<form class="joli accueil" method="post" id="searchForm">
+				<form action="jesouhaite.php" class="joli accueil" method="post" id="searchForm">
 					<div class="col-md-3 col-sm-3 col-xs-12">
 						<div class="wrapper-jhabite">
 							<img src="img/localisation-gris.svg" alt="">
@@ -109,6 +97,9 @@
 						<div class="wrapper-input-ville">
 							<input type="text" id="villes" name="ville_selectionnee" class="input-villes" placeholder="ville ou code postal">
 						</div>
+                        <?php if (isset($message)) { ?>
+                            <p class="message"><?php xecho($message) ?></p>
+                        <?php } ?>
 					</div>
 					<div class="col-md-3 col-sm-4 col-xs-12">
 						<div class="wrapper-submit-ville">

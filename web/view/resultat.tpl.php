@@ -32,33 +32,13 @@
 				tab[i].style.display = 'none';
 			}
 		}
-		function afficheSuite(id){
-			var x = document.getElementById('suite'+id);
-			var y = document.getElementById('lien'+id);
-			if(x.style.display === 'none') {
-				x.style.display = 'block';
-				y.style.display = 'none'; //y.innerHTML = 'Masquer les autres offres';
-			}/* else {
-				x.style.display = 'none';
-				y.innerHTML = 'Afficher les autres offres';
-			}*/
-		}
+
 		window.onclick = function(event) {
 			if (event.target.id.substring(0, 5) == 'modal') {
 				masqueClasse('modal');
 			}
 		}
-		/*function masqueCriteres(){
-			var x = document.getElementById('criteres');
-			var y = document.getElementById('fleche_criteres');
-			if(x.style.display === 'none') {
-				x.style.display = 'block';
-				y.innerHTML = "&#9652;"; //flèche vers le haut
-			} else {
-				x.style.display = 'none';
-				y.innerHTML = "&#9662;"; //flèche vers le bas
-			}
-		}*/
+
 	</script>
 </head>
 <body><div id="main" class="body-color">
@@ -79,18 +59,18 @@
 		</div>
 	</div>
 	<div class="wrapper container btn-modifier-demande">
-		<a href="#" class="btn-block-inline">
+		<a href="jesouhaite.php" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte ">
 				<p class="btn-texte-1">modifier ma demande</p>
-				<p class="btn-texte-2">trouver un emploi</p>
+                <!--<p class="btn-texte-2">trouver un emploi</p>-->
 			</div>				
 		</a>
-		<a href="#" class="btn-block-inline">
+		<a href="formulaire.php?etape=3" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte">
 				<p class="btn-texte-1">modifier ma situation</p>
-				<p class="btn-texte-2">étudiant</p>
+                <!--<p class="btn-texte-2">étudiant</p>-->
 			</div>				
 		</a>			
 		<h1><?= $nb_offres?> offres correspondent à ma recherche.</h1>
@@ -100,12 +80,11 @@
 if ($nb_offres) { 
 ?>
 <div class="joli wrapper container marge-inf">
-		
-<?php
+    <?php
 	foreach ($sous_themes as $sous_theme_id=>$titre) {
 		$nb_offres_sous_theme = count($offres[$sous_theme_id]);
 		$ancre="ancre_".$sous_theme_id;
-?>
+    ?>
 	<div class="row">
 		<div class="wrapper-titre-catgs">
 			<div class="wrapper-titre-de-catg">
@@ -116,7 +95,6 @@ if ($nb_offres) {
 			</div>
 		</div>
 	</div>
-
 	<div class="wrapper-liste-details-catg">	
 		<?php
 			$i = 0;
@@ -126,74 +104,21 @@ if ($nb_offres) {
 					substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
 				$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre["description"]);
 				$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte," ",1500))) ? 
-					substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;;
-				
-				if (++$i == $nb_offres_a_afficher+1){ 
-		?>
-	</div>
-	<div id="suite<?= $sous_theme_id?>" style="display:none">
-	<?php 		} ?> 
-		<div class="row">
-			<div class="wrapper-detail-catg">
-				<a href="offre.php?id=<?= (int) $offre['id'] ?>" ><?php xecho($titre) ?></a>
-			</div>
-		</div>
-				<!-- <div id="modal<?= (int) $offre['id'] ?>" class="modal" >
-					<div class="modal-content" style="display:table;">
-						<div style="display:table-cell;height:100%; width:2em; vertical-align:middle;">
-						<?php if(isset($offres[$sous_theme_id][$i-2]['id'])){ ?>
-							<img src="img/left.png" alt="Offre précédente" onclick="masqueId('modal<?= (int) $offre['id'] ?>');afficheId('modal<?= (int) $offres[$sous_theme_id][$i-2]['id'] ?>');">
-						<?php } ?>
-						</div>
-						<span class="close" onclick="masqueId('modal<?= (int) $offre['id'] ?>');">&times;</span>
-						
-						<p style="margin-top:0;"><b><?php xecho($offre["titre"]) ?></b><br/><?= xecho($offre['nom_pro']) ?> - <?= xecho($offre['ville']) ?></p>
-						<p style="font-size:90%;"><?php xbbecho($description_courte) ?> (<a href="offre.php?id=<?= (int) $offre['id'] ?>">en savoir plus</a>)</p>
-						
-						<div style="align:center; border:1px solid red; padding:1em; margin-top:2em;">Si cette offre t'intéresse, demande à être contacté·e par un conseiller d'ici <b><?php xecho($offre['delai']) ?> jours</b> maximum.
-						<form method="post" style="text-align:center; margin:1em auto;">
-							<input type="hidden" name="id_offre" value="<?php xecho($offre['id']) ?>">
-							<input type="text" required name="coordonnees" placeholder="Mon adresse courriel ou n° de téléphone" 
-								<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
-							<button type="submit" style="background-color:red">Je demande à être contacté·e</button>
-							<br/>
-						<?php 
-						if (ENVIRONMENT !== ENV_PROD) { 
-							if (ENVIRONMENT === ENV_TEST) { 
-						?>
-							<div style="font-size:small; color:red;">En environnement de test, le mail censé être adressé au professionnel est <a href="http://www.yopmail.fr?boussole" target="_blank">consultable ici</a>.</div>
-						<?php }else{ ?>
-							<div style="font-size:small; color:red;">Aucun mail n'est envoyé depuis cet environnement.</div>
-						<?php }
-						} ?>
-						</form>
-						</div>
-						
-						<div style="display:table-cell;height:100%; vertical-align:middle; width:2em; text-align:right;">
-						<?php if(isset($offres[$sous_theme_id][$i]['id'])){ ?>
-						<img src="img/right.png" alt="Offre suivante" onclick="masqueId('modal<?= (int) $offre['id'] ?>');afficheId('modal<?= (int) $offres[$sous_theme_id][$i]['id'] ?>');">
-						<?php } ?>
-						</div>
-					</div>
-				</div> -->
+					substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;
 
-<?php 		if($i==$nb_offres_a_afficher && $nb_offres_sous_theme > $nb_offres_a_afficher) { ?>
-				<div class="center">
-					<span id="lien<?= $sous_theme_id ?>" class="small" onclick="afficheSuite('<?= $sous_theme_id ?>');">
-						Afficher les autres offres <img src="img/sort_desc.png"></span>
-				</div>
-<?php 		}
-			if ($i > $nb_offres_a_afficher && $i==$nb_offres_sous_theme){ ?>
-			</div>
-<?php		}
-		} ?>
-		</div>
+		        ?>
+        <div class="row">
+            <div class="wrapper-detail-catg">
+                <a href="offre.php?id=<?= (int) $offre['id'] ?>" ><?php xecho($titre) ?></a>
+            </div>
+        </div>
+    <?php } ?>
+    </div>
 <?php } ?>
-	</form>
+	</div>
 <?php } ?>
 
 <?php include('../src/web/footer.inc.php'); ?>
-</div>
 </body>
 </html>
 

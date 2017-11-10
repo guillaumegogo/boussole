@@ -28,25 +28,25 @@
 		</div>
 	</div>
 	<div class="wrapper container btn-modifier-demande">
-		<a href="#" class="btn-block-inline">
+		<a href="jesouhaite.php" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte ">
 				<p class="btn-texte-1">modifier ma demande</p>
-				<p class="btn-texte-2">trouver un emploi</p>
+                <!--<p class="btn-texte-2">trouver un emploi</p>-->
 			</div>				
 		</a>
-		<a href="#" class="btn-block-inline">
+		<a href="formulaire.php?etape=3" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte">
 				<p class="btn-texte-1">modifier ma situation</p>
-				<p class="btn-texte-2">étudiant</p>
+                <!--<p class="btn-texte-2">étudiant</p>-->
 			</div>				
 		</a>
 		<a href="resultat.php" class="btn-block-inline margin-left-btn btn-jaune">
 			<img src="img/icon-fleche-black.svg" alt="" class="padding-icon-noir" >
 			<div class="wrapper-modif-btn-texte">
-				<p class="btn-texte-1">retour aux</p>
-				<p class="btn-texte-2">XX résultats</p>
+				<p class="btn-texte-1">retour aux résultats</p>
+                <!--<p class="btn-texte-2">XX résultats</p>-->
 			</div>				
 		</a>			
 	</div>
@@ -123,7 +123,7 @@
 					</div>
 					<div class="row">
 						<div class="offre-service-bloc-desc">
-							<p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller <mark>d'ici 5 jours maximum.</mark></p>
+							<p>Si je suis intéressé.e par cette offre, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
 						</div>
 					</div>
 				</div>
