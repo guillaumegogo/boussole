@@ -133,7 +133,7 @@ form.joli{
 	color: #29B297;
 }
 
-/*---------------------ACCEUIL---------------------*/
+/*---------------------ACCUEIL---------------------*/
 
 .accueil-recherche{
 	position: relative;
@@ -200,6 +200,21 @@ form.joli{
 	border: none;
 	box-shadow: 0px 8px 0px 0px #0A717D;
 
+}
+p.message{
+	font-size: 16px;
+	color: #15488E;
+	font-weight: 500;
+}
+p.message:before{
+	content: '';
+	background-image: url('../img/ico-attention.svg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float: left;
+	width: 15px;
+	height: 15px;
+	margin: 3px 7px 0 0;
 }
 
 .soustitre {
@@ -823,11 +838,12 @@ form.joli{
     margin-left: 30px;
 }
 
-
+.wrapper-etapes{
+	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);	
+}
 .wrapper-etape-un , .wrapper-etape-deux , .wrapper-etape-trois{
 	max-width: 100%;
 	background-color: #FFFFFF;	
-	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
 }
 
 
@@ -1502,12 +1518,15 @@ label.label_long{
 	background-color: #FBFBFB;	
 	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
 	padding: 0;
+	display: none;
 }
 .btns-navigation .col-sm-6{
 	padding: 0;
 }
 
-
+.detail-contenu{
+	margin-top: 50px;
+}
 .wrapper-img-fleche{
 	position: relative;
 	height: 65px;
@@ -1755,6 +1774,9 @@ input.input-adresse-mail{
 	text-decoration: none;
 	color: black;
 }
+.lien-google-http{
+	border-top: 1px solid #F0F0F0;
+}
 .lien-google-http a{
 	text-decoration: none;
 	color: #929392;
@@ -1769,7 +1791,7 @@ input.input-adresse-mail{
 }
 
 .lien-google{
-    border-bottom: 1px solid #F0F0F0;
+    
     display: block;
     margin: 0 23px;
     padding: 20px 20px 20px 0;
@@ -1828,9 +1850,11 @@ input.input-adresse-mail{
 .icon-viadeo{
 	background:url('../img/viadeo-gris.png') no-repeat center;
 }
-
 .icon-linkedin{
 	background:url('../img/linkedin-gris.png') no-repeat center;
+}
+.icon-email{
+	background:url('../img/ico-mail-gris.png') no-repeat center;
 }
 
 
@@ -1850,9 +1874,12 @@ input.input-adresse-mail{
 	background:url('../img/viadeo-couleur.png') no-repeat center;
 	background-size: contain;
 }
-
 .icon-linkedin:hover{
 	background:url('../img/linkedin-couleur.png') no-repeat center;
+	background-size: contain;
+}
+.icon-email:hover{
+	background:url('../img/ico-mail-noir.png') no-repeat center;
 	background-size: contain;
 }
 

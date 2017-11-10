@@ -168,16 +168,16 @@
 
 		
 
-
 	<div class="wrapper container">
 		<div class="reseau-sociaux">
 			<span>Je partage cet offre sur </span>
 			<div class="reseau-sociaux-liens">
 				<a target="_blank" title="Twitter" href="https://twitter.com/share?url=<?= $url_toshare ?>&text=La Boussole des jeunes : <?= $row['nom_offre'] ?>&via=la Boussole des jeunes" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="icon-twitter"></a>
-				<a target="_blank" title="Google plus" href="https://plus.google.com/share?url={URL}" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="icon-googleplus"></a>
+				<a target="_blank" title="Google plus" href="https://plus.google.com/share?url={<?php echo $url_toshare; ?>}" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="icon-googleplus"></a>
 				<a target="_blank" title="Facebook" href="https://www.facebook.com/sharer.php?u=<?= $url_toshare ?>&t=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" class="icon-facebook"></a>
 				<a target="_blank" title="Viadeo" href="#" rel="nofollow" onclick="window.open('https://www.viadeo.com/fr/widgets/share/preview?url=' + encodeURIComponent(window.location.href) + '&language=en', '_blank', 'toolbar=no, scrollbars=yes, resizable=yes, top=300, left=300, width=540, height=420'); return false;" class="icon-viadeo"></a>
 				<a target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $url_toshare ?>&title=La Boussole des jeunes : <?= $row['nom_offre'] ?>" rel="nofollow" onclick="javascript:window.open(this.href, '','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;" class="icon-linkedin"></a>
+				<a target="_blank" title="Email" href="mailto:?body=<?php echo $url_toshare; ?>" rel="nofollow" class="icon-email"></a>
 			</div>
 		</div>			
 	</div>
