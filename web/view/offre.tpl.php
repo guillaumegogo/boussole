@@ -17,12 +17,12 @@
 		<div class="row bordure-bas">
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="retour-page-wrapper">
-					<a href="etape3.html"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
+					<a href="index.php"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="localisation-wrapper">						
-					<img src="img/localisation.svg" alt=""><span>Grenoble, 38000</span> 			
+					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?></span> 			
 				</div>
 			</div>				
 		</div>
@@ -42,14 +42,15 @@
 				<p class="btn-texte-2">étudiant</p>
 			</div>				
 		</a>
-		<a href="#" class="btn-block-inline margin-left-btn btn-jaune">
+		<a href="resultat.php" class="btn-block-inline margin-left-btn btn-jaune">
 			<img src="img/icon-fleche-black.svg" alt="" class="padding-icon-noir" >
 			<div class="wrapper-modif-btn-texte">
 				<p class="btn-texte-1">retour aux</p>
-				<p class="btn-texte-2">33 résultats</p>
+				<p class="btn-texte-2">XX résultats</p>
 			</div>				
 		</a>			
 	</div>
+
 
 	<div class="wrapper container btns-navigation nav-desktop">
 		<div class="row">
@@ -81,7 +82,7 @@
 				<div class="col-md-8 col-sm-8 col-xs-12 wrapper-titre-offre">
 					<div class="row">
 						<div class="col-md-9 col-sm-8 col-xs-12">
-							<p class="titre-offre">Titre de l'offre</p>
+							<p class="titre-offre"><?php xecho($row['nom_offre']) ?></p>
 						</div>
 						<div class="col-md-3 col-sm-4 col-xs-12 texte-validite-align">
 							<div class="bloc-validite">
@@ -105,14 +106,16 @@
 									echo $msg_depot;
 								} else {
 									?>
-									<div class="col-md-6 col-sm-12 col-xs-12">
-										<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
-										<input type="text" required name="coordonnees" class="input-adresse-mail" placeholder="Mon adresse courriel ou n° de téléphone"
-											<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
-									</div>
-									<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
-										<button type="submit" class="submit-connexion-offre">Je demande à être contacté·e</button>									
-									</div>
+									<form method="post">
+										<div class="col-md-6 col-sm-12 col-xs-12">
+											<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
+											<input type="text" required name="coordonnees" class="input-adresse-mail" placeholder="Mon adresse courriel ou n° de téléphone"
+												<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
+										</div>
+										<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
+											<button type="submit" class="submit-connexion-offre">Je demande à être contacté·e</button>									
+										</div>
+									</form>
 									<?php
 								}
 								?>						

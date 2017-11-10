@@ -17,12 +17,12 @@
 			<div class="row bordure-bas">
 				<div class="col-md-6 col-sm-6 col-xs-6">
 					<div class="retour-page-wrapper">
-						<a href="page-je-souhaite.html"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
+						<a href="index.php"><img src="img/icon-retour.svg" alt="">Retour à la page d’accueil</a>
 					</div>
 				</div>
 				<div class="col-md-6 col-sm-6 col-xs-6">
 					<div class="localisation-wrapper">
-						<img src="img/localisation.svg" alt=""><span>Grenoble, 38000</span>			
+						<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?></span>			
 					</div>
 				</div>				
 			</div>
@@ -42,20 +42,17 @@
 			<div class=" row wrapper-etapes">
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-un">
 					<a href="formulaire.php?etape=1">
-						<img src="img/icon-valide.svg" alt="">
 						<span class="nom-etape">étape #1</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-deux">
 					<a href="formulaire.php?etape=2">
-						<img src="img/icon-valide.svg" alt="">
 						<span class="nom-etape">étape #2</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-trois">
-					<a href="#">
-						<span class="num-etape-active">3</span>
-						<span class="nom-etape couleur-vert-active">étape #3</span>
+					<a href="formulaire.php?etape=3">
+						<span class="nom-etape">étape #3</span>
 					</a>
 				</div>				
 			</div>

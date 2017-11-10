@@ -187,8 +187,9 @@ form.joli{
 }
 
 .submit-ville{
-	height: 3.5em;
-    width: 11.5em;
+	height: auto;
+    width: auto;
+    padding: 20px 40px;
 	border-radius: 0.5em;	
 	background-color: #137F8B;
 
@@ -338,6 +339,12 @@ form.joli{
 	    width: 276px;
     	height: 225px;
 	}
+	.wrapper-jhabite img{
+		display: none;
+	}
+	.wrapper-jhabite label{
+		margin: 0 10px 5px 5px;
+	}
 
 }
 
@@ -375,12 +382,15 @@ form.joli{
 	    width: 196px;
 	    height: 170px;
 	}
+	.bonhomme-section-header .col-md-4{
+		padding: 0 5px;
+	}
 }
 
 @media screen and (max-width:500px){
 	.bonhomme-section-header img{
-		width: 128px;
-    	height: 114px;
+		width: 108px;
+    	height: 94px;
 	}
 
 	.logo-boussole-homepage{
@@ -472,6 +482,7 @@ form.joli{
 	font-size: 16px;	
 	font-weight: 500;	
 	line-height: 20px;
+	vertical-align: middle;
 }
 
 .bordure-bas{
@@ -528,18 +539,79 @@ form.joli{
 	position: relative;
     bottom: 1em;
 }
-
-.filtre-gris{
-    filter: grayscale(100%);
-    -webkit-filter: grayscale(100%); 
-}
-
-.submit-gris{
+.submit-besoins[disabled=""]{
 	background-color: #CECECE;
 	box-shadow: 0px 8px 0px 0px #AEAEAE;
+	filter: grayscale(100%);
+    -webkit-filter: grayscale(100%); 
+    cursor: not-allowed;
+}
+/*.boutonsbesoin{
+}*/
+.boutonsbesoin .row .col-md-4{
+	/*display: table-cell;
+	width: 1%;
+	float: none;
+*/	margin-top: 220px;
+	margin-bottom: 80px;
+}
+
+.wrapper-submit-besoins.emploi:before{
+	content: '';
+	background-image: url('../img/femme-small.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	position: absolute;
+	bottom: 75px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 145px;
+	height: 250px;
+}
+.wrapper-submit-besoins.loger:before{
+	content: '';
+	background-image: url('../img/homme-small-1.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	position: absolute;
+	bottom: 82px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 200px;
+	height: 256px;
+}
+.wrapper-submit-besoins.soigner:before{
+	content: '';
+	background-image: url('../img/homme-small-2.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	position: absolute;
+	bottom: 80px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 160px;
+	height: 260px;
+}
+.wrapper-submit-besoins.disabled:before{
+	filter: grayscale(100%);
+    -webkit-filter: grayscale(100%); 
+    cursor: not-allowed;
 }
 
 /*TABLETTE & MOBILE*/
+@media(max-width: 991px){
+	.wrapper-submit-besoins.loger:before{width: 100px; height: 128px; bottom: 102px;}
+	.wrapper-submit-besoins.emploi:before{width: 73px; height: 125px; bottom: 95px;}
+	.wrapper-submit-besoins.soigner:before{width: 80px; height: 130px; bottom: 100px;}
+	.submit-besoins{
+		font-size: 1.4em;
+		height: 52px;
+	}
+	.boutonsbesoin .row .col-md-4{
+		margin-top: 120px;
+		margin-bottom: 20px;
+	}
+}
 @media screen and (max-width: 1200px){
 	.logo-ministere {
 	    float: none;
@@ -573,6 +645,15 @@ form.joli{
 	    padding-bottom: 0.6em;
 	}
 }
+@media(max-width: 767px){
+	.boutonsbesoin .row .col-md-4{
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+	.wrapper-submit-besoins{
+		margin: 100px 0 20px 0;
+	}
+}
 
 /*---------------------LES ETAPES DE RECHERCHE---------------------*/
 
@@ -580,6 +661,7 @@ form.joli{
 
 .femme-header{
 	float: right;
+	margin-top: 16px;
 }
 
 .btn-modifier-demande{
@@ -659,8 +741,47 @@ form.joli{
 	display: block;
 	max-width: 100%;
 	text-decoration: none;
-	padding: 2.5em 0;
+	padding: 2.5em 0 2.5em 0.8em;
 	text-decoration: none;
+}
+.wrapper-etapes a:before{
+	content: '';
+	background-image: url('../img/icon-valide.svg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float: left;
+	width: 42px;
+	height: 42px;
+}
+.wrapper-etapes a.active span{
+	color: #156C78 !important;
+}
+.wrapper-etapes .wrapper-etape-un a.active:before{
+	content: '';
+	background-image: url('../img/icon-step1.svg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float: left;
+	width: 42px;
+	height: 42px;
+}
+.wrapper-etapes .wrapper-etape-deux a.active:before{
+	content: '';
+	background-image: url('../img/icon-step2.svg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float: left;
+	width: 42px;
+	height: 42px;
+}
+.wrapper-etapes .wrapper-etape-trois a.active:before{
+	content: '';
+	background-image: url('../img/icon-step3.svg');
+	background-repeat: no-repeat;
+	background-size: 100%;
+	float: left;
+	width: 42px;
+	height: 42px;
 }
 .wrapper-etapes a:hover,
 .wrapper-etapes a:focus{
@@ -701,9 +822,7 @@ form.joli{
     text-align: center;
     margin-left: 30px;
 }
-.couleur-vert-active{
-	color: #156C78 !important;
-}
+
 
 .wrapper-etape-un , .wrapper-etape-deux , .wrapper-etape-trois{
 	max-width: 100%;
@@ -729,9 +848,11 @@ label.label_long{
 	padding: 10px 20px;
 }
 .formulaire .centreformulaire > div:last-of-type{
+	clear: both;
 	float: right;
 	margin: 30px;
 }
+
 .formulaire select{
 	 appearance: none;
 	-webkit-appearance: none;
@@ -782,7 +903,11 @@ label.label_long{
 
 .formulaire input[type="radio"],
 .formulaire input[type="checkbox"]{
-	display: none;
+	opacity: 0;
+}
+.formulaire input[type="radio"]:focus + label,
+.formulaire input[type="checkbox"]:focus + label{
+	outline: 1px dotted grey;
 }
 .formulaire input[type="radio"] ~ label,
 .formulaire input[type="checkbox"] ~ label{
@@ -969,9 +1094,15 @@ label.label_long{
 	}
 
 }
+@media(max-width: 767px){
+	.formulaire .centreformulaire > div:last-of-type{
+		float: left;
+		margin: 30px auto !important;
+	}
+}
 
 
-@media screen and (max-width: 525px){
+@media screen and (max-width: 545px){
 
 	.btn-modifier-demande a {
 	     width: auto; 
@@ -1014,7 +1145,7 @@ label.label_long{
 	}
 
 	.btn-modifier-demande a {
-	    padding: 15px 0px 6px 30px;
+	    //padding: 15px 0px 6px 30px;
 	}
 
 	.inline {
@@ -1037,10 +1168,11 @@ label.label_long{
 }
 
 @media screen and (max-width: 440px){
-	.logo-boussole-steps {
-	    
+	.logo-boussole-steps {	    
 	    margin-left: 7%;
-
+	}
+	.logo-ministere-steps {
+	    margin-right: 0;
 	}
 }
 
@@ -1180,7 +1312,7 @@ label.label_long{
 	color: #2D3549;	
 	font-size: 1.66em;	
 	font-weight: 500;
-	padding: 30px;
+	padding: 30px 40px 30px 30px;
 	margin: 0;
 	text-decoration: none;
 
@@ -1213,8 +1345,8 @@ label.label_long{
 
 @media screen and (max-width: 1200px){
 	.btn-modifier-demande a {
-	    padding: 15px 0px 3px 27px;
-	    width: 30%;
+	    //padding: 15px 0px 3px 27px;
+	    //width: 30%;
 	}
 
 	.btn-modifier-demande {
@@ -1251,7 +1383,7 @@ label.label_long{
 	}
 
 	.btn-modifier-demande a {
-	    padding: 15px 0px 6px 30px;
+	    //padding: 15px 0px 6px 30px;
 	    width: 99%;
 	    
 	    display: block;
@@ -1259,12 +1391,12 @@ label.label_long{
 	}
 
 	.wrapper-titre-de-catg{
-	    width: 66%;
+	    width: 70%;
 	}
 
 	.wrapper-titre-de-catg h2 {
 	    font-size: 1.66em;
-	    margin: 34px auto 38px 11px;
+	    margin: 30px;
 
 	}
 
@@ -1279,19 +1411,25 @@ label.label_long{
 	    margin-right: 5px;
 	}
 
-	.wrapper-detail-catg a {
-	   
-	    padding: 23px 27px;
+	.wrapper-detail-catg a {	   
+	    padding: 20px 40px 20px 30px;
 	}
 
 	.spacing-top {
 	    margin-top: 31px;
 	}
-
-	.wrapper-nbr-rech {
+	.wrapper-nbr-rech{
+		width: 60px;
+		height: 60px;
+	}
+	.wrapper-nbr-rech span{
+		top: 8px;
+		left: 20px;
+	}
+	/*.wrapper-nbr-rech {
 	   
 	    margin: 26px 15px 33px auto;
-	}
+	}*/
 
 
 }
@@ -1303,11 +1441,11 @@ label.label_long{
 	    text-align: center;
 	}
 
-	.wrapper-nbr-rech {
+	/*.wrapper-nbr-rech {
 	    display: inline-block;
 	     float: none; 
 	    margin: 39px 30px 33px auto;
-	}
+	}*/
 
 	.wrapper-titre-de-catg h2 {
 
@@ -1510,8 +1648,25 @@ label.label_long{
 .wrapper-offre-service-from{
 	margin-bottom: 100px;
 }
+.wrapper-offre-service-from p{
+	font-size: 16px;
+	line-height: 1.4;
+	padding: 0 15px;
+}
 .wrapper-offre-service-from .col-md-6{
 	width: 50%;
+}
+@media(max-width: 1199px){
+	.wrapper-offre-service-from .col-md-6{
+		width: 100%
+	}
+	input.input-adresse-mail{
+		width: 100% !important;
+	}
+	.submit-connexion-offre{
+		width: 100%;
+		margin: 10px 0 30px;
+	}
 }
 
 input.input-adresse-mail{
@@ -1614,12 +1769,12 @@ input.input-adresse-mail{
 }
 
 .lien-google{
-	height: 75px;
-    line-height: 75px;
     border-bottom: 1px solid #F0F0F0;
     display: block;
     margin: 0 23px;
+    padding: 20px 20px 20px 0;
     font-size: 1.33em;
+    line-height: 1.2;
     font-weight: 500;
     color: #2D3549;
 
@@ -1631,7 +1786,9 @@ input.input-adresse-mail{
     padding-top: 29px; 
     display: block;
     margin: 0 23px;
+    padding: 20px 20px 0 0;
     font-size: 1.33em;
+    line-height: 1.2;
     font-weight: 500;
     color: #2D3549;
 
@@ -1776,7 +1933,7 @@ input.input-adresse-mail{
 
 	.submit-connexion-align {
 	    text-align: left;
-	    margin: 33px 0;
+	    margin: 5px 0;
 	}
 
 	.offre-service-titre {
@@ -1814,7 +1971,7 @@ input.input-adresse-mail{
 
 	.bloc-validite {
 	   display: inline-block;
-	   padding-top: 19px;
+	   margin: 15px 0 15px 40px;
 	}
 
 	.nav-mobile{
@@ -1833,7 +1990,7 @@ input.input-adresse-mail{
 
 }
 
-@media screen and (max-width: 420px){
+@media screen and (max-width: 767px){
 
 	
 	.wrapper {
@@ -1869,7 +2026,7 @@ input.input-adresse-mail{
 
 	.adresse-offre{
 		border-top: 1px solid #E5E5E6;
-		 padding: 25px 6px 26px 6px;
+		padding: 20px 40px;
 	}
 
 	input.input-adresse-mail {
