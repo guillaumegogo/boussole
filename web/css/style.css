@@ -67,8 +67,7 @@ footer{
 .logo-ministere-homepage{
 	float: left;
 	margin-top: 4.5em;
-    width: 98px;
-    height: 130px;
+    height: 150px;
 }
 
 .logo-boussole-homepage{
@@ -1027,9 +1026,10 @@ label.label_long{
 }
 
 .logo-ministere-steps {
-	    float: left;
-	    padding-top: 2.2em;
-	    padding-left: 2em;
+	float: left;
+	padding-top: 2.2em;
+	padding-left: 2em;
+	max-height: 150px;
 }
 
 .text-droite{

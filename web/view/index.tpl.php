@@ -61,7 +61,7 @@
 		<div class="wrapper">
 			<div class="wrapper-bandeau-homepage">
 
-				<img src="img/logo-ministere.svg" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
+				<img src="img/logo-ministere-2.jpg" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
 				<a  href="index.php"><img src="img/logo-boussole.svg" alt="logo la boussole des jeunes" class="logo-boussole-homepage"></a>
 
 				<div class="container bonhomme-section-header">
