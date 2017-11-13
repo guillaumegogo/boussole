@@ -31,18 +31,19 @@ if($_SESSION['recherche']) {
 	}
 
 	//********* récupération des thèmes disponibles pour le code insee indiqué
-	if (isset($_SESSION['code_insee'])) $themes = get_themes_by_ville($_SESSION['code_insee']);
+	if (isset($_SESSION['code_insee'])) {
+	    $themes = get_themes_by_ville($_SESSION['code_insee']);
+    }
 
 	//********* a-t-on au moins un thème actif ?
 	foreach ($themes as $theme) {
 		$flag_theme += ($theme['actif']*$theme['nb']);
 	}
-}
 
-if(count($themes) == 0 || $flag_theme == 0) {
-    $erreur = 1;
+	if(!$erreur && (!$flag_theme || !count($themes))) {
+	    $erreur = 1;
+    }
 }
-
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
 if (isset($_POST['besoin'])) {
 	$_SESSION['besoin'] = $_POST['besoin'];
