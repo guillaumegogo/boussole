@@ -15,7 +15,7 @@ if (isset($_POST['ville_selectionnee'])) {
 }
 
 //********* l'utilisateur a relancé le formulaire
-if($_SESSION['recherche']) {
+if(isset($_SESSION['recherche'])) {
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville
 	$row = get_ville($_SESSION['recherche']);
 	$nb_villes = count($row);
