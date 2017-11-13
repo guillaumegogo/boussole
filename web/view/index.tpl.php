@@ -112,7 +112,7 @@
 		</div>
 
 	<div class=" wrapper soustitre">
-		<h1>Rencontrer des professionnel·le·s près de chez moi qui m'aident dans mes recherches.</h1>
+		<h1>Rencontre un professionnel près de chez toi, pour trouver un emploi, un métier, une formation, un logement...</h1>
 	</div>
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>
