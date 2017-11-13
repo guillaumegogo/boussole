@@ -851,7 +851,7 @@ label.label_long{
 	color: #2D3549;
 	font-size: 1.6em;	
 	font-weight: 500;	
-	line-height: 3.7em;
+	line-height: 1.2em;
 	display: block;
 }
 
@@ -1041,7 +1041,6 @@ label.label_long{
 @media screen and (max-width: 1200px){
 	
 	label.label_long {  
-	  line-height: 1.8em;
 	  padding: 20px 0 15px 0;
 	}
 
@@ -1091,7 +1090,6 @@ label.label_long{
 
 	label.label_long {
 	    font-size: 1.6em;
-	    line-height: 2.1em;
 	}
 
 	#formulaire-etapes-recherche {
@@ -1123,10 +1121,32 @@ label.label_long{
 
 }
 @media(max-width: 767px){
+	.formulaire{
+		padding: 10px 0px;
+	}
 	.formulaire .centreformulaire > div:last-of-type{
 		float: left;
 		margin: 30px auto !important;
 	}
+	.wrapper-etapes .col-sm-4{
+		width: 33.333%;
+	}
+	.wrapper-etapes a{
+		padding: 0;
+	}
+	.wrapper-etapes a:before{
+		display: none;
+	}
+	.wrapper-etapes .nom-etape{
+		font-size: 16px;
+		margin: 8px 0;
+		display: block;
+	}
+	.centreformulaire > a:last-of-type{
+		margin: 0 0 30px 0;
+		clear: left;
+	}
+
 }
 
 
@@ -1512,7 +1532,7 @@ label.label_long{
 }
 
 .wrapper-titre-offre{
-	padding:0 40px !important;
+	padding:0 30px !important;
 
 	border-right: 1px solid #F0F0F0;	
 	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
@@ -1967,7 +1987,8 @@ input.input-adresse-mail{
 	}
 
 	.titre-offre, .offre-service-titre {
-	    font-size: 2.41em;
+	    font-size: 2em;
+	    line-height: 1.3em;
 	}
 
 	.submit-connexion-align {
@@ -2091,3 +2112,9 @@ input.input-adresse-mail{
 
 
 
+/* résultat vide */
+.accueil_choix_besoin > div{
+	text-align: center;
+	margin: 50px 0;
+	font-size: 16px;
+}
