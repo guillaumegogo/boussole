@@ -919,6 +919,7 @@ label.label_long{
 .formulaire input[type="radio"],
 .formulaire input[type="checkbox"]{
 	opacity: 0;
+	margin-left: -13px;
 }
 .formulaire input[type="radio"]:focus + label,
 .formulaire input[type="checkbox"]:focus + label{
@@ -1014,15 +1015,15 @@ label.label_long{
 	box-shadow: 0px 8px 0px 0px #0A717D;
 }
 .centreformulaire > a:last-of-type{
-	display: none;
 	background: #A3A4A3;
-	border-radius: 5px;
+	border-radius: 0.5em;
 	font-weight: bold;	
 	color: #fff;
 	text-decoration: none;
 	padding: 1em 2.5em;
 	font-size: 1.6em;
 	box-shadow: 0px 8px 0px 0px #959695;
+	margin: 30px;
 }
 
 .logo-ministere-steps {
