@@ -434,6 +434,11 @@ p.message:before{
 	}
 
 }
+@media(max-width: 767px){
+	.submit-ville{
+		padding: 10px 30px;	
+	}
+}
 
 
 /*---------------------JE SOUHAITE ---------------------*/
@@ -1145,8 +1150,12 @@ label.label_long{
 	.centreformulaire > a:last-of-type{
 		margin: 0 0 30px 0;
 		clear: left;
+		padding: 0.5em 2em;
 	}
-
+	.formulaire button[type="submit"]{
+		height: 2.5em;
+		width: 9em;
+	}
 }
 
 
@@ -1519,7 +1528,11 @@ label.label_long{
 
 
 }
-
+@media(max-width: 767px){
+	.btn-modifier-demande a{
+		height: 50px;
+	}
+}
 
 /*--------------------- DETAILS DE LA RECHERCHE ---------------------*/
 
@@ -2100,7 +2113,7 @@ input.input-adresse-mail{
 
 	.submit-connexion-offre {
 	    width: auto;
-	    padding: 3%;
+	    padding: 3% 8%;
 	}
 
 
@@ -2119,6 +2132,6 @@ input.input-adresse-mail{
 /* résultat vide */
 .accueil_choix_besoin > div{
 	text-align: center;
-	margin: 50px 0;
+	margin: 50px auto;
 	font-size: 16px;
 }
