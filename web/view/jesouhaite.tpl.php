@@ -75,7 +75,7 @@
 	</div>
     <form class="joli accueil vert" method="post">
         <fieldset class="accueil_choix_besoin">
-        <?php if($flag_theme){ ?>
+        <?php if($flag_theme && count($themes) > 0){ ?>
             <div class="wrapper container">
                 <div class="wrapper-options">
                     <h1>Je souhaite</h1>
@@ -92,8 +92,6 @@
                     <?php } ?>
                 </div>
             </div>
-        <?php }else{ ?>
-            <div>La boussole n'est pas encore disponible sur ton territoire.<br/><br/>Tu peux cependant contacter <a href="http://www.crij.org/france" target="_blank">le réseau d'information jeunesse le plus proche de chez toi</a>.</div>
         <?php } ?>
         </fieldset>
     </form>

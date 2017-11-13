@@ -5,6 +5,7 @@ include('../src/web/bootstrap.php');
 //********* variables utilisées dans ce fichier
 $nb_villes = 0;
 $themes = array();
+$flag_theme = 0;
 $erreur = 0;
 
 if (isset($_POST['ville_selectionnee'])) {
@@ -33,10 +34,13 @@ if($_SESSION['recherche']) {
 	if (isset($_SESSION['code_insee'])) $themes = get_themes_by_ville($_SESSION['code_insee']);
 
 	//********* a-t-on au moins un thème actif ?
-	$flag_theme=0;
 	foreach ($themes as $theme) {
 		$flag_theme += ($theme['actif']*$theme['nb']);
 	}
+}
+
+if(count($themes) == 0 || $flag_theme == 0) {
+    $erreur = 1;
 }
 
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
