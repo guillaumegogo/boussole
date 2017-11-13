@@ -1218,6 +1218,7 @@ label.label_long{
 @media screen and (max-width: 440px){
 	.logo-boussole-steps {	    
 	    margin-left: 7%;
+	    width: auto;
 	}
 	.logo-ministere-steps {
 	    margin-right: 0;
@@ -1630,6 +1631,9 @@ label.label_long{
 	font-weight: bold;
 	color: #15488E;
 	padding-top: 28px;
+	-webkit-hyphens: auto;
+  	-ms-hyphens: auto;
+  	hyphens: auto;
 }
 
 .bloc-validite{
