@@ -97,7 +97,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<p class="offre-service-titre">Je suis intéressé.e par l'offre de service</p>
+						<p class="offre-service-titre">Je suis intéressé.e par ce service</p>
 					</div>
 					<div class="row">
 						<div class="wrapper-offre-service-from">
@@ -123,7 +123,7 @@
 					</div>
 					<div class="row">
 						<div class="offre-service-bloc-desc">
-							<p>Si je suis intéressé.e par ce service, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un conseiller <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
+							<p>Si je suis intéressé.e par ce service, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un professionnel <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
 						</div>
 					</div>
 				</div>
@@ -170,7 +170,7 @@
 
 	<div class="wrapper container">
 		<div class="reseau-sociaux">
-			<span>Je partage cette offre sur </span>
+			<span>Je partage ce service sur </span>
 			<div class="reseau-sociaux-liens">
 				<a target="_blank" title="Twitter" href="https://twitter.com/share?url=<?= $url_toshare ?>&text=La Boussole des jeunes : <?= $row['nom_offre'] ?>&via=la Boussole des jeunes" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="icon-twitter"></a>
 				<a target="_blank" title="Google plus" href="https://plus.google.com/share?url={<?php echo $url_toshare; ?>}" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="icon-googleplus"></a>
