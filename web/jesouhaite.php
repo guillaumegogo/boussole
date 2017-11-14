@@ -5,6 +5,7 @@ include('../src/web/bootstrap.php');
 //********* variables utilisées dans ce fichier
 $nb_villes = 0;
 $themes = array();
+$flag_theme = 0;
 $erreur = 0;
 
 if (isset($_POST['ville_selectionnee'])) {
@@ -14,7 +15,7 @@ if (isset($_POST['ville_selectionnee'])) {
 }
 
 //********* l'utilisateur a relancé le formulaire
-if($_SESSION['recherche']) {
+if(isset($_SESSION['recherche'])) {
 	//********* requête des codes insee (avec concat des codes postaux) et droits liés à la ville
 	$row = get_ville($_SESSION['recherche']);
 	$nb_villes = count($row);
@@ -30,15 +31,19 @@ if($_SESSION['recherche']) {
 	}
 
 	//********* récupération des thèmes disponibles pour le code insee indiqué
-	if (isset($_SESSION['code_insee'])) $themes = get_themes_by_ville($_SESSION['code_insee']);
+	if (isset($_SESSION['code_insee'])) {
+	    $themes = get_themes_by_ville($_SESSION['code_insee']);
+    }
 
 	//********* a-t-on au moins un thème actif ?
-	$flag_theme=0;
 	foreach ($themes as $theme) {
 		$flag_theme += ($theme['actif']*$theme['nb']);
 	}
-}
 
+	if(!$erreur && (!$flag_theme || !count($themes))) {
+	    $erreur = 1;
+    }
+}
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
 if (isset($_POST['besoin'])) {
 	$_SESSION['besoin'] = $_POST['besoin'];

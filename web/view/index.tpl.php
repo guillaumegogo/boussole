@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
@@ -112,7 +112,7 @@
 		</div>
 
 	<div class=" wrapper soustitre">
-		<h1>Rencontrer des professionnel·le·s près de chez moi qui m'aident dans mes recherches.</h1>
+		<h1>Rencontre un professionnel près de chez toi, pour trouver un emploi, un métier, une formation, un logement...</h1>
 	</div>
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>
