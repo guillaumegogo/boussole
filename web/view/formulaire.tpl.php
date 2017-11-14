@@ -42,17 +42,17 @@
 			<div class=" row wrapper-etapes">
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-un">
 					<a href="formulaire.php?etape=1" <?php echo $etape == 1 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">étape #1</span>
+						<span class="nom-etape">Ma demande</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-deux">
 					<a href="formulaire.php?etape=2" <?php echo $etape == 2 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">étape #2</span>
+						<span class="nom-etape">Mon profil</span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-trois">
 					<a href="formulaire.php?etape=3" <?php echo $etape == 3 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">étape #3</span>
+						<span class="nom-etape">Ma situation</span>
 					</a>
 				</div>				
 			</div>

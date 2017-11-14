@@ -124,6 +124,7 @@
 					<div class="row">
 						<div class="offre-service-bloc-desc">
 							<p>Si je suis intéressé.e par ce service, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté·e par un professionnel <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
+							<em class="legend">Les informations recueillies à partir de ce formulaire sont nécessaires au traitement de votre demande. Elles seront enregistrées et transmises au(x) professionnel(s) auprès du(es)quel(s) vous prendrez un rendez-vous. Vous disposez d'un droit d'accès, de rectification et d'opposition aux données vous concernant, que vous pouvez exercer en adressant une demande par ce formulaire (à créer). En cas d’abandon de la recherche, les données personnelles ne sont pas conservées.</em>
 						</div>
 					</div>
 				</div>
