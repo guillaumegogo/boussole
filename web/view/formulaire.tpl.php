@@ -40,21 +40,19 @@
 
 		<div id="formulaire-etapes-recherche" class="wrapper container">
 			<div class=" row wrapper-etapes">
-				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-un">
-					<a href="formulaire.php?etape=1" <?php echo $etape == 1 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Ma demande</span>
+			<?php 
+			$i=0;
+			$liste_style=array('un', 'deux', 'trois');
+			foreach($liste_pages as $page){ 
+				$style=$liste_style[$i];
+				$i++;
+				?>
+				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-<?= $style ?>">
+					<a href="formulaire.php?etape=<?= $page['ordre'] ?>" <?php echo $etape == $page['ordre'] ? 'class="active"' : '' ?>>
+						<span class="nom-etape"><?= $page['titre'] ?></span>
 					</a>
 				</div>
-				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-deux">
-					<a href="formulaire.php?etape=2" <?php echo $etape == 2 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Mon profil</span>
-					</a>
-				</div>
-				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-trois">
-					<a href="formulaire.php?etape=3" <?php echo $etape == 3 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Ma situation</span>
-					</a>
-				</div>				
+			<?php } ?>
 			</div>
 			<?php
 			if(count($meta)){
