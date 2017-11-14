@@ -7,7 +7,7 @@
 			</div>
 			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
 				<img src="img/icon-contact.svg">
-				<p>Je suis recontacté-e dans les jours qui suivent.</p>
+				<p>Je suis recontacté.e dans les jours qui suivent.</p>
 			</div>
 			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
 				<img src="img/icon-calendar.svg">
