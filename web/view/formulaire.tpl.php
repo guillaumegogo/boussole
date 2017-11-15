@@ -42,17 +42,17 @@
 			<div class=" row wrapper-etapes">
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-un">
 					<a href="formulaire.php?etape=1" <?php echo $etape == 1 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Ma demande</span>
+						<span class="nom-etape"><?= (isset($liste_pages[0])) ? $liste_pages[0]['titre'] : ''; ?></span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-deux">
 					<a href="formulaire.php?etape=2" <?php echo $etape == 2 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Mon profil</span>
+						<span class="nom-etape"><?= (isset($liste_pages[1])) ? $liste_pages[1]['titre'] : ''; ?></span>
 					</a>
 				</div>
 				<div class="col-md-4 col-sm-4 col-xs-12 wrapper-etape-trois">
 					<a href="formulaire.php?etape=3" <?php echo $etape == 3 ? 'class="active"' : '' ?>>
-						<span class="nom-etape">Ma situation</span>
+						<span class="nom-etape"><?= (isset($liste_pages[2])) ? $liste_pages[2]['titre'] : ''; ?></span>
 					</a>
 				</div>				
 			</div>
@@ -95,7 +95,7 @@
                                         <a href="formulaire.php?etape=2" style="float:left">Précédent</a>
                                     <?php } ?>
 								</div>
-							</fieldset>						
+							</fieldset>
 					</div>
 				</form>
 				<?php

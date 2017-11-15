@@ -3,11 +3,14 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<link rel="stylesheet" href="css/jquery-ui.css" />
+	<!-- bandeau "beta" à enlever lors du passage en prod --> 
+	<link rel="stylesheet" href="css/beta.css" />
+	<!-- / --> 
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script>$( function() {

@@ -19,7 +19,7 @@
 <footer>
 	<div class="wrapper footer-wrapper">
 		<ul>
-			<li><a href="mentions.php" target="_blank">Mentions légales</a></li>
+			<li><a href="mentions.php" target="_blank">À propos</a></li>
 			<li><a href="contact.php" target="_blank">Contact</a></li>
 			<li>Un service proposé par la Direction de la jeunesse, de l’éducation populaire et de la vie
 					associative.</li>

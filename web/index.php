@@ -11,12 +11,5 @@ if(isset($_SESSION['erreur'])) {
     unset($_SESSION['erreur']);
 }
 
-//********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
-if (isset($_POST['besoin'])) {
-	$_SESSION['besoin'] = $_POST['besoin'];
-	header('Location: formulaire.php');
-	exit();
-}
-
 //view
 require 'view/index.tpl.php';

@@ -21,67 +21,149 @@ include('../src/web/bootstrap.php');
 	<div class="mentions container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h2>Mentions légales</h2>
-				<h3>Informations éditoriales</h3>
-				<p><strong>Éditeur</strong></p>
-				<p>Ministère de l’éducation nationale<br>Direction de la jeunesse, de l’éducation populaire et de la vie
-					associative<br>95, avenue de France<br>75650 PARIS Cedex<br>Tél&nbsp;: 01 40 45 90 00</p>
-				<p>Administrateur national : Philippe Heurtaux (Division SI de la DJEPVA)</p>
-				<p>Ce site a été développé par Guillaume Gogo (Division SI de la DJEPVA).</p>
-				<p><strong>Accès au site</strong></p>
-				<p>Le site web a fait l’objet d’une déclaration auprès de la Commission Nationale de l’Informatique et des
-					Libertés (CNIL).</p>
-				<p>Les utilisateurs du site web sont tenus de respecter les dispositions de la loi du 6 janvier 1978 relative à
-					l’informatique, aux fichiers et aux libertés, dont la violation est passible de sanctions pénales. Ils
-					doivent notamment s’abstenir, d’une manière générale, de porter atteinte à la vie privée ou à la réputation
-					des personnes.</p>
-				<p><strong>Contenu du site</strong></p>
-				<p>Le Ministère en charge de la Jeunesse met à disposition des utilisateurs de ce site web des informations et
-					outils disponibles et vérifiés. Les informations du présent site renvoient parfois à des sites extérieurs
-					(liens hypertextes) sur lesquels le ministère n’a aucun contrôle et pour lesquels il décline toute
-					responsabilité.</p>
-				<p>Il s’efforcera de corriger autant que faire se peut les erreurs ou omissions qui lui seront signalées par les
-					utilisateurs (en adressant un courriel aux webmestre du site).</p>
-				<p><strong>Propriété</strong></p>
-				<p>La structure générale et le logiciel composant ce site web sont de l’utilisation exclusive du Ministère
-					chargé de la Jeunesse.</p>
-				<p>La mise en place de liens vers le site, y compris "profonds", n’est conditionnée à aucun accord préalable.
-					Seule la mention explicite du site du ministère dans l’intitulé du lien est souhaitée.</p>
-				<p>L’autorisation de mise en place d’un lien est valable pour tout support, à l’exception de ceux diffusant des
-					informations à caractère polémique, pornographique, xénophobe ou pouvant, dans une plus large mesure porter
-					atteinte à la sensibilité du plus grand nombre.</p>
-				<p>Les contenus ne sauraient être reproduits librement sans demande préalable et sans l’indication de la source.
-					Les demandes d’autorisation de reproduction d’un contenu doivent être adressées à la rédaction du site (en
-					adressant un courriel aux webmestre du site). La demande devra préciser le contenu visé ainsi que le site
-					sur lequel ce dernier figurera. En outre, les informations utilisées ne doivent l’être qu’à des fins
-					personnelles, associatives ou professionnelles, toute diffusion ou utilisation à des fins commerciales ou
-					publicitaires étant exclues.</p>
+    <h1>Présentation du service</h1>
+<p>
+    En 2016, le projet de service web destiné aux jeunes visant à améliorer
+    leur accès à l’information est entré dans son étape de construction.
+</p>
+<p>
+    Après l’exploitation de plusieurs études du ministère chargé de la jeunesse
+    et un diagnostic croisé approfondi mené dans deux régions partenaires du
+    projet (Champagne-Ardenne et Bretagne) auprès de jeunes en recherche
+    d’information et de professionnels de l’information jeunesse (locaux,
+    régionaux et nationaux), une équipe dédiée du ministère appuyée par le
+    secrétariat général à la modernisation de l’action publique est passée aux
+    travaux pratiques.
+</p>
+<p>
+    4 phases de conception-réalisation en mode Fab lab avec des professionnels
+    et des jeunes sur 2 territoires d’expérimentation Grand-Reims et Cœur
+    d’Essonne ont permis d’aboutir à la première version de la plateforme de
+    services présentée ici en version bêta.
+</p>
+<p>
+    Celle-ci vise dans un premier temps à rendre accessibles des services pour
+    les jeunes dans le domaine de l’emploi et du logement.
+    <br/>
+    <br/>
+    L’ambition du service « la Boussole des jeunes » est à la fois de
+    personnaliser l’offre d’information grâce à des questionnaires courts,
+    d’apporter des réponses opérationnelles et de garantir aux jeunes une
+    réponse dans des délais que chaque professionnel détermine et s’engage à
+    respecter.
+</p>
+<p>
+    Ce service vise également à améliorer les coopérations d’acteurs autour des
+    besoins des usagers dans le partage d’information en favorisant une
+    coordination optimisée des parcours des jeunes.
+</p>
+<p>
+    Cette version sera stabilisée sur ces 2 territoires d’ici la fin de
+    l’année. La phase de déploiement sur d’autres territoires volontaires
+    débutera dès janvier.
+</p>
+<p>
+    <h2>Vos données </h2>
+</p>
+<p>
+    <em>
+        Les informations recueillies à partir des formulaires sont nécessaires
+        au traitement des demandes. Ces informations sont enregistrées et
+        transmises au(x) professionnel(s) auprès du(es)quel(s) vous souhaitez
+        obtenir un rendez-vous. Vous disposez d'un droit d'accès, de
+        rectification et d'opposition aux données vous concernant, que vous
+        pouvez exercer en adressant une demande par courriel à
+    </em>
+    <a href="mailto:boussoledesdroits@jeunesse-sports.gouv.fr">
+        boussoledesdroits@jeunesse-sports.gouv.fr
+    </a>
+    <em>
+        . En cas d’abandon de la recherche, les données personnelles ne sont
+        pas conservées.
+    </em>
+</p>
+<p>
+    <h2>Mentions légales</h2>
+</p>
+<p>
+    <strong>Éditeur</strong>
+</p>
+<p>
+    Ministère de l’éducation nationale
+    <br/>
+    Direction de la jeunesse, de l’éducation populaire et de la vie associative
+    <br/>
+    95, avenue de France
+    <br/>
+    75650 PARIS Cedex
+    <br/>
+    Tél : 01 40 45 90 00
+</p>
+<p>
+    Directeur de la publication : Jean-Benoit Dujol, délégué interministériel à
+    jeunesse
+</p>
+<p>
+    Administrateur national :
+    <a href="mailto:philippe.heurtaux@jeunesse-sports.gouv.fr">
+        Philippe Heurtaux
+    </a>
+    , Division des systèmes d’information de la direction de la jeunesse, de
+    l’éducation populaire et de la vie associative
+</p>
+<p>
+Animateur Grand-Reims :    <a href="mailto:boussoledesdroits@crij-ca.fr">Alexis Louis</a>, Centre
+    Régional Information Jeunesse Champagne-Ardenne
+</p>
+<p>
+Animateur Cœur d’Essonne :    <a href="mailto:MatthiasGUENEAU@cidj.com">Matthias GUENEAU</a>,Centre
+    d’information et de documentation Jeunesse
+</p>
+<p>
+    Participants à l’expérimentation sur les territoires : à paraître
+</p>
+<p>
+    <strong>Développements </strong>
+</p>
+<p>
+    Ce site est développé par la Division des systèmes d’information de la
+    direction de la jeunesse, de l’éducation populaire et de la vie associative
+    : Guillaume Gogo
+</p>
+<p>
+    Code source : pas encore ouvert
+</p>
+<p>
+    <strong>Conception graphique </strong>
+</p>
+<p>
+    La Bonne Agence | Grenoble
+    <br/>
+    <a href="http://www.labonneagence.com">www.labonneagence.com</a>
+    <br/>
+    8 rue Jean Prévost 38000 Grenoble
+</p>
+<p>
+    <strong>Hébergement du site </strong>
+</p>
+<p>
+    Smile, prestataire des ministères sociaux
+    <br/>
+    www.
+    <a
+        href="http://openwide.fr/"
+        target="_blank"
+        title="Lien externe vers OpenWide"
+    >
+        smile.fr
+    </a>
+    <br/>
+    151 boulevard Stalingrad 69100 Villeurbanne
+    <br/>
+    <br/>
+    <br/>
+</p>
 
-				<h3>Données personnelles</h3>
-				<p>En conformité avec les dispositions de la loi du 6 janvier 1978 susmentionnée, le traitement automatisé des
-					données nominatives réalisé à partir de ce site web a fait l’objet d’une déclaration auprès de la Commission
-					Nationale de l’Informatique et des Libertés.
-					<!--Ce site ne collecte aucune autre donnée que des adresses IP destinées à un usage purement technique, nécessaire à la production de statistiques de consultation.--></p>
-
-				<h3>Protection et traitement de données à caractère personnel</h3>
-				<p>L’équipe du site est particulièrement attentive au respect des obligations légales de tout éditeur de site
-					internet et suit les recommandations de la commission nationale de l’informatique et des libertés (CNIL) et
-					celles de l’agence pour le développement de l’administration électronique (ADAE).<br></p>
-
-				<h3>Respect des lois en vigueur</h3>
-				<p>Le site respecte la vie privée de l’internaute et se conforme strictement aux lois en vigueur sur la
-					protection de la vie privée et des libertés individuelles. Aucune information personnelle n’est collectée à
-					votre insu. Aucune information personnelle n’est cédée à des tiers. Les courriels, les adresses
-					électroniques ou autres informations nominatives dont ce site est destinataire ne font l’objet d’aucune
-					exploitation et ne sont conservés que pour la durée nécessaire à leur traitement.<br></p>
-
-				<h3>Droit des internautes&nbsp;: droit d’accès et de rectification</h3>
-				<p>Conformément aux dispositions de la loi n&#176;78-17 du 6 janvier 1978 relative à l’informatique, aux
-					fichiers et aux libertés, les internautes disposent d’un droit d’accès, de modification, de rectification et
-					de suppression des données qui les concernent. Ce droit s’exerce par voie postale, en justifiant de son
-					identité, à l’adresse suivante&nbsp;:<br>Ministère de l’éducation nationale<br>Direction de la jeunesse, de
-					l’éducation populaire et de la vie associative<br>Division des Systèmes d'information<br>95, avenue de
-					France<br>75013 Paris 13e</p>
 			</div>
 		</div>
 	</div>

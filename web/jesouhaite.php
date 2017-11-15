@@ -46,6 +46,11 @@ if(isset($_SESSION['recherche'])) {
 }
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
 if (isset($_POST['besoin'])) {
+
+	//si on change de thème, on vide la table des critères
+	if(isset($_SESSION['besoin']) && $_SESSION['besoin'] != $_POST['besoin']){
+		unset($_SESSION['critere']);
+	}
 	$_SESSION['besoin'] = $_POST['besoin'];
 	header('Location: formulaire.php');
 	exit();
