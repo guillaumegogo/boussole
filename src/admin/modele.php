@@ -1701,20 +1701,114 @@ function get_liste_droits() {
 	return $rows;
 }
 
-function create_formulaire($theme, $territoire, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) {
+function create_formulaire($theme, $territoire) {
 
 	global $conn;
 	$created = false;
+	$msg = null;
 	$user_id=secu_get_current_user_id();
-	/* ... */	
-	return $created;
+	
+	//on crée le territoire sur le thème et le territoire données, s'il n'existe pas déjà 
+	if (isset($theme) && isset($territoire)) {
+		
+		$query = 'SELECT count(*) as `nb` FROM `'.DB_PREFIX.'bsl_formulaire` 
+			WHERE id_theme = ? AND id_territoire = ? ';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'ii', $theme, $territoire);
+		check_mysql_error($conn);
+		if (mysqli_stmt_execute($stmt)) {
+			$result = mysqli_stmt_get_result($stmt);
+			if (mysqli_num_rows($result) === 1) {
+				$row = mysqli_fetch_assoc($result);
+				$nb = (int)$row['nb'];
+			}
+			mysqli_stmt_close($stmt);
+		}
+		
+		if($nb>0){
+			$msg = 'Le formulaire existe déjà pour ce thème et ce territoire.';
+			
+		}else{
+			$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire`(`type`, `id_theme`, `id_territoire`, `actif`)
+				VALUES ("offre", ?, ?, 1) ';
+			$stmt = mysqli_prepare($conn, $query);
+			mysqli_stmt_bind_param($stmt, 'ii', $theme, $territoire);
+		
+			if (mysqli_stmt_execute($stmt)) {
+				$created += mysqli_stmt_affected_rows($stmt) > 0;
+				mysqli_stmt_close($stmt);
+			}
+		}
+	}
+	
+	return [$created,$msg];
 }
 
-function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) {
+// todo : mettre à jour le 'nb_pages' aussi !
+function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) { 
 
 	global $conn;
 	$updated = false;
 	$user_id=secu_get_current_user_id();
+	
+	//update pages
+	if (isset($id_p)) {
+		foreach($id_p as $key=>$id){
+			
+			//si on a un id, mais que l'ordre et le titre ont été effacés, on supprime la page, puis les questions associées
+			if ($id && !$ordre_p[$key] && !$titre_p[$key]){
+				$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__page` 
+					WHERE `id_page`= ? ';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'i', $id);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+				
+				$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__question` 
+					WHERE `id_page`= ? ';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'i', $id);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+				
+				$id=null;
+			}
+			
+			//si on a un ordre et un titre, on met à jour
+			if ($id && $ordre_p[$key] && $titre_p[$key]){
+				$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__page` 
+					SET `ordre`= ?, `titre` = ?
+					WHERE `id_page`= ? ';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'isi', $ordre_p[$key], $titre_p[$key], $id);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+			
+			//si pas d'id mais un titre et un ordre, on crée
+			if ($titre_p[$key] && $ordre_p[$key] && !$id){
+				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__page`(`id_formulaire`, `titre`, `ordre`)
+					VALUES (?, ?, ?)';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'isi', $formulaire_id, $titre_p[$key], $ordre_p[$key]);
+				
+				if (mysqli_stmt_execute($stmt)) {
+					$updated += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+			
+		}
+	}
 	
 	//update questions
 	if (isset($id_q)) {
@@ -1728,7 +1822,7 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 					}
 				}
 			
-				//si on a un ordre et un titre, on met à jour
+				//si on a un ordre et un titre, on met à jour 
 				if ($ordre_q[$key_p][$key] && $titre_q[$key_p][$key]){
 					$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__question` 
 						SET `id_page`= ?, `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
@@ -1769,54 +1863,6 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 					}
 				}
 			}
-		}
-	}
-
-	//update et delete pages
-	if (isset($id_p)) {
-		foreach($id_p as $key=>$id){
-			
-			//si on a un ordre et un titre, on met à jour
-			if ($ordre_p[$key] && $titre_p[$key]){
-				$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__page` 
-					SET `ordre`= ?, `titre` = ?
-					WHERE `id_page`= ? ';
-				$stmt = mysqli_prepare($conn, $query);
-				mysqli_stmt_bind_param($stmt, 'isi', $ordre_p[$key], $titre_p[$key], $id);
-				
-				if (mysqli_stmt_execute($stmt)) {
-					$updated += mysqli_stmt_affected_rows($stmt) > 0;
-					mysqli_stmt_close($stmt);
-				}
-			}
-			
-			//si l'ordre et le titre ont été effacés, on supprime la question
-			if (!$ordre_p[$key] && !$titre_p[$key]){
-				//ajouter test pour vérifier qu'il n'y a plus de questions ?
-				$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__page` 
-					WHERE `id_page`= ? ';
-				$stmt = mysqli_prepare($conn, $query);
-				mysqli_stmt_bind_param($stmt, 'i', $id);
-				
-				if (mysqli_stmt_execute($stmt)) {
-					$updated += mysqli_stmt_affected_rows($stmt) > 0;
-					mysqli_stmt_close($stmt);
-				}
-			}
-			
-			//si pas d'id mais un titre et un ordre, on crée
-			if ($titre_p[$key] && $ordre_p[$key] && !$id){
-				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__page`(`id_formulaire`, `titre`, `ordre`)
-					VALUES (?, ?, ?)';
-				$stmt = mysqli_prepare($conn, $query);
-				mysqli_stmt_bind_param($stmt, 'isi', $formulaire_id, $titre_p[$key], $ordre_p[$key]);
-				
-				if (mysqli_stmt_execute($stmt)) {
-					$updated += mysqli_stmt_affected_rows($stmt) > 0;
-					mysqli_stmt_close($stmt);
-				}
-			}
-			
 		}
 	}
 	

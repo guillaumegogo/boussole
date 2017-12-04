@@ -10,7 +10,10 @@
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function () {
 			$('#sortable').dataTable( {
-				stateSave: true
+				stateSave: true,
+				"columnDefs": [
+					{ "orderable": false, "targets": 5 }
+				]
 			} );
 		});
 	</script>
@@ -37,8 +40,9 @@
 				<th>#</th>
 				<th>Thème</th>
 				<th>Territoire</th>
-				<th>Nb de pages</th>
-				<th>Nb de questions</th>
+				<th>Pages</th>
+				<th>Questions</th>
+				<th> </th>
 			</tr>
 			</thead>
 			<tbody>
@@ -48,8 +52,9 @@
 					<td><a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire <?= (int) $row['id'] ?></a></td>
 					<td><?php xecho($row['theme']) ?></td>
 					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
-					<td><?php xecho($row['nb_pages']) ?></td>
-					<td><?php xecho($row['nb_questions']) ?></td>
+					<td style="text-align:center"><?php xecho($row['nb_pages']) ?></td>
+					<td style="text-align:center"><?php xecho($row['nb_questions']) ?></td>
+					<td style="text-align:left; width:0;"><input type="button" value="Dupliquer" onclick="javascript:location.href='formulaire_detail.php?duplicate=<?= (int) $row['id'] ?>'"> </td>
 				</tr>
 			<?php } ?>
 			</tbody>
@@ -68,7 +73,7 @@
 </div>
 
 <div class="button">
-	<input type="button" disabled value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'"> 
+	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'"> 
 </div>
 </body>
 </html>

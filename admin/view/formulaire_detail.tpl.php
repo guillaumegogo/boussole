@@ -81,7 +81,7 @@
 					<td><input <?= (isset($questions[$pid][$j]['name'])) ? 'readonly' : '' ?> name="name_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:10em" placeholder="identifiant unique du champ"
 						 value="<?php if(isset($questions[$pid][$j]['name'])) xecho($questions[$pid][$j]['name']); ?>"></td>
 					<td><select name="reponse_q[<?= $i ?>][<?= $j ?>]" style="width:12em" >
-						<?php print_r($reponses);
+						<?php 
 						foreach($reponses as $row) { ?>
 							<option value="<?= $row['id_reponse'] ?>" <?= (isset($questions[$pid][$j]['id_reponse']) && $row['id_reponse']==$questions[$pid][$j]['id_reponse']) ? ' selected ':'' ?>> <?= $row['libelle'] ?></option>
 						<?php } ?>
@@ -105,7 +105,7 @@
 	</fieldset>
 	
 	<div class="button">
-		<input type="hidden" name="maj_id" value=<?= xssafe($id_formulaire) ?> />
+		<input type="hidden" name="maj_id" value="<?= xssafe($id_formulaire) ?>" />
 		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
 		
 	<?php if($droit_ecriture) { ?>

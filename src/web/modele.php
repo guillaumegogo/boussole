@@ -19,7 +19,7 @@ function get_themes_by_ville($code_insee){
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `'.DB_PREFIX.'bsl__departement_region` ON `'.DB_PREFIX.'bsl__departement_region`.`id_region`=`'.DB_PREFIX.'bsl__region`.`id_region` 
 		WHERE `id_theme_pere` IS NULL 
-		AND (`'.DB_PREFIX.'bsl_professionnel`.competence_geo="national" OR `'.DB_PREFIX.'bsl_territoire_villes`.`code_insee`=? OR `'.DB_PREFIX.'bsl__departement_region`.`id_departement`=SUBSTR(?,1,2) OR `'.DB_PREFIX.'bsl__departement`.`id_departement`=SUBSTR(?,1,2)) 
+		AND (/*`'.DB_PREFIX.'bsl_professionnel`.competence_geo="national" OR */`'.DB_PREFIX.'bsl_territoire_villes`.`code_insee`=? OR `'.DB_PREFIX.'bsl__departement_region`.`id_departement`=SUBSTR(?,1,2) OR `'.DB_PREFIX.'bsl__departement`.`id_departement`=SUBSTR(?,1,2)) 
 		GROUP BY `'.DB_PREFIX.'bsl_theme`.`id_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme`, `'.DB_PREFIX.'bsl_theme`.`actif_theme` 
 		UNION
 		SELECT DISTINCT `'.DB_PREFIX.'bsl_theme`.id_theme, `'.DB_PREFIX.'bsl_theme`.`libelle_theme`, `'.DB_PREFIX.'bsl_theme`.`actif_theme`, 0 as `c`
@@ -29,6 +29,12 @@ function get_themes_by_ville($code_insee){
 
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sss', $code_insee, $code_insee, $code_insee);
+	
+$print_sql = $query;
+foreach(array($code_insee, $code_insee, $code_insee) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<!--<pre>".$print_sql."</pre>-->"; 
 	
 	$themes = query_get($stmt);
 	return $themes;
@@ -64,7 +70,7 @@ function get_ville($saisie){
 	return $row;
 }
 
-//************ récupération des éléments de la page du formulaire
+//************ récupération des éléments de la page du formulaire ==> todo: rajouter territoire !
 function get_formulaire($besoin, $etape){
 	
 	global $conn;

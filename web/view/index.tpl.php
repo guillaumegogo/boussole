@@ -3,7 +3,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
+	<link rel="icon" type="image/png" href="img/icon-boussole2.png" />
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
@@ -101,7 +101,7 @@
 							<input type="text" id="villes" name="ville_selectionnee" class="input-villes" placeholder="ville ou code postal">
 						</div>
                         <?php if (isset($message)) { ?>
-                            <p class="message"><?php xecho($message) ?></p>
+                            <p class="message"><?= $message ?></p>
                         <?php } ?>
 					</div>
 					<div class="col-md-3 col-sm-4 col-xs-12">

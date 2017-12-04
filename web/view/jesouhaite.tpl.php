@@ -29,7 +29,7 @@
 	</div>
     <form class="joli accueil vert" method="post">
         <fieldset class="accueil_choix_besoin">
-        <?php if($flag_theme && count($themes) > 0){ ?>
+        <?php if($nb && count($themes) > 0){ ?>
             <div class="wrapper container">
                 <div class="wrapper-options">
                     <h1>Je souhaite</h1>
