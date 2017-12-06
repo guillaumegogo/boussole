@@ -54,7 +54,7 @@
 					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
 					<td style="text-align:center"><?php xecho($row['nb_pages']) ?></td>
 					<td style="text-align:center"><?php xecho($row['nb_questions']) ?></td>
-					<td style="text-align:left; width:0;"><input type="button" value="Dupliquer" onclick="javascript:location.href='formulaire_detail.php?duplicate=<?= (int) $row['id'] ?>'"> </td>
+					<td style="text-align:left; width:0;"><input type="button" value="Dupliquer" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $row['id'] ?>&act=dup'"> </td>
 				</tr>
 			<?php } ?>
 			</tbody>

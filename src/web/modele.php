@@ -8,23 +8,23 @@ function get_themes_by_ville($code_insee){
 
 	$query = 'SELECT `id_theme` as `id`, `libelle_theme` as `libelle`, `actif_theme` as `actif`, MAX(`c`) as `nb` 
 	FROM (
-		SELECT DISTINCT `'.DB_PREFIX.'bsl_theme`.`id_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme`, 
-		`'.DB_PREFIX.'bsl_theme`.`actif_theme` , COUNT(`'.DB_PREFIX.'bsl_professionnel`.id_professionnel) as `c`
-		FROM `'.DB_PREFIX.'bsl_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` ON `'.DB_PREFIX.'bsl_professionnel_themes`.`id_theme`=`'.DB_PREFIX.'bsl_theme`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_professionnel_themes`.`id_professionnel` AND `'.DB_PREFIX.'bsl_professionnel`.`actif_pro`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` ON `'.DB_PREFIX.'bsl_territoire_villes`.`id_territoire`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `'.DB_PREFIX.'bsl__departement_region` ON `'.DB_PREFIX.'bsl__departement_region`.`id_region`=`'.DB_PREFIX.'bsl__region`.`id_region` 
+		SELECT DISTINCT `t`.`id_theme`, `t`.`libelle_theme`, 
+		`t`.`actif_theme` , COUNT(`p`.id_professionnel) as `c`
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` ON `pt`.`id_theme`=`t`.`id_theme`
+		LEFT JOIN `p` AS `p` ON `p`.`id_professionnel`=`pt`.`id_professionnel` AND `p`.`actif_pro`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.`id_departement`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `reg` ON `p`.`competence_geo`="regional" AND `reg`.`id_region`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region` 
 		WHERE `id_theme_pere` IS NULL 
-		AND (/*`'.DB_PREFIX.'bsl_professionnel`.competence_geo="national" OR */`'.DB_PREFIX.'bsl_territoire_villes`.`code_insee`=? OR `'.DB_PREFIX.'bsl__departement_region`.`id_departement`=SUBSTR(?,1,2) OR `'.DB_PREFIX.'bsl__departement`.`id_departement`=SUBSTR(?,1,2)) 
-		GROUP BY `'.DB_PREFIX.'bsl_theme`.`id_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme`, `'.DB_PREFIX.'bsl_theme`.`actif_theme` 
+		AND (/*`p`.competence_geo="national" OR*/ `tv`.`code_insee`=? OR `depreg`.`id_departement`=SUBSTR(?,1,2) OR `dep`.`id_departement`=SUBSTR(?,1,2)) 
+		GROUP BY `t`.`id_theme`, `t`.`libelle_theme`, `t`.`actif_theme` 
 		UNION
-		SELECT DISTINCT `'.DB_PREFIX.'bsl_theme`.id_theme, `'.DB_PREFIX.'bsl_theme`.`libelle_theme`, `'.DB_PREFIX.'bsl_theme`.`actif_theme`, 0 as `c`
-		FROM `'.DB_PREFIX.'bsl_theme`
-		WHERE `id_theme_pere` IS NULL) as `t`
+		SELECT DISTINCT `t2`.id_theme, `t2`.`libelle_theme`, `t2`.`actif_theme`, 0 as `c`
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t2`
+		WHERE `id_theme_pere` IS NULL) as `s`
 	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';
 
 	$stmt = mysqli_prepare($conn, $query);
@@ -75,19 +75,16 @@ function get_formulaire($besoin, $etape){
 	
 	global $conn;
 
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire`.`id_formulaire`, `'.DB_PREFIX.'bsl_formulaire`.`nb_pages`, `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, 
-		`'.DB_PREFIX.'bsl_formulaire__page`.`ordre` AS `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__page`.`aide`, 
-		`'.DB_PREFIX.'bsl_formulaire__question`.`id_question`, `'.DB_PREFIX.'bsl_formulaire__question`.`libelle` AS `libelle_question`, 
-		`'.DB_PREFIX.'bsl_formulaire__question`.`html_name`, `'.DB_PREFIX.'bsl_formulaire__question`.`type`, `'.DB_PREFIX.'bsl_formulaire__question`.`taille`, 
-		`'.DB_PREFIX.'bsl_formulaire__question`.`obligatoire`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`libelle`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`valeur`, 
-		`'.DB_PREFIX.'bsl_formulaire__valeur`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` 
-		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
-		JOIN `'.DB_PREFIX.'bsl_formulaire__page` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__question` ON `'.DB_PREFIX.'bsl_formulaire__question`.`id_page`=`'.DB_PREFIX.'bsl_formulaire__page`.`id_page` AND `'.DB_PREFIX.'bsl_formulaire__question`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` ON `'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__question`.`id_reponse`
-		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` ON `'.DB_PREFIX.'bsl_formulaire__valeur`.`id_reponse`=`'.DB_PREFIX.'bsl_formulaire__reponse`.`id_reponse` AND `'.DB_PREFIX.'bsl_formulaire__valeur`.`actif`=1
-		WHERE `'.DB_PREFIX.'bsl_formulaire`.`actif`=1 AND `'.DB_PREFIX.'bsl_theme`.`libelle_theme`= ? AND `'.DB_PREFIX.'bsl_formulaire__page`.`ordre` = ?
-		ORDER BY `ordre_page`, `'.DB_PREFIX.'bsl_formulaire__question`.`ordre`, `'.DB_PREFIX.'bsl_formulaire__valeur`.`ordre`';
+	$query = 'SELECT `f`.`id_formulaire`, `f`.`nb_pages`, `fp`.`titre`, `fp`.`ordre` AS `ordre_page`, `fp`.`aide`, 
+		`fq`.`id_question`, `fq`.`libelle` AS `libelle_question`, `fq`.`html_name`, `fq`.`type`, `fq`.`taille`, `fq`.`obligatoire`, `fv`.`libelle`, `fv`.`valeur`, 
+		`fv`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
+		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
+		JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `fq` ON `fq`.`id_page`=`fp`.`id_page` AND `fq`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`fq`.`id_reponse`
+		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `fv` ON `fv`.`id_reponse`=`fr`.`id_reponse` AND `fv`.`actif`=1
+		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ?
+		ORDER BY `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'si', $besoin, $etape);
 
@@ -114,12 +111,12 @@ function get_formulaire($besoin, $etape){
 	mysqli_stmt_close($stmt);
 	
 	//on récupère le nom des autres pages pour construire le fil d'ariane
-	$query = 'SELECT `'.DB_PREFIX.'bsl_formulaire__page`.`titre`, `'.DB_PREFIX.'bsl_formulaire__page`.`ordre`
-		FROM `'.DB_PREFIX.'bsl_formulaire__page` 
-		JOIN `'.DB_PREFIX.'bsl_formulaire` ON `'.DB_PREFIX.'bsl_formulaire__page`.`id_formulaire`=`'.DB_PREFIX.'bsl_formulaire`.`id_formulaire` AND `'.DB_PREFIX.'bsl_formulaire`.`actif`=1
-		JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`'.DB_PREFIX.'bsl_formulaire`.`id_theme`
-		WHERE `'.DB_PREFIX.'bsl_formulaire__page`.`actif`=1 AND `'.DB_PREFIX.'bsl_theme`.`libelle_theme`= ? 
-		ORDER BY `ordre`';		
+	$query = 'SELECT `fp`.`titre`, `fp`.`ordre`
+		FROM `'.DB_PREFIX.'bsl_formulaire__page` AS `fp`
+		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
+		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? 
+		ORDER BY `ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 's', $besoin);
 	$liste_pages = query_get($stmt);
@@ -137,8 +134,8 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	global $conn;
 	
-	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro`, `ville_offre`, `delai_offre` /*`t`.*, `'.DB_PREFIX.'bsl_theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
-	FROM ( SELECT `'.DB_PREFIX.'bsl_offre`.*,   /* on construit ici la liste des critères */
+	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro`, `ville_offre`, `delai_offre` /*`t`.*, `theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
+	FROM ( SELECT `o`.*,   /* on construit ici la liste des critères */
 		GROUP_CONCAT( if(nom_critere= "age_min", valeur_critere, NULL ) SEPARATOR "|") `age_min`, 
 		GROUP_CONCAT( if(nom_critere= "age_max", valeur_critere, NULL ) SEPARATOR "|") `age_max`, 
 		GROUP_CONCAT( if(nom_critere= "villes", valeur_critere, NULL ) SEPARATOR "|") `villes` ';
@@ -146,32 +143,32 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 		$c_cle = securite_bdd($conn, $cle);
 		$query .= ', GROUP_CONCAT( if(nom_critere= "' . $c_cle . '", valeur_critere, NULL ) SEPARATOR "|") "' . $c_cle . '"';
 	}
-	$query .= ' FROM `'.DB_PREFIX.'bsl_offre_criteres`
-		JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.`id_offre`=`'.DB_PREFIX.'bsl_offre_criteres`.`id_offre`
-		WHERE `'.DB_PREFIX.'bsl_offre`.`actif_offre` = 1 
-		GROUP BY `'.DB_PREFIX.'bsl_offre_criteres`.`id_offre`
+	$query .= ' FROM `'.DB_PREFIX.'bsl_offre_criteres` AS `oc`
+		JOIN `'.DB_PREFIX.'bsl_offre` AS `o` ON `o`.`id_offre`=`oc`.`id_offre`
+		WHERE `o`.`actif_offre` = 1 
+		GROUP BY `oc`.`id_offre`
 		) as `t`
-	JOIN `'.DB_PREFIX.'bsl_theme` ON `'.DB_PREFIX.'bsl_theme`.`id_theme`=`t`.`id_sous_theme`
-	JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.`id_theme`=`'.DB_PREFIX.'bsl_theme`.`id_theme_pere`
-	JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`t`.`id_professionnel` /* s il n y a pas une liste de villes propre à l offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d où les jointures en dessous ↓ */
-	LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_villes` ON `'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`=`'.DB_PREFIX.'bsl_professionnel_villes`.`id_professionnel` AND `'.DB_PREFIX.'bsl_professionnel`.`zone_selection_villes`=1 AND `'.DB_PREFIX.'bsl_professionnel_villes`.`code_insee` = ?
-	LEFT JOIN `'.DB_PREFIX.'bsl_territoire` ON `t`.`zone_selection_villes`=0 AND `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_territoire`.`id_territoire`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo` 
-	LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` ON `'.DB_PREFIX.'bsl_territoire_villes`.`id_territoire`=`'.DB_PREFIX.'bsl_territoire`.`id_territoire` AND `'.DB_PREFIX.'bsl_territoire_villes`.`code_insee` = ?
-	LEFT JOIN `'.DB_PREFIX.'bsl__departement` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="departemental" AND `'.DB_PREFIX.'bsl__departement`.`id_departement`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-	LEFT JOIN `'.DB_PREFIX.'bsl__region` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="regional" AND `'.DB_PREFIX.'bsl__region`.`id_region`=`'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`
-	LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `'.DB_PREFIX.'bsl__departement_region` ON `'.DB_PREFIX.'bsl__departement_region`.`id_region`=`'.DB_PREFIX.'bsl__region`.`id_region`
+	JOIN `'.DB_PREFIX.'bsl_theme` AS `theme` ON `theme`.`id_theme`=`t`.`id_sous_theme`
+	JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.`id_theme`=`theme`.`id_theme_pere`
+	JOIN `'.DB_PREFIX.'bsl_professionnel` AS `pro` ON `pro`.id_professionnel=`t`.`id_professionnel` /* s il n y a pas une liste de villes propre à l offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d où les jointures en dessous ↓ */
+	LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_villes` AS `pv` ON `pro`.`id_professionnel`=`pv`.`id_professionnel` AND `pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?
+	LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `t`.`zone_selection_villes`=0 AND `pro`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`pro`.`id_competence_geo` 
+	LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `tv`.`code_insee` = ?
+	LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `pro`.`competence_geo`="departemental" AND `dep`.`id_departement`=`pro`.`id_competence_geo`
+	LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `reg` ON `pro`.`competence_geo`="regional" AND `reg`.`id_region`=`pro`.`id_competence_geo`
+	LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region`
 
 	WHERE `t`.`debut_offre` <= CURDATE() AND `t`.`fin_offre` >= CURDATE() 
-	AND `'.DB_PREFIX.'bsl_professionnel`.`actif_pro` = 1
+	AND `pro`.`actif_pro` = 1
 	AND `theme_pere`.`libelle_theme` = ? 
 	/* recherche géographique ! */
 	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
-		OR (`'.DB_PREFIX.'bsl_professionnel`.`zone_selection_villes`=1 AND `'.DB_PREFIX.'bsl_professionnel_villes`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
+		OR (`pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
 		OR (`t`.`zone_selection_villes`=0 AND ( /* sinon il faut chercher dans la zone de compétence du pro */
-			`'.DB_PREFIX.'bsl_professionnel`.`competence_geo` = "national"
-			OR `'.DB_PREFIX.'bsl_territoire_villes`.`code_insee` = ?
-			OR `'.DB_PREFIX.'bsl__departement`.`id_departement` = SUBSTR(?,1,2) 
-			OR `'.DB_PREFIX.'bsl__departement_region`.`id_departement` = SUBSTR(?,1,2)
+			`pro`.`competence_geo` = "national"
+			OR `tv`.`code_insee` = ?
+			OR `dep`.`id_departement` = SUBSTR(?,1,2) 
+			OR `depreg`.`id_departement` = SUBSTR(?,1,2)
 		)))';
 	$terms = array($code_insee, $code_insee, $besoin, '%'.$code_insee.'%', $code_insee, $code_insee, $code_insee, $code_insee);
 	$terms_type = "ssssssss";
@@ -200,7 +197,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 			}
 		}
 	}
-	$query .= ' ORDER BY `'.DB_PREFIX.'bsl_theme`.`ordre_theme`, RAND()'; //le RAND permet de ne pas afficher toujours les mêmes offres en premier... en attendant un meilleur critère de tri
+	$query .= ' ORDER BY `theme`.`ordre_theme`, RAND()'; //le RAND permet de ne pas afficher toujours les mêmes offres en premier... en attendant un meilleur critère de tri
 
 if (DEBUG) {
 	$print_sql = $query;
@@ -242,10 +239,10 @@ function get_offre($id){
 	global $conn;
 	$row = null;
 	
-	$query = 'SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut, DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `'.DB_PREFIX.'bsl_offre`.`zone_selection_villes`, `nom_pro`, `visibilite_coordonnees`
-		FROM `'.DB_PREFIX.'bsl_offre` 
-		JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel 
-		JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`'.DB_PREFIX.'bsl_offre`.id_sous_theme
+	$query = 'SELECT `nom_offre`, `description_offre`, DATE_FORMAT(`debut_offre`, "%d/%m/%Y") AS date_debut, DATE_FORMAT(`fin_offre`, "%d/%m/%Y") AS date_fin, `theme_pere`.libelle_theme AS `theme_offre`, `theme_fils`.libelle_theme AS `sous_theme_offre`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`, `telephone_offre`, `site_web_offre`, `delai_offre`, `o`.`zone_selection_villes`, `nom_pro`, `visibilite_coordonnees`
+		FROM `'.DB_PREFIX.'bsl_offre` AS `o`
+		JOIN `'.DB_PREFIX.'bsl_professionnel` AS `pro` ON `pro`.id_professionnel=`o`.id_professionnel 
+		JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_fils` ON `theme_fils`.id_theme=`o`.id_sous_theme
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`theme_fils`.id_theme_pere
 		WHERE `actif_offre` = 1 AND `id_offre`= ? ';
 

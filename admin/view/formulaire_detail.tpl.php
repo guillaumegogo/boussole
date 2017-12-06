@@ -17,21 +17,21 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
-		Détail du formulaire</h2> 
+		<?= ($flag_duplicate) ? 'Duplication':'Détail' ?> du formulaire</h2> 
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 	
 	<form method="post" class="detail">
-	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-		<legend>Détails</legend> <!--(<?= $meta['theme'].' '.$meta['territoire'] ?>)-->
-		Thème : <select name="theme" <?= (isset($meta['theme'])) ? 'disabled':'' ?>>
+	<fieldset <?= ($droit_ecriture || $flag_duplicate || !(isset($meta['theme']) && isset($meta['territoire']))) ? '':'disabled="disabled"' ?> >
+		<legend>Détails</legend> 
+		Thème : <select name="theme"><option label='' value=''>
 		<?php foreach($themes as $row) { ?>
-			<option required value="<?= $row['id_theme'] ?>" <?= (isset($meta['theme']) && $row['libelle_theme_court']==$meta['theme']) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'] ?></option>
+			<option required value="<?= $row['id_theme'] ?>" <?= (isset($meta['theme']) && $row['libelle_theme_court']==$meta['theme'] && !$flag_duplicate) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'] ?></option>
 		<?php } ?>
 			</select>
-		&#8231; Territoire : <select name="territoire" <?= (isset($meta['territoire'])) ? 'disabled':'' ?>>
+		&#8231; Territoire : <select name="territoire"><option label='' value=''>
 		<?php foreach($territoires as $row) { ?>
-			<option required value="<?= $row['id_territoire'] ?>" <?= (isset($meta['territoire']) && $row['nom_territoire']==$meta['territoire']) ? ' selected ':'' ?>> <?= $row['nom_territoire'] ?></option>
+			<option required value="<?= $row['id_territoire'] ?>" <?= (isset($meta['territoire']) && $row['nom_territoire']==$meta['territoire'] && !$flag_duplicate) ? ' selected ':'' ?>> <?= $row['nom_territoire'] ?></option>
 		<?php } ?>
 			</select>
 	</fieldset>
@@ -48,6 +48,7 @@
 				<th>Identifiant</th>
 				<th>Réponses</th>
 				<th>Affichage <img src="img/help.png" height="16px" title="Conseils : option pour choix unique avec nombre limité de choix | liste déroulante pour choix unique avec de nombreux choix | coche pour choix multiple avec nombre limité de choix..."></th>
+				<th>&nbsp;</th>
 			</thead>
 			<tbody>
 			<?php
@@ -63,6 +64,7 @@
 						value="<?php if(isset($pages[$i]['titre'])) { xecho($pages[$i]['titre']); } ?>"></td>
 					<td class="page"></td>
 					<td colspan=2 class="page"></td>
+					<td class="page"><?php if($pid && empty(array_filter_recursive($questions[$pid]))) { //on ne peut supprimer une page que si elle existe (pid) et qu'elle ne contient plus de question ?><a href="?id=<?= $id_formulaire ?>&act=dp&i=<?= $pid ?>" onclick="return confirm('Voulez-vous supprimer cette page ?')"><img src="img/cancel.png" width="16px"></a><?php } ?></td>
 				</tr>
 				
 				<?php
@@ -95,6 +97,7 @@
 						<option value="<?= $key ?>" <?php if (isset($questions[$pid][$j]['type']) && $questions[$pid][$j]['type']==$key) echo 'selected'; ?>><?= $val ?></option>
 					<?php } ?>
 					</select></td>
+					<td><?php if(isset($questions[$pid][$j]['id'])) { ?><a href="?id=<?= $id_formulaire ?>&act=dq&i=<?= $questions[$pid][$j]['id'] ?>" onclick="return confirm('Voulez-vous supprimer cette question ?')"><img src="img/cancel.png" width="16px"></a><?php } ?></td>
 				</tr>
 				<?php
 				}

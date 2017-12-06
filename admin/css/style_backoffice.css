@@ -94,12 +94,15 @@ legend{
 	padding: 0 1em;
 }
 .accueil ul{
-	background:#f9f9f9;
-	border-top:1px solid black;
-	border-bottom:1px solid black;
+	list-style-type: none;
+	background:#f9f9f9; /*#f0f8f8*/
+	border-top:1px solid #AAA; /*#00AAA9 black*/
+	border-bottom:1px solid #AAA;
+	border-left: 3px solid #00AAA9; /*B8DEDE*/
 	height:9em;
 	margin-top:0.5em; 
 	line-height:2.5em;
+	padding: 1em 2em;
 }
 .derniere{
 	margin-right:0;
