@@ -19,7 +19,7 @@ define('DROIT_PROFESSIONNEL', 'professionnel');
 define('DROIT_TERRITOIRE', 'territoire');
 define('DROIT_THEME', 'theme');
 define('DROIT_UTILISATEUR', 'utilisateur');
-define('DROIT_CRITERE', 'critere');
+define('DROIT_FORMULAIRE', 'formulaire');
 
 define('PASSWD_MIN_LENGTH', 6);
 
@@ -162,10 +162,10 @@ function secu_is_authorized($domaine)
 				$champs = '`theme_r` as `lecture`, `theme_w` as `ecriture`'; break;
 			case DROIT_UTILISATEUR :
 				$champs = '`utilisateur_r` as `lecture`, `utilisateur_w` as `ecriture`'; break;
-			case DROIT_CRITERE :
+			case DROIT_FORMULAIRE :
 				$champs = '`formulaire_r` as `lecture`, `formulaire_w` as `ecriture`'; break;
 			case 'accueil' :
-				$champs = '`demande_r` as `'.DROIT_DEMANDE.'`, `offre_r` as `'.DROIT_OFFRE.'`, `mesure_r` as `'.DROIT_MESURE.'`, `professionnel_r` as `'.DROIT_PROFESSIONNEL.'`, `utilisateur_r` as `'.DROIT_UTILISATEUR.'`, `formulaire_r` as `'.DROIT_CRITERE.'`, `theme_r` as `'.DROIT_THEME.'`, `territoire_r` as `'.DROIT_TERRITOIRE.'`'; break;
+				$champs = '`demande_r` as `'.DROIT_DEMANDE.'`, `offre_r` as `'.DROIT_OFFRE.'`, `mesure_r` as `'.DROIT_MESURE.'`, `professionnel_r` as `'.DROIT_PROFESSIONNEL.'`, `utilisateur_r` as `'.DROIT_UTILISATEUR.'`, `formulaire_r` as `'.DROIT_FORMULAIRE.'`, `theme_r` as `'.DROIT_THEME.'`, `territoire_r` as `'.DROIT_TERRITOIRE.'`'; break;
 		}
 		$sql = 'SELECT '.$champs.' FROM `'.DB_PREFIX.'bsl__droits` 
 			JOIN `'.DB_PREFIX.'bsl_utilisateur` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
@@ -230,9 +230,8 @@ function secu_check_level($domaine, $id)
 		
 		} 
 		if(($check['ecriture']==PERIMETRE_ZONE || $check['lecture']==PERIMETRE_ZONE) && $zone_id=secu_get_territoire_id()){
-			//on checke les territoires de user_id et $domaine/$id. si c'est les mêmes return true
 			
-			if($domaine=='territoire' && $zone_id == $id) {
+			if($domaine===DROIT_TERRITOIRE && $zone_id == $id) {
 				if($check['ecriture']==PERIMETRE_ZONE) {
 					$droit_ecriture = true;
 				}else{
@@ -240,7 +239,7 @@ function secu_check_level($domaine, $id)
 				}
 			
 			}else{
-				if($domaine=='demande') {
+				if($domaine===DROIT_DEMANDE) {
 					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
 						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
 						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
@@ -248,27 +247,27 @@ function secu_check_level($domaine, $id)
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 				
-				} else if($domaine=='offre') {
+				} else if($domaine===DROIT_OFFRE) {
 					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`
 						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
 						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_offre=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
-				} else if($domaine=='mesure') {
+				} else if($domaine===DROIT_MESURE) {
 					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'bsl_mesure`
 						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_mesure`.id_professionnel AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo="territoire"
 						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_mesure=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
-				} else if($domaine=='professionnel') {
+				} else if($domaine===DROIT_PROFESSIONNEL) {
 					$query='SELECT id_professionnel as `id` FROM `'.DB_PREFIX.'bsl_professionnel`
 						WHERE competence_geo="territoire" AND id_competence_geo=? AND id_professionnel=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
-				} else if($domaine=='utilisateur') {
+				} else if($domaine===DROIT_UTILISATEUR) {
 					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
 						WHERE id_statut IN (2,4) AND id_metier=? AND id_utilisateur=? 
 						UNION
@@ -278,17 +277,16 @@ function secu_check_level($domaine, $id)
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'iiii', $zone_id, $id, $zone_id, $id);
 					
-				} else if($domaine=='formulaire') {
+				} else if($domaine===DROIT_FORMULAIRE) {
 					$query='SELECT `id_formulaire` FROM `'.DB_PREFIX.'bsl_formulaire`
 						WHERE `id_territoire`=? AND `id_formulaire`= ?';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
-				} else if($domaine=='theme') {
+				} else if($domaine===DROIT_THEME) {
 				//***inusité***
 					
-				} else 
-				check_mysql_error($conn);
+				} else check_mysql_error($conn);
 				
 				if (isset($stmt) && mysqli_stmt_execute($stmt)) {
 					$result = mysqli_stmt_get_result($stmt);

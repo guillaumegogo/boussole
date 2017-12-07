@@ -41,7 +41,7 @@ if($is_authorized = secu_is_authorized('accueil')){
 	if (isset($is_authorized[DROIT_THEME]) && $is_authorized[DROIT_THEME]) {
 		$references[] = array('theme.php', 'Thèmes et sous-thèmes', '');
 	}
-	if (isset($is_authorized[DROIT_CRITERE]) && $is_authorized[DROIT_CRITERE]) {
+	if (isset($is_authorized[DROIT_FORMULAIRE]) && $is_authorized[DROIT_FORMULAIRE]) {
 		$references[] = array('formulaire_liste.php', 'Formulaires', '');
 	}
 }

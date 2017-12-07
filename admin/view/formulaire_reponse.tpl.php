@@ -53,7 +53,7 @@
 				<th>Libellé</th>
 				<th>Valeur</th>
 				<th>Ordre</th>
-				<th>Choix par défaut</th>
+				<!--<th>Choix par défaut</th>-->
 				<th>Actif</th>
 			</thead>
 			<tbody>
@@ -69,7 +69,7 @@
 						value="<?php if(isset($valeurs[$i]['valeur'])) { xecho($valeurs[$i]['valeur']); } ?>" <?= (isset($valeurs[$i]['valeur'])) ? 'readonly':'' ?>></td>
 					<td><input name="ordre_v[<?= $i ?>]" type="text"  style="width:2em" 
 						value="<?php if(isset($valeurs[$i]['ordre'])) { xecho($valeurs[$i]['ordre']); } ?>"></td>
-					<td><input type="radio" name="defaut" value="<?= $vid ?>" <?= (isset($valeurs[$i]['defaut']) && $valeurs[$i]['defaut']==1) ? 'checked' : '' ?>></td>
+					<!--<td><input type="radio" name="defaut" value="<?= $vid ?>" <?= (isset($valeurs[$i]['defaut']) && $valeurs[$i]['defaut']==1) ? 'checked' : '' ?>></td>-->
 					<td><input type="checkbox" name="actif[]" value="<?= $vid ?>" <?= (isset($valeurs[$i]['actif']) && $valeurs[$i]['actif']==1) ? 'checked' : '' ?>></td>
 				</tr>
 

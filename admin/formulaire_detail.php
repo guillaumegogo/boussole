@@ -1,7 +1,6 @@
 <?php
-
 include('../src/admin/bootstrap.php');
-$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_CRITERE, $_GET['id']) : true;
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_FORMULAIRE, $_GET['id']) : true;
 
 //********* variables
 $id_formulaire = null;
@@ -17,9 +16,10 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
  
 } elseif (isset($_POST['enregistrer'])) {
 
-	echo "<!--<pre>"; print_r($_POST); echo "</pre>-->";
-	$name_q = null;
-	if(isset($_POST['name_q'])) $name_q = $_POST['name_q'];
+	echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
+	
+	$name_q = (isset($_POST['name_q'])) ? $_POST['name_q'] : null;
+	$requis = (isset($_POST['requis'])) ? $_POST['requis'] : null;
 
 	if (!$_POST["maj_id"]) { //action création
 		$t = create_formulaire($_POST['theme'], $_POST['territoire']);
@@ -32,14 +32,14 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 			$msg = 'Le formulaire a été initialisé.';
 			
 			if ($id_formulaire) {
-				$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q);
+				$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
 				if ($updated) $msg = 'Le formulaire a été correctement créé.';
 			}
 		}
 		
 	} else { //action modification
 		$id_formulaire = $_POST['maj_id'];
-		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q);
+		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
 		
 		if ($updated) $msg = 'Le formulaire a été mis à jour.';
 	}
@@ -56,9 +56,10 @@ if (isset($_GET['act'])) {
 		$updated = delete_question_formulaire($_GET['i'], $_GET['id']);
 		if ($updated) $msg = 'Le formulaire a été mis à jour.';
 	}
-	//action suppression de question
+	//action duplication de formulaire
 	if($_GET['act']=='dup'){
 		$flag_duplicate = true;
+		$droit_ecriture = true;
 	}
 }
 
@@ -83,8 +84,12 @@ if (isset($id_formulaire)) {
 
 $themes = get_liste_themes(1);
 
-$territoires[] = array('id_territoire'=>'', 'nom_territoire'=>'National');
-$territoires = array_merge($territoires, get_territoires(null, 1));
+if ($droit_ecriture && secu_check_role(ROLE_ANIMATEUR)) {
+	$territoires = get_territoires($_SESSION['territoire_id'],1);
+} else {
+	$territoires[] = array('id_territoire'=>'', 'nom_territoire'=>'National');
+	$territoires = array_merge($territoires, get_territoires(null, 1));
+}
 
 $types = array(''=>'', 'radio'=>'Boutons d\'option', 'select'=>'Liste déroulante', 'checkbox'=>'Cases à cocher', 'multiple'=>'Liste à choix multiples');
 

@@ -12,7 +12,7 @@ function get_themes_by_ville($code_insee){
 		`t`.`actif_theme` , COUNT(`p`.id_professionnel) as `c`
 		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` ON `pt`.`id_theme`=`t`.`id_theme`
-		LEFT JOIN `p` AS `p` ON `p`.`id_professionnel`=`pt`.`id_professionnel` AND `p`.`actif_pro`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `p`.`id_professionnel`=`pt`.`id_professionnel` AND `p`.`actif_pro`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo` 
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` 
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.`id_departement`=`p`.`id_competence_geo` 
@@ -83,7 +83,7 @@ function get_formulaire($besoin, $etape){
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `fq` ON `fq`.`id_page`=`fp`.`id_page` AND `fq`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`fq`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `fv` ON `fv`.`id_reponse`=`fr`.`id_reponse` AND `fv`.`actif`=1
-		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ?
+		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ? AND `f`.`id_territoire`=0
 		ORDER BY `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'si', $besoin, $etape);
@@ -113,9 +113,9 @@ function get_formulaire($besoin, $etape){
 	//on récupère le nom des autres pages pour construire le fil d'ariane
 	$query = 'SELECT `fp`.`titre`, `fp`.`ordre`
 		FROM `'.DB_PREFIX.'bsl_formulaire__page` AS `fp`
-		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1 
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? 
+		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? AND `f`.`id_territoire`=0
 		ORDER BY `ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 's', $besoin);

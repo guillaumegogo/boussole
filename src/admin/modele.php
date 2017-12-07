@@ -1122,18 +1122,17 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 	$query = 'SELECT `f`.`id_formulaire` AS `id`, `t`.`libelle_theme_court` AS `theme`, `tr`.`nom_territoire`, COUNT(DISTINCT `fp`.`id_page`) AS `nb_pages`,  COUNT(DISTINCT `q`.`id_question`) AS `nb_questions`
 		FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`f`.`id_territoire` /*AND `tr`.`actif_territoire`=1*/ ';
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`f`.`id_territoire` /*AND `tr`.`actif_territoire`=1*/ 
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `q` ON `q`.`id_page`=`fp`.`id_page` AND `q`.`actif`=1
+		WHERE `f`.`actif`=? ';
+	$params[] = (int) $flag_actif;
+	$types .= 'i';
 	if (isset($territoire_id) && $territoire_id > 0) {
 		$query .= 'AND `tr`.`id_territoire`=? ';
 		$params[] = (int) $territoire_id;
 		$types .= 'i';
 	}
-	$query .= 'LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `q` ON `q`.`id_page`=`fp`.`id_page` AND `q`.`actif`=1
-		WHERE `f`.`actif`=? ';
-	$params[] = (int) $flag_actif;
-	$types .= 'i';
-	
 	$query .= 'GROUP BY `f`.`id_formulaire`, `t`.`libelle_theme_court`, `tr`.`nom_territoire`
 		ORDER BY `f`.`id_formulaire`, `fp`.`id_page`';
 
@@ -1709,7 +1708,7 @@ function create_formulaire($theme, $territoire) {
 		
 		$query = 'SELECT COUNT(*) as `nb` 
 			FROM `'.DB_PREFIX.'bsl_formulaire` 
-			WHERE id_theme = ? AND id_territoire = ? ';
+			WHERE id_theme = ? AND id_territoire = ? AND actif = 1';
 		$stmt = mysqli_prepare($conn, $query);
 		mysqli_stmt_bind_param($stmt, 'ii', $theme, $territoire);
 		check_mysql_error($conn);
@@ -1741,7 +1740,7 @@ function create_formulaire($theme, $territoire) {
 	return [$created,$msg];
 }
 
-function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q) { 
+function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $requis) { 
 
 	global $conn;
 	$updated = false;
@@ -1795,11 +1794,13 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 				if($id){
 					//si on a un titre, une réponse et un type, on met à jour
 					if ($titre_q[$key_p][$key] && $reponse_q[$key_p][$key] && $type_q[$key_p][$key]){
+						
 						$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire__question` 
-							SET `id_page`= ?, `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ? 
+							SET `id_page`= ?, `ordre`= ?, `libelle` = ?, `id_reponse`= ?, `type` = ?, `obligatoire` = ? 
 							WHERE `id_question`= ? ';
 						$stmt = mysqli_prepare($conn, $query);
-						mysqli_stmt_bind_param($stmt, 'iisisi', $id_p[$key_p], $ordre_q[$key_p][$key], $titre_q[$key_p][$key], $reponse_q[$key_p][$key], $type_q[$key_p][$key], $id);
+						$required = (isset($requis[$key_p][$key])) ? 1:0;
+						mysqli_stmt_bind_param($stmt, 'iisisii', $id_p[$key_p], $ordre_q[$key_p][$key], $titre_q[$key_p][$key], $reponse_q[$key_p][$key], $type_q[$key_p][$key], $required, $id);
 					
 						if (mysqli_stmt_execute($stmt)) {
 							$updated += mysqli_stmt_affected_rows($stmt) > 0;
@@ -1811,10 +1812,11 @@ function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $pa
 					//si on n'a pas d'id mais toutes les infos, c'est une nouvelle question à créer
 					if($titre_q[$key_p][$key] && $name_q[$key_p][$key] && $reponse_q[$key_p][$key] && $type_q[$key_p][$key]){
 						$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__question`
-							(`id_page`, `libelle`, `html_name`, `ordre`, `type`, `id_reponse`)
-							VALUES (?, ?, ?, ?, ?, ?) ';
+							(`id_page`, `libelle`, `html_name`, `ordre`, `type`, `obligatoire`, `id_reponse`)
+							VALUES (?, ?, ?, ?, ?, ?, ?) ';
 						$stmt = mysqli_prepare($conn, $query);
-						mysqli_stmt_bind_param($stmt, 'issisi', $id_p[$key_p], $titre_q[$key_p][$key], $name_q[$key_p][$key], $ordre_q[$key_p][$key], $type_q[$key_p][$key], $reponse_q[$key_p][$key]);
+						$required = (isset($requis[$key_p][$key])) ? 1:0;
+						mysqli_stmt_bind_param($stmt, 'issisii', $id_p[$key_p], $titre_q[$key_p][$key], $name_q[$key_p][$key], $ordre_q[$key_p][$key], $type_q[$key_p][$key], $required, $reponse_q[$key_p][$key]);
 					
 						if (mysqli_stmt_execute($stmt)) {
 							$updated += mysqli_stmt_affected_rows($stmt) > 0;

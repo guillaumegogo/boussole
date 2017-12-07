@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
 	<link rel="icon" type="image/png" href="img/compass-icon.png" />
 	<title><?php xecho(ucfirst($titredusite)); ?></title>
+	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 <body><div id="main">
 	<?php include('../src/web/header.inc.php'); ?>
@@ -71,12 +72,12 @@
 										?>
 										<div class="col-md-6 col-sm-6 col-xs-12 spacing">
 											<div class="lab">
-												<label class="label_long" for="<?php xecho($question['name']) ?>"><?php xecho($question['que']) ?></label>
+												<label class="label_long" for="<?php xecho($question['name']) ?>"><?php xecho($question['que']) ?> <?= ($question['obl']) ? '*':'' ?></label>
 												<div style="display:block;">
 													<?php
 													echo ouverture_ligne($question);
 													foreach ($reponses[$question['id']] as $reponse) {
-														echo affiche_valeur($reponse, $question['type']);
+														echo affiche_valeur($reponse, $question['type'], $question['obl']);
 													}
 													echo cloture_ligne($question);
 													?>

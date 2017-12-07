@@ -40,22 +40,25 @@ function ouverture_ligne($ele)
 			$t = '<div style="display:inline-table;">';
 			break;
 		case 'select':
-			$t = '<select name="' . $ele['name'] . '">';
+			$r = ($ele['obl']) ? 'required':'';
+			$t = '<select name="' . $ele['name'] . '" ' . $r . ' ><option value="" label=""> ';
 			break;
 		case 'multiple':
-			$t = '<select multiple name="' . $ele['name'] . '[]" size="' . $ele['tai'] . '">';
+			$r = ($ele['obl']) ? 'required':'';
+			$t = '<select multiple name="' . $ele['name'] . '[]" size="' . $ele['tai'] . '" ' . $r . ' >';
 			break;
 	}
 	return $t;
 }
 
-function affiche_valeur($ele, $type)
+//Voir si implémentation xssafe possible ou si ça fait sauter les "name"
+function affiche_valeur($ele, $type, $requis)
 { //affichage valeur
-	//Voir si implémentation xssafe possible ou si ça fait sauter les "name"
 	$t = '';
 	switch ($type) {
 		case 'radio':
-			$t = '<input type="radio" name="' . $ele['name'] . '" value="' . $ele['val'] . '" id="' . $ele['val'] . $ele['name'] . '" ';
+			$r = ($requis) ? 'required':'';
+			$t = '<input type="radio" name="' . $ele['name'] . '" value="' . $ele['val'] . '" id="' . $ele['val'] . $ele['name'] . '" ' . $r ;
 			if (isset($_SESSION['critere'][$ele['name']])) {
 				if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' checked ';
 			} else if ($ele['def'] == 1) $t .= ' checked ';

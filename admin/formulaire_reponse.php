@@ -1,7 +1,7 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-secu_check_login(DROIT_CRITERE);
+secu_check_login(DROIT_FORMULAIRE);
 
 //********* variables
 $id_reponse = null;
@@ -17,7 +17,8 @@ if (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
 
 	} else { //requête de modification
 		$id_reponse = $_POST['maj_id'];
-		$defaut= (isset($_POST['defaut'])) ? $_POST['defaut']:null;
+		//$defaut= (isset($_POST['defaut'])) ? $_POST['defaut']:null;
+		$defaut= null;
 		$updated = update_reponse($id_reponse, $_POST['libelle'], $_POST['id_v'], $_POST['libelle_v'], $_POST['valeur_v'], $_POST['ordre_v'], $_POST['actif'], $defaut);
 		
 		if ($updated) {
