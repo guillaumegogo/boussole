@@ -109,21 +109,24 @@ echo "<!--<pre>".$print_sql."</pre>-->";
 	check_mysql_error($conn);
 
 	mysqli_stmt_bind_result($stmt, $id_formulaire, $nb_pages, $titre, $ordre_page, $aide, $idq, $question, $name, $type, $taille, $obligatoire, $libelle, $valeur, $defaut);
-	$tmp_id = 0;
-	$tmp_que = '';
+	$tmp_id = null;
+	$tmp_que = null;
 	$meta = [];
 	$questions = [];
 	$reponses = [];
 	while (mysqli_stmt_fetch($stmt)) {
-		if ($id_formulaire != $tmp_id) { //on récupère les données de la page de formulaire
+		if (is_null($tmp_id)) { //on récupère pour commencer les données de la page de formulaire
 			$meta = array('id' => $id_formulaire, 'nb' => $nb_pages, 'titre' => $titre, 'etape' => $ordre_page, 'aide' => $aide, 'suite' => ($ordre_page < $nb_pages) ? ($ordre_page + 1) : 'fin');
 			$tmp_id = $id_formulaire;
+		}else if($id_formulaire == $tmp_id) { //puis on récupère les questions et réponses du formulaire en question
+			if ($question != $tmp_que) {
+				$questions[] = array('id' => $idq, 'que' => $question, 'name' => $name, 'type' => $type, 'tai' => $taille, 'obl' => $obligatoire);
+				$tmp_que = $question;
+			}
+			$reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
+		}else{
+			break;
 		}
-		if ($question != $tmp_que) { //on récupère les questions
-			$questions[] = array('id' => $idq, 'que' => $question, 'name' => $name, 'type' => $type, 'tai' => $taille, 'obl' => $obligatoire);
-			$tmp_que = $question;
-		}
-		$reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
 	}
 	mysqli_stmt_close($stmt);
 	
