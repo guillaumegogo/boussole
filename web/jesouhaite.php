@@ -27,6 +27,8 @@ if(isset($_SESSION['recherche'])) {
 		$_SESSION['code_insee'] = $row[0]['code_insee']; // sert à la requête
 		$_SESSION['ville_habitee'] = $row[0]['nom_ville'];
 		$_SESSION['code_postal'] = $row[0]['codes_postaux'];
+		$_SESSION['id_territoire'] = $row[0]['id_territoire'];
+		$_SESSION['nom_territoire'] = $row[0]['nom_territoire'];
 	}
 
 	//********* récupération des thèmes disponibles pour le code insee indiqué

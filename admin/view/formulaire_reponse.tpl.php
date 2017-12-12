@@ -16,12 +16,12 @@
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
 		var cell4 = row.insertCell(3);
-		var cell5 = row.insertCell(4);
+		/*var cell5 = row.insertCell(4);*/
 		cell1.innerHTML = "<input name=\"id_v["+x+"]\" type=\"hidden\" value=\"\"><input name=\"libelle_v["+x+"]\" type=\"text\" class=\"input_long\" value=\"\">";
 		cell2.innerHTML = "<input name=\"valeur_v["+x+"]\" type=\"text\" class=\"input_long\" value=\"\">";
 		cell3.innerHTML = "<input name=\"ordre_v["+x+"]\" type=\"text\" style=\"width:2em\" value=\"\">";
-		cell4.innerHTML = "<input type=\"radio\" name=\"defaut\" value=\"\" >";
-		cell5.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" checked >";
+		/*cell4.innerHTML = "<input type=\"radio\" name=\"defaut\" value=\"\" >";*/
+		cell4.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" checked >";
 	}
 	</script>
 	<title>Boussole des jeunes</title>
@@ -33,7 +33,18 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
+	<form method="get" class="liste_territoire">
+		<label for="id">Liste des réponses :</label>
+		<select name="id" onchange="this.form.submit()">
+			<?php foreach ($liste_reponses as $row) { ?>
+			<option value="<?= $row['id_reponse'] ?>"
+				<?= ($id_reponse == $row['id_reponse']) ? 'selected' : '' ?>>
+				<?= $row['libelle'] ?></option>
+			<?php } ?>
+		</select>
+	</form>
+
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> > <?php if(isset($_SESSION['dernier_formulaire'])){ ?><a href="formulaire_detail.php?id=<?=$_SESSION['dernier_formulaire'] ?>">Détail du formulaire</a> ><?php } ?> </small>
 		Détail de la réponse</h2> 
 
 	<div class="soustitre"><?php echo $msg; ?></div>
@@ -85,7 +96,10 @@
 	<div class="button">
 		<input type="hidden" name="maj_id" value="<?= xssafe($id_reponse) ?>" />
 		<input type="button" value="Retour" onclick="history.go(-1)">
+		<input type="submit" name="enregistrer-sous" value="Enregistrer sous">
+<?php if (secu_check_role(ROLE_ADMIN)) { ?>
 		<input type="submit" name="enregistrer" value="Enregistrer">
+<?php } ?>
 	</div>
 	
 	</form>

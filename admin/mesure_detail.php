@@ -23,7 +23,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	if (!$_POST["maj_id"]) { //requête d'ajout
 		$created = create_mesure($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro']);
 		$id_mesure = mysqli_insert_id($conn);
-		
+
 		if ($created) $msg = "Création bien enregistrée.";
 
 	} else { //requête de modification

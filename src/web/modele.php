@@ -19,7 +19,7 @@ function get_themes_by_ville($code_insee){
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `reg` ON `p`.`competence_geo`="regional" AND `reg`.`id_region`=`p`.`id_competence_geo` 
 		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region` 
 		WHERE `id_theme_pere` IS NULL 
-		AND (/*`p`.competence_geo="national" OR*/ `tv`.`code_insee`=? OR `depreg`.`id_departement`=SUBSTR(?,1,2) OR `dep`.`id_departement`=SUBSTR(?,1,2)) 
+		AND (`p`.competence_geo="national" OR `tv`.`code_insee`=? OR `depreg`.`id_departement`=SUBSTR(?,1,2) OR `dep`.`id_departement`=SUBSTR(?,1,2)) 
 		GROUP BY `t`.`id_theme`, `t`.`libelle_theme`, `t`.`actif_theme` 
 		UNION
 		SELECT DISTINCT `t2`.id_theme, `t2`.`libelle_theme`, `t2`.`actif_theme`, 0 as `c`
@@ -29,12 +29,12 @@ function get_themes_by_ville($code_insee){
 
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sss', $code_insee, $code_insee, $code_insee);
-	
+	/*
 $print_sql = $query;
 foreach(array($code_insee, $code_insee, $code_insee) as $term){
 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
 }
-echo "<!--<pre>".$print_sql."</pre>-->"; 
+echo "<pre>".$print_sql."</pre>"; */
 	
 	$themes = query_get($stmt);
 	return $themes;
@@ -47,20 +47,31 @@ function get_ville($saisie){
 
 	//test si saisie avec le autocomplete (auquel cas ça se termine par des chiffres)
 	if (is_numeric(substr($saisie, -3))) {
-		$query = 'SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ", ") AS `codes_postaux` 
-			FROM `'.DB_PREFIX.'bsl__ville` 
+		$query = 'SELECT `nom_ville`, `v`.`code_insee`, GROUP_CONCAT(DISTINCT `v`.`code_postal` SEPARATOR ", ") AS `codes_postaux`, `tr`.`id_territoire`, `nom_territoire`
+			FROM `'.DB_PREFIX.'bsl__ville` as `v`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`code_insee` = `v`.`code_insee`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `actif_territoire`=1
 			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ?
-			GROUP BY `nom_ville`, `code_insee`';
+			GROUP BY `nom_ville`, `v`.`code_insee`';
 		$stmt = mysqli_prepare($conn, $query);
 		$ville = substr($saisie, 0, -6);
 		$cp = substr($saisie, -5);
 		mysqli_stmt_bind_param($stmt, 'ss', $ville, $cp);
+		
+	
+$print_sql = $query;
+foreach(array($ville, $cp) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<!--<pre>".$print_sql."</pre>-->";
 
 	} else {
-		$query = 'SELECT `nom_ville`, `code_insee`, GROUP_CONCAT(`code_postal` SEPARATOR ", ") AS `codes_postaux` 
-			FROM `'.DB_PREFIX.'bsl__ville` 
-			WHERE `nom_ville` LIKE ?
-			GROUP BY `nom_ville`, `code_insee`';
+		$query = 'SELECT `nom_ville`, `v`.`code_insee`, GROUP_CONCAT(DISTINCT `v`.`code_postal` SEPARATOR ", ") AS `codes_postaux`, `tr`.`id_territoire`, `nom_territoire` 
+			FROM `'.DB_PREFIX.'bsl__ville` as `v`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`code_insee` = `v`.`code_insee`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `actif_territoire`=1
+			WHERE `nom_ville` LIKE ? 
+			GROUP BY `nom_ville`, `v`.`code_insee`';
 		$stmt = mysqli_prepare($conn, $query);
 		$saisie_insee = format_insee($saisie) . '%';
 		mysqli_stmt_bind_param($stmt, 's', $saisie_insee);
@@ -70,23 +81,29 @@ function get_ville($saisie){
 	return $row;
 }
 
-//************ récupération des éléments de la page du formulaire ==> todo: rajouter territoire !
-function get_formulaire($besoin, $etape){
+//************ récupération des éléments de la page du formulaire 
+function get_formulaire($besoin, $etape, $id_territoire=0){
 	
 	global $conn;
 
-	$query = 'SELECT `f`.`id_formulaire`, `f`.`nb_pages`, `fp`.`titre`, `fp`.`ordre` AS `ordre_page`, `fp`.`aide`, 
-		`fq`.`id_question`, `fq`.`libelle` AS `libelle_question`, `fq`.`html_name`, `fq`.`type`, `fq`.`taille`, `fq`.`obligatoire`, `fv`.`libelle`, `fv`.`valeur`, 
-		`fv`.`defaut` FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
+	$query = 'SELECT `f`.`id_formulaire`, `f`.`nb_pages`, `fp`.`titre`, `fp`.`ordre` AS `ordre_page`, `fp`.`aide`, `fq`.`id_question`, `fq`.`libelle` AS `libelle_question`, `fq`.`html_name`, `fq`.`type`, `fq`.`taille`, `fq`.`obligatoire`, `fv`.`libelle`, `fv`.`valeur`, `fv`.`defaut` 
+		FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `fq` ON `fq`.`id_page`=`fp`.`id_page` AND `fq`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`fq`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `fv` ON `fv`.`id_reponse`=`fr`.`id_reponse` AND `fv`.`actif`=1
-		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ? AND `f`.`id_territoire`=0
-		ORDER BY `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
+		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ? AND (`f`.`id_territoire`=? OR `f`.`id_territoire`=0)
+		ORDER BY `f`.`id_territoire` DESC, `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'si', $besoin, $etape);
+	mysqli_stmt_bind_param($stmt, 'sii', $besoin, $etape, $id_territoire);
+
+	
+$print_sql = $query;
+foreach(array($besoin, $etape, $id_territoire) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<!--<pre>".$print_sql."</pre>-->";
 
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
@@ -115,10 +132,10 @@ function get_formulaire($besoin, $etape){
 		FROM `'.DB_PREFIX.'bsl_formulaire__page` AS `fp`
 		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1 
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? AND `f`.`id_territoire`=0
-		ORDER BY `ordre`';
+		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? AND (`f`.`id_territoire`=? OR `f`.`id_territoire`=0)
+		ORDER BY `f`.`id_territoire` DESC, `ordre`';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 's', $besoin);
+	mysqli_stmt_bind_param($stmt, 'si', $besoin, $id_territoire);
 	$liste_pages = query_get($stmt);
 	
 	return [$meta, $questions, $reponses, $liste_pages];

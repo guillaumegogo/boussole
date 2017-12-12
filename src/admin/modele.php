@@ -1890,16 +1890,58 @@ function update_nbpages_formulaire($id){
 	return $updated;
 }
 
+function create_reponse($libelle, $id_v, $libelle_v, $valeur_v, $ordre_v, $actif) {
+
+	global $conn;
+	$created = false;
+	$reponse_id = null;
+	$defaut = 0;
+	$user_id=secu_get_current_user_id();
+	
+	if (isset($libelle)) {
+		$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__reponse`(`libelle`)
+			VALUES (?)';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 's', $libelle);
+		if (mysqli_stmt_execute($stmt)) {
+			$reponse_id = mysqli_insert_id($conn);
+			$created += mysqli_stmt_affected_rows($stmt) > 0;
+			mysqli_stmt_close($stmt);
+		}
+	}
+	
+	//insert valeurs
+	if (isset($libelle_v)) {
+		foreach($libelle_v as $key=>$libelle_valeur){
+			if($libelle_valeur){
+				$thisactif = (isset($actif[$key])) ? '1':'0';
+				
+				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__valeur`(`id_reponse`, `libelle`, `valeur`, `ordre`, `defaut`, `actif`)
+					VALUES (?, ?, ?, ?, ?, ?)';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'issiii', $reponse_id, $libelle_valeur, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif);
+
+				if (mysqli_stmt_execute($stmt)) {
+					$created += mysqli_stmt_affected_rows($stmt) > 0;
+					mysqli_stmt_close($stmt);
+				}
+			}
+		}
+	}
+	
+	return $reponse_id;
+}
+
 function update_reponse($reponse_id, $libelle, $id_v, $libelle_v, $valeur_v, $ordre_v, $actif, $defaut_id) {
 
 	global $conn;
 	$updated = false;
 	$user_id=secu_get_current_user_id();
 	
-	//update questions
+	//update valeurs
 	if (isset($libelle_v)) {
-		foreach($libelle_v as $key=>$libelle){
-			if($libelle){
+		foreach($libelle_v as $key=>$libelle_valeur){
+			if($libelle_valeur){
 				$defaut = (isset($defaut_id) && ($id_v[$key] == $defaut_id)) ? '1':'0';
 				$thisactif = (isset($actif[$key])) ? '1':'0';				
 				
@@ -1908,7 +1950,7 @@ function update_reponse($reponse_id, $libelle, $id_v, $libelle_v, $valeur_v, $or
 						SET `libelle`= ? ,`valeur`= ? ,`ordre`= ? ,`defaut`= ? ,`actif`= ? 
 						WHERE `id_valeur`= ? ';
 					$stmt = mysqli_prepare($conn, $query);
-					mysqli_stmt_bind_param($stmt, 'ssiiii', $libelle, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif, $id_v[$key]);
+					mysqli_stmt_bind_param($stmt, 'ssiiii', $libelle_valeur, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif, $id_v[$key]);
 					
 					if (mysqli_stmt_execute($stmt)) {
 						$updated += mysqli_stmt_affected_rows($stmt) > 0;
@@ -1918,25 +1960,13 @@ function update_reponse($reponse_id, $libelle, $id_v, $libelle_v, $valeur_v, $or
 					$query = 'INSERT INTO `'.DB_PREFIX.'bsl_formulaire__valeur`(`id_reponse`, `libelle`, `valeur`, `ordre`, `defaut`, `actif`)
 						VALUES (?, ?, ?, ?, ?, ?)';
 					$stmt = mysqli_prepare($conn, $query);
-					mysqli_stmt_bind_param($stmt, 'issiii', $reponse_id, $libelle, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif);
+					mysqli_stmt_bind_param($stmt, 'issiii', $reponse_id, $libelle_valeur, $valeur_v[$key], $ordre_v[$key], $defaut, $thisactif);
 										
 					if (mysqli_stmt_execute($stmt)) {
 						$updated += mysqli_stmt_affected_rows($stmt) > 0;
 						mysqli_stmt_close($stmt);
 					}
-				}/* // pour l'instant désactivation uniquement. 
-			}else{
-				if(isset($id_v[$key]) && $id_v[$key]){
-					
-					$query = 'DELETE FROM `'.DB_PREFIX.'bsl_formulaire__valeur` WHERE `id_valeur`= ? ';
-					$stmt = mysqli_prepare($conn, $query);
-					mysqli_stmt_bind_param($stmt, 'i', $id_v[$key]);
-					
-					if (mysqli_stmt_execute($stmt)) {
-						$updated += mysqli_stmt_affected_rows($stmt) > 0;
-						mysqli_stmt_close($stmt);
-					}
-				}*/
+				}
 			}
 		}
 	}

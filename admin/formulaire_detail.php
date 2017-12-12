@@ -1,6 +1,7 @@
 <?php
 include('../src/admin/bootstrap.php');
 $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_FORMULAIRE, $_GET['id']) : true;
+$_SESSION['dernier_formulaire'] = $_GET['id'];
 
 //********* variables
 $id_formulaire = null;

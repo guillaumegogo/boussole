@@ -8,16 +8,16 @@ $id_reponse = null;
 $msg = "";
 
 //********** si post du formulaire interne
-if (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
-
-	if (!$_POST["maj_id"]) { //requête d'ajout
+if ((isset($_POST['enregistrer']) || isset($_POST['enregistrer-sous'])) && isset($_POST["maj_id"])) {
+	
+	if (!$_POST["maj_id"] || isset($_POST['enregistrer-sous'])) { //requête d'ajout
 		
-		$created = null; /* todo */
+		$created = create_reponse($_POST['libelle'], $_POST['id_v'], $_POST['libelle_v'], $_POST['valeur_v'], $_POST['ordre_v'], $_POST['actif']);
+		$id_reponse = $created;
 		if ($created) $msg = "Création bien enregistrée.";
 
 	} else { //requête de modification
 		$id_reponse = $_POST['maj_id'];
-		//$defaut= (isset($_POST['defaut'])) ? $_POST['defaut']:null;
 		$defaut= null;
 		$updated = update_reponse($id_reponse, $_POST['libelle'], $_POST['id_v'], $_POST['libelle_v'], $_POST['valeur_v'], $_POST['ordre_v'], $_POST['actif'], $defaut);
 		
@@ -27,7 +27,7 @@ if (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
 	}
 }
 
-if (isset($_GET['id'])) {
+if (!$id_reponse && isset($_GET['id'])) {
 	$id_reponse = $_GET['id'];
 }
 
@@ -39,6 +39,8 @@ if (isset($id_reponse)) {
 	$libelle_reponse = $t[0];
 	$valeurs = $t[1];
 }
+
+$liste_reponses = get_reponses();
 
 $max_valeurs_par_reponse = 10;
 $nb_lignes_a_afficher = (count($valeurs)) ? count($valeurs) : $max_valeurs_par_reponse;

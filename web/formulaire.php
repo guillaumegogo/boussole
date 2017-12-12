@@ -3,7 +3,7 @@
 include('../src/web/bootstrap.php');
 
 //************ si accès direct à la page, renvoi vers l'accueil
-if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
+if (!isset($_SESSION['code_insee']) || !isset($_SESSION['besoin'])) {
 	header('Location: index.php');
 	exit();
 }
@@ -30,7 +30,7 @@ if ($etape=='fin') {
 }
 
 //************ récupération des éléments de la page du formulaire
-$t = get_formulaire($_SESSION['besoin'], $etape);
+$t = get_formulaire($_SESSION['besoin'], $etape, $_SESSION['id_territoire']);
 $meta = $t[0];
 $questions = $t[1];
 $reponses = $t[2];

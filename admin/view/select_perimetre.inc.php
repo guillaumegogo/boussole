@@ -24,7 +24,8 @@ if (isset($perimetre_lecture)){
 }else{
 	$ld_territoires[] = array('id_territoire'=>0, 'nom_territoire'=>'! National');
 	$ld_territoires = array_merge($ld_territoires, get_territoires(null, 1));
-}?>
+}
+?>
 
 <form method="post" class="liste_territoire">
 	<label for="choix_territoire">Périmètre :</label>

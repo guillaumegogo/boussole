@@ -23,7 +23,8 @@
 				</div>
 				<div class="col-md-6 col-sm-6 col-xs-6">
 					<div class="localisation-wrapper">
-						<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?></span>			
+						<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?>
+						<?php if($_SESSION['nom_territoire']) { ?> <br/><?php xecho($_SESSION['nom_territoire']); } ?></span>
 					</div>
 				</div>				
 			</div>

@@ -115,14 +115,13 @@
 		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
 		
 	<?php if ($id_formulaire) { ?>
-		<input type="button" value="Dupliquer" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
+		<input type="button" value="Dupliquer le formulaire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
 	<?php } ?>
 	
-	<?php if($droit_ecriture) { ?>
-		<input type="button" disabled value="Créer de nouvelles réponses" onclick="javascript:location.href='formulaire_reponse.php'">
-		
-	<?php if ($id_formulaire) {
-		if($meta['actif'] == 0){ ?>
+	<?php if($droit_ecriture) { 
+		if ($id_formulaire) {
+		if($meta['actif'] == 0){ 
+	?>
 		<input type="submit" name="restaurer" value="Restaurer">
 	<?php }else{ ?>
 		<input type="submit" name="archiver" value="Archiver">
