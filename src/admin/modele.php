@@ -741,9 +741,9 @@ function get_liste_offres($flag = 1, $territoire_id = null, $user_pro_id = null)
 		JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `p`.id_professionnel=`o`.`id_professionnel`
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.id_theme=`o`.`id_sous_theme`
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `theme_pere` ON `theme_pere`.id_theme=`t`.`id_theme_pere`
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.id_departement`=`p`.`id_competence_geo`
+		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.`id_departement`=`p`.`id_competence_geo`
 		LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `r` ON `p`.`competence_geo`="regional" AND `r`.`id_region`=`p`.`id_competence_geo`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `r`` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo`
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo`
 		WHERE actif_offre= ? ';
 	$params[] = (int) $flag;
 	$types = 'i';

@@ -113,13 +113,11 @@
 	<div class="button">
 		<input type="hidden" name="maj_id" value="<?= (!$flag_duplicate) ? xssafe($id_formulaire) : '' ?>" />
 		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
-		
-	<?php if ($id_formulaire) { ?>
-		<input type="button" value="Dupliquer le formulaire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
-	<?php } ?>
 	
 	<?php if($droit_ecriture) { 
-		if ($id_formulaire) {
+		if ($id_formulaire) {?>
+		<input type="button" value="Dupliquer le formulaire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
+	<?php 
 		if($meta['actif'] == 0){ 
 	?>
 		<input type="submit" name="restaurer" value="Restaurer">

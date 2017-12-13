@@ -364,7 +364,7 @@ if (isset($territoires)){
 			<input type="button" value="Retour" onclick="javascript:location.href='professionnel_liste.php'">
 		<?php if($droit_ecriture) {
 			if (!$id_professionnel) {
-				if($pro['actif_pro'] == 0){ ?>
+				if(isset($pro['actif_pro']) && $pro['actif_pro'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Désactiver">
