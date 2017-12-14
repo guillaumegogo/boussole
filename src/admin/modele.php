@@ -1513,7 +1513,7 @@ function update_user($id, $nom, $courriel){
 	return $updated;
 }
 
-function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse, $actif){
+function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse){
 
 	global $conn;
 	$updated = false;
@@ -1527,7 +1527,7 @@ function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse, $actif){
 		$result = mysqli_stmt_get_result($stmt);
 		$row = mysqli_fetch_assoc($result);
 		
-		if (password_verify(SALT_BOUSSOLE . $motdepasseactuel, $nouveaumotdepasse)) {
+		if (password_verify(SALT_BOUSSOLE . $motdepasseactuel, $row['motdepasse'])) {
 			$query = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
 				SET `motdepasse` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
 				WHERE `id_utilisateur` = ?';
@@ -1539,8 +1539,8 @@ function update_motdepasse($id, $motdepasseactuel, $nouveaumotdepasse, $actif){
 			
 			if (mysqli_stmt_execute($stmt2)) {
 				$updated = mysqli_stmt_affected_rows($stmt) > 0;
-				mysqli_stmt_close($stmt);
 				$msg = 'Mot de passe modifié.';
+				mysqli_stmt_close($stmt2);
 			} else {
 				$msg = $message_erreur_bd;
 			}

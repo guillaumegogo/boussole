@@ -3,20 +3,19 @@
 include('../src/admin/bootstrap.php');
 $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_UTILISATEUR, $_GET['id']) : true;
 
+//print_r($_POST);
+
 //********* variables
 $last_id = null;
 $msg = '';
 
 if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
-
 	$restored = archive('utilisateur', (int)$_POST["maj_id"], 1);
  
 } elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
-
 	$archived = archive('utilisateur', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
-	
+} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {	
 	if (!$_POST["maj_id"]) { //requête d'ajout
 
 		$maj_attache = NULL;
@@ -53,9 +52,9 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 				$updated_mp = update_motdepasse((int)$_POST['maj_id'], $_POST['motdepasseactuel'], $_POST["nouveaumotdepasse"] );
 
 				if ($updated_mp[0]) {
-					$msg = $updated_mp[1];
+					$msg = 'Modification bien enregistrée. '.$updated_mp[1];
 				} else {
-					$msg = $message_erreur_bd;
+					$msg = $message_erreur_bd.' '.$updated_mp[1];
 				}
 			} else {
 				$msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
