@@ -57,7 +57,7 @@ function xecho($data)
  */
 function xbbecho($data)
 {
-	echo bbcode2html(xssafe($data));
+	echo html_entity_decode(bbcode2html(xssafe($data)));
 }
 
 
@@ -155,7 +155,7 @@ function bbcode2html($s) {
 		'/\[u\](.*?)\[\/u\]/is',
 		'/\[img\](.*?)\[\/img\]/is',
 		'/\[url\=(.*?)\](.*?)\[\/url\]/is',
-		'/\[br\]/is',
+		'/\[br\]/is'
 	);
 
 	$htmltags = array(
