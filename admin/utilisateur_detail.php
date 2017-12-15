@@ -15,52 +15,56 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 } elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
 	$archived = archive('utilisateur', (int)$_POST["maj_id"]);
  
-} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {	
-	if (!$_POST["maj_id"]) { //requête d'ajout
+} elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
+	
+	if (! filter_var($_POST["courriel"], FILTER_VALIDATE_EMAIL)) {
+		$msg = 'L\'adresse email saisie ne paraît pas valide.';
+	
+	}else{	
+		if (!$_POST["maj_id"]) { //requête d'ajout
 
-		$maj_attache = NULL;
-		if (isset($_POST["statut"])) {
-			if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
-				$maj_attache = $_POST["attache"];
-			else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) 
-				$maj_attache = $_POST["attache_p"];
-		}
-		if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
-
-			$created = create_user($_POST["nom_pouet"], $_POST["courriel"], secu_password_hash($_POST["nouveaumotdepasse"]), $_POST["statut"], $maj_attache);
+			$maj_attache = NULL;
+			if (isset($_POST["statut"])) {
+				if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
+					$maj_attache = $_POST["attache"];
+				else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) 
+					$maj_attache = $_POST["attache_p"];
+			}
+			
+			$created = create_user($_POST["nom_pouet"], $_POST["courriel"], $_POST["statut"], $maj_attache);
 			if ($created) {
 				$last_id = mysqli_insert_id($conn);
 				$msg = 'Utilisateur bien créé.';
+				$sent = secu_send_pass_email($_POST['courriel'], 'init');
+				$msg .= ($sent) ? ' Un email lui a été envoyé.' : ' Aucun email n\'a pu lui être envoyé. Merci de lui demander d\'utiliser le formulaire mot de passe oublié.';
 			} else {
 				$msg = $message_erreur_bd;
 			}
-		} else {
-			$msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
-		}
 
-	} else { //requête de modification
-		if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
-			$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"]);
+		} else { //requête de modification
+			if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
+				$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"]);
 
-			if ($updated) {
-				$msg = 'Modification bien enregistrée.';
-			} else {
-				$msg = $message_erreur_bd;
-			}
-		} else { //modif mot de passe
-			if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
-				$updated_mp = update_motdepasse((int)$_POST['maj_id'], $_POST['motdepasseactuel'], $_POST["nouveaumotdepasse"] );
-
-				if ($updated_mp[0]) {
-					$msg = 'Modification bien enregistrée. '.$updated_mp[1];
+				if ($updated) {
+					$msg = 'Modification bien enregistrée.';
 				} else {
-					$msg = $message_erreur_bd.' '.$updated_mp[1];
+					$msg = $message_erreur_bd;
 				}
-			} else {
-				$msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
+			} else { //modif mot de passe
+				if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
+					$updated_mp = update_motdepasse((int)$_POST['maj_id'], $_POST['motdepasseactuel'], $_POST["nouveaumotdepasse"] );
+
+					if ($updated_mp[0]) {
+						$msg = 'Modification bien enregistrée. '.$updated_mp[1];
+					} else {
+						$msg = $message_erreur_bd.' '.$updated_mp[1];
+					}
+				} else {
+					$msg = 'Les mots de passe saisis doivent correspondre et faire au moins '.PASSWD_MIN_LENGTH.' caractères.';
+				}
 			}
+			$last_id = $_POST["maj_id"];
 		}
-		$last_id = $_POST["maj_id"];
 	}
 }
 

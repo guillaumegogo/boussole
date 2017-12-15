@@ -14,7 +14,7 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> Réinitialisation du mot de passe</h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Saisie du mot de passe</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -39,7 +39,7 @@
 					<label for="nouveaumotdepasse2">Confirmez le mot de passe :</label>
 					<input type="password" name="nouveaumotdepasse2"/>
 				</div>
-				<input type="submit" value="Valider">
+				<br/><input type="submit" value="Valider">
 			</div>
 
 		<?php } ?>

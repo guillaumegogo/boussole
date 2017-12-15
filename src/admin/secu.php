@@ -420,10 +420,10 @@ function secu_check_role($role)
  * Envoi du mail de réinitialisation de mot de passe
  * @param string $email
  */
-function secu_send_reset_email($email)
+function secu_send_pass_email($email, $origine='reset')
 {
 	global $conn;
-
+	$sent = false;
 	$token = hash('sha256', $email . time() . rand(0, 1000000));
 
 	$sql = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
@@ -431,22 +431,30 @@ function secu_send_reset_email($email)
 			WHERE `email`= ? AND `actif_utilisateur`= 1';
 
 	$stmt = mysqli_prepare($conn, $sql);
-	mysqli_stmt_bind_param($stmt, 'ss', $token, $_POST['login']);
+	mysqli_stmt_bind_param($stmt, 'ss', $token, $email);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		if (mysqli_stmt_affected_rows($stmt) === 1) {
-			$subject = mb_encode_mimeheader('Réinitialisation de votre mot de passe', 'UTF-8');
-			$message = "<html><p>Vous avez demandé la réinitialisation de votre mot de passe.</p> "
-				. "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur ce lien : <a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "</a></p>"
+			if ($origine=='reset') {
+				$subject = mb_encode_mimeheader('Réinitialisation de votre mot de passe', 'UTF-8');
+				$message = "<html><p>Vous avez demandé la réinitialisation de votre mot de passe.</p> "
+				. "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "</a></p>"
 				. "<p>Ce lien est valide trois jours, après quoi il vous faudra refaire une demande.</html>";
+			}else if ($origine=='init') {
+				$subject = mb_encode_mimeheader('Création de votre compte Boussole des jeunes et initialisation de votre mot de passe', 'UTF-8');
+				$message = "<html><p>Un compte a été créé à votre nom sur la Boussole des jeunes.</p> "
+				. "<p>Avant de pouvoir vous connecter, vous devez initialiser votre mot de passe en cliquant sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php?t=" . $token . "</a></p>"
+				. "<p>Ce lien est valide trois jours, après quoi il faudra demander une réinitialisation du mot de passe sur <a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php\">" . $_SERVER['SERVER_NAME'] . "/admin/motdepasseoublie.php</a>.</html>";
+			}
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 			$headers .= 'From: La Boussole des jeunes <boussole@jeunes.gouv.fr>' . "\r\n";
 
-			mail($email, $subject, $message, $headers);
+			$sent = mail($email, $subject, $message, $headers);
 		}
-		mysqli_stmt_close($stmt);
 	}
+	mysqli_stmt_close($stmt);
+	return $sent;
 }
 
 /**

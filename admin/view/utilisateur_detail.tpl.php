@@ -78,7 +78,7 @@
 						<?php } ?>
 						</select>
 					</div>
-					<div class="lab">
+					<div class="lab" style="display:block;">
 						<label for="attache">Attache :</label>
 						<div style="display:inline-block;">
 							<select name="attache" id="liste_territoires" 
@@ -112,9 +112,6 @@
 						<label for="motdepasseactuel">Mot de passe actuel :</label>
 						<input type="password" name="motdepasseactuel"/>
 					</div>
-				<?php }
-				if ($vue == "motdepasse" || $vue == "creation") {
-					?>
 					<div class="lab">
 						<label for="nouveaumotdepasse"><?php echo ($id_utilisateur) ? "Nouveau mot de passe" : "Mot de passe"; ?>
 							:</label>
@@ -128,6 +125,8 @@
 			</div>
 			<?php if ($vue == "modif") { ?>
 				<a href="?id=<?= $id_utilisateur ?>&do=mdp" style="float:right">Changer le mot de passe</a>
+			<?php } else if ($vue == "creation") { ?>
+				<div style="font-style: italic; font-size:small; text-align:center">Un email sera transmis à l'adresse indiquée pour que l'utilisateur puisse renseigner son mot de passe.</div>
 			<?php } ?>
 		</fieldset>
 

@@ -1472,11 +1472,12 @@ function create_sous_theme($libelle, $id_theme) {
 }
 
 /* Utilisateurs */
-function create_user($nom_utilisateur, $courriel, $mdp, $statut, $attache) {
+function create_user($nom_utilisateur, $courriel, $statut, $attache) {
 
 	global $conn;
 	$created = false;
-	$user_id= secu_get_current_user_id();
+	$user_id = secu_get_current_user_id();
+	$mdp = null; //secu_user_checksum($user_id, 'temporaire@boussole.fr', date("Y-m-d H:i:s")); //mot de passe temporaire pour éviter les connections fortuites ?
 
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_utilisateur`
 		(`nom_utilisateur`, `email`, `motdepasse`, `date_inscription`, `id_statut`, `id_metier`, `creation_user_id`)

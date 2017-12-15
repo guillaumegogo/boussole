@@ -12,7 +12,7 @@ $token = null;
 if (isset($_POST['login']) && !empty($_POST['login'])) {
 	$vue = '';
 	$msg = 'Si votre adresse de courriel est bien connue de nos services, un message vient d\'y être envoyé. Si ce n\'est pas le cas, contactez votre administrateur.';
-	secu_send_reset_email($_POST['login']);
+	secu_send_pass_email($_POST['login'], 'reset');
 }
 
 //activation du lien depuis le mail
@@ -26,7 +26,6 @@ if (isset($_GET['t']) && !empty($_GET['t'])) {
 }
 
 //nouveau mot de passe
-//TODO ajouter longueur minimale pour password
 if (isset($_POST['token']) && !empty($_POST['token']) && secu_check_reset_token($_POST['token'])) {
 	$vue = 'reinit';
 	if ($_POST["nouveaumotdepasse"] === $_POST["nouveaumotdepasse2"] && strlen($_POST["nouveaumotdepasse"]) >= PASSWD_MIN_LENGTH) {
