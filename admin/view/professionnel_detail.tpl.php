@@ -146,11 +146,11 @@
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend>Description du professionnel</legend>
+			<legend>Description du professionnel (organisme)</legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
-					<label for="nom">Nom du professionnel :</label>
+					<label for="nom">Nom de l'organisme :</label>
 					<input type="text" name="nom" required value="<?php if ($id_professionnel) {
 						echo $pro['nom_pro'];
 					} ?>"/>
@@ -176,7 +176,7 @@
 					</select>
 				</div>
 				<div class="lab">
-					<label for="desc">Description du professionnel :</label>
+					<label for="desc">Description de l'organisme :</label>
 					<div style="display:inline-block;" id="div-editeur">
 						<input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
 						<input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
@@ -324,7 +324,14 @@ if (isset($territoires)){
 		<div style="display:inline-block; vertical-align:top;">
 			<small><i>Villes correspondant au filtre :</i></small><br/>
 			<select id="list1" MULTIPLE SIZE="20" style=" min-width:20em;">
-				<?php include('../src/admin/villes_options_insee.inc'); //la liste des villes de France... todo : à remplacer par $("#villes").autocomplete ?>
+				<?php // include('../src/admin/villes_options_insee.inc'); //<-- si on veut laisser la possibilité de choisir n'importe quelle ville en France... ?>
+				<?php 
+				if (isset($villes_accessibles)){
+					foreach($villes_accessibles as $row){ ?>
+						<option value="<?= $row['code_insee'] ?>"><?= $row['nom_ville'].' '. $row['code_postal'] ?></option>
+				<?php
+					}
+				} ?>
 			</select>
 		</div>
 

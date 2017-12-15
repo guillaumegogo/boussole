@@ -93,12 +93,19 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires(null,1);
 }
 
+//les villes accessibles au pro (si on veut toutes les villes de France on utilise include('../src/admin/villes_options_insee.inc'); )
+//$villes = get_villes_by_territoire((int)$id_territoire);
+$villes_accessibles = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
+
 $liste_villes_pro=null;
 if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 1){ 
 	$liste_villes_pro = get_villes_by_pro((int)$id_professionnel); // la liste personnalisée des villes du pro
-}else if(isset($pro['competence_geo']) && $pro['competence_geo'] && $pro['id_competence_geo']){ 
-	$liste_villes_pro = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']); //la liste des villes du territoire
 }
+/*
+else if(isset($pro['competence_geo']) && $pro['competence_geo'] && $pro['id_competence_geo']){ 
+	$liste_villes_pro =  //la liste des villes du territoire
+}
+*/
 
 $incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes);
 $incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $liste_villes_pro);
