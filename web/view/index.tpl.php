@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="icon" type="image/png" href="img/icon-boussole2.png" />
-	<link rel="stylesheet" href="css/style.css" />
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+	<?php include('../src/web/head-min.inc.php'); ?>
 	<link rel="stylesheet" href="css/jquery-ui.css" />
-	<!-- bandeau "beta" à enlever lors du passage en prod --> 
-	<link rel="stylesheet" href="css/beta.css" />
-	<!-- / --> 
 	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
 	<script>$( function() {
@@ -57,7 +49,6 @@
 				}
 			});
 		} );</script>
-	<title><?php xecho(ucfirst($titredusite)) ?></title>
 </head>
 <body><div id="main">
 	<header id="bandeau-home-page">
@@ -117,6 +108,25 @@
 	<div class=" wrapper soustitre">
 		<h1>Rencontre un professionnel près de chez toi, pour trouver un emploi, un métier, une formation, un logement...</h1>
 	</div>
+	
+	<div class="wrapper div123">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+				<img src="img/icon-clock.svg">
+				<p>En 5 minutes je trouve le bon professionnel.</p>
+			</div>
+			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+				<img src="img/icon-contact.svg">
+				<p>Je suis recontacté.e dans les jours qui suivent.</p>
+			</div>
+			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+				<img src="img/icon-calendar.svg">
+				<p>J'obtiens un rendez-vous et une réponse à mon besoin.</p>
+			</div>					
+		</div>
+	</div>
+</div>
 	<?php include('../src/web/footer.inc.php'); ?>
 </div>
 </body>

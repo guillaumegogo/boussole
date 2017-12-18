@@ -8,7 +8,6 @@
 /*---------------------GENERAL---------------------*/
 
 *{
-	/*explications : https://www.alsacreations.com/astuce/lire/22-Commentfixerunpiedaubasdelapage.html*/
 	-moz-box-sizing: border-box; 
 	box-sizing: border-box; 
 
@@ -52,6 +51,28 @@ a{
 
 footer{
 	background-color: #3B465B;
+	color: #fff;
+	font-size: 16px;
+	padding:0.5em 0 0.5em 0;
+}
+footer a{
+	text-decoration: none;
+	color: #fff;
+	border-bottom: 1px solid white;
+	transition: color 0.3s ease 0s;
+	-webkit-transition: color 0.3s ease 0s;
+}
+footer a:hover,
+footer a:focus{
+	color: #eee;
+	text-decoration: none;
+}
+
+/*----- GUILLAUME ------------*/
+.apropos{
+	height:auto !important; /* real browsers */
+	height:80%; /* IE6: treaded as min-height*/
+	min-height:80%; /* real browsers */
 }
 
 /*---------------------HEADER HOME PAGE ---------------------*/
@@ -275,24 +296,23 @@ p.message:before{
 	border-right: 1px solid #4A5468;
 
 }
-
-.footer-wrapper a{
-	text-decoration: none;
-	color: #fff;
-	border-bottom: 1px solid white;
-	transition: color 0.3s ease 0s;
-	-webkit-transition: color 0.3s ease 0s;
-}
-.footer-wrapper a:hover,
-.footer-wrapper a:focus{
-	color: #eee;
-	text-decoration: none;
-}
-
 .footer-wrapper ul li:nth-child(3){
 	border-right: none;
 
 }
+
+.footer-column {
+	float:left;
+	width: 33%;
+	min-width : 20em;
+	padding:0 3em;
+}
+.footer-after {
+	clear:both;
+	display:table;
+	padding-top:0.5em;
+}
+
 
 /*TABLETTE & MOBILE*/
 

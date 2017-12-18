@@ -13,7 +13,11 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$restored = archive('utilisateur', (int)$_POST["maj_id"], 1);
  
 } elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
-	$archived = archive('utilisateur', (int)$_POST["maj_id"]);
+	if ($_POST["maj_id"]==$_SESSION['user_id']){
+		$msg = 'Vous ne pouvez pas désactiver votre propre compte.';
+	} else {
+		$archived = archive('utilisateur', (int)$_POST["maj_id"]);
+	}
  
 } elseif (isset($_POST['enregistrer']) && isset($_POST["maj_id"])) {
 	

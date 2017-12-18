@@ -115,7 +115,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 		
     //au professionnel
     $to = 'boussole@yopmail.fr';
-    if (ENVIRONMENT === ENV_PROD) {
+    if (ENVIRONMENT === ENV_PROD || ENVIRONMENT === ENV_BETA) {
         $to = $courriel_offre;
     }
     $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des jeunes');
@@ -126,11 +126,15 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
         . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-    $headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-    //if (ENVIRONMENT !== ENV_PROD) {
+	$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
+		'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+    if (ENVIRONMENT !== ENV_PROD) {
         $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-    //}
+    }
+
     $envoi_mail = mail($to, $subject, $message, $headers);
+	//todo : check http://foundationphp.com/tutorials/email.php 
 
     //accusé d'envoi au demandeur
     if (filter_var($coordonnees, FILTER_VALIDATE_EMAIL)) {
@@ -142,10 +146,12 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
             . "<p>Profil : " . liste_criteres($_SESSION['critere'], '<br/>') . "</p></html>";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-        $headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
-        //if (ENVIRONMENT !== ENV_PROD) {
+		$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
+			'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
+			'X-Mailer: PHP/' . phpversion();
+        if (ENVIRONMENT !== ENV_PROD) {
             $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-        //}
+        }
         $envoi_accuse = mail($to, $subject, $message, $headers);
     }
 

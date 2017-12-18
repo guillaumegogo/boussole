@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+/* bandeau test */
+body:after{
+	content: "test";
+	position: fixed;
+	width: 150px;
+	height: 25px;
+	background: #00AAA9;
+	top: 22px;
+	right: -35px;
+	text-align: center;
+	font-size: 1em;
+	font-family: sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: white;
+	line-height: 27px;
+	-ms-transform:rotate(45deg);
+	-webkit-transform:rotate(45deg);
+	transform:rotate(45deg);
+	box-shadow: 0px 2px 5px 0px grey;
+}

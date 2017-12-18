@@ -138,12 +138,13 @@
 					   echo "_liste.php";
 				   } ?>'">
 		<?php if($droit_ecriture) { 
-			if ($id_utilisateur) { 
+			if ($id_utilisateur && $vue != "motdepasse") { 
 				if($user['actif_utilisateur'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
-		<?php }else{ ?>
+		<?php }else{ 
+				if($id_utilisateur!=$_SESSION['user_id']){?>
 			<input type="submit" name="archiver" value="Désactiver">
-		<?php } } ?>
+				<?php } } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
 		<?php } ?>
 		</div>

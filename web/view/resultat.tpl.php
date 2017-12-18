@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="stylesheet" href="css/style.css" />
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
-	<link rel="icon" type="image/png" href="img/compass-icon.png" />
-	<title><?php xecho(ucfirst($titredusite)); ?></title>
+	<?php include('../src/web/head-min.inc.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script>
 		function afficheId(id){
