@@ -40,6 +40,7 @@ function get_nb_nouvelles_demandes() {
 	return $nb;
 }
 
+//todo : intégrer la gestion des formulaires territoriaux (plutôt que id=territoire=0)
 function get_criteres_offre($id_offre, $id_theme){
 
 	global $conn;
@@ -53,7 +54,7 @@ function get_criteres_offre($id_offre, $id_theme){
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `q`.`id_reponse`=`fr`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `v` ON `v`.`id_reponse`=`fr`.`id_reponse` AND `v`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_offre_criteres` AS `oc` ON `oc`.`nom_critere`=`q`.`html_name` AND `oc`.`valeur_critere`=`v`.`valeur` AND `oc`.`id_offre`= ?
-		WHERE `f`.`type`="offre" AND `f`.`actif`=1 AND `t`.`id_theme`= ?
+		WHERE `f`.`type`="offre" AND `f`.`actif`=1 AND `t`.`id_theme`= ? AND `f`.`id_territoire`=0 
 		ORDER BY `fp`.`ordre`, `q`.`ordre`, `v`.`ordre`';
 
 	$stmt = mysqli_prepare($conn, $query);
