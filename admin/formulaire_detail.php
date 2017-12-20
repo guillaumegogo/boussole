@@ -64,7 +64,7 @@ if (isset($_GET['act'])) {
 	}
 }
 
-if (isset($_GET['id'])) {
+if (isset($_GET['id']) && !$id_formulaire) {
 	$id_formulaire = $_GET['id'];
 }
 

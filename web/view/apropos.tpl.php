@@ -4,6 +4,7 @@
 	<?php include('../src/web/head-min.inc.php'); ?>
 </head>
 <body>
+
 <div class="apropos">
 	<?php include('../src/web/header.inc.php'); ?>
 
@@ -20,7 +21,8 @@
 	</div>
 </div>
 
-	<?php include('../src/web/footer.inc.php'); ?>
+<?php include('../src/web/footer.inc.php'); ?>
+
 </body>
 </html>
 

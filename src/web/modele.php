@@ -97,7 +97,6 @@ function get_formulaire($besoin, $etape, $id_territoire=0){
 		ORDER BY `f`.`id_territoire` DESC, `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sii', $besoin, $etape, $id_territoire);
-
 	
 $print_sql = $query;
 foreach(array($besoin, $etape, $id_territoire) as $term){
@@ -125,7 +124,7 @@ echo "<!--<pre>".$print_sql."</pre>-->";
 			}
 			$reponses[$idq][] = array('name' => $name, 'lib' => $libelle, 'val' => $valeur, 'def' => $defaut);  //on récupère les réponses
 		}else{
-			break;
+			break; //au cas où 2 formulaires (territoire et national), on arrête après la lecture du formulaire territorial
 		}
 	}
 	mysqli_stmt_close($stmt);

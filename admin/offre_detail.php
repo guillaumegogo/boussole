@@ -84,7 +84,11 @@ if (isset($id_offre)) {
 
 		//récup du formulaire dynamique
 		if (isset($row['id_theme_pere']) && $row['id_theme_pere']) {
-			$t = get_criteres_offre($id_offre, $row['id_theme_pere']);
+			if($row['competence_geo']=="territoire"){
+				$t = get_criteres_offre($id_offre, $row['id_theme_pere'], $row['id_competence_geo']);
+			}else{
+				$t = get_criteres_offre($id_offre, $row['id_theme_pere'],0);
+			}
 			$questions = $t[0];
 			$reponses = $t[1];
 		}

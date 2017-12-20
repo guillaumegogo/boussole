@@ -40,8 +40,7 @@ function get_nb_nouvelles_demandes() {
 	return $nb;
 }
 
-//todo : intégrer la gestion des formulaires territoriaux (plutôt que id=territoire=0)
-function get_criteres_offre($id_offre, $id_theme){
+function get_criteres_offre($id_offre, $id_theme, $id_territoire=0){
 
 	global $conn;
 
@@ -54,26 +53,40 @@ function get_criteres_offre($id_offre, $id_theme){
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `q`.`id_reponse`=`fr`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `v` ON `v`.`id_reponse`=`fr`.`id_reponse` AND `v`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_offre_criteres` AS `oc` ON `oc`.`nom_critere`=`q`.`html_name` AND `oc`.`valeur_critere`=`v`.`valeur` AND `oc`.`id_offre`= ?
-		WHERE `f`.`type`="offre" AND `f`.`actif`=1 AND `t`.`id_theme`= ? AND `f`.`id_territoire`=0 
-		ORDER BY `fp`.`ordre`, `q`.`ordre`, `v`.`ordre`';
+		WHERE `f`.`type`="offre" AND `f`.`actif`=1 AND `t`.`id_theme`= ? AND (`f`.`id_territoire`=? OR `f`.`id_territoire`=0)
+		ORDER BY `f`.`id_territoire` DESC, `fp`.`ordre`, `q`.`ordre`, `v`.`ordre`';
 
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'ii', $id_offre, $id_theme);
+	mysqli_stmt_bind_param($stmt, 'iii', $id_offre, $id_theme, $id_territoire);
 	check_mysql_error($conn);
 	
+$print_sql = $query;
+foreach(array( $id_offre, $id_theme, $id_territoire) as $term){
+	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+}
+echo "<!--<pre>".$print_sql."</pre>-->";
+
 	$questions = [];
 	$reponses = [];
+	$tmp_id = null;
 	$tmp_que = '';
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);
 		while ($row = mysqli_fetch_assoc($result)) {
-			//on récupère les questions
-			if ($row['libelle_question'] != $tmp_que) { 
-				$questions[] = array('libelle' => $row['libelle_question'], 'name' => $row['html_name'], 'type' => $row['type'], 'obligatoire' => $row['obligatoire']);
-				$tmp_que = $row['libelle_question'];
+			if(is_null($tmp_id)){
+				$tmp_id = $row['id_formulaire'];
 			}
-			//on récupère les réponses
-			$reponses[$row['html_name']][] = array('libelle' => $row['libelle'], 'valeur' => $row['valeur'], 'selectionne' => ($row['id_offre']) ? 'selected' : ''); 
+			if($tmp_id == $row['id_formulaire']){
+				//on récupère les questions
+				if ($row['libelle_question'] != $tmp_que) { 
+					$questions[] = array('libelle' => $row['libelle_question'], 'name' => $row['html_name'], 'type' => $row['type'], 'obligatoire' => $row['obligatoire']);
+					$tmp_que = $row['libelle_question'];
+				}
+				//on récupère les réponses
+				$reponses[$row['html_name']][] = array('libelle' => $row['libelle'], 'valeur' => $row['valeur'], 'selectionne' => ($row['id_offre']) ? 'selected' : '');
+			}else{
+				break; //au cas où 2 formulaires (territoire et national), on arrête après la lecture du formulaire territorial
+			}
 		}
 		mysqli_stmt_close($stmt);
 	}

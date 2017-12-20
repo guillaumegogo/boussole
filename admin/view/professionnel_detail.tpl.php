@@ -195,10 +195,16 @@
 					<?php } ?>
 					</div>
 				</div>
-				<!--<div class="lab">
-					<label for="editeur">Éditeur :</label>
-					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?>> Oui <img src="img/help.png" height="16px" title="L'éditeur a le droit de saisir des mesures.">
-				</div>-->
+				<div class="lab">
+					<label for="editeur">Mesurier :</label>
+					<?php if(secu_check_role(ROLE_ADMIN)){ ?>
+					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
+					<?php }else{ ?>
+					<input type="hidden" name="check_editeur" value="<?= (isset($pro['editeur']) && $pro['editeur']) ? '1':'0' ?>" > 
+					<input type="checkbox" disabled readonly <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
+					<?php } ?>
+					Oui <img src="img/help.png" height="16px" title="Cet organisme peut être indiqué comme l'éditeur de mesures." >
+				</div>
 			</div>
 			<div class="deux_colonnes">
 				<div class="lab">

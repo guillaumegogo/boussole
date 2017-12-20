@@ -95,7 +95,10 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 
 //les villes accessibles au pro (si on veut toutes les villes de France on utilise include('../src/admin/villes_options_insee.inc'); )
 //$villes = get_villes_by_territoire((int)$id_territoire);
-$villes_accessibles = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
+$villes_accessibles = null;
+if(isset($pro['competence_geo']) && isset($pro['id_competence_geo'])){
+	$villes_accessibles = get_villes_by_competence_geo($pro['competence_geo'], (int)$pro['id_competence_geo']);
+}
 
 $liste_villes_pro=null;
 if(isset($pro['zone_selection_villes']) && $pro['zone_selection_villes'] == 1){ 

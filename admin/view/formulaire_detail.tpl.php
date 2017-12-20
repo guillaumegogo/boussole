@@ -115,7 +115,7 @@
 		<input type="button" value="Retour à la liste" onclick="javascript:location.href='formulaire_liste.php'"> 
 	
 	<?php if($droit_ecriture) { 
-		if ($id_formulaire) {?>
+		if ($id_formulaire && !$flag_duplicate) {?>
 		<input type="button" value="Dupliquer le formulaire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
 	<?php 
 		if($meta['actif'] == 0){ 

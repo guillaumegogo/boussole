@@ -71,8 +71,12 @@ footer a:focus{
 /*----- GUILLAUME ------------*/
 .apropos{
 	height:auto !important; /* real browsers */
-	height:80%; /* IE6: treaded as min-height*/
-	min-height:80%; /* real browsers */
+	height:85%; /* IE6: treaded as min-height*/
+	min-height:85%; /* real browsers */
+}
+
+.apropos footer{
+	width:100%;
 }
 
 /*---------------------HEADER HOME PAGE ---------------------*/
