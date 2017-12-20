@@ -103,17 +103,24 @@ if (secu_check_role(ROLE_ANIMATEUR)) {
 }
 
 $liste_statuts = null;
-if (secu_check_role(ROLE_ADMIN)) $liste_statuts = array('1' => 'Administrateur national', '2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant'); //+ '5' => 'Administrateur régional'
-if (secu_check_role(ROLE_ANIMATEUR)) $liste_statuts = array('2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant');
-if (secu_check_role(ROLE_PRO)) $liste_statuts = array('3' => 'Professionnel');
+$liste_pro = null;
+
+if (secu_check_role(ROLE_ADMIN)) {
+	$liste_statuts = array('1' => 'Administrateur national', '2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant'); //+ '5' => 'Administrateur régional'
+	$liste_pro = get_liste_pros_select('pro');
+}else if (secu_check_role(ROLE_ANIMATEUR)) {
+	$liste_statuts = array('2' => 'Animateur territorial', '3' => 'Professionnel', '4' => 'Consultant');
+	$liste_pro = get_liste_pros_select('pro', 'territoire', $param_territoire);
+}else if (secu_check_role(ROLE_PRO)) {
+	$liste_statuts = array('3' => 'Professionnel');
+	$liste_pro = array(array('id_professionnel'=>secu_get_user_pro_id(), 'nom_pro'=>$_SESSION['nom_pro']));
+}
 
 if ($id_utilisateur) {
 	$liste_territoires = get_territoires();
 }else{
 	$liste_territoires = get_territoires($param_territoire,1);
 }
-
-$liste_pro = get_liste_pros_select('pro', 'territoire',$param_territoire);
 
 //type de formulaire à afficher
 if (isset($_GET['do']) && $_GET['do'] == 'mdp') {

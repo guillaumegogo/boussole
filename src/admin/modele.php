@@ -702,7 +702,7 @@ function get_liste_pros_select($type="pro",$zone=null, $zone_id=null, $user_pro_
 		$params[] = (int) $user_pro_id;
 		$types .= 'i';
 	}
-	$query;
+	$query .= ' ORDER BY `nom_pro` ';
 	$stmt = query_prepare($query,$params,$types);
 	$pros = query_get($stmt);
 	return $pros;
@@ -1518,7 +1518,7 @@ function update_user($id, $nom, $courriel){
 		SET `nom_utilisateur` = ?, `email` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
 		WHERE `id_utilisateur` = ?';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'ssii', $nom, $courriel, $id, $user_id);
+	mysqli_stmt_bind_param($stmt, 'ssii', $nom, $courriel, $user_id, $id);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$updated = mysqli_stmt_affected_rows($stmt) > 0;
