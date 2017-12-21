@@ -161,3 +161,22 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 	
 	return $resultat;
 }
+
+
+function envoi_mail_contact($nom, $sujet, $email, $message) 
+{
+	$resultat = null;
+
+    $to = 'boussole@jeunesse-sports.gouv.fr';
+    $subject = mb_encode_mimeheader('Demande de contact : '.$sujet);
+    $headers = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+	$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
+		'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+    $envoi_mail = mail($to, $subject, $message, $headers);
+    if ($envoi_mail) {
+        $resultat = true;
+    }
+	return $resultat;
+}
