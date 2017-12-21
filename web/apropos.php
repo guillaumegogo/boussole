@@ -6,11 +6,12 @@ $sujets_contact=array("contact_pro"=>"Demande de contact professionnel", "offre_
 if(isset($_POST['envoi_mail'])){
 	
 	//if ($_SERVER[“HTTP_REFERER”] != "http://www.mondomaine.tld/contact"){ //protection à envisager
-	if !(isset($_SESSION['test_antispam']) && isset($_POST['test']) && ($_SESSION['test_antispam'] == $_POST['test'])){
+	if (isset($_SESSION['test_antispam']) && isset($_POST['test']) && ($_SESSION['test_antispam'] == $_POST['test'])){
 		if (isset($_POST['name_contact']) && isset($_POST['subject_contact']) && isset($_POST['email_contact']) && isset($_POST['message_contact'])){
+			
 			$sujet = $sujets_contact[$_POST['subject_contact']];
-
 			$send = envoi_mail_contact ($_POST['name_contact'], $sujet, $_POST['email_contact'], $_POST['message_contact']);
+			
 			if ($send){
 				$msg = 'Votre message a bien été envoyé';
 				

@@ -171,9 +171,12 @@ function envoi_mail_contact($nom, $sujet, $email, $message)
     $subject = mb_encode_mimeheader('Demande de contact : '.$sujet);
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-	$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
+	$headers .= 'From: La Boussole des jeunes <no-reply@jeunesse-sports.gouv.fr>' . "\r\n".
 		'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
 		'X-Mailer: PHP/' . phpversion();
+    if (ENVIRONMENT !== ENV_PROD) {
+        $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
+    }
     $envoi_mail = mail($to, $subject, $message, $headers);
     if ($envoi_mail) {
         $resultat = true;
