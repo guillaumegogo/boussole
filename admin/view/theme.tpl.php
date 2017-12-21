@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>

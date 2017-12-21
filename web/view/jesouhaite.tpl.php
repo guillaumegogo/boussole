@@ -2,7 +2,7 @@
 <html>
 <head>
 	<?php include('../src/web/head-min.inc.php'); ?>
-	<link rel="stylesheet" href="css/jquery-ui.css" />
+	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 </head>
 <body><div id="main">
 	<?php include('../src/web/header.inc.php'); ?>

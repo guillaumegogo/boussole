@@ -2,9 +2,9 @@
 <html>
 <head>
 	<?php include('../src/web/head-min.inc.php'); ?>
-	<link rel="stylesheet" href="css/jquery-ui.css" />
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
+	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/jquery-ui.min.js"></script>
 	<script>$( function() {
 			var listeVilles = [<?php include('../src/villes_index.inc');?>];
 			//adaptation fichier insee : pas d'accent, de tiret, d'apostrophe, etc.

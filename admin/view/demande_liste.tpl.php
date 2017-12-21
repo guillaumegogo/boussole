@@ -6,10 +6,11 @@
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
 	<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css"/>
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" language="javascript" src="js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/buttons.html5.min.js"></script>
+	<!-- export -->
 	<script type="text/javascript" language="javascript" src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 	<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>

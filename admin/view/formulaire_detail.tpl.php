@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<title>Boussole des jeunes</title>
 </head>

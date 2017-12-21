@@ -5,7 +5,7 @@
 	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="stylesheet" href="css/jquery-ui.css">
+	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script type="text/javascript">

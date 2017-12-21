@@ -5,10 +5,10 @@
 	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
-	<link rel="stylesheet" href="css/jquery-ui.css">
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
@@ -376,7 +376,7 @@ if (isset($territoires)){
 		<div class="button">
 			<input type="button" value="Retour" onclick="javascript:location.href='professionnel_liste.php'">
 		<?php if($droit_ecriture) {
-			if (!$id_professionnel) {
+			if ($id_professionnel) {
 				if(isset($pro['actif_pro']) && $pro['actif_pro'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>

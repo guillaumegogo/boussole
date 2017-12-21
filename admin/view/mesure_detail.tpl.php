@@ -4,11 +4,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Boussole des jeunes</title>
 	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<link rel="stylesheet" href="css/jquery-ui.css">
 	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
-	<script type="text/javascript" language="javascript" src="js/jquery-1.12.0.js"></script>
-	<script type="text/javascript" language="javascript" src="js/jquery-ui-1.12.0.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
+	<script type="text/javascript" language="javascript" src="../src/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.filterByText.js"></script>
 	<script type="text/javascript" language="javascript" src="js/selectbox.js"></script>
 	<script type="text/javascript" language="javascript" src="js/datepicker-fr.js"></script>
