@@ -915,26 +915,47 @@ function create_pro($nom, $type, $statut, $desc, $adresse, $code_postal, $ville,
 
 	global $conn;
 	$created = false;
-	$user_id= secu_get_current_user_id();
-
-	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
-		(`nom_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
-		`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `creation_date`, `creation_user_id`)
-		VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , NOW(), ? )';
-
-	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'siisssssssisssisiii', $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
-	check_mysql_error($conn);
+	$info = null;
 	
+	/* on teste d'abord s'il n'existe pas */
+	$test_pro = true;
+	$query = 'SELECT `id_professionnel` FROM `'.DB_PREFIX.'bsl_professionnel` AS `p`
+		WHERE `nom_pro`= ? AND `competence_geo` = ? AND `id_competence_geo` = ? ';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ssi', $nom, $competence_geo, $competence_geo_id);
+	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
-		$created = mysqli_stmt_affected_rows($stmt) > 0;
+		$result = mysqli_stmt_get_result($stmt);
+		if (mysqli_num_rows($result) > 0) {
+			$info = mysqli_fetch_assoc($result);
+			$test_pro = false;
+			$info = 'Un organisme portant ce nom existe déjà sur cette zone (peut-être parmi les archivés)';
+		}
 		mysqli_stmt_close($stmt);
+	}
+
+	if($test_pro){
+		$user_id= secu_get_current_user_id();
+
+		$query = 'INSERT INTO `'.DB_PREFIX.'bsl_professionnel`
+			(`nom_pro`, `type_id`, `statut_id`, `description_pro`, `adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,
+			`courriel_pro`, `telephone_pro`, `visibilite_coordonnees`, `courriel_referent_boussole`, `telephone_referent_boussole`, `site_web_pro`, `delai_pro`, `competence_geo`, `id_competence_geo`, `editeur`, `creation_date`, `creation_user_id`)
+			VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , NOW(), ? )';
+
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'siisssssssisssisiii', $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $user_id);
+		check_mysql_error($conn);
 		
-		$last_id = mysqli_insert_id($conn);		
-		$created2 = update_listes_pro($last_id, $themes, $zone, $liste_villes);
+		if (mysqli_stmt_execute($stmt)) {
+			$created = mysqli_stmt_affected_rows($stmt) > 0;
+			mysqli_stmt_close($stmt);
+			
+			$info = mysqli_insert_id($conn);
+			$created2 = update_listes_pro($info, $themes, $zone, $liste_villes);
+		}
 	}
 	
-	return $last_id;
+	return [$created, $info];
 }
 
 function update_pro($pro_id, $nom, $type, $statut, $desc, $adresse, $code_postal, $ville, $code_insee, $courriel, $tel, $visibilite, $courriel_ref, $tel_ref, $site, $delai, $competence_geo, $competence_geo_id, $editeur, $themes, $zone, $liste_villes){

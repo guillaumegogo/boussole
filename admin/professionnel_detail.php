@@ -47,9 +47,14 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	//requête d'ajout
 	if (!$_POST["maj_id"]) {
-		$last_id = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
+		$created = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
 		
-		if ($last_id) $msg = "Création bien enregistrée.";
+		if ($created[0]){
+			$last_id = $created[1];
+			$msg = "Création bien enregistrée.";
+		}else{
+			$msg = $created[1];
+		}
 
 	//requête de modification
 	} else {
