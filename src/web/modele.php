@@ -117,7 +117,8 @@ echo "<!--<pre>".$print_sql."</pre>-->";
 		if (is_null($tmp_id)) { //on récupère pour commencer les données de la page de formulaire
 			$meta = array('id' => $id_formulaire, 'nb' => $nb_pages, 'titre' => $titre, 'etape' => $ordre_page, 'aide' => $aide, 'suite' => ($ordre_page < $nb_pages) ? ($ordre_page + 1) : 'fin');
 			$tmp_id = $id_formulaire;
-		}else if($id_formulaire == $tmp_id) { //puis on récupère les questions et réponses du formulaire en question
+		}
+		if($id_formulaire == $tmp_id) { //puis on récupère les questions et réponses du formulaire en question
 			if ($question != $tmp_que) {
 				$questions[] = array('id' => $idq, 'que' => $question, 'name' => $name, 'type' => $type, 'tai' => $taille, 'obl' => $obligatoire);
 				$tmp_que = $question;
