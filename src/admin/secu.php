@@ -59,14 +59,14 @@ function secu_login($email, $password)
 
 			//Verification du mot de passe saisi
 			if (password_verify(SALT_BOUSSOLE . $password, $hash)) {
-				$_SESSION['user_id'] = $id_utilisateur;
-				$_SESSION['user_checksum'] = secu_user_checksum($id_utilisateur, $email, $date_inscription);
+				$_SESSION['admin']['user_id'] = $id_utilisateur;
+				$_SESSION['admin']['user_checksum'] = secu_user_checksum($id_utilisateur, $email, $date_inscription);
 				
 				//accroche statut
-				$_SESSION['accroche'] = 'Bonjour ' . $nom_utilisateur . ', vous êtes ' . $libelle_statut;
+				$_SESSION['admin']['accroche'] = 'Bonjour ' . $nom_utilisateur . ', vous êtes ' . $libelle_statut;
 				
 				//récup des id pro et territoire
-				$_SESSION['territoire_id'] = null;
+				$_SESSION['admin']['territoire_id'] = null;
 				secu_set_user_pro_id(null);
 				
 				switch($id_statut){
@@ -74,22 +74,22 @@ function secu_login($email, $password)
 						break;
 					case(ROLE_ANIMATEUR):
 					case(ROLE_CONSULTANT):
-						$_SESSION['territoire_id'] = $id_metier;
-						$_SESSION['accroche'] .= ' (' . $nom_territoire . ')';
+						$_SESSION['admin']['territoire_id'] = $id_metier;
+						$_SESSION['admin']['accroche'] .= ' (' . $nom_territoire . ')';
 						break;
 					case(ROLE_PRO):
 						secu_set_user_pro_id($id_metier);
-						if($competence_geo=="territoire") $_SESSION['territoire_id'] = $id_competence_geo; 
-						$_SESSION['accroche'] .= ' (' . $nom_pro . ')';
-						$_SESSION['nom_pro'] = $nom_pro;
-						$_SESSION['perimetre'] = 'PRO';
+						if($competence_geo=="territoire") $_SESSION['admin']['territoire_id'] = $id_competence_geo; 
+						$_SESSION['admin']['accroche'] .= ' (' . $nom_pro . ')';
+						$_SESSION['admin']['nom_pro'] = $nom_pro;
+						$_SESSION['admin']['perimetre'] = 'PRO';
 						break;
 					case(ROLE_ADMIN_REGIONAL):
 						/* ? */
 						break;
 				}
-				if (!isset($_SESSION['perimetre'])) 
-					$_SESSION['perimetre'] = $_SESSION['territoire_id'];
+				if (!isset($_SESSION['admin']['perimetre'])) 
+					$_SESSION['admin']['perimetre'] = $_SESSION['admin']['territoire_id'];
 
 				$logged = true;
 			}
@@ -110,12 +110,12 @@ function secu_is_logged()
 	global $conn;
 
 	$logged = false;
-	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id']) && isset($_SESSION['user_checksum']) && !empty($_SESSION['user_checksum'])) {
+	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id']) && isset($_SESSION['admin']['user_checksum']) && !empty($_SESSION['admin']['user_checksum'])) {
 		$sql = 'SELECT `email`, `date_inscription`
 			FROM `'.DB_PREFIX.'bsl_utilisateur`
 			WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
 		$stmt = mysqli_prepare($conn, $sql);
-		$id = (int)$_SESSION['user_id'];
+		$id = (int)$_SESSION['admin']['user_id'];
 		mysqli_stmt_bind_param($stmt, 'i', $id);
 
 		if (mysqli_stmt_execute($stmt)) {
@@ -125,7 +125,7 @@ function secu_is_logged()
 				mysqli_stmt_fetch($stmt);
 				check_mysql_error($conn);
 
-				if (secu_user_checksum($id, $login, $date_inscription) === $_SESSION['user_checksum'])
+				if (secu_user_checksum($id, $login, $date_inscription) === $_SESSION['admin']['user_checksum'])
 					$logged = true;
 
 				mysqli_stmt_close($stmt);
@@ -146,7 +146,7 @@ function secu_is_authorized($domaine)
 	global $conn;
 	$authorized = null;
 
-	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id'])) {
 		switch ($domaine) {
 			case DROIT_DEMANDE :
 				$champs = '`demande_r` as `lecture`, `demande_w` as `ecriture`'; break;
@@ -171,7 +171,7 @@ function secu_is_authorized($domaine)
 			JOIN `'.DB_PREFIX.'bsl_utilisateur` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
 			WHERE `id_utilisateur` = ? ';
 		$stmt = mysqli_prepare($conn, $sql);
-		$id = (int)$_SESSION['user_id'];
+		$id = (int)$_SESSION['admin']['user_id'];
 		mysqli_stmt_bind_param($stmt, 'i', $id);
 		check_mysql_error($conn);
 		
@@ -363,7 +363,7 @@ function secu_check_level($domaine, $id)
 		}
 		
 		//exception pour toujours pouvoir accéder à son propre compte
-		if($domaine=='utilisateur' && $id==$_SESSION['user_id']) {
+		if($domaine=='utilisateur' && $id==$_SESSION['admin']['user_id']) {
 			$droit_ecriture += true;
 		}
 	}
@@ -388,12 +388,12 @@ function secu_check_role($role)
 	global $conn;
 	$check = false;
 
-	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id'])) {
 		$sql = 'SELECT `id_statut` 
 				FROM `'.DB_PREFIX.'bsl_utilisateur` 
 				WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
 		$stmt = mysqli_prepare($conn, $sql);
-		$id = (int)$_SESSION['user_id'];
+		$id = (int)$_SESSION['admin']['user_id'];
 		mysqli_stmt_bind_param($stmt, 'i', $id);
 
 		if (mysqli_stmt_execute($stmt)) {
@@ -524,8 +524,8 @@ function secu_reset_password($password, $token)
 function secu_get_current_user_id()
 {
 	$user_id = null;
-	if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id']))
-		$user_id = (int)$_SESSION['user_id'];
+	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id']))
+		$user_id = (int)$_SESSION['admin']['user_id'];
 
 	return $user_id;
 }
@@ -537,9 +537,9 @@ function secu_get_current_user_id()
 function secu_set_territoire_id($id)
 {
 	if ((int)$id > 0) {
-		$_SESSION['territoire_id'] = (int)$id;
+		$_SESSION['admin']['territoire_id'] = (int)$id;
 	} else {
-		$_SESSION['territoire_id'] = null;
+		$_SESSION['admin']['territoire_id'] = null;
 	}
 }
 
@@ -550,8 +550,8 @@ function secu_set_territoire_id($id)
 function secu_get_territoire_id()
 {
 	$territoire_id = null;
-	if (isset($_SESSION['territoire_id']) && !empty($_SESSION['territoire_id']))
-		$territoire_id = (int)$_SESSION['territoire_id'];
+	if (isset($_SESSION['admin']['territoire_id']) && !empty($_SESSION['admin']['territoire_id']))
+		$territoire_id = (int)$_SESSION['admin']['territoire_id'];
 
 	return $territoire_id;
 }
@@ -563,9 +563,9 @@ function secu_get_territoire_id()
 function secu_set_user_pro_id($id)
 {
 	if ((int)$id > 0)
-		$_SESSION['user_pro_id'] = (int)$id;
+		$_SESSION['admin']['user_pro_id'] = (int)$id;
 	else
-		$_SESSION['user_pro_id'] = null;
+		$_SESSION['admin']['user_pro_id'] = null;
 }
 
 /**
@@ -575,8 +575,8 @@ function secu_set_user_pro_id($id)
 function secu_get_user_pro_id()
 {
 	$user_pro_id = null;
-	if (isset($_SESSION['user_pro_id']) && !empty($_SESSION['user_pro_id']))
-		$user_pro_id = (int)$_SESSION['user_pro_id'];
+	if (isset($_SESSION['admin']['user_pro_id']) && !empty($_SESSION['admin']['user_pro_id']))
+		$user_pro_id = (int)$_SESSION['admin']['user_pro_id'];
 
 	return $user_pro_id;
 }

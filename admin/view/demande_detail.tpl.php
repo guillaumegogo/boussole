@@ -11,7 +11,7 @@
 
 <body>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php if( isset($_SESSION['accroche']) ) { xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>) 
+<div class="statut"><?php if( isset($_SESSION['admin']['accroche']) ) { xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>) 
 		<?php } else { // cas de l'acces direct à la demande depuis le mail ?><a href="index.php">Connexion</a><?php } ?></div>
 
 <div class="container">

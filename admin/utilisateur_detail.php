@@ -13,7 +13,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$restored = archive('utilisateur', (int)$_POST["maj_id"], 1);
  
 } elseif (isset($_POST['archiver']) && isset($_POST["maj_id"])) {
-	if ($_POST["maj_id"]==$_SESSION['user_id']){
+	if ($_POST["maj_id"]==$_SESSION['admin']['user_id']){
 		$msg = 'Vous ne pouvez pas désactiver votre propre compte.';
 	} else {
 		$archived = archive('utilisateur', (int)$_POST["maj_id"]);
@@ -99,7 +99,7 @@ if (isset($id_utilisateur)) {
 
 $param_territoire = null;
 if (secu_check_role(ROLE_ANIMATEUR)) {
-	$param_territoire = $_SESSION['territoire_id'];
+	$param_territoire = $_SESSION['admin']['territoire_id'];
 }
 
 $liste_statuts = null;
@@ -113,7 +113,7 @@ if (secu_check_role(ROLE_ADMIN)) {
 	$liste_pro = get_liste_pros_select('pro', 'territoire', $param_territoire);
 }else if (secu_check_role(ROLE_PRO)) {
 	$liste_statuts = array('3' => 'Professionnel');
-	$liste_pro = array(array('id_professionnel'=>secu_get_user_pro_id(), 'nom_pro'=>$_SESSION['nom_pro']));
+	$liste_pro = array(array('id_professionnel'=>secu_get_user_pro_id(), 'nom_pro'=>$_SESSION['admin']['nom_pro']));
 }
 
 if ($id_utilisateur) {

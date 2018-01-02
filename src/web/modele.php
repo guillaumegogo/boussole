@@ -248,7 +248,7 @@ if (DEBUG) {
 
 	mysqli_stmt_close($stmt);
 	
-	$id_recherche = (!isset($_SESSION['recherche_id'])) ? create_recherche($nb_offres) : null;
+	$id_recherche = (!isset($_SESSION['web']['recherche_id'])) ? create_recherche($nb_offres) : null;
 	
 	return [$sous_themes, $offres, $id_recherche];
 }
@@ -285,9 +285,9 @@ function create_recherche($nb){
 	
 	$query = 'INSERT INTO `'.DB_PREFIX.'bsl_recherche`(`date_recherche`, `code_insee`, `besoin`, `criteres`, `nb_offres`)
 		VALUES (NOW(), ?, ?, ?, ?)';
-	$criteres = json_encode($_SESSION['critere'], JSON_UNESCAPED_SLASHES); //façon de charger le tableau simplement en base de données
+	$criteres = json_encode($_SESSION['web']['critere'], JSON_UNESCAPED_SLASHES); //façon de charger le tableau simplement en base de données
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'sssi', $_SESSION['code_insee'], $_SESSION['besoin'], $criteres, $nb);
+	mysqli_stmt_bind_param($stmt, 'sssi', $_SESSION['web']['code_insee'], $_SESSION['web']['besoin'], $criteres, $nb);
 	check_mysql_error($conn);
 
 	if (mysqli_stmt_execute($stmt)) {

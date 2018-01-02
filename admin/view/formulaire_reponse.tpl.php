@@ -29,7 +29,7 @@
 
 <body>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?php xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 
@@ -44,7 +44,7 @@
 		</select>
 	</form>
 
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> > <?php if(isset($_SESSION['dernier_formulaire'])){ ?><a href="formulaire_detail.php?id=<?=$_SESSION['dernier_formulaire'] ?>">Détail du formulaire</a> ><?php } ?> </small>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> > <?php if(isset($_SESSION['admin']['dernier_formulaire'])){ ?><a href="formulaire_detail.php?id=<?=$_SESSION['admin']['dernier_formulaire'] ?>">Détail du formulaire</a> ><?php } ?> </small>
 		Détail de la réponse</h2> 
 
 	<div class="soustitre"><?php echo $msg; ?></div>

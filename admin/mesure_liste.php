@@ -6,7 +6,7 @@ $perimetre = $check['lecture'];
 
 //********* territoire sélectionné
 /*if (isset($_POST["choix_territoire"])) {
-	$_SESSION['perimetre'] = $_POST['choix_territoire'];
+	$_SESSION['admin']['perimetre'] = $_POST['choix_territoire'];
 }*/
 
 //******** liste des mesures

@@ -3,17 +3,17 @@
 include('../src/web/bootstrap.php');
 
 //************ si accès direct à la page, renvoi vers l'accueil
-if (!isset($_SESSION['ville_habitee']) || !isset($_SESSION['besoin'])) {
+if (!isset($_SESSION['web']['ville_habitee']) || !isset($_SESSION['web']['besoin'])) {
 	header('Location: index.php');
 	exit();
 }
 
 //********* on va chercher les offres et les sous-thèmes
-$t = get_offres_demande($_SESSION['critere'], $_SESSION['type'], $_SESSION['besoin'], $_SESSION['code_insee']);
+$t = get_offres_demande($_SESSION['web']['critere'], $_SESSION['web']['type'], $_SESSION['web']['besoin'], $_SESSION['web']['code_insee']);
 $sous_themes = $t[0];
 $offres = $t[1];
 //si nouvelle recherche, on génère un id de recherche pour la traçabilité
-if (!isset($_SESSION['recherche_id']) && isset($t[2]) && (int)$t[2]>0 ) $_SESSION['recherche_id'] = $t[2]; 
+if (!isset($_SESSION['web']['recherche_id']) && isset($t[2]) && (int)$t[2]>0 ) $_SESSION['web']['recherche_id'] = $t[2]; 
 
 //********* contenu du template 
 $aucune_offre = '';

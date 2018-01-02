@@ -39,7 +39,7 @@
 
 <body>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?php echo $_SESSION['admin']['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Liste des utilisateurs</a> ></small> 
@@ -142,7 +142,7 @@
 				if($user['actif_utilisateur'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ 
-				if($id_utilisateur!=$_SESSION['user_id']){?>
+				if($id_utilisateur!=$_SESSION['admin']['user_id']){?>
 			<input type="submit" name="archiver" value="Désactiver">
 				<?php } } } ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">

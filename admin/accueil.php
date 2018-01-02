@@ -28,8 +28,8 @@ if($is_authorized = secu_is_authorized('accueil')){
 	}
 	if (isset($is_authorized[DROIT_UTILISATEUR]) && $is_authorized[DROIT_UTILISATEUR]) {
 		$acteurs[] = array('utilisateur_liste.php', 'Utilisateurs', '');
-	} else if (isset($_SESSION['user_id'])) { 
-		$acteurs[] = array('utilisateur_detail.php?id=' . $_SESSION['user_id'], 'Profil utilisateur', ''); // même si on n'a pas les droits sur les utilisateurs, on doit pouvoir voir son propre profil - CA NE FONCTIONNE PAS POUR LE MOMENT. Voir secu_check_login
+	} else if (isset($_SESSION['admin']['user_id'])) { 
+		$acteurs[] = array('utilisateur_detail.php?id=' . $_SESSION['admin']['user_id'], 'Profil utilisateur', ''); // même si on n'a pas les droits sur les utilisateurs, on doit pouvoir voir son propre profil - CA NE FONCTIONNE PAS POUR LE MOMENT. Voir secu_check_login
 	}
 	if (secu_check_role(ROLE_ADMIN)) {
 		$acteurs[] = array('droits.php', 'Droits d\'accès', '');
@@ -48,7 +48,7 @@ if($is_authorized = secu_is_authorized('accueil')){
 
 //********** sélection territoire
 if (isset($_POST['choix_territoire'])) {
-	$_SESSION['perimetre'] = $_POST['choix_territoire'];
+	$_SESSION['admin']['perimetre'] = $_POST['choix_territoire'];
 }
 
 //view

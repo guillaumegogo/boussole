@@ -16,8 +16,8 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="localisation-wrapper">
-					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?>
-					<?php if($_SESSION['nom_territoire']) { ?> <br/><?php xecho($_SESSION['nom_territoire']); } ?></span>
+					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['web']['ville_habitee']) ?>, <?php xecho($_SESSION['web']['code_postal']) ?>
+					<?php if($_SESSION['web']['nom_territoire']) { ?> <br/><?php xecho($_SESSION['web']['nom_territoire']); } ?></span>
 				</div>
 			</div>
 		</div>
@@ -25,7 +25,7 @@
     <form class="joli accueil vert" method="post">
         <fieldset class="accueil_choix_besoin">
         <?php if($nb && count($themes) > 0){ ?>
-			<?php if(!$_SESSION['nom_territoire']) { ?>
+			<?php if(!$_SESSION['web']['nom_territoire']) { ?>
 			<div style="font-weight: bold;"><span style="color:red">Ta ville n'appartient pour le moment à aucun territoire de la Boussole des jeunes.</span><br/><br/>Si aucune offre de service ne te convient,<br/>contacte le <a href="https://www.cidj.com/nous-rencontrer">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement trouver une réponse à ton besoin.
 			<?php } ?>
             <div class="wrapper container">

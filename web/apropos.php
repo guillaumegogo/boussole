@@ -6,7 +6,7 @@ $sujets_contact=array("contact_pro"=>"Demande de contact professionnel", "offre_
 if(isset($_POST['envoi_mail'])){
 	
 	//if ($_SERVER[“HTTP_REFERER”] != "http://www.mondomaine.tld/contact"){ //protection à envisager
-	if (isset($_SESSION['test_antispam']) && isset($_POST['test']) && ($_SESSION['test_antispam'] == $_POST['test'])){
+	if (isset($_SESSION['web']['test_antispam']) && isset($_POST['test']) && ($_SESSION['web']['test_antispam'] == $_POST['test'])){
 		if (isset($_POST['name_contact']) && isset($_POST['subject_contact']) && isset($_POST['email_contact']) && isset($_POST['message_contact'])){
 			
 			$sujet = $sujets_contact[$_POST['subject_contact']];
@@ -37,7 +37,7 @@ if(isset($_GET['p']) && in_array($_GET['p'], $liste_page)){
 		
 		//test de session anti robot pour le formulaire de contact
 		$test_antispam = md5(uniqid(microtime(), true));
-		$_SESSION['test_antispam'] = $test_antispam;
+		$_SESSION['web']['test_antispam'] = $test_antispam;
 	}
 }
 

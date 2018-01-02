@@ -93,7 +93,7 @@ if (secu_check_role(ROLE_ADMIN)) {
 	$departements = get_liste_departements();
 }
 if (secu_check_role(ROLE_ANIMATEUR)) {
-	$territoires = get_territoires($_SESSION['territoire_id'],1);
+	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1);
 } else {
 	$territoires = get_territoires(null,1);
 }

@@ -7,7 +7,7 @@ $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_MESURE, $_GET['i
 $id_mesure = null;
 $msg = "";
 $user_pro_id = null;
-if (isset($_SESSION['user_pro_id'])) $user_pro_id=$_SESSION['user_pro_id'];
+if (isset($_SESSION['admin']['user_pro_id'])) $user_pro_id=$_SESSION['admin']['user_pro_id'];
 
 //********** si post du formulaire interne
 if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {

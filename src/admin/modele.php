@@ -1634,7 +1634,7 @@ function get_formulaire_mesure(){
 		WHERE `f`.`actif`=1 AND `f`.`type`="mesure"
 		ORDER BY `ordre_page`, `q`.`ordre`, `v`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
-	//mysqli_stmt_bind_param($stmt, 'si', $_SESSION['besoin'], $etape);
+	//mysqli_stmt_bind_param($stmt, 'si', $_SESSION['admin']['besoin'], $etape);
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 

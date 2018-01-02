@@ -12,7 +12,7 @@
 <a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole 
 	<?= (ENVIRONMENT === ENV_TEST) ? '<span style="color:black; background:red;">TEST</span>' : '' ?></h1>
-<div class="statut"><?php echo $_SESSION['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?php echo $_SESSION['admin']['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<?php //include('view/select_perimetre.inc.php'); //a priori pas d'intérêt ici. ou alors juste pour les admins ??>

@@ -16,8 +16,8 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="localisation-wrapper">						
-					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['ville_habitee']) ?>, <?php xecho($_SESSION['code_postal']) ?>
-					<?php if($_SESSION['nom_territoire']) { ?> <br/><?php xecho($_SESSION['nom_territoire']); } ?></span>
+					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['web']['ville_habitee']) ?>, <?php xecho($_SESSION['web']['code_postal']) ?>
+					<?php if($_SESSION['web']['nom_territoire']) { ?> <br/><?php xecho($_SESSION['web']['nom_territoire']); } ?></span>
 				</div>
 			</div>				
 		</div>
@@ -105,7 +105,7 @@
 										<div class="col-md-6 col-sm-12 col-xs-12">
 											<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
 											<input type="text" required name="coordonnees" class="input-adresse-mail" placeholder="Mon adresse courriel ou n° de téléphone"
-												<?= (isset($_SESSION['coordonnees'])) ? 'value="'.$_SESSION['coordonnees'].'"':'' ?> />
+												<?= (isset($_SESSION['web']['coordonnees'])) ? 'value="'.$_SESSION['web']['coordonnees'].'"':'' ?> />
 										</div>
 										<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
 											<button type="submit" class="submit-connexion-offre">Je demande à être contacté·e</button>

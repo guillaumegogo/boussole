@@ -130,7 +130,7 @@
 
 <body>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?= $_SESSION["accroche"] ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?= $_SESSION['admin']['accroche'] ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des professionnels</a> ></small> 

@@ -59,29 +59,29 @@ function affiche_valeur($ele, $type, $requis)
 		case 'radio':
 			$r = ($requis) ? 'required':'';
 			$t = '<input type="radio" name="' . $ele['name'] . '" value="' . $ele['val'] . '" id="' . $ele['val'] . $ele['name'] . '" ' . $r ;
-			if (isset($_SESSION['critere'][$ele['name']])) {
-				if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' checked ';
+			if (isset($_SESSION['web']['critere'][$ele['name']])) {
+				if ($_SESSION['web']['critere'][$ele['name']] == $ele['val']) $t .= ' checked ';
 			} else if ($ele['def'] == 1) $t .= ' checked ';
 			$t .= '> ' . '<label for="' . $ele['val'] . $ele['name'] .'">' . xssafe($ele['lib']). '</label>' . "\n";
 			break;
 		case 'checkbox':
 			$t = '<input type="checkbox" name="' . $ele['name'] . '[]" value="' . $ele['val'] . '" ' . '" id="' . $ele['val'] . $ele['name'] . '" ';
-			if (isset($_SESSION['critere'][$ele['name']])) {
-				if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' checked ';
+			if (isset($_SESSION['web']['critere'][$ele['name']])) {
+				if (in_array($ele['val'], $_SESSION['web']['critere'][$ele['name']])) $t .= ' checked ';
 			} else if ($ele['def'] == 1) $t .= ' checked ';
 			$t .= '> ' . '<label for="' . $ele['val'] . $ele['name'] .'">' . xssafe($ele['lib']) . '</label>' . '</br>' . "\n";
 			break;
 		case 'select':
 			$t = '<option value="' . $ele['val'] . '" ';
-			if (isset($_SESSION['critere'][$ele['name']])) {
-				if ($_SESSION['critere'][$ele['name']] == $ele['val']) $t .= ' selected ';
+			if (isset($_SESSION['web']['critere'][$ele['name']])) {
+				if ($_SESSION['web']['critere'][$ele['name']] == $ele['val']) $t .= ' selected ';
 			} else if ($ele['def'] == 1) $t .= ' selected ';
 			$t .= '> ' . xssafe($ele['lib']) . '</option>' . "\n";
 			break;
 		case 'multiple':
 			$t = '<option value="' . $ele['val'] . '" ';
-			if (isset($_SESSION['critere'][$ele['name']])) {
-				if (in_array($ele['val'], $_SESSION['critere'][$ele['name']])) $t .= ' selected ';
+			if (isset($_SESSION['web']['critere'][$ele['name']])) {
+				if (in_array($ele['val'], $_SESSION['web']['critere'][$ele['name']])) $t .= ' selected ';
 			} else if ($ele['def'] == 1) $t .= ' selected ';
 			$t .= '> ' . xssafe($ele['lib']) . '</option>' . "\n";
 			break;
@@ -104,7 +104,7 @@ function cloture_ligne($ele)
 	}
 	
 	//une fois le critère affiché (avec la préselection), on vide la session du critere correspondant
-	unset($_SESSION['critere'][$ele['name']]);
+	unset($_SESSION['web']['critere'][$ele['name']]);
 	
 	return $t;
 }
@@ -121,7 +121,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
     $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des jeunes');
     $message = "<html><p>Un jeune est intéressé par l'offre <b>" . $nom_offre . "</b>.</p>"
         . "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
-        . "<p>Son profil est le suivant : " . liste_criteres($_SESSION['critere'], '<br/>') . "</p>"
+        . "<p>Son profil est le suivant : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p>"
         . "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p>"
         . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
     $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -143,7 +143,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
         $subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des jeunes');
         $message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
             . "<p>Offre <b>" . $nom_offre . "</b>.</p>"
-            . "<p>Profil : " . liste_criteres($_SESSION['critere'], '<br/>') . "</p></html>";
+            . "<p>Profil : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p></html>";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 		$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".

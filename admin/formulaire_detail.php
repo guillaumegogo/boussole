@@ -1,7 +1,7 @@
 <?php
 include('../src/admin/bootstrap.php');
 $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_FORMULAIRE, $_GET['id']) : true;
-$_SESSION['dernier_formulaire'] = $_GET['id'];
+$_SESSION['admin']['dernier_formulaire'] = $_GET['id'];
 
 //********* variables
 $id_formulaire = null;
@@ -86,7 +86,7 @@ if (isset($id_formulaire)) {
 $themes = get_liste_themes(1);
 
 if ($droit_ecriture && secu_check_role(ROLE_ANIMATEUR)) {
-	$territoires = get_territoires($_SESSION['territoire_id'],1);
+	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1);
 } else {
 	$territoires[] = array('id_territoire'=>'', 'nom_territoire'=>'National');
 	$territoires = array_merge($territoires, get_territoires(null, 1));

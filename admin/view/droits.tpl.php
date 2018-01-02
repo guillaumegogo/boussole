@@ -34,7 +34,7 @@
 
 <body>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php xecho($_SESSION['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
+<div class="statut"><?php xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 
