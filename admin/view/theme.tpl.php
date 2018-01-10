@@ -21,7 +21,7 @@
 	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<?php if ($select_theme) { ?>
-	<form method="post" style="margin-bottom:1em;">
+	<form method="post" style="margin-bottom:1em;" class="theme">
 		<label for="choix_theme">Thème :</label>
 		<select name="choix_theme" onchange="this.form.submit()">
 			<option value="">A choisir</option><?php echo $select_theme; ?></select>
@@ -45,8 +45,8 @@
 					</div>
 					<div class="lab">
 						<label for="actif">Actif :</label>
-						<input type="radio" name="actif" value="1" <?php if ($actif_theme_choisi == "1") echo "checked"; ?>> Oui
-						<input type="radio" name="actif" value="0" <?php if ($actif_theme_choisi == "0") echo "checked"; ?>> Non
+						<input type="radio" name="actif" value="1" id="actif-oui" <?php if ($actif_theme_choisi == "1") echo "checked"; ?>><label for="actif-oui">Oui</label>
+						<input type="radio" name="actif" value="0" id="actif-non" <?php if ($actif_theme_choisi == "0") echo "checked"; ?>><label for="actif-non">Non</label>
 
 					</div>
 					<input type="hidden" name="maj_id_theme" value="<?php echo $id_theme_choisi; ?>">

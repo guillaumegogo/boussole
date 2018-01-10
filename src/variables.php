@@ -4,7 +4,7 @@ define('ENV_GUILLAUME', 'guillaume');
 define('ENV_TEST', 'test');
 define('ENV_BETA', 'beta');
 define('ENV_PROD', 'prod');
-define('ENVIRONMENT', ENV_GUILLAUME);
+define('ENVIRONMENT', ENV_LBA);
 
 define('DEBUG', true);
 
