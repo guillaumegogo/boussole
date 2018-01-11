@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 	<meta name="viewport" content="width=device-width"/>
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
 

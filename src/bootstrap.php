@@ -17,3 +17,5 @@ if (ENVIRONMENT === ENV_PROD || ENVIRONMENT === ENV_BETA) {
 //Inclusions communes
 include __DIR__.'/functions.php';
 include __DIR__.'/connect.php';
+
+include __DIR__.'/messages.php';

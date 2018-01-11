@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="demande_liste.php">Liste de demandes</a> ></small> 

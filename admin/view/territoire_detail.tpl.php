@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 	
 	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
@@ -29,7 +29,7 @@
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
 

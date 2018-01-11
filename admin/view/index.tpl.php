@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 </head>
 
 <body>

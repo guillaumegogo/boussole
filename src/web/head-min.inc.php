@@ -11,4 +11,4 @@
 	<link rel="stylesheet" href="css/test.css" />
 	<?php } ?>
 	
-	<title><?php xecho(ucfirst($titredusite)); ?></title>
+	<title>La Boussole des jeunes</title>

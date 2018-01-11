@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 	
 	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
@@ -156,7 +156,7 @@
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="mesure_liste.php">Liste des mesures</a> ></small> 

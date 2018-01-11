@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<?php include('view/inc.head.php'); ?>
 	
 	<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css"/>
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
@@ -29,7 +29,7 @@
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
 	<?php include('../src/admin/select_perimetre.inc.php'); ?>
