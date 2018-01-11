@@ -160,7 +160,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="mesure_liste.php">Liste des mesures</a> ></small> 
-		<?= ($id_mesure) ? 'Détail' : 'Création' ?> d'une mesure  <?= ($id_mesure && $row['actif_mesure'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?></h2>
+		<?= ($id_mesure) ? 'Détail' : 'Création' ?> d'une mesure  </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -169,7 +169,7 @@
 		<input type="hidden" name="maj_id" value="<?php echo $id_mesure; ?>">
 
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
-			<legend>Description de la mesure</legend>
+			<legend>Description de la mesure <?= ($id_mesure && $row['actif_mesure'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?></legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">

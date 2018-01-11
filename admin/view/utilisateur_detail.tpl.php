@@ -40,7 +40,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Liste des utilisateurs</a> ></small> 
-		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur <?= ($id_utilisateur && $user['actif_utilisateur'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></h2>
+		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -52,7 +52,7 @@
 
 		<input type="hidden" name="maj_id" value="<?= $id_utilisateur ?>">
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend>Description de l'utilisateur</legend>
+			<legend>Description de l'utilisateur <?= ($id_utilisateur && $user['actif_utilisateur'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></legend>
 
 			<div class="une_colonne">
 				<div class="lab">

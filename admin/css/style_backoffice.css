@@ -31,9 +31,6 @@ h1.bandeau{
     font-weight: bold;
 	color:white;
 	background:#00AAA9; /*SteelBlue;*/
-	/*
-    padding-left:3.5em; 
-	background: SteelBlue url("../img/compass-icon2.png") no-repeat 0.2em 0.2em;*/
 }
 .bandeau img{
 	float:left;
@@ -104,6 +101,7 @@ legend{
 	width:33%;
 	border:none;
 	padding: 0 1em;
+	vertical-align:top;
 }
 .accueil ul{
 	list-style-type: none;

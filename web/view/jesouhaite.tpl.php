@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 </head>
 <body><div id="main">
-	<?php include('../src/web/header.inc.php'); ?>
+	<?php include('view/inc.header.php'); ?>
 
 	<div class="wrapper container">
 		<div class="row bordure-bas">
@@ -48,7 +48,7 @@
         </fieldset>
     </form>
 
-	<?php include('../src/web/footer.inc.php'); ?>
+	<?php include('view/inc.footer.php'); ?>
 </div>
 </body>
 </html>

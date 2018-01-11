@@ -131,7 +131,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des organismes</a> ></small> 
-		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un organisme  <?= ($id_professionnel && $pro['actif_pro'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
+		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un organisme </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -143,7 +143,7 @@
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend>Description de l'organisme</legend>
+			<legend>Description de l'organisme <?= ($id_professionnel && $pro['actif_pro'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?></legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">

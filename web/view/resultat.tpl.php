@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 	<script>
 		function afficheId(id){
@@ -36,7 +36,7 @@
 	</script>
 </head>
 <body><div id="main" class="body-color">
-	<?php include('../src/web/header.inc.php'); ?>
+	<?php include('view/inc.header.php'); ?>
 
 	<div class="wrapper container">
 		<div class="row bordure-bas">
@@ -113,9 +113,9 @@ if ($nb_offres) {
 </div>
 <?php } ?>
 
-<div>Si tu ne trouves pas ici de réponse à ton besoin,<br/> nous t'invitons à contacter le <a href="https://www.cidj.com/nous-rencontrer">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement t'aider.</div>
+<div>Si tu ne trouves pas ici de réponse à ton besoin,<br/> nous t'invitons à contacter le <a href="https://www.cidj.com/nous-rencontrer" target="_blank">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement t'aider.</div>
 
-<?php include('../src/web/footer.inc.php'); ?>
+<?php include('view/inc.footer.php'); ?>
 </body>
 </html>
 

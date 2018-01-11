@@ -41,7 +41,12 @@ function array_filter_recursive($input) {
 		} 
 	} 
 	return array_filter($input); 
-} 
+}
+
+// fonction de construction des liens dans la page d'accueil
+function lien($row){
+	return '<a href="' . $row[0] .'"'. ((substr($row[0],0,4)=="http")?' target="_blank" ':'') .'>'. $row[1] .'</a> '. $row[2];
+}
 
 /*
 $timestamp_debut = microtime(true);

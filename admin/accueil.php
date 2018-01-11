@@ -14,6 +14,10 @@ if($is_authorized = secu_is_authorized('accueil')){
 	if (secu_check_role(ROLE_ADMIN)) {
 		$activites[] = array('recherche_liste.php', 'Liste des recherches effectuées', '');
 	}
+	if (secu_check_role(ROLE_ADMIN)) {
+		$activites[] = array('http://statsbeta.mtsfp-vm-djepva-boussole.accelance.net/dashboard/db/boussole_beta?orgId=1&from=1507912332742&to=1515691932742&var-serverurl=beta.boussoledesdroits.fr&var-nombdd=Boussol%20Integ', 'Statistiques', '<img src="img/help.png" height="16px" title="Grafana extérieur.">');
+	}
+	
 
 	//******* construction des listes de lien
 	if (isset($is_authorized[DROIT_OFFRE]) && $is_authorized[DROIT_OFFRE]) {

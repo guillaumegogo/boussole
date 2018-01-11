@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="../src/js/jquery-ui.min.js"></script>
@@ -123,11 +123,11 @@
 			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
 				<img src="img/icon-calendar.svg">
 				<p>J'obtiens une réponse à ma demande et un rendez vous si nécessaire.</p>
-			</div>					
+			</div>
 		</div>
 	</div>
 </div>
-	<?php include('../src/web/footer.inc.php'); ?>
+	<?php include('view/inc.footer.php'); ?>
 </div>
 </body>
 </html>

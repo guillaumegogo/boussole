@@ -5,7 +5,7 @@
 </head>
 
 <body>
-<a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
+<a href="../web/" target="_blank"><img src="img/ex-link-w.png" class="retour_boussole"></a>
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
 
 <div class="container">

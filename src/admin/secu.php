@@ -454,9 +454,9 @@ function secu_send_pass_email($email, $origine='reset')
 			}
 			$headers = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-			$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
+			$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n"; /*.
 							'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
-							'X-Mailer: PHP/' . phpversion();
+							'X-Mailer: PHP/' . phpversion();*/
 
 			$sent = mail($email, $subject, $message, $headers);
 		}

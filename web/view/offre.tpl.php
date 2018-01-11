@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 <body><div id="main" class="body-color">
-	<?php include('../src/web/header.inc.php'); ?>
+	<?php include('view/inc.header.php'); ?>
 
 	<div class="wrapper container">
 		<div class="row bordure-bas">
@@ -16,8 +16,8 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
 				<div class="localisation-wrapper">						
-					<img src="img/localisation.svg" alt=""><span><?php xecho($_SESSION['web']['ville_habitee']) ?>, <?php xecho($_SESSION['web']['code_postal']) ?>
-					<?php if($_SESSION['web']['nom_territoire']) { ?> <br/><?php xecho($_SESSION['web']['nom_territoire']); } ?></span>
+					<img src="img/localisation.svg" alt=""><span><?php if(isset($_SESSION['web']['ville_habitee'])) xecho($_SESSION['web']['ville_habitee']); ?>, <?php if(isset($_SESSION['web']['code_postal'])) xecho($_SESSION['web']['code_postal']); ?>
+					<?php if(isset($_SESSION['web']['nom_territoire']) && $_SESSION['web']['nom_territoire']) { ?> <br/><?php xecho($_SESSION['web']['nom_territoire']); } ?></span>
 				</div>
 			</div>				
 		</div>
@@ -178,7 +178,7 @@
 		</div>			
 	</div>
 
-	<?php include('../src/web/footer.inc.php'); ?>
+	<?php include('view/inc.footer.php'); ?>
 </div>
 </body>
 </html>

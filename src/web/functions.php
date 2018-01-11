@@ -126,9 +126,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
         . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . "/admin/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-	$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
-		'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
-		'X-Mailer: PHP/' . phpversion();
+	$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
     if (ENVIRONMENT !== ENV_PROD) {
         $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
     }
@@ -146,9 +144,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
             . "<p>Profil : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p></html>";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-		$headers .= 'From: La Boussole des jeunes <boussole@jeunesse-sports.gouv.fr>' . "\r\n".
-			'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
-			'X-Mailer: PHP/' . phpversion();
+		$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
         if (ENVIRONMENT !== ENV_PROD) {
             $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
         }
@@ -158,7 +154,6 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
     if ($envoi_mail) {
         $resultat = true;
     }
-	
 	return $resultat;
 }
 
@@ -168,15 +163,12 @@ function envoi_mail_contact($nom, $sujet, $email, $message)
 	$resultat = null;
 
     $to = 'boussole@jeunesse-sports.gouv.fr';
-    $subject = mb_encode_mimeheader('Demande de contact : '.$sujet);
+    $subject = mb_encode_mimeheader('Contact via la boussole : '.$sujet);
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-	$headers .= 'From: La Boussole des jeunes <no-reply@jeunesse-sports.gouv.fr>' . "\r\n".
-		'Reply-To: no-reply@jeunesse-sports.gouv.fr'."\r\n" .
-		'X-Mailer: PHP/' . phpversion();
-    if (ENVIRONMENT !== ENV_PROD) {
-        $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
-    }
+	$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n" 
+		. 'Reply-To: <' .$email. ">\r\n" ;
+	$message = $message . "<br/><br/>Adresse mail de l'expéditeur : ". $email ;
     $envoi_mail = mail($to, $subject, $message, $headers);
     if ($envoi_mail) {
         $resultat = true;

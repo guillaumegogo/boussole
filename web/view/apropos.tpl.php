@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 </head>
 <body>
 
 <div class="apropos">
-	<?php include('../src/web/header.inc.php'); ?>
+	<?php include('view/inc.header.php'); ?>
 
 	<div class="container" style="padding:1em 0;">
 	
@@ -21,7 +21,7 @@
 	</div>
 </div>
 
-<?php include('../src/web/footer.inc.php'); ?>
+<?php include('view/inc.footer.php'); ?>
 
 </body>
 </html>

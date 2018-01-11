@@ -34,13 +34,13 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="territoire_liste.php">Liste des territoires</a> ></small> 
-		<?= ($id_territoire) ? 'Détail' : 'Création'; ?> d'un territoire  <?= ($id_territoire && $territoire['actif'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
+		<?= ($id_territoire) ? 'Détail' : 'Création'; ?> d'un territoire</h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<form method="post" class="detail" onsubmit='checkall()'>
 		<fieldset class="centre" <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend><?= ($id_territoire) ? "Détail du" : "Création d'un nouveau" ?> territoire</legend>
+			<legend>Description du territoire  <?= ($id_territoire && $territoire['actif'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </legend>
 			<label for="libelle_territoire" class="court">Libellé :</label>
 			<input type="text" required name="libelle_territoire" value="<?= (isset($territoire)) ? $territoire['nom_territoire']:'' ?>">
 			<input type="hidden" name="maj_id_territoire" value="<?php echo $id_territoire; ?>">

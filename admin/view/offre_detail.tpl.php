@@ -121,7 +121,7 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Liste des offres de service</a> ></small> 
-		<?= ($id_offre) ? 'Détail' : 'Création' ?> d'une offre <?= ($id_offre && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?> </h2>
+		<?= ($id_offre) ? 'Détail' : 'Création' ?> d'une offre</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -130,7 +130,7 @@
 		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
 
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
-			<legend>Description de l'offre de service</legend>
+			<legend>Description de l'offre de service <?= ($id_offre && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'<a href="../web/offre.php?id='.$id_offre.'" target="_blank"><img src="img/ex-link-b.png" width="32px"></a>' ?></legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -264,7 +264,7 @@
 				</div>
 				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">
 				<?php if($droit_ecriture) { ?>
-					<div style="margin-bottom:1em;">Filtre <abbr title="La liste des villes proposées dépend de la zone de compétence géographique du professionnel">&#9888;</abbr> : 
+					<div style="margin-bottom:1em;">Filtre <abbr title="La liste des villes proposées dépend de la zone de compétence géographique du professionnel"><img src="img/warning.png"></abbr> : 
 						<input id="textbox"
 							value="nom de ville, code postal ou département..."
 							type="text" style="width:20em;"

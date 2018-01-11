@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/web/head-min.inc.php'); ?>
+	<?php include('view/inc.head-min.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 <body><div id="main">
-	<?php include('../src/web/header.inc.php'); ?>
+	<?php include('view/inc.header.php'); ?>
 
 	<main>
 		<div class="wrapper container">
@@ -103,7 +103,7 @@
 			?>
 			</div>
 	</main>
-	<?php include('../src/web/footer.inc.php'); ?>
+	<?php include('view/inc.footer.php'); ?>
 </div>
 </body>
 </html>
