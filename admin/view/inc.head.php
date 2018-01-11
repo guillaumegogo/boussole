@@ -5,8 +5,12 @@
 <link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
 
 <?php
-if((isset($_SESSION['admin']['lba']) && $_SESSION['admin']['lba']=="oui") || (isset($_GET['lba']) && $_GET['lba']=="oui")){
-	$_SESSION['admin']['lba'] = "oui";
+if(isset($_GET['lba'])){
+	$_SESSION['admin']['lba'] = ($_GET['lba']=="non") ? "non" : null;
+}
+if(!(isset($_SESSION['admin']['lba']) && $_SESSION['admin']['lba']=="non")){
 ?>
 <link rel="stylesheet" href="css/style_lba.css"/>
-<?php } ?>
+<?php 
+} 
+?>

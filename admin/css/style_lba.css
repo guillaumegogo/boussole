@@ -1,3 +1,4 @@
+
 /*** Intégration La Bonne Agence ***/
 
 /* Header + Fil Ariane */
@@ -674,5 +675,58 @@ form.detail .deux_colonnes .lab{
 .ui-datepicker-inline .ui-datepicker-calendar tbody tr td a:focus{
 	background:rgba(19, 127, 139, 0.7);
 	color: white;
-}*/
+}
+
 /**/
+
+/*** Bandeau ***/
+h1.bandeau{
+	background: linear-gradient(90deg, rgb(26, 160, 167) 0%, rgb(24, 92, 160) 100%);
+	font-family: 'Quicksand', sans-serif;
+	padding: 20px 0;
+	vertical-align: middle;
+}
+h1.bandeau img{
+	margin: 0 15px 0 30px;
+	float: none;
+	display: inline-block;
+	vertical-align: middle;
+}
+h1.bandeau + .statut{
+	position: absolute;
+	top: 35px;
+	right: 30px;
+	background: transparent;
+	color: white;
+	font-family: 'Quicksand', sans-serif;
+}
+h1.bandeau + .statut a{
+	color: white;
+}
+h1.bandeau + .statut a:last-of-type{
+	display: block;
+}
+@media(max-width: 991px){
+	h1.bandeau{
+		min-height: 60px;
+		font-size: 1.3em;
+	}
+	h1.bandeau img{
+		float: left;
+	}
+	h1.bandeau + .statut{
+		position: static;
+		color: #333;
+		margin: 10px 10px 0 0;
+	}
+	h1.bandeau + .statut a{
+		color: #333;
+	}
+}
+@media(max-width: 767px){
+	.accueil td{
+		width: 100%;
+		display: block;
+		padding: 0;
+	}
+}
