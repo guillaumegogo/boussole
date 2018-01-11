@@ -1,8 +1,8 @@
 <a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
 
 <h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole 
-	<?= (ENVIRONMENT === ENV_BETA) ? '<span style="color:red; background:white;">BETA</span>' : '' ?>
-	<?= (ENVIRONMENT === ENV_TEST) ? '<span style="color:red; background:white;">TEST</span>' : '' ?></h1>
+	<?= (ENVIRONMENT === ENV_BETA) ? '<span style="color:red; background:white; padding:0 0.2em;">BETA</span>' : '' ?>
+	<?= (ENVIRONMENT === ENV_TEST) ? '<span style="color:red; background:white; padding:0 0.2em;">TEST</span>' : '' ?></h1>
 
 <div class="statut">
 	<?php if( isset($_SESSION['admin']['accroche']) ) { 

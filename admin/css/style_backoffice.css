@@ -57,6 +57,9 @@ h1 a:hover {
 	margin-bottom:1em;
 	background-color:#DCEFEF; /*#B8DEDE b6cee2;*/
 }
+.statut a {
+	text-decoration: underline;
+}
 h2 {
 	margin-left:0em;
 }

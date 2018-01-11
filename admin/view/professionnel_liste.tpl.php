@@ -84,7 +84,7 @@
 
 <?php if($check_ajout){ ?>
 <div class="button">
-	<input type="button" value="Ajouter un professionnel" onclick="javascript:location.href='professionnel_detail.php'">
+	<input type="button" value="Ajouter un organisme" onclick="javascript:location.href='professionnel_detail.php'">
 </div>
 <?php } ?>
 </body>
