@@ -1,7 +1,6 @@
 <?php
 include('../src/admin/bootstrap.php');
 $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_FORMULAIRE, $_GET['id']) : true;
-$_SESSION['admin']['dernier_formulaire'] = $_GET['id'];
 
 //********* variables
 $id_formulaire = null;
@@ -17,7 +16,9 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
  
 } elseif (isset($_POST['enregistrer'])) {
 
-	echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
+	if (DEBUG) { 
+		echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
+	}
 	
 	$name_q = (isset($_POST['name_q'])) ? $_POST['name_q'] : null;
 	$requis = (isset($_POST['requis'])) ? $_POST['requis'] : null;
@@ -67,6 +68,7 @@ if (isset($_GET['act'])) {
 if (isset($_GET['id']) && !$id_formulaire) {
 	$id_formulaire = $_GET['id'];
 }
+$_SESSION['admin']['dernier_formulaire'] = $id_formulaire;
 
 $meta = null;
 $pages = null;

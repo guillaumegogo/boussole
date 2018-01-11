@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<?php include('../src/admin/header.inc.php'); ?>
+	
 	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
@@ -129,12 +127,11 @@
 </head>
 
 <body>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?= $_SESSION['admin']['accroche'] ?> (<a href="index.php">déconnexion</a>)</div>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des professionnels</a> ></small> 
-		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un professionnel  <?= ($id_professionnel && $pro['actif_pro'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des organismes</a> ></small> 
+		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un organisme  <?= ($id_professionnel && $pro['actif_pro'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
 
@@ -146,7 +143,7 @@
 
 		<input type="hidden" name="maj_id" value="<?= $id_professionnel ?>">
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend>Description du professionnel (organisme)</legend>
+			<legend>Description de l'organisme</legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -388,7 +385,7 @@ if (isset($territoires)){
 		
 <?php if(count($offres)+count($incoherences_themes)+count($incoherences_villes)>0){ ?>
 		<fieldset>
-			<legend>Offres de service du professionnel</legend>
+			<legend>Offres de service de l'organisme</legend>
 			<div>
 <?php if(count($incoherences_themes)>0){ ?>
 		<span style="color:red; font-weight: bold;">offres incohérentes (thèmes)</span><ul>

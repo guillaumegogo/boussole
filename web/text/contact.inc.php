@@ -1,5 +1,9 @@
 <h1>Contact</h1>
 
+<p>La Boussole s’améliore grâce à vos retours ! Nous prenons en compte toutes les remarques que nous recevons. </p>
+<p>Vous avez une idée pour améliorer la Boussole des jeunes,  vous souhaitez nous donner votre avis, nous signaler une erreur : contactez-nous ! </p>
+<p>Vous êtes un partenaire potentiel et souhaitez rejoindre le projet, contactez-nous ! </p>
+
 <form id="contact_form" action="#" method="POST" enctype="multipart/form-data">
 	<input type="hidden" name="test" value="<?= $test_antispam ?>" />
 	

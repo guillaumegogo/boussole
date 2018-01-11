@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<?php include('../src/admin/header.inc.php'); ?>
+	
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" language="javascript">
@@ -16,20 +14,16 @@
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
 		var cell4 = row.insertCell(3);
-		/*var cell5 = row.insertCell(4);*/
-		cell1.innerHTML = "<input name=\"id_v["+x+"]\" type=\"hidden\" value=\"\"><input name=\"libelle_v["+x+"]\" type=\"text\" class=\"input_long\" value=\"\">";
-		cell2.innerHTML = "<input name=\"valeur_v["+x+"]\" type=\"text\" class=\"input_long\" value=\"\">";
-		cell3.innerHTML = "<input name=\"ordre_v["+x+"]\" type=\"text\" style=\"width:2em\" value=\"\">";
-		/*cell4.innerHTML = "<input type=\"radio\" name=\"defaut\" value=\"\" >";*/
-		cell4.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" checked >";
+		cell1.innerHTML = "<input name=\"libelle_v["+x+"]\" type=\"text\" class=\"input_treslong\" value=\"\">\r\n"; //<input name=\"id_v["+x+"]\" type=\"hidden\" value=\"\">
+		cell2.innerHTML = "<input name=\"valeur_v["+x+"]\" type=\"text\" value=\"\">\r\n";
+		cell3.innerHTML = "<input name=\"ordre_v["+x+"]\" type=\"text\" class=\"input_int\" value=\"\">\r\n";
+		cell4.innerHTML = "<input type=\"checkbox\" name=\"actif[]\" value=\"\" checked >\r\n";
 	}
 	</script>
-	<title>Boussole des jeunes</title>
 </head>
 
 <body>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
 
@@ -62,7 +56,7 @@
 			<thead>
 			<tr>
 				<th>Libellé</th>
-				<th>Valeur</th>
+				<th>Identifiant <img src="img/help.png" height="16px" title="Cet identifiant doit être différent à chaque ligne du tableau. Il est à usage interne et n'est pas affiché dans le formulaire présenté au jeune."></th>
 				<th>Ordre</th>
 				<!--<th>Choix par défaut</th>-->
 				<th>Actif</th>
@@ -74,11 +68,11 @@
 			?>
 				<tr>
 					<td><input name="id_v[<?= $i ?>]" type="hidden" value="<?= $vid ?>">
-						<input name="libelle_v[<?= $i ?>]" type="text" class="input_long"
+						<input name="libelle_v[<?= $i ?>]" type="text" class="input_treslong"
 						value="<?php if(isset($valeurs[$i]['libelle_valeur'])) { xecho($valeurs[$i]['libelle_valeur']); } ?>"></td>
-					<td><input name="valeur_v[<?= $i ?>]" type="text" class="input_long"
+					<td><input name="valeur_v[<?= $i ?>]" type="text" 
 						value="<?php if(isset($valeurs[$i]['valeur'])) { xecho($valeurs[$i]['valeur']); } ?>" <?= (isset($valeurs[$i]['valeur'])) ? 'readonly':'' ?>></td>
-					<td><input name="ordre_v[<?= $i ?>]" type="text"  style="width:2em" 
+					<td><input name="ordre_v[<?= $i ?>]" type="text"  class="input_int" 
 						value="<?php if(isset($valeurs[$i]['ordre'])) { xecho($valeurs[$i]['ordre']); } ?>"></td>
 					<!--<td><input type="radio" name="defaut" value="<?= $vid ?>" <?= (isset($valeurs[$i]['defaut']) && $valeurs[$i]['defaut']==1) ? 'checked' : '' ?>></td>-->
 					<td><input type="checkbox" name="actif[]" value="<?= $vid ?>" <?= (isset($valeurs[$i]['actif']) && $valeurs[$i]['actif']==1) ? 'checked' : '' ?>></td>

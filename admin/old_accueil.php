@@ -52,4 +52,4 @@ if (isset($_POST['choix_territoire'])) {
 }
 
 //view
-require 'view/accueil.tpl.php';
+require 'view/old_accueil.tpl.php';

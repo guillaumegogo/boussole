@@ -1,7 +1,6 @@
 <?php
 
 //********* affichage des thèmes proposés en fonction de la ville choisie 
-/* note : la requête vérifie actuellement s'il y a des professionnels actifs sur la commune indiquée, thème par thème (avec recherche sur toutes les strates géographiques : pays, région, département ou territoire). idéalement il faudrait faire la vérification au niveau des offres actives...*/
 function get_themes_by_ville($code_insee){
 
 	global $conn;
@@ -26,15 +25,39 @@ function get_themes_by_ville($code_insee){
 		FROM `'.DB_PREFIX.'bsl_theme` AS `t2`
 		WHERE `id_theme_pere` IS NULL) as `s`
 	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';
+	
+	
+/*
+//la requête vérifie s'il y a des professionnels actifs sur la commune indiquée, thème par thème (avec recherche sur toutes les strates géographiques : pays, région, département ou territoire). idéalement il faudrait faire la vérification au niveau des offres actives...
+	$query = 'SELECT `id_theme` as `id`, `libelle_theme` as `libelle`, `actif_theme` as `actif`, MAX(`c`) as `nb` 
+	FROM (
+		SELECT DISTINCT `t`.`id_theme`, `t`.`libelle_theme`, 
+		`t`.`actif_theme` , COUNT(`p`.id_professionnel) as `c`
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` ON `pt`.`id_theme`=`t`.`id_theme`
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `p`.`id_professionnel`=`pt`.`id_professionnel` AND `p`.`actif_pro`=1
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.`id_departement`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `reg` ON `p`.`competence_geo`="regional" AND `reg`.`id_region`=`p`.`id_competence_geo` 
+		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region` 
+		WHERE `id_theme_pere` IS NULL 
+		AND (`p`.competence_geo="national" OR `tv`.`code_insee`=? OR `depreg`.`id_departement`=SUBSTR(?,1,2) OR `dep`.`id_departement`=SUBSTR(?,1,2)) 
+		GROUP BY `t`.`id_theme`, `t`.`libelle_theme`, `t`.`actif_theme` 
+		UNION
+		SELECT DISTINCT `t2`.id_theme, `t2`.`libelle_theme`, `t2`.`actif_theme`, 0 as `c`
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t2`
+		WHERE `id_theme_pere` IS NULL) as `s`
+	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';*/
 
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sss', $code_insee, $code_insee, $code_insee);
-	/*
+	
 $print_sql = $query;
 foreach(array($code_insee, $code_insee, $code_insee) as $term){
 	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
 }
-echo "<pre>".$print_sql."</pre>"; */
+echo "<!--".$print_sql."-->"; 
 	
 	$themes = query_get($stmt);
 	return $themes;

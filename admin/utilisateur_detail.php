@@ -3,8 +3,6 @@
 include('../src/admin/bootstrap.php');
 $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_UTILISATEUR, $_GET['id']) : true;
 
-//print_r($_POST);
-
 //********* variables
 $last_id = null;
 $msg = '';

@@ -26,7 +26,7 @@
         <fieldset class="accueil_choix_besoin">
         <?php if($nb && count($themes) > 0){ ?>
 			<?php if(!$_SESSION['web']['nom_territoire']) { ?>
-			<div style="font-weight: bold;"><span style="color:red">Ta ville n'appartient pour le moment à aucun territoire de la Boussole des jeunes.</span><br/><br/>Si aucune offre de service ne te convient,<br/>contacte le <a href="https://www.cidj.com/nous-rencontrer">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement trouver une réponse à ton besoin.
+			<div style="font-weight: bold; margin-bottom:-2em;">La Boussole ne couvre pas encore ta ville, les services proposés sont par conséquent en nombre limité.</div>
 			<?php } ?>
             <div class="wrapper container">
                 <div class="wrapper-options">

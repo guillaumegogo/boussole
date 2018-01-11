@@ -1319,6 +1319,32 @@ function get_liste_themes($actif = null, $pro_id = null) {
 	return $themes;
 }
 
+function get_theme_et_sous_themes_by_id($id) {
+
+	global $conn;
+	$themes = null;
+	if (isset($id)) {
+		$query = 'SELECT `id_theme`, `libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`, `t`.`id_territoire`, `nom_territoire` 
+			FROM `'.DB_PREFIX.'bsl_theme` AS `t`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` 
+			WHERE `id_theme`= ? OR `id_theme_pere`= ? 
+			ORDER BY id_theme_pere, ordre_theme';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'ii', $id, $id);
+	}
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		while ($theme = mysqli_fetch_assoc($result)) {
+			$themes[] = $theme;
+		}
+		mysqli_stmt_close($stmt);
+	}
+
+	return $themes;
+}
+
+/*
 function get_liste_sous_themes($theme_pere) {
 
 	global $conn;
@@ -1344,6 +1370,33 @@ function get_liste_sous_themes($theme_pere) {
 		}
 		mysqli_stmt_close($stmt);
 	}
+
+	return $themes;
+}
+*/
+function get_liste_themes_par_territoire($territoire_id = null) {
+
+	global $conn;
+	$themes = null;
+	$params = [];
+	$types = '';
+
+	$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `t`.`id_territoire`, `nom_territoire` 
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` ';
+	$query .= 'WHERE `t`.`id_theme_pere` IS NULL ';
+	if(isset($territoire_id) && $territoire_id) {
+		$query .= ' AND `tr`.`id_territoire`= ? ';
+		$params[] = (int) $territoire_id;
+		$types .= 'i';
+	}
+	/*if(isset($actif)) {
+		$query .= 'AND `actif_theme`= ? ';
+		$params[] = (int) $actif;
+		$types .= 'i';
+	}*/
+	$stmt = query_prepare($query,$params,$types);
+	$themes = query_get($stmt);
 
 	return $themes;
 }
@@ -1453,6 +1506,49 @@ function get_villes_by_territoire($id) {
 }
 
 /* Thèmes */
+function create_theme($theme, $territoire, $libelle, $actif){
+
+	global $conn;
+	$created = false;
+	$msg = null;
+	$user_id=secu_get_current_user_id();
+
+	//on vérifie d'abord si le thème n'a pas déjà été décliné sur le territoire en question 
+	if (isset($theme) && isset($territoire)) {
+		
+		$query = 'SELECT COUNT(*) as `nb` 
+			FROM `'.DB_PREFIX.'bsl_theme` 
+			WHERE `libelle_theme_court` LIKE ? AND `id_territoire` = ? AND `actif_theme` = 1';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'si', $theme, $territoire);
+		check_mysql_error($conn);
+		if (mysqli_stmt_execute($stmt)) {
+			$result = mysqli_stmt_get_result($stmt);
+			if (mysqli_num_rows($result) === 1) {
+				$row = mysqli_fetch_assoc($result);
+				$nb = (int)$row['nb'];
+			}
+			mysqli_stmt_close($stmt);
+		}
+		
+		if($nb>0){
+			$msg = 'Ce thème a déjà été décliné sur ce territoire.';
+			
+		}else{
+			$query = 'INSERT INTO `'.DB_PREFIX.'bsl_theme`(`libelle_theme`, `id_theme_pere`, `actif_theme`, `ordre_theme`, `libelle_theme_court`, `id_territoire`) VALUES (?, NULL, ?, NULL, ?, ?)';
+			$stmt = mysqli_prepare($conn, $query);
+			mysqli_stmt_bind_param($stmt, 'sisi', $libelle, $actif, $theme, $territoire);
+			check_mysql_error($conn);
+			if (mysqli_stmt_execute($stmt)) {
+				$created = mysqli_stmt_affected_rows($stmt) > 0;
+				mysqli_stmt_close($stmt);
+			}
+		}
+	}
+	
+	return [$created,$msg];
+}
+
 function update_theme($id, $libelle, $actif){
 
 	global $conn;
@@ -1469,18 +1565,31 @@ function update_theme($id, $libelle, $actif){
 	return $updated;
 }
 
-function update_sous_themes($id, $sous_themes){
+function update_sous_themes($sous_themes, $id_theme_pere, $theme){
 
 	global $conn;
 	$updated = 0;
 	
 	if(isset($sous_themes)){
-		foreach ($sous_themes as $foo) {
-			$query = 'UPDATE `'.DB_PREFIX.'bsl_theme` 
-				SET `libelle_theme`= ? , `ordre_theme`= ? , `actif_theme`= ? 
-				WHERE `id_theme`= ?';
-			$stmt = mysqli_prepare($conn, $query);
-			mysqli_stmt_bind_param($stmt, 'siii', $foo[1], $foo[2], $foo[3], $foo[0]);
+		foreach ($sous_themes as $row) {
+			if($row[0]){
+				$query = 'UPDATE `'.DB_PREFIX.'bsl_theme` 
+					SET `libelle_theme`= ? , `ordre_theme`= ? , `actif_theme`= ? 
+					WHERE `id_theme`= ?';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'siii', $row[1], $row[2], $row[3], $row[0]);
+			}else{
+				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_theme` (`libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`) VALUES (?,?,?,?,?)';
+				$stmt = mysqli_prepare($conn, $query);
+				mysqli_stmt_bind_param($stmt, 'siiii', $row[1], $id_theme_pere, $row[2], $row[3], $theme);
+				
+				$print_sql = $query;
+				foreach(array( $row[1], $id_theme_pere, $row[2], $row[3], $row[0], $theme) as $term){
+					$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+				}
+				echo "<!--<pre>".$print_sql."</pre>-->";
+
+			}
 			check_mysql_error($conn);
 			if (mysqli_stmt_execute($stmt)) {
 				$updated += mysqli_stmt_affected_rows($stmt) > 0;
@@ -1490,7 +1599,7 @@ function update_sous_themes($id, $sous_themes){
 	}
 	return $updated;
 }
-
+/*
 function create_sous_theme($libelle, $id_theme) {
 
 	global $conn;
@@ -1504,7 +1613,7 @@ function create_sous_theme($libelle, $id_theme) {
 		mysqli_stmt_close($stmt);
 	}
 	return $created;
-}
+}*/
 
 /* Utilisateurs */
 function create_user($nom_utilisateur, $courriel, $statut, $attache) {

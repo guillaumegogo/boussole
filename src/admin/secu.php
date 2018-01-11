@@ -40,12 +40,12 @@ function secu_login($email, $password)
 	global $conn;
 	$logged = false;
 
-	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `'.DB_PREFIX.'bsl_utilisateur`.`id_statut`, `libelle_statut`, `date_inscription`, `id_metier`, `nom_pro`, `t_u`.`nom_territoire`, `competence_geo`, `id_competence_geo`, `t_p`.`nom_territoire` AS `nom_territoire_pro` 
-			FROM `'.DB_PREFIX.'bsl_utilisateur` 
-			JOIN `'.DB_PREFIX.'bsl__droits` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
-			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_u` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 2 AND `id_metier`=`t_u`.`id_territoire`
-			LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.`id_statut` = 3 AND `id_metier`=`'.DB_PREFIX.'bsl_professionnel`.`id_professionnel`
-			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_p` ON `'.DB_PREFIX.'bsl_professionnel`.`competence_geo`="territoire" AND `'.DB_PREFIX.'bsl_professionnel`.`id_competence_geo`=`t_p`.`id_territoire`
+	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `u`.`id_statut`, `libelle_statut`, `date_inscription`, `id_metier`, `nom_pro`, `t_u`.`nom_territoire`, `competence_geo`, `id_competence_geo`, `t_p`.`nom_territoire` AS `nom_territoire_pro` 
+			FROM `'.DB_PREFIX.'bsl_utilisateur` AS `u`
+			JOIN `'.DB_PREFIX.'bsl__droits` AS `d` ON `d`.`id_statut`=`u`.`id_statut`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_u` ON `u`.`id_statut` = 2 AND `id_metier`=`t_u`.`id_territoire`
+			LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `u`.`id_statut` = 3 AND `id_metier`=`p`.`id_professionnel`
+			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_p` ON `p`.`competence_geo`="territoire" AND `p`.`id_competence_geo`=`t_p`.`id_territoire`
 			WHERE `email` = ? AND `actif_utilisateur` = 1';
 	$stmt = mysqli_prepare($conn, $sql);
 	mysqli_stmt_bind_param($stmt, 's', $email);
@@ -63,7 +63,7 @@ function secu_login($email, $password)
 				$_SESSION['admin']['user_checksum'] = secu_user_checksum($id_utilisateur, $email, $date_inscription);
 				
 				//accroche statut
-				$_SESSION['admin']['accroche'] = 'Bonjour ' . $nom_utilisateur . ', vous êtes ' . $libelle_statut;
+				$_SESSION['admin']['accroche'] = 'Bonjour <a href="utilisateur_detail.php?id=' . $id_utilisateur . '">'. $nom_utilisateur . '</a>, vous êtes ' . $libelle_statut;
 				
 				//récup des id pro et territoire
 				$_SESSION['admin']['territoire_id'] = null;
@@ -75,12 +75,16 @@ function secu_login($email, $password)
 					case(ROLE_ANIMATEUR):
 					case(ROLE_CONSULTANT):
 						$_SESSION['admin']['territoire_id'] = $id_metier;
-						$_SESSION['admin']['accroche'] .= ' (' . $nom_territoire . ')';
+						$_SESSION['admin']['accroche'] .= ' (<a href="territoire_detail.php?id=' . $id_metier . '">' . $nom_territoire . '</a>)';
 						break;
 					case(ROLE_PRO):
 						secu_set_user_pro_id($id_metier);
-						if($competence_geo=="territoire") $_SESSION['admin']['territoire_id'] = $id_competence_geo; 
-						$_SESSION['admin']['accroche'] .= ' (' . $nom_pro . ')';
+						$accroche_territoire = '';
+						if($competence_geo=="territoire") {
+							$_SESSION['admin']['territoire_id'] = $id_competence_geo;
+							$accroche_territoire = ' / <a href="territoire_detail.php?id=' . $id_competence_geo . '">' . $nom_territoire_pro . '</a>';
+						}
+						$_SESSION['admin']['accroche'] .= ' (<a href="professionnel_detail.php?id=' . $id_metier . '">' . $nom_pro . '</a>' . $accroche_territoire.')';
 						$_SESSION['admin']['nom_pro'] = $nom_pro;
 						$_SESSION['admin']['perimetre'] = 'PRO';
 						break;

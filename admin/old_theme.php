@@ -62,4 +62,4 @@ if ($id_theme_choisi) {
 }*/
 
 //view
-require 'view/theme.tpl.php';
+require 'view/old_theme.tpl.php';

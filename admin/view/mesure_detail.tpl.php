@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<?php include('../src/admin/header.inc.php'); ?>
+	
 	<link rel="stylesheet" href="../src/js/jquery-ui.min.css">
 	<?php if($droit_ecriture) { ?>
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
@@ -158,8 +156,7 @@
 </head>
 
 <body>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php echo $_SESSION['admin']['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="mesure_liste.php">Liste des mesures</a> ></small> 
@@ -389,8 +386,6 @@ if (isset($territoires)){
 			}
 			?>
 				</div>
-				<!--<pre><?php print_r($questions); print_r($reponses)?></pre>-->
-				
 			</fieldset>
 
 		<?php
@@ -413,3 +408,7 @@ if (isset($territoires)){
 </div>
 </body>
 </html>
+
+<?php if (DEBUG) { ?>
+<!--<pre><?php print_r($questions); print_r($reponses)?></pre>-->
+<?php } ?>

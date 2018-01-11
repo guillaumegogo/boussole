@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<?php include('../src/admin/header.inc.php'); ?>
+	
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
-	<title>Boussole des jeunes</title>
 </head>
 
 <body>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>)</div>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
 
@@ -116,7 +112,7 @@
 	
 	<?php if($droit_ecriture) { 
 		if ($id_formulaire && !$flag_duplicate) {?>
-		<input type="button" value="Dupliquer le formulaire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
+		<input type="button" value="Décliner sur un territoire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
 	<?php 
 		if($meta['actif'] == 0){ 
 	?>
@@ -126,9 +122,6 @@
 	<?php } } ?>
 		<input type="submit" name="enregistrer" value="Enregistrer">
 	<?php } ?>
-	
-	
-		
 	</div>
 	
 	</form>

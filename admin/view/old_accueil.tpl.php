@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<?php include('../src/admin/header.inc.php'); ?>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width"/>
+	<link rel="stylesheet" href="css/style_backoffice.css"/>
+	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
+	<title>Boussole des jeunes</title>
 </head>
 
 <body>
-<?php include('../src/admin/bandeau.inc.php'); ?>
+<a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
+<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole 
+	<?= (ENVIRONMENT === ENV_BETA) ? '<span style="color:red; background:white;">BETA</span>' : '' ?>
+	<?= (ENVIRONMENT === ENV_TEST) ? '<span style="color:red; background:white;">TEST</span>' : '' ?></h1>
+<div class="statut"><?php echo $_SESSION['admin']['accroche']; ?> (<a href="index.php">déconnexion</a>)</div>
 
 <div class="container">
 

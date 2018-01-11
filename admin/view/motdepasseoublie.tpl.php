@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<?php include('../src/admin/header.inc.php'); ?>
 	<meta name="viewport" content="width=device-width"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<title>Boussole des jeunes</title>
 </head>
 
 <body>
-<a href="../web/" target="_blank"><img src="img/external-link.png" class="retour_boussole"></a>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
 

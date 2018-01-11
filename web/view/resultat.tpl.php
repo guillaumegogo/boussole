@@ -110,11 +110,15 @@ if ($nb_offres) {
     <?php } ?>
     </div>
 <?php } ?>
-	</div>
+</div>
 <?php } ?>
+
+<div>Si tu ne trouves pas ici de réponse à ton besoin,<br/> nous t'invitons à contacter le <a href="https://www.cidj.com/nous-rencontrer">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement t'aider.</div>
 
 <?php include('../src/web/footer.inc.php'); ?>
 </body>
 </html>
 
+<?php if (DEBUG) { ?>
 <!--<pre><?php print_r($offres); echo 'besoin '.$_SESSION['web']['besoin'];?></pre>-->
+<?php } ?>

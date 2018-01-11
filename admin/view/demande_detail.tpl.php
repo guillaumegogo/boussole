@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>Boussole des jeunes</title>
-	<link rel="icon" type="image/png" href="img/compass-icon.png"/>
-	<link rel="stylesheet" href="css/style_backoffice.css"/>
-	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+	<?php include('../src/admin/header.inc.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
 </head>
 
 <body>
-<h1 class="bandeau"><img src="../web/img/marianne.png" width="93px"> Administration de la boussole</h1>
-<div class="statut"><?php if( isset($_SESSION['admin']['accroche']) ) { xecho($_SESSION['admin']['accroche']); ?> (<a href="index.php">déconnexion</a>) 
-		<?php } else { // cas de l'acces direct à la demande depuis le mail ?><a href="index.php">Connexion</a><?php } ?></div>
+<?php include('../src/admin/bandeau.inc.php'); ?>
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="demande_liste.php">Liste de demandes</a> ></small> 

@@ -20,10 +20,10 @@
 <div class="container">
 	<?php include('../src/admin/select_perimetre.inc.php'); ?>
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des formulaires <?= ($flag_actif) ? '' : 'inactifs'; ?></h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des thèmes</h2>
 	
 	<?php
-	if (count($formulaires) > 0) {
+	if (count($themes) > 0) {
 	?>
 	
 		<table id="sortable" class="display compact">
@@ -32,19 +32,19 @@
 				<th>#</th>
 				<th>Thème</th>
 				<th>Territoire</th>
-				<th>Pages</th>
-				<th>Questions</th>
+				<th>Libellé</th>
+				<th>Actif</th>
 			</tr>
 			</thead>
 			<tbody>
 			<?php
-			foreach ($formulaires as $row) { ?>
+			foreach ($themes as $row) { ?>
 				<tr>
-					<td><a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire <?= (int) $row['id'] ?></a></td>
-					<td><?php xecho($row['theme']) ?></td>
+					<td><a href="theme_detail.php?id=<?= (int) $row['id_theme'] ?>">Thème <?= (int) $row['id_theme'] ?></a></td>
+					<td><?php xecho($row['libelle_theme_court']) ?></td>
 					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
-					<td style="text-align:center"><?php xecho($row['nb_pages']) ?></td>
-					<td style="text-align:center"><?php xecho($row['nb_questions']) ?></td>
+					<td><?php xecho($row['libelle_theme']) ?></td>
+					<td><?php xecho($row['actif_theme']?'oui':'non') ?></td>
 				</tr>
 			<?php } ?>
 			</tbody>
@@ -58,12 +58,10 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"?actif=oui">Liste des formulaires actifs'; ?></a></div>
-
 </div>
 
-<div class="button">
+<!--<div class="button">
 	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'"> 
-</div>
+</div>-->
 </body>
 </html>
