@@ -392,7 +392,7 @@ form fieldset select{
     box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
     margin-bottom: 10px;
     padding: 0 15px;
-    width: auto !important;
+    //width: auto !important;
 }
 form fieldset select {
     background: url('../img/bg-select.svg');
@@ -417,7 +417,7 @@ form input[type="submit"]{
 	font-weight: bold;
 	border-radius: 3px !important;
 	border: none !important;
-	padding: 20px 40px !important;
+	padding: 12px 30px !important;
 	margin: 15px 10px 30px 0 !important;
 	height: auto !important;
 	display: inline-block !important;
@@ -426,7 +426,7 @@ form input[type="submit"]{
 	transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
 	-webkit-transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
 }
-form .button input[value="Retour"]{
+form .button input[value*="Retour"]{
 	background: #aaa;
 	box-shadow: 0px 8px 0px 0px rgb(145, 145, 145) !important;
 }
@@ -480,7 +480,10 @@ form.detail .une_colonne .lab input[type="radio"] + label{
 	font-weight: 500;
 }
 form.detail .deux_colonnes{
-	width: 53%;
+	width: 49.5%;
+	display: inline-block;
+	margin-right: 0;
+	margin-left: 0;
 }
 form.detail .deux_colonnes .lab{
 	min-width: 50%;
