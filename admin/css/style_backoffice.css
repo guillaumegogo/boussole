@@ -151,6 +151,9 @@ input[readonly] {
 .detail input[type=text].input_long { 
 	width: 30em; 
 }
+.detail input[type=text].input_treslong { 
+	width: 50em; 
+}
 .criteres{
 	width:16em !important; 
 }

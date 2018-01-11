@@ -36,6 +36,6 @@
 		</div>
 	</div>
 	<div class="footer-after">
-		Un service proposé par la <a href="http://jeunes.gouv.fr" target="_blank">Direction de la jeunesse, de l’éducation populaire et de la vie associative</a> • <a href="apropos.php?p=mentions">Mentions légales</a>.
+		Un service proposé par la <a href="http://jeunes.gouv.fr/ministere/missions-et-organisation/organisation-du-ministere/article/la-direction-de-la-jeunesse-de-l" target="_blank">Direction de la jeunesse, de l’éducation populaire et de la vie associative</a> · <a href="apropos.php?p=mentions">Mentions légales</a>.
 	</div>
 </footer>
