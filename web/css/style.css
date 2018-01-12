@@ -324,6 +324,12 @@ footer .footer-after{
 	margin: 15px 0 0 0;
 }
 
+.logo-ministere-footer{
+	float: left;
+	margin: 1em;
+    height: 150px;
+}
+
 @media(max-width: 767px){
 	.info-footer{
 		text-align: center;
@@ -470,7 +476,11 @@ footer .footer-after{
 
 	.logo-ministere-homepage {
 	    display: none;
-	}	
+	}
+	
+	.logo-ministere-footer{
+	    display: none;
+	}
 
 }
 

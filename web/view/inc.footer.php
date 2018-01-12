@@ -1,4 +1,5 @@
 <footer>
+	<img src="img/logo-ministere.png" alt="Ministère de l'éducation nationale" class="logo-ministere-footer">
 	<div class="info-footer container">
 		<div class="row">
 			<div class="wrapper footer-column col-sm-3">
