@@ -172,12 +172,13 @@ input[readonly] {
 	width: 30em; 
 }
 #editeur{
-	border: 1px solid grey;
+	border: 1px solid #ddd;
 	padding: 0.2em;
 	overflow: auto;
 	font-size:90%;
-	width:37em;
+	width:30em;
 	height:15em;
+	font-weight: normal;
 }
 select.age { 
 	width: auto; 
