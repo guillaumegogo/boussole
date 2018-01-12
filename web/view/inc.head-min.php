@@ -4,7 +4,6 @@
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" media="all">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
-	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Quicksand" />
 	
 	<?php if (ENVIRONMENT === ENV_BETA) { ?>
 	<link rel="stylesheet" href="css/beta.css" />
