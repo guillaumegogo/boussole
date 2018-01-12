@@ -3,6 +3,7 @@
 <link rel="icon" type="image/png" href="img/compass-icon.png"/>
 <link rel="stylesheet" href="css/style_backoffice.css"/>
 <link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Quicksand" />
 
 <?php
 if(isset($_GET['lba'])){
