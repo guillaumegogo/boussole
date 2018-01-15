@@ -34,14 +34,14 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 			$msg = 'Le formulaire a été initialisé.';
 			
 			if ($id_formulaire) {
-				$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
+				$updated = update_formulaire($id_formulaire, null, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
 				if ($updated) $msg = 'Le formulaire a été correctement créé.';
 			}
 		}
 		
 	} else { //action modification
 		$id_formulaire = $_POST['maj_id'];
-		$updated = update_formulaire($id_formulaire, $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
+		$updated = update_formulaire($id_formulaire, $_POST['theme'], $_POST['id_p'], $_POST['ordre_p'], $_POST['titre_p'], $_POST['id_q'], $_POST['page_q'], $_POST['ordre_q'], $_POST['titre_q'], $_POST['reponse_q'], $_POST['type_q'], $name_q, $requis);
 		
 		if ($updated) $msg = 'Le formulaire a été mis à jour.';
 	}

@@ -1,7 +1,6 @@
 <?php
 include('../src/admin/bootstrap.php');
-$droit_ecriture = true; //todo
-//$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_THEME, $_GET['id']) : true;
+$droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_THEME, $_GET['id']) : true;
 
 $check = secu_check_login(DROIT_THEME);
 $perimetre = $check['lecture'];
@@ -13,6 +12,9 @@ $msg = '';
 
 if (isset($_POST["enregistrer"])) {
 	
+	if (DEBUG) { 
+		echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
+	}
 	$created = $updated = $updated_st = null;
 	
 	//********** mise à jour thème/sous themes
@@ -30,7 +32,7 @@ if (isset($_POST["enregistrer"])) {
 		}
 	}
 	
-	if ($created!=false && $updated!=false && isset($_POST['sthemes'])) {
+	if ($id_theme_choisi && isset($_POST['sthemes'])) {
 		$updated_st=update_sous_themes($_POST['sthemes'], $id_theme_choisi, $_POST['theme']);
 	}
 	

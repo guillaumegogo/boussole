@@ -13,33 +13,35 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
-		<?= ($flag_duplicate) ? 'Duplication':'Détail' ?> du formulaire</h2> 
+		<?= ($flag_duplicate ? 'Déclinaison': ($id_formulaire ? 'Détail' : 'Création' )) ?>  du formulaire</h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 	
 	<form method="post" class="detail">
 	<fieldset <?= (!$droit_ecriture ) ? 'disabled="disabled"':'' ?> > 
-		<legend>Détails</legend> 
-		Thème : <select name="theme"><?php //<option label='' value=''> ?>
+		<legend>Description du formulaire</legend> 
+		<div class="lab">
+			<label for="theme">Thème / territoire :</label>
+			<select name="theme" required>
 		<?php foreach($themes as $row) { ?>
-			<option required value="<?= $row['id_theme'] ?>" <?= (isset($meta['theme']) && $row['libelle_theme_court']==$meta['theme']) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'] ?></option>
+			<option value="<?= $row['id_theme'] ?>" <?= (isset($meta['id_theme']) && $row['id_theme']==$meta['id_theme']) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'].' / '.($row['nom_territoire'] ? $row['nom_territoire'] : 'national') ?></option>
 		<?php } ?>
 			</select>
-		&#8231; Territoire : <select name="territoire"><?php //<option label='' value=''> ?>
+		</div>
+		<!--&#8231; Territoire : <select name="territoire" disabled><?php //<option label='' value=''> ?>
 		<?php foreach($territoires as $row) { ?>
 			<option required value="<?= $row['id_territoire'] ?>" <?= (isset($meta['territoire']) && $row['nom_territoire']==$meta['territoire'] && !$flag_duplicate) ? ' selected ':'' ?>> <?= $row['nom_territoire'] ?></option>
 		<?php } ?>
 			</select>
 	</fieldset>
 	
-	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-		<legend>Pages et questions</legend>
-		
+	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>-->
+		<div class="lab">
+		<label for="" style="width:auto; margin-bottom:1em;">Titre des pages et liste des questions :</label>
 		<table class="dataTable display compact">
 			<thead>
 			<tr>
-				<th>Type</th>
-				<th>Ordre</th>
+				<th><abbr title="Numéro de page / numéro de question">Ordre</abbr></th>
 				<th>Libellé</th>
 				<th>Identifiant</th>
 				<th>Réponses</th>
@@ -54,8 +56,7 @@
 				$pid= (isset($pages[$i]['id'])) ? $pages[$i]['id'] : null;
 			?>
 				<tr>
-					<td class="page">page <input name="id_p[<?= $i ?>]" type="hidden" value="<?= (!$flag_duplicate) ? $pid:'' ?>"></td>
-					<td class="page"><input name="ordre_p[<?= $i ?>]" type="text" style="width:1em" 
+					<td class="page"><input name="id_p[<?= $i ?>]" type="hidden" value="<?= (!$flag_duplicate) ? $pid:'' ?>"> <input name="ordre_p[<?= $i ?>]" type="text" style="width:1em" 
 						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>"></td>
 					<td class="page"><input name="titre_p[<?= $i ?>]" type="text" class="input_long" 
 						value="<?php if(isset($pages[$i]['titre'])) { xecho($pages[$i]['titre']); } ?>"></td>
@@ -70,9 +71,8 @@
 					$qid= (isset($questions[$pid][$j]['id'])) ? $questions[$pid][$j]['id'] : null;
 				?>
 				<tr>
-					<td>&#8735; question <input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(!$flag_duplicate) { xecho($qid); } ?>"></td>
-					<td><input name="page_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
-						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>" >. 
+					<td><input name="id_q[<?= $i ?>][<?= $j ?>]" type="hidden" value="<?php if(!$flag_duplicate) { xecho($qid); } ?>"> <input name="page_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
+						value="<?php if(isset($pages[$i]['ordre'])) { xecho($pages[$i]['ordre']); } else { echo $i+1; } ?>" >.
 						<input name="ordre_q[<?= $i ?>][<?= $j ?>]" type="text" style="width:1em" 
 						value="<?php if(isset($questions[$pid][$j]['ordre'])) { xecho($questions[$pid][$j]['ordre']); } else { echo $j+1;} ?>" ></td>
 					<td><input name="titre_q[<?= $i ?>][<?= $j ?>]" type="text" class="input_long"
@@ -104,6 +104,7 @@
 			?>
 			</tbody>
 		</table>
+		</div>
 	</fieldset>
 	
 	<div class="button">

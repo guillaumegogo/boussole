@@ -95,7 +95,12 @@ if (isset($id_offre)) {
 
 		//liste déroulante des thèmes / sous-thèmes du pro		
 		$tab_js_soustheme = array();
-		$themes = get_themes_by_pro((int)$row['id_professionnel']);
+		//$themes = get_themes_by_pro((int)$row['id_professionnel'], 1);
+		if(isset($row['competence_geo']) && $row['competence_geo']=='territoire'){
+			$themes = get_themes_by_territoire($row['id_competence_geo']);
+		}else{
+			$themes = get_themes_by_territoire(0); //national
+		}
 		foreach($themes as $rowt){
 			if (!isset($rowt['id_theme_pere'])) {
 				$tab_js_soustheme[$rowt['id_theme']] = '';

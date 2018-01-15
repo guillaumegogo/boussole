@@ -27,7 +27,9 @@
 
 <div class="container">
 	
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="theme_liste.php">Liste des thèmes</a> ></small> <?= ($id_theme_choisi) ? 'Détail' : 'Création'; ?> d'un thème</h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="theme_liste.php">Liste des thèmes</a> ></small> 
+		<?= ($flag_duplicate ? 'Déclinaison': ($id_theme_choisi ? 'Détail' : 'Création' )) ?>  du thème</h2>
+		
 	<div class="soustitre"><?php echo $msg; ?></div>
 
 	<form method="post" class="detail">
@@ -36,28 +38,28 @@
 			<div class="une_colonne" style="width:auto; min-width:auto;">
 				<div class="lab">
 					<label for="theme">Thème :</label>
-					<div style="display:inline-block"><select <?= $id_theme_choisi ? ' disabled ' : ' name="theme" ' ?>>
+					<div style="display:inline-block"><select required <?= $id_theme_choisi ? ' disabled ' : ' name="theme" ' ?>>
 						<option value=''></option>
 					<?php foreach ($liste_themes as $row) { ?>
 						<option value="<?= $row['libelle'] ?>" <?= (isset($theme['libelle_theme_court']) && $theme['libelle_theme_court'] == $row['libelle']) ? ' selected ' : '' ?> ><?= $row['libelle'] ?></option>
 					<?php } ?>
 					</select>
 					<?php if($id_theme_choisi) { ?>
-						<input type="hidden" name="theme" value="cat"/>
+						<input type="hidden" name="theme" value="<?= $theme['libelle_theme_court'] ?>"/>
 					<?php } ?>
 					</div>
 				</div>
 				<br/>
 				<div class="lab">
 					<label for="territoire">Territoire :</label>
-					<div style="display:inline-block"><select <?= $id_theme_choisi ? ' disabled ' : ' name="territoire" ' ?>>
-						<option value='0'>National</option>
+					<div style="display:inline-block"><select required <?= ($id_theme_choisi && !$flag_duplicate) ? ' disabled ' : ' name="territoire" ' ?>>
+						<?php if (!$flag_duplicate) { ?><option value='0'>National</option><?php }else{ ?><option value=''></option><?php } ?>
 						<?php foreach ($territoires as $row) { ?>
 						<option value="<?= $row['id_territoire'] ?>" <?= (isset($theme['id_territoire']) && $theme['id_territoire'] == $row['id_territoire']) ? ' selected ' : '' ?> ><?= $row['nom_territoire'] ?></option>
 						<?php } ?>
 					</select>
-					<?php if($id_theme_choisi) { ?>
-						<input type="hidden" name="territoire" value="cat"/>
+					<?php if($id_theme_choisi && !$flag_duplicate) { ?>
+						<input type="hidden" name="territoire" value="<?= $theme['id_territoire'] ?>"/>
 					<?php } ?>
 					</div>
 				</div>
@@ -92,12 +94,12 @@
 			if (isset($sous_themes) && count($sous_themes) > 0) {
 				$i=0;
 				foreach($sous_themes as $row) {
-					if ($row['id_theme'] != $id_theme_choisi) {
+					if ($row['id_theme_pere'] == $id_theme_choisi) {
 			?>
 						<tr>
 							<td>
 								<input type="hidden" name="sthemes[<?= $i ?>][]"
-									   value="<?= $row['id_theme'] ?>"/>
+									   value="<?= ($flag_duplicate) ? '' : $row['id_theme'] ?>"/>
 								<input type="text" name="sthemes[<?= $i ?>][]"
 									   value="<?= $row['libelle_theme'] ?>" class="input_treslong" />
 							</td>
@@ -128,21 +130,24 @@
 
 		</fieldset>
 
-		<div class="button">			
-			<?php if($id_theme_choisi) { ?>
-				<input type="hidden" name="maj_id_theme" value="<?= (!$flag_duplicate) ? xssafe($id_theme_choisi) : '' ?>" />
+		<div class="button">
+			<?php if($id_theme_choisi && !$flag_duplicate) { ?>
+				<input type="hidden" name="maj_id_theme" value="<?= xssafe($id_theme_choisi) ?>" />
 			<?php } ?>
 			
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='theme_liste.php'"> 
 			
-			<?php if($droit_ecriture) { 
-				if ($id_theme_choisi && !$flag_duplicate) {?>
+			<?php if ($id_theme_choisi && $theme['actif_theme'] == 1 && !$flag_duplicate) { ?>
 				<input type="button" value="Décliner sur un territoire" onclick="javascript:location.href='theme_detail.php?id=<?= (int) $id_theme_choisi ?>&act=dup'">
+			<?php } ?>
+			<!--
 			<?php if($theme['actif_theme'] == 0){ ?>
 				<input type="submit" name="restaurer" value="Restaurer">
 			<?php }else{ ?>
 				<input type="submit" name="archiver" value="Archiver">
-			<?php } } ?>
+			<?php } ?>
+			-->
+			<?php if($droit_ecriture) { ?>
 				<input type="submit" name="enregistrer" value="Enregistrer">
 			<?php } ?>
 		</div>

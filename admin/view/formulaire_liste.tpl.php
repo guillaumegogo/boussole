@@ -42,10 +42,10 @@
 				<tr>
 					<td><a href="formulaire_detail.php?id=<?= (int) $row['id'] ?>">Formulaire <?= (int) $row['id'] ?></a></td>
 					<td><?php xecho($row['theme']) ?></td>
-					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
+					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?> <?php if(isset($row['ancien_territoire']) && $row['ancien_territoire']!=$row['nom_territoire']){?> <span style="color:red; font-size:smaller">(anciennement <?= isset($row['ancien_territoire'])?$row['ancien_territoire']:'national' ?>)</span><?php } ?></td>
 					<td style="text-align:center"><?php xecho($row['nb_pages']) ?></td>
 					<td style="text-align:center"><?php xecho($row['nb_questions']) ?></td>
-				</tr>
+				</tr> 
 			<?php } ?>
 			</tbody>
 		</table>

@@ -87,7 +87,7 @@ if (isset($id_mesure)) {
 		
 		$tab_js_soustheme = array();
 		
-		$themes = get_themes_by_pro((int)$row['id_professionnel']);
+		$themes = get_themes_by_pro((int)$row['id_professionnel'], 1);
 		foreach($themes as $rowt){
 			if (!isset($rowt['id_theme_pere'])) {
 				if ($rowt['id_professionnel'] == $row['id_professionnel']) {

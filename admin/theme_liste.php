@@ -15,7 +15,7 @@ if ($perimetre_lecture <= PERIMETRE_ZONE && !$_SESSION['admin']['perimetre']) {
 //******** liste
 //$flag_actif = (isset($_GET['actif']) && $_GET['actif'] == "non") ? 0 : 1;
 $territoire_id = (is_numeric($_SESSION['admin']['perimetre'])) ? $_SESSION['admin']['perimetre'] : null;
-$themes = get_liste_themes_par_territoire($territoire_id);
+$themes = get_themes_by_territoire($territoire_id);
 
 //view
 require 'view/theme_liste.tpl.php';

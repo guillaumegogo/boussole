@@ -506,31 +506,6 @@ function update_criteres_mesure($id, $tab_criteres) {
 	return $updated;
 }
 
-
-function get_themes_by_pro($id){
-
-	global $conn;
-	$themes = null;
-
-	$query = 'SELECT `t`.`id_theme`, `libelle_theme`,`id_professionnel`, `id_theme_pere`
-		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
-		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt`
-		ON `pt`.`id_theme`=`t`.`id_theme`
-		WHERE `actif_theme` = 1 AND (id_professionnel IS NULL OR id_professionnel= ?)';
-
-	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'i', $id);
-	check_mysql_error($conn);
-	if (mysqli_stmt_execute($stmt)) {
-		$result = mysqli_stmt_get_result($stmt);
-		while ($theme = mysqli_fetch_assoc($result)) {
-			$themes[] = $theme;
-		}
-		mysqli_stmt_close($stmt);
-	}
-	return $themes;
-}
-
 function get_villes_by_competence_geo($competence, $id) {
 
 	global $conn;
@@ -856,7 +831,7 @@ function get_liste_pros($flag, $territoire_id, $user_pro_id = null) { //tous les
 	global $conn;
 	$pros = [];
 
-	$query = 'SELECT `p`.`id_professionnel`, `nom_pro`, `type_pro`, `param_type`.`libelle` AS `type`, `ville_pro`, `code_postal_pro`, GROUP_CONCAT(libelle_theme_court SEPARATOR ", ") AS `themes`, `competence_geo`, `zone_selection_villes`, `nom_departement`, `nom_region`, `nom_territoire`
+	$query = 'SELECT `p`.`id_professionnel`, `nom_pro`, `type_pro`, `param_type`.`libelle` AS `type`, `ville_pro`, `code_postal_pro`, GROUP_CONCAT(libelle_theme_court SEPARATOR ", ") AS `themes`, `competence_geo`, `zone_selection_villes`, `nom_departement`, `nom_region`, `nom_territoire`, `p`.`id_competence_geo`, `t`.`id_territoire`
 		FROM `'.DB_PREFIX.'bsl_professionnel` AS `p`
 		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` ON `pt`.`id_professionnel`=`p`.`id_professionnel`
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`pt`.`id_theme`
@@ -1154,10 +1129,11 @@ function get_liste_formulaires($flag_actif = 1, $territoire_id = null) {
 	$formulaires= null;
 	$types='';
 
-	$query = 'SELECT `f`.`id_formulaire` AS `id`, `t`.`libelle_theme_court` AS `theme`, `tr`.`nom_territoire`, COUNT(DISTINCT `fp`.`id_page`) AS `nb_pages`,  COUNT(DISTINCT `q`.`id_question`) AS `nb_questions`
+	$query = 'SELECT `f`.`id_formulaire` AS `id`, `t`.`libelle_theme_court` AS `theme`, `tr`.`nom_territoire`,  `old_tr`.`nom_territoire` as `ancien_territoire`, COUNT(DISTINCT `fp`.`id_page`) AS `nb_pages`,  COUNT(DISTINCT `q`.`id_question`) AS `nb_questions`
 		FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`f`.`id_territoire` /*AND `tr`.`actif_territoire`=1*/ 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` /*AND `tr`.`actif_territoire`=1*/ 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `old_tr` ON `old_tr`.`id_territoire`=`f`.`id_territoire` /* `tr`.`id_territoire`=`f`.`id_territoire` */
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `q` ON `q`.`id_page`=`fp`.`id_page` AND `q`.`actif`=1
 		WHERE `f`.`actif`=? ';
@@ -1186,12 +1162,12 @@ function get_formulaire_by_id($id){
 	$pages = [];
 	$questions = [];
 
-	$query = 'SELECT `f`.`id_formulaire`,`t`.`libelle_theme_court`, `tr`.`nom_territoire`, `f`.`nb_pages`, `f`.`actif`, `fp`.`id_page`, `fp`.`titre`, `fp`.`ordre` AS `ordre_page`, `fp`.`aide`, `q`.`id_question`, `q`.`ordre` AS `ordre_question`, `q`.`libelle` AS `libelle_question`, `q`.`html_name`, `q`.`type`, `q`.`taille`, `q`.`obligatoire`, `fr`.`id_reponse`, `fr`.`libelle` AS `reponse`
+	$query = 'SELECT `f`.`id_formulaire`, `f`.`id_theme`, `t`.`libelle_theme_court`, `t`.`libelle_theme`, `tr`.`nom_territoire`, `f`.`nb_pages`, `f`.`actif`, `fp`.`id_page`, `fp`.`titre`, `fp`.`ordre` AS `ordre_page`, `fp`.`aide`, `q`.`id_question`, `q`.`ordre` AS `ordre_question`, `q`.`libelle` AS `libelle_question`, `q`.`html_name`, `q`.`type`, `q`.`taille`, `q`.`obligatoire`, `fr`.`id_reponse`, `fr`.`libelle` AS `reponse`
 		FROM `'.DB_PREFIX.'bsl_formulaire` AS `f`
-		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`f`.`id_territoire` AND `tr`.`actif_territoire`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `fp`.`actif`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `q` ON `q`.`id_page`=`fp`.`id_page` AND `q`.`actif`=1
+		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` /* `tr`.`id_territoire`=`f`.`id_territoire` */
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__page` AS `fp` ON `fp`.`id_formulaire`=`f`.`id_formulaire` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `q` ON `q`.`id_page`=`fp`.`id_page`
 		LEFT JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`q`.`id_reponse`
 		WHERE `f`.`id_formulaire` = ?
 		ORDER BY `ordre_page`, `q`.`ordre`';
@@ -1200,10 +1176,10 @@ function get_formulaire_by_id($id){
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
 
-	mysqli_stmt_bind_result($stmt, $id_formulaire, $libelle_theme_court, $nom_territoire, $nb_pages, $actif, $id_page, $titre, $ordre_page, $aide, $id_question, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $id_reponse, $reponse);
+	mysqli_stmt_bind_result($stmt, $id_formulaire, $id_theme, $libelle_theme_court, $libelle_theme, $nom_territoire,$nb_pages, $actif, $id_page, $titre, $ordre_page, $aide, $id_question, $ordre_question, $libelle_question, $html_name, $type, $taille, $obligatoire, $id_reponse, $reponse);
 	while (mysqli_stmt_fetch($stmt)) {
 		if ($id_formulaire != $tmp_id) { //données du formulaire
-			$meta = array('id' => $id_formulaire, 'theme' => $libelle_theme_court, 'territoire' => ($nom_territoire) ? $nom_territoire : 'national', 'actif' => $actif, 'nb' => $nb_pages);
+			$meta = array('id' => $id_formulaire, 'id_theme' => $id_theme, 'theme' => $libelle_theme_court, 'libelle' => $libelle_theme, 'territoire' => ($nom_territoire) ? $nom_territoire : 'national', 'actif' => $actif, 'nb' => $nb_pages);
 			$tmp_id = $id_formulaire;
 		}
 		if ($id_page != $tmp_p) { //données des pages du formulaire
@@ -1289,25 +1265,17 @@ function get_liste_departements() {
 	return $departements;
 }
 
-function get_liste_themes($actif = null, $pro_id = null) {
+function get_liste_themes($actif = null) {
 
 	global $conn;
 	$themes = null;
 	$params = [];
 	$types = '';
 
-	if(isset($pro_id)) {
-		$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `id_professionnel` 
-			FROM `'.DB_PREFIX.'bsl_theme` AS `t`
-			LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt`
-			ON `pt`.`id_theme`=`t`.`id_theme` AND `pt`.`id_professionnel`= ? ';
-		$params[] = (int) $pro_id;
-		$types .= 'i';
-	}else{
-		$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme` 
-			FROM `'.DB_PREFIX.'bsl_theme` AS `t` ';
-	}
-	$query .= 'WHERE `id_theme_pere` IS NULL ';
+	$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `nom_territoire` 
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `t`.`id_territoire`=`tr`.`id_territoire` 
+		WHERE `id_theme_pere` IS NULL ';
 	if(isset($actif)) {
 		$query .= 'AND `actif_theme`= ? ';
 		$params[] = (int) $actif;
@@ -1344,51 +1312,55 @@ function get_theme_et_sous_themes_by_id($id) {
 	return $themes;
 }
 
-/*
-function get_liste_sous_themes($theme_pere) {
-
-	global $conn;
-	$themes = null;
-	if (isset($theme_pere)) {
-		$query = 'SELECT `id_theme`, `libelle_theme`, `ordre_theme`, `actif_theme` 
-			FROM `'.DB_PREFIX.'bsl_theme`
-			WHERE `id_theme_pere`= ?  
-			ORDER BY actif_theme DESC, ordre_theme';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'i', $theme_pere);
-	}else{
-		$query = 'SELECT `id_theme`, `libelle_theme`, `ordre_theme`, `actif_theme` 
-			FROM `'.DB_PREFIX.'bsl_theme`
-			ORDER BY actif_theme DESC, ordre_theme';
-		$stmt = mysqli_prepare($conn, $query);
-	}
-	check_mysql_error($conn);
-	if (mysqli_stmt_execute($stmt)) {
-		$result = mysqli_stmt_get_result($stmt);
-		while ($theme = mysqli_fetch_assoc($result)) {
-			$themes[] = $theme;
-		}
-		mysqli_stmt_close($stmt);
-	}
-
-	return $themes;
-}
-*/
-function get_liste_themes_par_territoire($territoire_id = null) {
+function get_themes_by_pro($pro_id, $actif = null, $theme_pere_only = null) {
 
 	global $conn;
 	$themes = null;
 	$params = [];
 	$types = '';
 
-	$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `t`.`id_territoire`, `nom_territoire` 
+	$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `t`.`id_territoire`, `id_professionnel`, `id_theme_pere`, `nom_territoire`
 		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` ';
-	$query .= 'WHERE `t`.`id_theme_pere` IS NULL ';
-	if(isset($territoire_id) && $territoire_id) {
-		$query .= ' AND `tr`.`id_territoire`= ? ';
-		$params[] = (int) $territoire_id;
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` 
+			ON `tr`.`id_territoire`=`t`.`id_territoire` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` 
+			ON `pt`.`id_theme`=`t`.`id_theme` 
+		WHERE `pt`.`id_professionnel`= ? ';
+	$params[] = (int) $pro_id;
+	$types .= 'i';
+	if(isset($actif)) {
+		$query .= 'AND `actif_theme`= ? ';
+		$params[] = (int) $actif;
 		$types .= 'i';
+	}
+	if(isset($theme_pere_only) && $theme_pere_only=="pere") {
+		$query .= 'AND `id_theme_pere` IS NULL ';
+	}
+	$stmt = query_prepare($query,$params,$types);
+	$themes = query_get($stmt);
+	return $themes;
+}
+
+function get_themes_by_territoire($territoire_id = null, $theme_pere_only = null) {
+
+	global $conn;
+	$themes = null;
+	$params = [];
+	$types = '';
+
+	$query = 'SELECT `t`.`id_theme`, `t`.`libelle_theme`, `t`.`libelle_theme_court`, `t`.`actif_theme`, `t`.`id_territoire`, `t`.`id_theme_pere`, `tr`.`nom_territoire` 
+		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
+		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `pere` ON `pere`.`id_theme`=`t`.`id_theme_pere` 
+		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` ';
+	$query .= 'WHERE 1 ';
+	if(isset($territoire_id)) {
+		$query .= ' AND `t`.`id_territoire`= ? OR `pere`.`id_territoire`= ?';
+		$params[] = (int) $territoire_id;
+		$params[] = (int) $territoire_id;
+		$types .= 'ii';
+	}
+	if(isset($theme_pere_only) && $theme_pere_only=="pere") {
+		$query .= 'AND `t`.`id_theme_pere` IS NULL ';
 	}
 	/*if(isset($actif)) {
 		$query .= 'AND `actif_theme`= ? ';
@@ -1579,7 +1551,9 @@ function update_sous_themes($sous_themes, $id_theme_pere, $theme){
 				$stmt = mysqli_prepare($conn, $query);
 				mysqli_stmt_bind_param($stmt, 'siii', $row[1], $row[2], $row[3], $row[0]);
 			}else{
-				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_theme` (`libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`) VALUES (?,?,?,?,?)';
+				$query = 'INSERT INTO `'.DB_PREFIX.'bsl_theme` 
+					(`libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`) 
+					VALUES (?,?,?,?,?)';
 				$stmt = mysqli_prepare($conn, $query);
 				mysqli_stmt_bind_param($stmt, 'siiii', $row[1], $id_theme_pere, $row[2], $row[3], $theme);
 				
@@ -1885,12 +1859,25 @@ function create_formulaire($theme, $territoire) {
 	return [$created,$msg];
 }
 
-function update_formulaire($formulaire_id, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $requis) { 
+function update_formulaire($formulaire_id, $theme, $id_p, $ordre_p, $titre_p, $id_q, $page_q, $ordre_q, $titre_q, $reponse_q, $type_q, $name_q, $requis) { 
 
 	global $conn;
 	$updated = false;
 	$user_id=secu_get_current_user_id();
 	$nbpages_a_mettre_a_jour = false;
+	
+	if (isset($formulaire_id) && isset($theme) && $theme) {
+		$query = 'UPDATE `'.DB_PREFIX.'bsl_formulaire` 
+			SET `id_theme`= ?, `id_territoire` = NULL
+			WHERE `id_formulaire`= ? ';
+		$stmt = mysqli_prepare($conn, $query);
+		mysqli_stmt_bind_param($stmt, 'ii', $theme, $formulaire_id);
+		
+		if (mysqli_stmt_execute($stmt)) {
+			$updated += mysqli_stmt_affected_rows($stmt) > 0;
+			mysqli_stmt_close($stmt);
+		}
+	}
 	
 	if (isset($id_p) && isset($id_q)) {
 		

@@ -1,3 +1,4 @@
+<?php if (DEBUG) { echo '<!--'; print_r($themes); print_r($row); echo '-->'; } ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -166,19 +167,32 @@
 						<label for="theme">Thème :</label>
 						<select id="select_themes" name="theme" onchange="choixTheme(this)">
 						<?php 
-						if (!$row['id_theme_pere']) { ?>
-							<option value="">A choisir</option>
+						//************* le temps de redresser les données pré-v1
+						$test_data_prev1 = false;
+						foreach($themes as $rowt){
+							if($rowt['id_theme']==$row['id_theme_pere']) $test_data_prev1 = true; //si la valeur en base est dans la liste des thèmes remontées, c'est qu'on n'est pas si mal.
+						}
+						//*****************/
+						if (!$row['id_theme_pere'] || !$test_data_prev1) { ?>
+							<option value="" >A choisir</option>
 						<?php }
 						foreach($themes as $rowt){
 							if (!isset($rowt['id_theme_pere'])) {
-								if ($rowt['id_professionnel'] == $row['id_professionnel']) { ?>
-							<option value="<?= $rowt['id_theme'] ?>" <?= ($rowt['id_theme'] == $row['id_theme_pere']) ? ' selected ':'' ?>> <?= $rowt['libelle_theme'] ?></option>
+								//if ($rowt['id_professionnel'] == $row['id_professionnel']) { ?>
+							<option value="<?= $rowt['id_theme'] ?>" <?= ($rowt['id_theme'] == $row['id_theme_pere']) ? ' selected ':'' ?>> <?= $rowt['libelle_theme_court'] ?><?= (isset($rowt['actif_theme']) && $rowt['actif_theme']==0) ? ' (inactif) ':'' ?></option>
 						<?php			
-								}
+								//}
 							}
 						}
 						?>
 						</select>
+						<?php 
+						//************* le temps de redresser les données pré-v1
+						if(!$test_data_prev1){
+							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : "'.$row['libelle_theme_pere'].'"/national)</span></br>';
+						}
+						//*****************/
+						?>
 					</div>
 					<div class="lab">
 						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème</abbr>
@@ -198,6 +212,13 @@
 						}
 						?>
 						</select>
+						<?php 
+						//************* le temps de redresser les données pré-v1
+						if(!$test_data_prev1){
+							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.$row['libelle_sous_theme'].')</span></br>';
+						}
+						//*****************/
+						?>
 					</div>
 				<?php } ?>
 			</div>

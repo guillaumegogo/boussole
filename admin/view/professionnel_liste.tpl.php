@@ -62,7 +62,12 @@
 					</td>
 					<td><?= ($row['type']) ? $row['type'] : $row['type_pro'] ?></td>
 					<td><?php echo $row['ville_pro'] . " (" . $row['code_postal_pro'] . ")"; ?></td>
-					<td><?= $row['themes'] ?></td>
+					<td><?= $row['themes'] ?>
+					<?php //recadrage données pré v1
+					if($row['competence_geo']=="territoire" && $row['id_competence_geo']!=$row['id_territoire']) { ?>
+						<br/><span style="color:red">incohérence /territoire</span>
+					<?php } ?>
+					</td>
 					<td><?= $geo ?></td>
 				</tr>
 				<?php

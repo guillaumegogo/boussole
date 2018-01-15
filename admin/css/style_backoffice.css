@@ -156,7 +156,7 @@ input[readonly] {
 	width: 3em; 
 }
 .detail input[type=text].datepick { 
-	width: 10em; 
+	width: 7em; 
 }
 .detail input[type=text].input_long { 
 	width: 30em; 

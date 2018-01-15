@@ -81,7 +81,16 @@ if (isset($id_professionnel)) {
 //********** listes : thèmes et compétences géographiques (régions, départements et/ou territoires )
 $types = get_liste_parametres('type_pro');
 $statuts = get_liste_parametres('statut');
-$themes = get_liste_themes(1, $id_professionnel);
+if(isset($pro['competence_geo']) && $pro['competence_geo']=='territoire'){
+	$themes_proposes = get_themes_by_territoire($pro['id_competence_geo'], "pere");
+}else{
+	$themes_proposes = get_themes_by_territoire(0, "pere"); //national
+}
+$themes_coches = get_themes_by_pro($id_professionnel);
+foreach($themes_coches as &$rowc) { 
+	$rowc['checked'] = null;
+    unset($rowc);
+}
 
 $competences_geo = array('territoire' => 'Territoire');
 $regions = null;
@@ -115,11 +124,10 @@ else if(isset($pro['competence_geo']) && $pro['competence_geo'] && $pro['id_comp
 }
 */
 
-$incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes);
+$incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes_coches);
 $incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $liste_villes_pro);
 
 $offres = ($id_professionnel) ? get_liste_offres(1,null, (int)$id_professionnel) : null;
 
 //view
 require 'view/professionnel_detail.tpl.php';
-// else require 'view/professionnel_detail_r.tpl.php';

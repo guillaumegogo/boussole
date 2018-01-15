@@ -154,14 +154,13 @@
 				</div>
 				<div class="lab">
 					<label for="type_id">Type :</label>
-					<div style="display:inline-block"><select name="type_id">
+					<select name="type_id">
 						<option value=""></option>
 					<?php foreach ($types as $type) { ?>
 						<option value="<?= $type['id'] ?>" <?= ($id_professionnel && (isset($pro['type_id']) && $pro['type_id'] == $type['id'])) ? ' selected ' : '' ?> ><?= $type['libelle'] ?></option>
 					<?php } ?>
 					</select><?php if (isset($pro['type_pro']) && $pro['type_pro'] && !$pro['type_id']) { ?>
-					<br/><span style="font-size:0.7em">(<?= $pro['type_pro'] ?>)</span>
-					<?php } ?></div>
+					<?php } ?>
 				</div>
 				<div class="lab">
 					<label for="statut_id">Statut :</label>
@@ -172,6 +171,7 @@
 					<?php } ?>
 					</select>
 				</div>
+				<span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : "<?= $pro['type_pro'] ?>")</span>
 				<div class="lab">
 					<label for="desc">Description de l'organisme :</label>
 					<div style="display:inline-block;" id="div-editeur">
@@ -187,13 +187,30 @@
 				<div class="lab">
 					<label for="theme[]">Thème(s) :</label>
 					<div style="display:inline-table;">
-					<?php foreach($themes as $rowt) { ?>
-						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" <?= (isset($rowt['id_professionnel']) && $rowt['id_professionnel']) ? ' checked ':'' ?>> <?= $rowt['libelle_theme'] ?></br>
+					<?php foreach($themes_proposes as $rowt) { ?>
+						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" 
+						<?php 
+						foreach($themes_coches as &$rowc) { 
+							if($rowc['id_theme'] == $rowt['id_theme']) { 
+								echo ' checked '; $rowc['checked']=1; break; 
+							}
+							unset($rowc);
+						}?>
+						> <?= $rowt['libelle_theme_court'] ?>  <?= (isset($rowt['actif_theme']) && $rowt['actif_theme']==0) ? ' (inactif) ':'' ?></br>
 					<?php } ?>
 					</div>
 				</div>
+					<?php //************* le temps de redresser les données pré-v1
+					if (DEBUG) { echo '<!--'; print_r($themes_proposes); print_r($themes_coches); echo '-->';  }
+					$themes_a_maj = null;
+					foreach($themes_coches as $rowc) { 
+						if (!$rowc['checked']) $themes_a_maj .= $rowc['libelle_theme_court'].'/'.($rowc['nom_territoire']?$rowc['nom_territoire']:'national').', ';
+					}
+					?>
+					<?= ($themes_a_maj ? '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.substr($themes_a_maj,0,-2).')</span></br>' : '') 
+					/****************************************************************/ ?>
 				<div class="lab">
-					<label for="editeur">Mesurier :</label>
+					<label for="editeur">Editeur du mesurier :</label>
 					<?php if(secu_check_role(ROLE_ADMIN)){ ?>
 					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
 					<?php }else{ ?>
