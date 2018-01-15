@@ -159,7 +159,6 @@
 .dataTable tbody tr a{
 	color: #137F8B;
 	display: inline-block;
-	font-weight: bold;
 	transition: color 0.3s ease 0s;
 	-webkit-transition: color 0.3s ease 0s;	
 }
@@ -316,6 +315,7 @@
 	padding: 12px 10px;
 	text-align: center;
 	width: 1%;
+	font-size: 15px;
 	font-weight: bold;
 }
 .filtres td select{
@@ -358,20 +358,23 @@ form fieldset{
 	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
 }
 form fieldset legend{
-	font-size: 30px;
+	font-size: 25px;
 	color: #156c78;
 	font-weight: bold;
-	padding: 25px;
+	padding: 15px;
 	margin: 0 0 0 -30px;
 	width: 100%;
 	background: white;
 	border: 1px solid #eee;
 	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
 }
+form fieldset legend a img{
+	width: 20px;
+}
 form fieldset label,
 form fieldset label + div{
 	color: #2d3549;
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: 800;
 	line-height: 1.2;
 	vertical-align: middle;
@@ -384,15 +387,18 @@ form fieldset select{
 	appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    height: 40px;
+    height: 30px;
     color: rgb(105, 105, 104);
-    font-size: 1em;
+    font-size: 0.9em;
     border-radius: 3px;
     border: 1px solid rgb(229, 229, 230);
     box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
     margin-bottom: 10px;
-    padding: 0 15px;
+    padding: 0 10px;
     //width: auto !important;
+}
+#editeur{
+	border: 1px solid rgb(229, 229, 230);
 }
 form fieldset select {
     background: url('../img/bg-select.svg');
