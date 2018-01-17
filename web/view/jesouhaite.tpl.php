@@ -24,10 +24,13 @@
 	</div>
     <form class="joli accueil vert" method="post">
         <fieldset class="accueil_choix_besoin">
-        <?php if($nb && count($themes) > 0){ ?>
-			<?php if(!$_SESSION['web']['nom_territoire']) { ?>
+        <?php 
+		if($nb && count($themes) > 0){ 
+			if(!$_SESSION['web']['nom_territoire']) { ?>
+			
 			<div style="font-weight: bold; margin-bottom:-2em;">La Boussole ne couvre pas encore ta ville, les services proposés sont par conséquent en nombre limité.</div>
 			<?php } ?>
+			
             <div class="wrapper container">
                 <div class="wrapper-options">
                     <h1>Je souhaite</h1>
@@ -37,8 +40,8 @@
                 <div class="row">
                     <?php foreach ($themes as $theme) { ?>
                         <div class="col-md-4 col-sm-4 col-xs-12 spacing-besoins">
-                            <div class="wrapper-submit-besoins <?php xecho($theme['libelle']) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
-                                <input type="submit" name="besoin" value="<?php xecho($theme['libelle']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
+                            <div class="wrapper-submit-besoins <?php xecho(sans_accent($theme['libelle_theme_court'])) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
+                                <input type="submit" name="besoin" value="<?php xecho($theme['libelle_theme_court']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
                             </div>
                         </div>
                     <?php } ?>

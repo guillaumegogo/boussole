@@ -36,8 +36,9 @@
 	</fieldset>
 	
 	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>-->
-		<div class="lab">
-		<label for="" style="width:auto; margin-bottom:1em;">Titre des pages et liste des questions :</label>
+		<div class="lab" style="display:block;">
+		<label for="" style="width:auto; margin-bottom:1em">Titre des pages et liste des questions :</label>
+		</div>
 		<table class="dataTable display compact">
 			<thead>
 			<tr>
@@ -104,7 +105,6 @@
 			?>
 			</tbody>
 		</table>
-		</div>
 	</fieldset>
 	
 	<div class="button">

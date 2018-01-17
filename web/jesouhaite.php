@@ -31,19 +31,23 @@ if(isset($_SESSION['web']['recherche'])) {
 		$_SESSION['web']['nom_territoire'] = $row[0]['nom_territoire'];
 	}
 
+	//********* récupération des thèmes disponibles pour le territoire indiqué
+	if (isset($_SESSION['web']['id_territoire'])) {
+	    $themes = get_themes_by_territoire($_SESSION['web']['id_territoire']);
+	
 	//********* récupération des thèmes disponibles pour le code insee indiqué
-	if (isset($_SESSION['web']['code_insee'])) {
-	    $themes = get_themes_by_ville($_SESSION['web']['code_insee']);
-		
-		//********* a-t-on au moins un thème actif ?
-		$nb = 0;
-		foreach ($themes as $theme) {
-			$nb += $theme['actif']*$theme['nb'];
-		}
-		if(!$nb || !count($themes)) {
-			$erreur = 3;
-		}
-    }
+	}else if (isset($_SESSION['web']['code_insee'])) {
+		//$themes = get_themes_by_ville($_SESSION['web']['code_insee']);
+	}
+	
+	//********* a-t-on au moins un thème actif ?
+	$nb = 0;
+	foreach ($themes as $theme) {
+		$nb += $theme['actif']*$theme['nb'];
+	}
+	if(!$nb || !count($themes)) {
+		$erreur = 3;
+	}
 }
 //********* l'utilisateur a choisi un thème -> il est envoyé vers le formulaire
 if (isset($_POST['besoin'])) {

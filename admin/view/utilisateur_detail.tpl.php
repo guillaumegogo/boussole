@@ -58,7 +58,7 @@
 				<div class="lab">
 					<label for="courriel">Courriel <?= ($vue != 'creation') ? '(login)' : '' ?> :</label>
 					<input type="text" name="courriel" required placeholder="Le courriel sert de login"
-						value="<?= ($id_utilisateur) ? $user['email'] : '' ?>" <?= ($vue == 'motdepasse') ? 'disabled':'' ?> />
+						value="<?= ($id_utilisateur) ? $user['email'] : '' ?>" <?= ($vue == 'motdepasse') ? 'readonly':'' ?> />
 				</div>
 				<?php if ($vue == "modif" || $vue == "creation") { ?>
 					<div class="lab">

@@ -58,7 +58,7 @@ footer{
 footer a{
 	text-decoration: none;
 	color: #fff;
-	border-bottom: 1px solid white;
+	border-bottom: 1px solid transparent;
 	transition: color 0.3s ease 0s;
 	-webkit-transition: color 0.3s ease 0s;
 }
@@ -66,6 +66,7 @@ footer a:hover,
 footer a:focus{
 	color: #eee;
 	text-decoration: none;
+	border-bottom: 1px solid white;
 }
 
 /*----- GUILLAUME ------------*/
@@ -289,6 +290,9 @@ footer{
 .info-footer{
 	overflow: auto;
 }
+.info-footer.container{
+	margin-top: 15px;
+}
 .info-footer .footer-column{
 	margin: 0 0 10px 0;
 	padding: 0 1.5em;
@@ -307,13 +311,8 @@ footer{
 .info-footer .footer-column ul li a{
 	margin-bottom: 3px;
 	display: inline-block;
-	border-bottom: 1px solid transparent;
 	transition: border 0.3s ease 0s;
 	-webkit-transition: border 0.3s ease 0s;
-}
-.info-footer .footer-column ul li a:hover,
-.info-footer .footer-column ul li a:focus{
-	border-bottom: 1px solid white;
 }
 
 footer .footer-after{
@@ -326,7 +325,7 @@ footer .footer-after{
 .logo-ministere-footer{
 	float: left;
 	margin: 1em;
-    height: 150px;
+    height: 122px;
 }
 
 @media(max-width: 767px){
@@ -337,7 +336,7 @@ footer .footer-after{
 		max-width: 100%;
 		margin: 0 0 30px 0;
 	}
-	.info-footer.container h4{
+	.info-footer.container{
 		margin: 10px 0;
 	}
 }
@@ -644,7 +643,7 @@ footer .footer-after{
 	width: 145px;
 	height: 250px;
 }
-.wrapper-submit-besoins.loger:before{
+.wrapper-submit-besoins.logement:before{
 	content: '';
 	background-image: url('../img/homme-small-1.png');
 	background-repeat: no-repeat;
@@ -656,7 +655,7 @@ footer .footer-after{
 	width: 200px;
 	height: 256px;
 }
-.wrapper-submit-besoins.soigner:before{
+.wrapper-submit-besoins.sante:before{
 	content: '';
 	background-image: url('../img/homme-small-2.png');
 	background-repeat: no-repeat;
@@ -676,9 +675,9 @@ footer .footer-after{
 
 /*TABLETTE & MOBILE*/
 @media(max-width: 991px){
-	.wrapper-submit-besoins.loger:before{width: 100px; height: 128px; bottom: 102px;}
+	.wrapper-submit-besoins.logement:before{width: 100px; height: 128px; bottom: 102px;}
 	.wrapper-submit-besoins.emploi:before{width: 73px; height: 125px; bottom: 95px;}
-	.wrapper-submit-besoins.soigner:before{width: 80px; height: 130px; bottom: 100px;}
+	.wrapper-submit-besoins.sante:before{width: 80px; height: 130px; bottom: 100px;}
 	.submit-besoins{
 		font-size: 1.4em;
 		height: 52px;
@@ -2211,3 +2210,26 @@ input.input-adresse-mail{
 	font-size: 16px;
 }
 /**/
+
+
+
+/* contact form */
+#contact_form{
+	margin:auto;
+}
+#contact_form label{
+	width:7em;
+	vertical-align:top;
+}
+#contact_form #submit_button{
+	
+	border: none;
+	border-radius: 5px;	
+	background-color: #137F8B;
+	box-shadow: 0px 8px 0px 0px #0A717D;
+	color: #fff;
+	font-size: 1.25em;	
+	font-weight: bold;
+	padding: 15px;
+	margin-top:10px;
+}

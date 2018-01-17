@@ -27,7 +27,7 @@ if(isset($_POST['envoi_mail'])){
 }
 
 $contenu = null;
-$liste_page = ["presentation", "donnees_perso", "aide", "contact", "accessibilite", "engagement", "mentions"];
+$liste_page = ["presentation", "comment", "conditions", "mentions", "contact"];
 
 if(isset($_GET['p']) && in_array($_GET['p'], $liste_page)){
 	$contenu = 'text/'.$_GET['p'].'.inc.html';
