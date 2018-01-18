@@ -97,7 +97,7 @@
 	-webkit-appearance:none;
 	appearance:none;
 	border: 1px solid #ddd;
-	height: 35px;
+	height: auto;
 	padding: 5px 8px;
 	font-size: 15px;
 	min-width: 80px;
@@ -119,6 +119,7 @@
 	vertical-align: middle;
 	font-weight: 800 !important;
 	font-size: 15px;
+	text-transform: uppercase;
 	line-height: 1.2;
 	text-align: left;
 	border-top: 1px solid #ddd;
@@ -367,7 +368,7 @@ form fieldset legend{
 	font-weight: bold;
 	padding: 15px;
 	margin: 0 0 0 -30px;
-	width: 100%;
+	width: calc(100% + 30px);
 	background: white;
 	border: 1px solid #eee;
 	box-shadow: 1px 1px 16px 0 rgba(0,0,0,0.03);
@@ -375,8 +376,7 @@ form fieldset legend{
 form fieldset legend a img{
 	width: 20px;
 }
-form fieldset label,
-form fieldset label + div{
+form fieldset label{
 	color: #2d3549;
 	font-size: 15px;
 	font-weight: 800;
@@ -402,7 +402,8 @@ form fieldset select{
     //width: auto !important;
 }
 #editeur{
-	border: 1px solid rgb(229, 229, 230);
+	border: 1px solid #aaa;
+    padding: 10px 5px;
 }
 form fieldset select {
     background: url('../img/bg-select.svg');
@@ -411,6 +412,8 @@ form fieldset select {
 }
 form fieldset select[multiple=""]{
 	height: auto;
+	vertical-align: top;
+	margin-bottom: 20px;
 }
 form .une_colonne .lab{
 	width: 100%;
@@ -742,4 +745,8 @@ h1.bandeau + .statut a:last-of-type{
 		display: block;
 		padding: 0;
 	}
+}
+.criteres{
+	min-width: 22em;
+	width: auto !important;
 }
