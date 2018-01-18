@@ -23,8 +23,8 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	$name_q = (isset($_POST['name_q'])) ? $_POST['name_q'] : null;
 	$requis = (isset($_POST['requis'])) ? $_POST['requis'] : null;
 
-	if (!$_POST["maj_id"]) { //action création
-		$t = create_formulaire($_POST['theme'], $_POST['territoire']);
+	if (!$_POST["maj_id"]) {
+		$t = create_formulaire($_POST['theme']);
 		
 		if(!$t[0]){ //si pas créé, on récupère le message
 			$msg = $t[1];

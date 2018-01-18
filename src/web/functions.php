@@ -7,6 +7,17 @@ function format_insee($saisie)
 	return str_replace($tab_aremplacer, $tab_rempace, $saisie);
 }
 
+function sans_accent($str)
+{
+	$url = $str;
+    $url = preg_replace('#à|â#', 'a', $url);
+    $url = preg_replace('#è|é|ê#', 'e', $url);
+    $url = preg_replace('#ï#', 'i', $url);
+    $url = preg_replace('#ô#', 'o', $url);
+    $url = preg_replace('#ù|û#', 'u', $url);
+    $url = preg_replace('#ç#', 'c', $url);
+    return ($url);
+}
 //********* fonction de présentation (un peu crado) des critères du jeune
 function liste_criteres($tab_criteres, $separateur = ", ")
 {

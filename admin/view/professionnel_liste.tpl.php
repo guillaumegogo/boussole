@@ -65,7 +65,7 @@
 					<td><?= $row['themes'] ?>
 					<?php //recadrage données pré v1
 					if($row['competence_geo']=="territoire" && $row['id_competence_geo']!=$row['id_territoire']) { ?>
-						<br/><span style="color:red">incohérence /territoire</span>
+						<br/><span style="font-size:smaller; color:red">incohérence/territoire</span>
 					<?php } ?>
 					</td>
 					<td><?= $geo ?></td>

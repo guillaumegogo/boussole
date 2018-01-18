@@ -1,10 +1,38 @@
 <?php
 
+//********* affichage des thèmes proposés en fonction du territoire
+function get_themes_by_territoire($id){
+
+	global $conn;
+
+	$query = 'SELECT `tn`.`libelle_theme_court`, `tn`.`libelle_theme` as `libelle_national`,  `tn`.`actif_theme` as `actif_national`, `tt`.id_theme, `tt`.`libelle_theme` as `libelle`, `tt`.`actif_theme` as `actif`, 1 as `nb`
+		FROM `'.DB_PREFIX.'bsl_theme` AS `tn`
+		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `tt` 
+			ON `tt`.`libelle_theme_court`=`tn`.`libelle_theme_court` 
+			AND `tt`.id_territoire = ?
+		WHERE `tn`.`id_theme_pere` IS NULL AND `tn`.`id_territoire`=0';
+
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	
+	if(DEBUG){
+		$print_sql = $query;
+		foreach(array($id) as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--".$print_sql."-->"; 
+	}
+	
+	$themes = query_get($stmt);
+	return $themes;
+}
+
 //********* affichage des thèmes proposés en fonction de la ville choisie 
 function get_themes_by_ville($code_insee){
 
 	global $conn;
 
+	//la requête vérifie s'il y a des professionnels actifs sur la commune indiquée, thème par thème (avec recherche sur toutes les strates géographiques : pays, région, département ou territoire). idéalement il faudrait faire la vérification au niveau des offres actives...
 	$query = 'SELECT `id_theme` as `id`, `libelle_theme` as `libelle`, `actif_theme` as `actif`, MAX(`c`) as `nb` 
 	FROM (
 		SELECT DISTINCT `t`.`id_theme`, `t`.`libelle_theme`, 
@@ -26,38 +54,16 @@ function get_themes_by_ville($code_insee){
 		WHERE `id_theme_pere` IS NULL) as `s`
 	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';
 	
-	
-/*
-//la requête vérifie s'il y a des professionnels actifs sur la commune indiquée, thème par thème (avec recherche sur toutes les strates géographiques : pays, région, département ou territoire). idéalement il faudrait faire la vérification au niveau des offres actives...
-	$query = 'SELECT `id_theme` as `id`, `libelle_theme` as `libelle`, `actif_theme` as `actif`, MAX(`c`) as `nb` 
-	FROM (
-		SELECT DISTINCT `t`.`id_theme`, `t`.`libelle_theme`, 
-		`t`.`actif_theme` , COUNT(`p`.id_professionnel) as `c`
-		FROM `'.DB_PREFIX.'bsl_theme` AS `t`
-		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel_themes` AS `pt` ON `pt`.`id_theme`=`t`.`id_theme`
-		LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `p`.`id_professionnel`=`pt`.`id_professionnel` AND `p`.`actif_pro`=1
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `p`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`p`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl_territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` AS `dep` ON `p`.`competence_geo`="departemental" AND `dep`.`id_departement`=`p`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__region` AS `reg` ON `p`.`competence_geo`="regional" AND `reg`.`id_region`=`p`.`id_competence_geo` 
-		LEFT JOIN `'.DB_PREFIX.'bsl__departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region` 
-		WHERE `id_theme_pere` IS NULL 
-		AND (`p`.competence_geo="national" OR `tv`.`code_insee`=? OR `depreg`.`id_departement`=SUBSTR(?,1,2) OR `dep`.`id_departement`=SUBSTR(?,1,2)) 
-		GROUP BY `t`.`id_theme`, `t`.`libelle_theme`, `t`.`actif_theme` 
-		UNION
-		SELECT DISTINCT `t2`.id_theme, `t2`.`libelle_theme`, `t2`.`actif_theme`, 0 as `c`
-		FROM `'.DB_PREFIX.'bsl_theme` AS `t2`
-		WHERE `id_theme_pere` IS NULL) as `s`
-	GROUP BY `id_theme`, `libelle_theme`, `actif_theme`';*/
-
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sss', $code_insee, $code_insee, $code_insee);
 	
-$print_sql = $query;
-foreach(array($code_insee, $code_insee, $code_insee) as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo "<!--".$print_sql."-->"; 
+	if(DEBUG){
+		$print_sql = $query;
+		foreach(array($code_insee, $code_insee, $code_insee) as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--".$print_sql."-->";
+	}
 	
 	$themes = query_get($stmt);
 	return $themes;
@@ -81,12 +87,13 @@ function get_ville($saisie){
 		$cp = substr($saisie, -5);
 		mysqli_stmt_bind_param($stmt, 'ss', $ville, $cp);
 		
-	
-$print_sql = $query;
-foreach(array($ville, $cp) as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo "<!--<pre>".$print_sql."</pre>-->";
+		if(DEBUG){
+			$print_sql = $query;
+			foreach(array($ville, $cp) as $term){
+				$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+			}
+			echo "<!--<pre>".$print_sql."</pre>-->";
+		}
 
 	} else {
 		$query = 'SELECT `nom_ville`, `v`.`code_insee`, GROUP_CONCAT(DISTINCT `v`.`code_postal` SEPARATOR ", ") AS `codes_postaux`, `tr`.`id_territoire`, `nom_territoire` 
@@ -116,16 +123,18 @@ function get_formulaire($besoin, $etape, $id_territoire=0){
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `fq` ON `fq`.`id_page`=`fp`.`id_page` AND `fq`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`fq`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `fv` ON `fv`.`id_reponse`=`fr`.`id_reponse` AND `fv`.`actif`=1
-		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ? AND (`f`.`id_territoire`=? OR `f`.`id_territoire`=0)
+		WHERE `f`.`actif`=1 AND `t`.`libelle_theme_court`= ? AND `fp`.`ordre` = ? AND `t`.`id_territoire`=?
 		ORDER BY `f`.`id_territoire` DESC, `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sii', $besoin, $etape, $id_territoire);
 	
-$print_sql = $query;
-foreach(array($besoin, $etape, $id_territoire) as $term){
-	$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
-}
-echo "<!--<pre>".$print_sql."</pre>-->";
+	if(DEBUG){
+		$print_sql = $query;
+		foreach(array($besoin, $etape, $id_territoire) as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
 
 	mysqli_stmt_execute($stmt);
 	check_mysql_error($conn);
@@ -158,7 +167,7 @@ echo "<!--<pre>".$print_sql."</pre>-->";
 		FROM `'.DB_PREFIX.'bsl_formulaire__page` AS `fp`
 		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1 
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? AND (`f`.`id_territoire`=? OR `f`.`id_territoire`=0)
+		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme_court`= ? AND `t`.`id_territoire`=?
 		ORDER BY `f`.`id_territoire` DESC, `ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'si', $besoin, $id_territoire);
@@ -203,7 +212,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	WHERE `t`.`debut_offre` <= CURDATE() AND `t`.`fin_offre` >= CURDATE() 
 	AND `pro`.`actif_pro` = 1
-	AND `theme_pere`.`libelle_theme` = ? 
+	AND `theme_pere`.`libelle_theme_court` = ? 
 	/* recherche géographique ! */
 	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
 		OR (`pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
@@ -242,13 +251,13 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 	}
 	$query .= ' ORDER BY `theme`.`ordre_theme`, RAND()'; //le RAND permet de ne pas afficher toujours les mêmes offres en premier... en attendant un meilleur critère de tri
 
-if (DEBUG) {
-	$print_sql = $query;
-	foreach($terms as $term){
-		$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+	if (DEBUG) {
+		$print_sql = $query;
+		foreach($terms as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--".$print_sql."-->"; 
 	}
-	echo "<!--".$print_sql."-->"; 
-}
 
 	$stmt = query_prepare($query,$terms,$terms_type);
 	check_mysql_error($conn);

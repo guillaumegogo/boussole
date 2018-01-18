@@ -189,7 +189,7 @@
 						<?php 
 						//************* le temps de redresser les données pré-v1
 						if(!$test_data_prev1){
-							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : "'.$row['libelle_theme_pere'].'"/national)</span></br>';
+							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.$row['libelle_theme_pere'].'/national)</span></br>';
 						}
 						//*****************/
 						?>
@@ -342,9 +342,16 @@
 			<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 				<legend>Liste des critères de l'offre de service</legend>
 				<input type="hidden" name="maj_criteres" value="oui"> 
-				<div class="colonnes">
 
-			<?php
+		<?php
+		if(!count($questions)){
+		?>
+			Il semble qu'aucun critère ne soit actif pour ce thème et ce territoire. <a href="formulaire_liste.php">Un formulaire est-il bien défini pour ce thème ?</a>
+		<?php
+		}else{
+		?>
+				<div class="colonnes">
+		<?php
 			foreach ($questions as $question) {
 			?>
 						<div class="lab">
@@ -366,6 +373,9 @@
 			}
 			?>
 				</div>
+		<?php
+		}
+		?>
 			</fieldset>
 
 		<?php

@@ -62,7 +62,11 @@
 					<!--<td>" . $row['date_debut']. "</td>-->
 					<td><span style="display:none"><?=substr($row['date_fin'], 6, 4).substr($row['date_fin'], 3, 2).substr($row['date_fin'], 0, 2) ?></span><!--clé de tri-->
 						<?= $row['date_fin'] ?></td>
-					<td><?= $row['libelle_theme_court'] ?></td>
+					<td><?= $row['libelle_theme_court'] ?>
+					<?php //recadrage données pré v1
+					if($row['competence_geo']=="territoire" && $row['id_territoire']!=$row['id_competence_geo']) { ?>
+						<br/><span style="font-size:smaller; color:red">incohérence/territoire</span>
+					<?php } ?></td>
 					<td><a href="professionnel_detail.php?id=<?= $row['id_professionnel'] ?>"><?= $row['nom_pro'] ?></a></td>
 					<td><?= $zone ?></td>
 				</tr>
