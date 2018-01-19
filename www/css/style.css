@@ -1763,7 +1763,7 @@ label.label_long{
 .offre-desc{
 	color: #474747;	
 	font-size: 1.91em;	
-	font-weight: bold;
+	/*font-weight: bold;*/
 	padding-left: 27px;
 	padding-top: 55px;
 }

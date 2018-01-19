@@ -45,7 +45,7 @@
 						<?= date_format(date_create($recherche['date_recherche']), 'd/m/Y à H\hi') ?> </td>
 					<td style="text-align:center"><?php xecho($recherche['code_insee']) ?></td>
 					<td nowrap><?php xecho($recherche['besoin']) ?></td>
-					<td><div style="font-size:0.7em;"><?= str_replace(["_", "\"", "{", "}", "\u20ac"], [" ", " ", "", "", "€"], $recherche['criteres']) //pretty_json_print($recherche['criteres'], 50) ?></div></td> 
+					<td><div style="font-size:0.7em;"><?= str_replace(["_", "\"", "\\", "{", "}"], [" ", " ", "", "", ""], preg_replace('/u([\da-fA-F]{4})/', '&#x\1;', $recherche['criteres'])) //pretty_json_print($recherche['criteres'], 50) ?></div></td> 
 					<td style="text-align:center"><?php xecho($recherche['nb_offres']) ?></td>
 					<td><?php 
 					$liste_demande_id = explode(",", $recherche['demandes']);

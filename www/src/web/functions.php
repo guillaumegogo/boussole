@@ -130,7 +130,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
         $to = $courriel_offre;
     }
     $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des jeunes');
-    $message = "<html><p>Un jeune est intéressé par l'offre <b>" . $nom_offre . "</b>.</p>"
+    $message = "<html><p>Bonjour, un jeune est intéressé par l'offre <b>" . $nom_offre . "</b>.</p>"
         . "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
         . "<p>Son profil est le suivant : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p>"
         . "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p>"
@@ -150,7 +150,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 
         $to = $coordonnees;
         $subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des jeunes');
-        $message = "<html><p>Nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
+        $message = "<html><p>Bonjour, nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
             . "<p>Offre <b>" . $nom_offre . "</b>.</p>"
             . "<p>Profil : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p></html>";
 		$headers = 'MIME-Version: 1.0' . "\r\n";
