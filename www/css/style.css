@@ -93,11 +93,13 @@ footer a:focus{
 .logo-ministere-homepage{
 	float: left;
 	margin-top: 4.5em;
-    height: 150px;
+    height: 70px;
+	margin-right: -70px;
 }
 
 .logo-boussole-homepage{
 	padding: 2em 0;
+	margin-left: -70px;
 }
 
 .bonhomme-section-header{
@@ -377,6 +379,7 @@ footer .footer-after{
 
 	.logo-boussole-homepage {
 	    width: auto ;
+		margin-left: auto;
 	}
 
 	.logo-ministere-homepage {
