@@ -120,8 +120,9 @@ function cloture_ligne($ele)
 	return $t;
 }
 
-function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
+function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $criteres=null, $token)
 {
+	global $path_extranet;
 	$resultat = null;
 		
     //au professionnel
@@ -131,10 +132,14 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
     }
     $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des jeunes');
     $message = "<html><p>Bonjour, un jeune est intéressé par l'offre <b>" . $nom_offre . "</b>.</p>"
-        . "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>"
-        . "<p>Son profil est le suivant : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p>"
-        . "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p>"
-        . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
+        . "<p>Il a déposé une demande de contact le " . utf8_encode(strftime('%d %B %Y &agrave; %H:%M')) . "</p>";
+	if($criteres) {
+		$message .= "<p>Son profil est le suivant :<br/>" . liste_criteres($criteres, '<br/>') . "</p>";
+	}else{
+		$message .= "<p>Il n'a pas indiqué son profil (accès direct à l'offre).</p>";
+	}
+    $message .= "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p>"
+        . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_extranet . "/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 	$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";
@@ -150,9 +155,15 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $token)
 
         $to = $coordonnees;
         $subject = mb_encode_mimeheader('Vous avez déposé une demande de contact sur la Boussole des jeunes');
-        $message = "<html><p>Bonjour, nous vous confirmons qu'un message a été transmis au professionnel avec vos coordonnées et les informations suivantes :</p>"
-            . "<p>Offre <b>" . $nom_offre . "</b>.</p>"
-            . "<p>Profil : " . liste_criteres($_SESSION['web']['critere'], '<br/>') . "</p></html>";
+		$message = "<html><p>Bonjour!</p>"
+            . "<p>Votre demande de contact a bien été enregistrée par la Boussole des jeunes.</p>"
+            . "<p>L'offre de service que vous avez choisie est <b>" . $nom_offre . "</b>.</p>";
+		if($criteres) {
+			//$message .= "<p>Les informations que vous avez indiqué sont les suivantes : <b>" . liste_criteres($criteres, '<br/>') . "</b>.</p>";
+		}
+        $message .= "<p>L'organisme en charge de cette offre prendra contact avec vous sous peu !</p>"
+            . "<p>A bientôt</p>"
+            . "<p>L’équipe Boussole des jeunes</p>";
 		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 		$headers .= 'From: La Boussole des jeunes <noreply@boussole.jeunes.gouv.fr>' . "\r\n";

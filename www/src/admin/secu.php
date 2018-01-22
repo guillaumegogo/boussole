@@ -430,6 +430,7 @@ function secu_check_role($role)
 function secu_send_pass_email($email, $origine='reset')
 {
 	global $conn;
+	global $path_from_extranet_to_web;
 	$sent = false;
 	$token = hash('sha256', $email . time() . rand(0, 1000000));
 

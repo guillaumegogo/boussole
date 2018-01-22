@@ -123,7 +123,7 @@ function get_formulaire($besoin, $etape, $id_territoire=0){
 		JOIN `'.DB_PREFIX.'bsl_formulaire__question` AS `fq` ON `fq`.`id_page`=`fp`.`id_page` AND `fq`.`actif`=1
 		JOIN `'.DB_PREFIX.'bsl_formulaire__reponse` AS `fr` ON `fr`.`id_reponse`=`fq`.`id_reponse`
 		JOIN `'.DB_PREFIX.'bsl_formulaire__valeur` AS `fv` ON `fv`.`id_reponse`=`fr`.`id_reponse` AND `fv`.`actif`=1
-		WHERE `f`.`actif`=1 AND `t`.`libelle_theme_court`= ? AND `fp`.`ordre` = ? AND `t`.`id_territoire`=?
+		WHERE `f`.`actif`=1 AND `t`.`libelle_theme`= ? AND `fp`.`ordre` = ? AND `t`.`id_territoire`=?
 		ORDER BY `f`.`id_territoire` DESC, `ordre_page`, `fq`.`ordre`, `fv`.`ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sii', $besoin, $etape, $id_territoire);
@@ -167,7 +167,7 @@ function get_formulaire($besoin, $etape, $id_territoire=0){
 		FROM `'.DB_PREFIX.'bsl_formulaire__page` AS `fp`
 		JOIN `'.DB_PREFIX.'bsl_formulaire` AS `f` ON `fp`.`id_formulaire`=`f`.`id_formulaire` AND `f`.`actif`=1 
 		JOIN `'.DB_PREFIX.'bsl_theme` AS `t` ON `t`.`id_theme`=`f`.`id_theme`
-		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme_court`= ? AND `t`.`id_territoire`=?
+		WHERE `fp`.`actif`=1 AND `t`.`libelle_theme`= ? AND `t`.`id_territoire`=?
 		ORDER BY `f`.`id_territoire` DESC, `ordre`';
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'si', $besoin, $id_territoire);
@@ -212,7 +212,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	WHERE `t`.`debut_offre` <= CURDATE() AND `t`.`fin_offre` >= CURDATE() 
 	AND `pro`.`actif_pro` = 1
-	AND `theme_pere`.`libelle_theme_court` = ? 
+	AND `theme_pere`.`libelle_theme` = ? 
 	/* recherche géographique ! */
 	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
 		OR (`pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
