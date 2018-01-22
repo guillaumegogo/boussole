@@ -293,7 +293,7 @@
 					</div>
 
 					<div style="display:inline-block; vertical-align:top;">
-						<small><i>Villes correspondant au filtre :</i></small><br/>
+						<small><i>Villes accessibles :</i></small><br/>
 						<select id="list1" MULTIPLE SIZE="10" style="width:18em;">
 					<?php 
 					if(isset($villes)){

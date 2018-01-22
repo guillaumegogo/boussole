@@ -336,7 +336,7 @@ function update_criteres_offre($id, $tab_criteres) {
 	$user_id= secu_get_current_user_id();
 	$updated = false;
 
-	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ?';
+	$query1 = 'DELETE FROM `'.DB_PREFIX.'bsl_offre_criteres` WHERE `id_offre` = ? AND `nom_critere`!="villes" '; //les villes sont gérées dans update_offre
 	$stmt = mysqli_prepare($conn, $query1);
 	mysqli_stmt_bind_param($stmt, 'i', $id);
 	mysqli_stmt_execute($stmt);

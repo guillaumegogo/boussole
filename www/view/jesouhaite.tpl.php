@@ -41,7 +41,7 @@
                     <?php foreach ($themes as $theme) { ?>
                         <div class="col-md-4 col-sm-4 col-xs-12 spacing-besoins">
                             <div class="wrapper-submit-besoins <?php xecho(sans_accent($theme['libelle_theme_court'])) ?> <?= ($theme['actif']*$theme['nb']) ? '':'disabled' ?>">
-                                <input type="submit" name="besoin" value="<?php xecho($theme['libelle_theme_court']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
+                                <input type="submit" name="besoin" value="<?php xecho(isset($theme['libelle']) ? $theme['libelle']:$theme['libelle_national']) ?>" class="submit-besoins" <?= ($theme['actif']*$theme['nb']) ? '':'disabled alt="Cette thématique n\'est pas encore disponible sur ce territoire" title="Cette thématique n\'est pas encore disponible sur ce territoire"' ?>>
                             </div>
                         </div>
                     <?php } ?>
