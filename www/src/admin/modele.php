@@ -1038,7 +1038,7 @@ function update_listes_pro($pro_id, $themes, $zone, $liste_villes){
 function get_incoherences_themes_by_pro($pro_id, $themes){
 
 	//on cherche les offres de service du pro pour les thèmes qui ne seraient plus gérés
-	$query_ot = 'SELECT `id_offre`, `nom_offre` 
+	$query_ot = 'SELECT DISTINCT `id_offre`, `nom_offre` 
 		FROM `'.DB_PREFIX.'bsl_offre` 
 		JOIN `'.DB_PREFIX.'bsl_theme` ON id_sous_theme=id_theme 
 		WHERE `actif_offre`=1 AND id_professionnel = ? ';
@@ -1065,7 +1065,7 @@ function get_incoherences_themes_by_pro($pro_id, $themes){
 function get_incoherences_villes_by_pro($pro_id, $row){
 
 	//on cherche les offres de service du pro hors zone géographique
-	$query_ov = 'SELECT `o`.`id_offre`, `nom_offre` 
+	$query_ov = 'SELECT DISTINCT `o`.`id_offre`, `nom_offre` 
 		FROM `'.DB_PREFIX.'bsl_offre` AS `o`
 		JOIN `'.DB_PREFIX.'bsl_offre_criteres` AS `oc`
 		ON `o`.`id_offre`=`oc`.`id_offre` AND `nom_critere` LIKE "villes"
