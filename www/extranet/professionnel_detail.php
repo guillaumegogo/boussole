@@ -125,7 +125,7 @@ else if(isset($pro['competence_geo']) && $pro['competence_geo'] && $pro['id_comp
 */
 
 $incoherences_themes = get_incoherences_themes_by_pro((int)$id_professionnel, $themes_coches);
-$incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, $liste_villes_pro);
+$incoherences_villes = get_incoherences_villes_by_pro((int)$id_professionnel, (is_null($liste_villes_pro)?$villes_accessibles:$liste_villes_pro)); //soit le pro a une liste de villes particulières, et dans ce cas on recherche d'après cette liste, soit on fait la recherche sur les villes du territoire
 
 $offres = ($id_professionnel) ? get_liste_offres(1,null, (int)$id_professionnel) : null;
 

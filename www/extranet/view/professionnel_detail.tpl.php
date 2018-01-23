@@ -171,7 +171,9 @@
 					<?php } ?>
 					</select>
 				</div>
+				<?php if(isset($pro['type_pro']) && $pro['type_pro'] && !$pro['statut_id'] && !$pro['type_id']) {?>
 				<span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : "<?= $pro['type_pro'] ?>")</span>
+				<?php }?>
 				<div class="lab">
 					<label for="desc">Description de l'organisme :</label>
 					<div style="display:inline-block;" id="div-editeur">
@@ -184,43 +186,6 @@
 						<input id="resultat" type="hidden" name="desc"/>
 					</div>
 				</div>
-				<div class="lab">
-					<label for="theme[]">Thème(s) :</label>
-					<div style="display:inline-table;">
-					<?php foreach($themes_proposes as $rowt) { ?>
-						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" 
-						<?php 
-						foreach($themes_coches as &$rowc) { 
-							if($rowc['id_theme'] == $rowt['id_theme']) { 
-								echo ' checked '; $rowc['checked']=1; break; 
-							}
-							unset($rowc);
-						}?>
-						> <?= $rowt['libelle_theme_court'] ?>  <?= (isset($rowt['actif_theme']) && $rowt['actif_theme']==0) ? ' (inactif) ':'' ?></br>
-					<?php } ?>
-					</div>
-				</div>
-					<?php //************* le temps de redresser les données pré-v1
-					if (DEBUG) { echo '<!--'; print_r($themes_proposes); print_r($themes_coches); echo '-->';  }
-					$themes_a_maj = null;
-					foreach($themes_coches as $rowc) { 
-						if (!$rowc['checked']) $themes_a_maj .= $rowc['libelle_theme_court'].'/'.($rowc['nom_territoire']?$rowc['nom_territoire']:'national').', ';
-					}
-					?>
-					<?= ($themes_a_maj ? '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.substr($themes_a_maj,0,-2).')</span></br>' : '') 
-					/****************************************************************/ ?>
-				<div class="lab">
-					<label for="editeur">Editeur du mesurier :</label>
-					<?php if(secu_check_role(ROLE_ADMIN)){ ?>
-					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
-					<?php }else{ ?>
-					<input type="hidden" name="check_editeur" value="<?= (isset($pro['editeur']) && $pro['editeur']) ? '1':'0' ?>" > 
-					<input type="checkbox" disabled readonly <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
-					<?php } ?>
-					Oui <img src="img/help.png" height="16px" title="Cet organisme peut être indiqué comme l'éditeur de mesures." >
-				</div>
-			</div>
-			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="adresse">Adresse :</label>
 					<input type="text" name="adresse" value="<?php if ($id_professionnel) {
@@ -239,6 +204,8 @@
 						echo $pro['site_web_pro'];
 					} ?>"/>
 				</div>
+			</div>
+			<div class="deux_colonnes">
 				<div class="lab">
 					<label for="courriel">Courriel de gestion :</label>
 					<input type="text" name="courriel" required value="<?php if ($id_professionnel) {
@@ -251,7 +218,7 @@
 					<input type="text" name="tel" value="<?php if ($id_professionnel) {
 						echo $pro['telephone_pro'];
 					} ?>"/>
-					<br/><input type="checkbox" name="visibilite" value="1" <?= (isset($pro['visibilite_coordonnees']) && $pro['visibilite_coordonnees']) ? ' checked ':'' ?>> <small><i>Afficher les courriel et téléphone sur le site.</i></small>
+					<br/><input type="checkbox" name="visibilite" value="1" <?= (isset($pro['visibilite_coordonnees']) && $pro['visibilite_coordonnees']) ? ' checked ':'' ?>> <span class="notice">Afficher ces deux dernières informations sur le site.</span>
 					</div>
 				</div>
 				<div class="lab">
@@ -266,7 +233,7 @@
 					<input type="text" name="tel_ref" required value="<?php if ($id_professionnel) {
 						echo $pro['telephone_referent_boussole'];
 					} ?>"/>
-					<br/><small><i>Ces informations ne sont pas affichées sur le site.</i></small>
+					<br/><span class="notice" style="font-style: italic; ">Ces deux dernières informations ne sont pas affichées sur le site.</span>
 					</div>
 				</div>
 				<div class="lab">
@@ -327,11 +294,12 @@ if (isset($territoires)){
 	<?php foreach ($territoires as $row_t) { ?>
 	<option value="<?= $row_t['id_territoire'] ?>" <?= ((isset($pro['competence_geo']) && $pro['competence_geo'] == 'territoire') && ($row_t['id_territoire'] == $pro['id_competence_geo'])) ? ' selected ' : '' ?> ><?= $row_t['nom_territoire'] ?></option>
 	<?php } ?>
-</select></div>
+</select>
 
-<div style="margin-top:1em"><span id="zone_personnalisee" style="display:<?= $display_t ?>" >
-	<input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence territoriale</span>
-	
+	<span id="zone_personnalisee" class="notice" style="display:<?= $display_t ?>;" ><input type="checkbox" name="check_zone" id="check_zone" value="1" <?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'checked' : '' ?> onchange="displayZone(this);" > Personnaliser la zone de compétence territoriale</span>
+</div>
+
+<div style="margin-top:1em">	
 	<div class="lab" id="div_liste_villes" style="display:<?= (isset($pro['zone_selection_villes']) && $pro['zone_selection_villes']) ? 'block' : 'none' ?>">
 		<?php if($droit_ecriture) { ?>
 		<div style="margin-bottom:1em;">Filtre : 
@@ -383,6 +351,47 @@ if (isset($territoires)){
 
 					</div>
 				</div>
+				<?php if(isset($pro['competence_geo'])) { //si pas de compétence géo, impossible de déterminer les thèmes?>
+				<div class="lab">
+					<label for="theme[]">Thème(s) :</label>
+					<div style="display:inline-table;">
+					<?php if(count($themes_proposes)){
+						foreach($themes_proposes as $rowt) { ?>
+						<input type="checkbox" name="theme[]" value="<?= $rowt['id_theme'] ?>" 
+						<?php 
+						foreach($themes_coches as &$rowc) { 
+							if($rowc['id_theme'] == $rowt['id_theme']) { 
+								echo ' checked '; $rowc['checked']=1; break; 
+							}
+							unset($rowc);
+						}?>
+						> <?= $rowt['libelle_theme_court'] ?>  <?= (isset($rowt['actif_theme']) && $rowt['actif_theme']==0) ? ' (inactif) ':'' ?></br>
+					<?php }
+					} else { ?>
+						<span class="notice">Aucun thème n'est déclaré sur ce territoire.</span>
+					<?php } ?>
+					</div>
+				</div>
+				<?php } ?>
+					<?php //************* le temps de redresser les données pré-v1
+					if (DEBUG) { echo '<!--'; print_r($themes_proposes); print_r($themes_coches); echo '-->';  }
+					$themes_a_maj = null;
+					foreach($themes_coches as $rowc) { 
+						if (!$rowc['checked']) $themes_a_maj .= $rowc['libelle_theme_court'].'/'.($rowc['nom_territoire']?$rowc['nom_territoire']:'national').', ';
+					}
+					?>
+					<?= ($themes_a_maj ? '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.substr($themes_a_maj,0,-2).')</span></br>' : '') 
+					/****************************************************************/ ?>
+				<div class="lab">
+					<label for="editeur">Editeur du mesurier :</label>
+					<?php if(secu_check_role(ROLE_ADMIN)){ ?>
+					<input type="checkbox" name="check_editeur" value="1" <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
+					<?php }else{ ?>
+					<input type="hidden" name="check_editeur" value="<?= (isset($pro['editeur']) && $pro['editeur']) ? '1':'0' ?>" > 
+					<input type="checkbox" disabled readonly <?= (isset($pro['editeur']) && $pro['editeur']) ? ' checked ':'' ?> > 
+					<?php } ?>
+					Oui <img src="img/help.png" height="16px" title="Cet organisme peut être indiqué comme l'éditeur de mesures." >
+				</div>
 
 			</div>
 		</fieldset>
@@ -405,7 +414,7 @@ if (isset($territoires)){
 			<legend>Offres de service de l'organisme</legend>
 			<div>
 <?php if(count($incoherences_themes)>0){ ?>
-		<span style="color:red; font-weight: bold;">offres incohérentes (thèmes)</span><ul>
+		<span style="color:red; font-weight: bold;">offres en incohérence : thème inactif</span><ul>
 		<?php 
 		foreach ($incoherences_themes as $row){ ?>
 			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>
@@ -414,7 +423,7 @@ if (isset($territoires)){
 		</ul><br>
 <?php } 
 if(count($incoherences_villes)>0){ ?>
-		<span style="color:red; font-weight: bold;">offres incohérentes (villes)</span><ul>
+		<span style="color:red; font-weight: bold;">offres en incohérence : ville hors périmètre</span><ul>
 		<?php 
 		foreach ($incoherences_villes as $row){ ?>
 			<li><a href="offre_detail.php?id=<?=$row['id_offre']?>"><?=$row['nom_offre']?></a></li>

@@ -1355,7 +1355,7 @@ function get_themes_by_territoire($territoire_id = null, $theme_pere_only = null
 		LEFT JOIN `'.DB_PREFIX.'bsl_theme` AS `pere` ON `pere`.`id_theme`=`t`.`id_theme_pere` 
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` 
 		WHERE 1 ';
-	if(isset($territoire_id) && $territoire_id) {
+	if(!is_null($territoire_id)) {
 		$query .= ' AND `t`.`id_territoire`= ? OR `pere`.`id_territoire`= ? ';
 		$params[] = (int) $territoire_id;
 		$params[] = (int) $territoire_id;

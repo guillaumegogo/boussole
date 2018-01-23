@@ -230,3 +230,6 @@ pre{
 .page{
 	border-top:1px solid black !important;
 }
+.notice{
+	font-weight:normal; font-size: small;
+}

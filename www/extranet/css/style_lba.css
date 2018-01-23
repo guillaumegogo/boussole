@@ -381,7 +381,7 @@ form fieldset label{
 	font-size: 15px;
 	font-weight: 800;
 	line-height: 1.2;
-	vertical-align: middle;
+	vertical-align: top;
 }
 form fieldset label + div{
 	font-weight: 500;
