@@ -22,20 +22,19 @@
 		<legend>Description du formulaire</legend> 
 		<div class="lab">
 			<label for="theme">Thème / territoire :</label>
-			<select name="theme" required>
+		<?php if(!count($themes)){ ?>
+			<span class="notice">Tous les thèmes déclarés ont déjà un formulaire associé.</span>
+		<?php } else { ?>
+			<select <?= ($id_formulaire && !$flag_duplicate) ? ' disabled ' : ' name="theme" ' ?> required>
 		<?php foreach($themes as $row) { ?>
 			<option value="<?= $row['id_theme'] ?>" <?= (isset($meta['id_theme']) && $row['id_theme']==$meta['id_theme']) ? ' selected ':'' ?>> <?= $row['libelle_theme_court'].' / '.($row['nom_territoire'] ? $row['nom_territoire'] : 'national') ?></option>
 		<?php } ?>
 			</select>
-		</div>
-		<!--&#8231; Territoire : <select name="territoire" disabled><?php //<option label='' value=''> ?>
-		<?php foreach($territoires as $row) { ?>
-			<option required value="<?= $row['id_territoire'] ?>" <?= (isset($meta['territoire']) && $row['nom_territoire']==$meta['territoire'] && !$flag_duplicate) ? ' selected ':'' ?>> <?= $row['nom_territoire'] ?></option>
+		<?php if($id_formulaire && !$flag_duplicate) { ?>
+			<input type="hidden" name="theme" value="<?= $meta['id_theme'] ?>"/>
 		<?php } ?>
-			</select>
-	</fieldset>
-	
-	<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>-->
+		</div>
+		
 		<div class="lab" style="display:block;">
 		<label for="" style="width:auto; margin-bottom:1em">Titre des pages et liste des questions :</label>
 		</div>
@@ -105,6 +104,7 @@
 			?>
 			</tbody>
 		</table>
+		<?php } ?>
 	</fieldset>
 	
 	<div class="button">

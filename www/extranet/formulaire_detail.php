@@ -85,7 +85,11 @@ if (isset($id_formulaire)) {
 	}
 }
 
-$themes = get_liste_themes(1);
+if($flag_duplicate){
+	$themes = get_liste_themes("disponible");
+}else{
+	$themes = get_liste_themes();
+}
 
 if ($droit_ecriture && secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1);

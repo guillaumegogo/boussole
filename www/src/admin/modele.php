@@ -621,7 +621,7 @@ function get_villes_by_pro($id) {
 	return $row;
 }
 
-function get_territoires($id = null, $actif = null) {
+function get_territoires($id = null, $actif = null, $duplicated_theme = null) {
 
 	global $conn;
 	$t = null;
@@ -632,15 +632,21 @@ function get_territoires($id = null, $actif = null) {
 		WHERE `nom_territoire` != "" ';
 	$params = array();
 	$types = '';
-	if (isset($actif)) {
+	if (!is_null($actif)) {
 		$query .= ' AND `actif_territoire` = ? ';
 		$params[] = (int) $actif;
 		$types .= 'i';
 	}
-	if (isset($id) && $id > 0) {
+	if ($id) {
 		$query .= ' AND `t`.`id_territoire`= ? ';
 		$params[] = (int) $id;
 		$types .= 'i';
+	}
+	if ($duplicated_theme) {
+		$query .= ' AND `t`.`id_territoire` NOT IN 
+        (SELECT `id_territoire` FROM `bsl_theme` WHERE `libelle_theme_court`= ?) ';
+		$params[] = $duplicated_theme;
+		$types .= 's';
 	}
 	$query .= 'GROUP BY `id_territoire`, `nom_territoire` 
 		ORDER BY `nom_territoire` ASC';
@@ -1267,7 +1273,7 @@ function get_liste_departements() {
 	return $departements;
 }
 
-function get_liste_themes($actif = null) {
+function get_liste_themes($statut = null) {
 
 	global $conn;
 	$themes = null;
@@ -1278,10 +1284,10 @@ function get_liste_themes($actif = null) {
 		FROM `'.DB_PREFIX.'bsl_theme` AS `t` 
 		LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `tr` ON `t`.`id_territoire`=`tr`.`id_territoire` 
 		WHERE `id_theme_pere` IS NULL ';
-	if(isset($actif)) {
-		$query .= 'AND `actif_theme`= ? ';
-		$params[] = (int) $actif;
-		$types .= 'i';
+	if($statut=="actif") {
+		$query .= 'AND `actif_theme`= 1 ';
+	}else if($statut=="disponible") {
+		$query .= 'AND `actif_theme`= 1 AND `t`.`id_territoire` IS NULL ';
 	}
 	$stmt = query_prepare($query,$params,$types);
 	$themes = query_get($stmt);

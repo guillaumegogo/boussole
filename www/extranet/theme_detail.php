@@ -66,10 +66,12 @@ if ($id_theme_choisi) {
 }
 
 $liste_themes = get_liste_parametres('theme');
+$duplicated_theme = ($flag_duplicate)?$theme['libelle_theme_court']:null;
+
 if (secu_check_role(ROLE_ANIMATEUR)) {
-	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1);
+	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1,$duplicated_theme);
 } else {
-	$territoires = get_territoires(null,1);
+	$territoires = get_territoires(null,1,$duplicated_theme);
 }
 
 //view

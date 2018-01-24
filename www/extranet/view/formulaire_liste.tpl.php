@@ -58,12 +58,14 @@
 	}
 	?>
 
+	<div class="notice italic centre" style="margin-bottom:1em">Pour initialiser un nouveau formulaire, choisissez un des formulaires existants et utilisez la fonction [décliner sur un territoire].</div>
+
 	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"?actif=oui">Liste des formulaires actifs'; ?></a></div>
 
 </div>
 
-<div class="button">
+<!--<div class="button">
 	<input type="button" value="Créer un formulaire" onclick="javascript:location.href='formulaire_detail.php'"> 
-</div>
+</div>-->
 </body>
 </html>
