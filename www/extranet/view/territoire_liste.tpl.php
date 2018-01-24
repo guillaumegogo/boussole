@@ -52,7 +52,7 @@
 		<?php
 	} else {
 		?>
-		<div style="margin:1em;text-align:center">Aucun résultat</div>
+		<div class="centre margin1">Aucun résultat</div>
 		<?php
 	}
 	?>

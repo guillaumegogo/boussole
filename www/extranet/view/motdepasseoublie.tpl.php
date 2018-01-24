@@ -16,7 +16,7 @@
 
 	<form method="post" class="detail">
 		<?php if ($vue == 'normal') { ?>
-			<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
+			<div class="une_colonne" class="centre" style="border:1px solid grey; padding:1em;">
 				<div class="lab">
 					<label for="login">Adresse de courriel :</label>
 					<input type="text" name="login"/>
@@ -25,7 +25,7 @@
 			</div>
 
 		<?php } else if ($vue == 'reinit' && $token !== null) { ?>
-			<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
+			<div class="une_colonne" class="centre" style="border:1px solid grey; padding:1em;">
 				<input type="hidden" name="token" value="<?= $token ?>">
 				<div class="lab">
 					<label for="nouveaumotdepasse">Nouveau mot de passe :</label>

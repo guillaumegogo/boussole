@@ -68,10 +68,10 @@
 				</div>
 
 				<div style="display:inline-block; margin-top:1em; vertical-align: top;">
-					<INPUT TYPE="button" style="display:block; margin:1em;" NAME="right" VALUE="&gt;&gt;"
+					<INPUT TYPE="button" class="margin1" style="display:block;" NAME="right" VALUE="&gt;&gt;"
 						   ONCLICK="moveSelectedOptions(this.form['list1'],this.form['list2'],true)">
 
-					<INPUT TYPE="button" style="display:block; margin:1em;" NAME="left" VALUE="&lt;&lt;"
+					<INPUT TYPE="button" class="margin1" style="display:block;" NAME="left" VALUE="&lt;&lt;"
 						   ONCLICK="moveSelectedOptions(this.form['list2'],this.form['list1'],true)">
 				</div>
 

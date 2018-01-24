@@ -53,11 +53,12 @@
 	<?php
 	} else {
 	?>
-		<div style="margin:1em;text-align:center">Aucun résultat</div>
+		<div class="centre margin1">Aucun résultat</div>
 	<?php
 	}
 	?>
 
+		<div class="notice italic centre">Pour ouvrir un thème sur un nouveau territoire, choisissez un des thèmes existants et utilisez la fonction [décliner sur un territoire].</div>
 </div>
 
 <!--<div class="button">

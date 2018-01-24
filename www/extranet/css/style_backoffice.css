@@ -60,7 +60,7 @@ h1 a:hover {
 h2 {
 	margin-left:0em;
 }
-.container{
+.margin1{
 	margin:1em;
 }
 .liste_territoire{
@@ -232,4 +232,7 @@ pre{
 }
 .notice{
 	font-weight:normal; font-size: small;
+}
+.italic {
+  font-style: italic;
 }

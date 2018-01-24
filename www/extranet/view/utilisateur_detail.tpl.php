@@ -123,7 +123,7 @@
 			<?php if ($vue == "modif") { ?>
 				<a href="?id=<?= $id_utilisateur ?>&do=mdp" style="float:right">Changer le mot de passe</a>
 			<?php } else if ($vue == "creation") { ?>
-				<div style="font-style: italic; font-size:small; text-align:center">Un email sera transmis à l'adresse indiquée pour que l'utilisateur puisse renseigner son mot de passe.</div>
+				<div class="centre italic" style="font-size:small;">Un email sera transmis à l'adresse indiquée pour que l'utilisateur puisse renseigner son mot de passe.</div>
 			<?php } ?>
 		</fieldset>
 
