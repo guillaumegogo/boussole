@@ -2,9 +2,7 @@
 	<div class="info-footer container" style="">
 		<div class="row">
 			<div class="wrapper footer-column col-sm-3">
-				<img src="img/2017_MEN_logo.png" alt="Ministère de l'éducation nationale" >
-			</div>
-			<div class="wrapper footer-column col-sm-3">
+				<!--<img src="img/2017_MEN_logo.png" alt="Ministère de l'éducation nationale" >-->
 				<ul>
 					<li><a href="apropos.php?p=presentation">La Boussole, c’est quoi ?</a></li>
 					<li><a href="apropos.php?p=comment">Comment ça marche ?</a></li>
@@ -14,6 +12,10 @@
 				<ul>
 					<li><a href="apropos.php?p=conditions">Conditions d’utilisation</a></li>
 					<li><a href="apropos.php?p=mentions">Mentions légales</a></li>
+				</ul>
+			</div>
+			<div class="wrapper footer-column col-sm-3">
+				<ul>
 					<li><a href="apropos.php?p=contact">Contactez-nous</a></li>
 				</ul>
 			</div>

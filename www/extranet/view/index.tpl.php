@@ -15,7 +15,7 @@
 	<div class="soustitre"><?= $msg ?></div>
 
 	<form method="post" class="detail auth">
-		<div class="une_colonne" class="centre" style="border:1px solid grey; padding:1em;">
+		<div class="une_colonne" style="border:1px solid grey; padding:1em; text-align:center;">
 			<div class="lab">
 				<label for="login">Utilisateur :</label>
 				<input type="text" name="login" placeholder="votre courriel de contact"/>
