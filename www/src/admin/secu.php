@@ -41,11 +41,11 @@ function secu_login($email, $password)
 	$logged = false;
 
 	$sql = 'SELECT `id_utilisateur`, `nom_utilisateur`, `motdepasse`, `u`.`id_statut`, `libelle_statut`, `date_inscription`, `id_metier`, `nom_pro`, `t_u`.`nom_territoire`, `competence_geo`, `id_competence_geo`, `t_p`.`nom_territoire` AS `nom_territoire_pro` 
-			FROM `'.DB_PREFIX.'bsl_utilisateur` AS `u`
-			JOIN `'.DB_PREFIX.'bsl__droits` AS `d` ON `d`.`id_statut`=`u`.`id_statut`
-			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_u` ON `u`.`id_statut` = 2 AND `id_metier`=`t_u`.`id_territoire`
-			LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` AS `p` ON `u`.`id_statut` = 3 AND `id_metier`=`p`.`id_professionnel`
-			LEFT JOIN `'.DB_PREFIX.'bsl_territoire` AS `t_p` ON `p`.`competence_geo`="territoire" AND `p`.`id_competence_geo`=`t_p`.`id_territoire`
+			FROM `'.DB_PREFIX.'utilisateur` AS `u`
+			JOIN `'.DB_PREFIX.'_droits` AS `d` ON `d`.`id_statut`=`u`.`id_statut`
+			LEFT JOIN `'.DB_PREFIX.'territoire` AS `t_u` ON `u`.`id_statut` = 2 AND `id_metier`=`t_u`.`id_territoire`
+			LEFT JOIN `'.DB_PREFIX.'professionnel` AS `p` ON `u`.`id_statut` = 3 AND `id_metier`=`p`.`id_professionnel`
+			LEFT JOIN `'.DB_PREFIX.'territoire` AS `t_p` ON `p`.`competence_geo`="territoire" AND `p`.`id_competence_geo`=`t_p`.`id_territoire`
 			WHERE `email` = ? AND `actif_utilisateur` = 1';
 	$stmt = mysqli_prepare($conn, $sql);
 	mysqli_stmt_bind_param($stmt, 's', $email);
@@ -116,7 +116,7 @@ function secu_is_logged()
 	$logged = false;
 	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id']) && isset($_SESSION['admin']['user_checksum']) && !empty($_SESSION['admin']['user_checksum'])) {
 		$sql = 'SELECT `email`, `date_inscription`
-			FROM `'.DB_PREFIX.'bsl_utilisateur`
+			FROM `'.DB_PREFIX.'utilisateur`
 			WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
 		$stmt = mysqli_prepare($conn, $sql);
 		$id = (int)$_SESSION['admin']['user_id'];
@@ -171,8 +171,8 @@ function secu_is_authorized($domaine)
 			case 'accueil' :
 				$champs = '`demande_r` as `'.DROIT_DEMANDE.'`, `offre_r` as `'.DROIT_OFFRE.'`, `mesure_r` as `'.DROIT_MESURE.'`, `professionnel_r` as `'.DROIT_PROFESSIONNEL.'`, `utilisateur_r` as `'.DROIT_UTILISATEUR.'`, `formulaire_r` as `'.DROIT_FORMULAIRE.'`, `theme_r` as `'.DROIT_THEME.'`, `territoire_r` as `'.DROIT_TERRITOIRE.'`'; break;
 		}
-		$sql = 'SELECT '.$champs.' FROM `'.DB_PREFIX.'bsl__droits` 
-			JOIN `'.DB_PREFIX.'bsl_utilisateur` ON `'.DB_PREFIX.'bsl__droits`.`id_statut`=`'.DB_PREFIX.'bsl_utilisateur`.`id_statut`
+		$sql = 'SELECT '.$champs.' FROM `'.DB_PREFIX.'_droits` 
+			JOIN `'.DB_PREFIX.'utilisateur` ON `'.DB_PREFIX.'_droits`.`id_statut`=`'.DB_PREFIX.'utilisateur`.`id_statut`
 			WHERE `id_utilisateur` = ? ';
 		$stmt = mysqli_prepare($conn, $sql);
 		$id = (int)$_SESSION['admin']['user_id'];
@@ -244,51 +244,51 @@ function secu_check_level($domaine, $id)
 			
 			}else{
 				if($domaine===DROIT_DEMANDE) {
-					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
-						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_demande=? ';
+					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'demande`
+						JOIN `'.DB_PREFIX.'offre` ON `'.DB_PREFIX.'offre`.id_offre=`'.DB_PREFIX.'demande`.id_offre
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_competence_geo=? AND id_demande=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 				
 				} else if($domaine===DROIT_OFFRE) {
-					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_offre=? ';
+					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'offre`
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_competence_geo=? AND id_offre=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine===DROIT_MESURE) {
-					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'bsl_mesure`
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_mesure`.id_professionnel AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_competence_geo=? AND id_mesure=? ';
+					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'mesure`
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'mesure`.id_professionnel AND `'.DB_PREFIX.'professionnel`.competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_competence_geo=? AND id_mesure=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine===DROIT_PROFESSIONNEL) {
-					$query='SELECT id_professionnel as `id` FROM `'.DB_PREFIX.'bsl_professionnel`
+					$query='SELECT id_professionnel as `id` FROM `'.DB_PREFIX.'professionnel`
 						WHERE competence_geo="territoire" AND id_competence_geo=? AND id_professionnel=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine===DROIT_UTILISATEUR) {
-					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
+					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'utilisateur`
 						WHERE id_statut IN (2,4) AND id_metier=? AND id_utilisateur=? 
 						UNION
-						SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
-						LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.id_metier=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel 
+						SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'utilisateur`
+						LEFT JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'utilisateur`.id_metier=`'.DB_PREFIX.'professionnel`.id_professionnel 
 						WHERE id_statut =3 AND competence_geo="territoire" AND id_competence_geo=? AND id_utilisateur=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'iiii', $zone_id, $id, $zone_id, $id);
 					
 				} else if($domaine===DROIT_FORMULAIRE) {
-					$query='SELECT `id_formulaire` FROM `'.DB_PREFIX.'bsl_formulaire`
+					$query='SELECT `id_formulaire` FROM `'.DB_PREFIX.'formulaire`
 						WHERE `id_territoire`=? AND `id_formulaire`= ?';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
 					
 				} else if($domaine===DROIT_THEME) {
-					$query='SELECT `id_theme` FROM `'.DB_PREFIX.'bsl_theme`
+					$query='SELECT `id_theme` FROM `'.DB_PREFIX.'theme`
 						WHERE `id_territoire`=? AND `id_theme`= ?';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $zone_id, $id);
@@ -320,31 +320,31 @@ function secu_check_level($domaine, $id)
 			
 			}else {
 				if($domaine===DROIT_DEMANDE) {
-					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'bsl_demande`
-						JOIN `'.DB_PREFIX.'bsl_offre` ON `'.DB_PREFIX.'bsl_offre`.id_offre=`'.DB_PREFIX.'bsl_demande`.id_offre
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_demande=? ';
+					$query='SELECT id_demande as `id` FROM `'.DB_PREFIX.'demande`
+						JOIN `'.DB_PREFIX.'offre` ON `'.DB_PREFIX.'offre`.id_offre=`'.DB_PREFIX.'demande`.id_offre
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_professionnel=? AND id_demande=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 					//echo $query.' '.$pro_id.' '.$id;
 				
 				} else if($domaine===DROIT_OFFRE) {
-					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'bsl_offre`
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_offre`.id_professionnel AND competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_offre=? ';
+					$query='SELECT id_offre as `id` FROM `'.DB_PREFIX.'offre`
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'offre`.id_professionnel AND competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_professionnel=? AND id_offre=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 					
 				} else if($domaine===DROIT_MESURE) {
-					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'bsl_mesure`
-						JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=`'.DB_PREFIX.'bsl_mesure`.id_professionnel AND `'.DB_PREFIX.'bsl_professionnel`.competence_geo="territoire"
-						WHERE `'.DB_PREFIX.'bsl_professionnel`.id_professionnel=? AND id_mesure=? ';
+					$query='SELECT id_mesure as `id` FROM `'.DB_PREFIX.'mesure`
+						JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'professionnel`.id_professionnel=`'.DB_PREFIX.'mesure`.id_professionnel AND `'.DB_PREFIX.'professionnel`.competence_geo="territoire"
+						WHERE `'.DB_PREFIX.'professionnel`.id_professionnel=? AND id_mesure=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
 				
 				} else if($domaine===DROIT_UTILISATEUR) {
-					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'bsl_utilisateur`
-						LEFT JOIN `'.DB_PREFIX.'bsl_professionnel` ON `'.DB_PREFIX.'bsl_utilisateur`.id_metier=`'.DB_PREFIX.'bsl_professionnel`.id_professionnel 
+					$query='SELECT id_utilisateur as `id` FROM `'.DB_PREFIX.'utilisateur`
+						LEFT JOIN `'.DB_PREFIX.'professionnel` ON `'.DB_PREFIX.'utilisateur`.id_metier=`'.DB_PREFIX.'professionnel`.id_professionnel 
 						WHERE id_statut =3 AND id_professionnel=? AND id_utilisateur=? ';
 					$stmt = mysqli_prepare($conn, $query);
 					mysqli_stmt_bind_param($stmt, 'ii', $pro_id, $id);
@@ -397,7 +397,7 @@ function secu_check_role($role)
 
 	if (isset($_SESSION['admin']['user_id']) && !empty($_SESSION['admin']['user_id'])) {
 		$sql = 'SELECT `id_statut` 
-				FROM `'.DB_PREFIX.'bsl_utilisateur` 
+				FROM `'.DB_PREFIX.'utilisateur` 
 				WHERE `id_utilisateur` = ? AND `actif_utilisateur` = 1';
 		$stmt = mysqli_prepare($conn, $sql);
 		$id = (int)$_SESSION['admin']['user_id'];
@@ -434,7 +434,7 @@ function secu_send_pass_email($email, $origine='reset')
 	$sent = false;
 	$token = hash('sha256', $email . time() . rand(0, 1000000));
 
-	$sql = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
+	$sql = 'UPDATE `'.DB_PREFIX.'utilisateur` 
 			SET `reinitialisation_mdp`= ? ,`date_demande_reinitialisation`= NOW() 
 			WHERE `email`= ? AND `actif_utilisateur`= 1';
 
@@ -478,7 +478,7 @@ function secu_check_reset_token($token)
 	$check = false;
 
 	$sql = 'SELECT `date_demande_reinitialisation` 
-			FROM `'.DB_PREFIX.'bsl_utilisateur` 
+			FROM `'.DB_PREFIX.'utilisateur` 
 			WHERE `reinitialisation_mdp`= ? AND `actif_utilisateur`= 1';
 
 	$stmt = mysqli_prepare($conn, $sql);
@@ -509,7 +509,7 @@ function secu_reset_password($password, $token)
 {
 	global $conn;
 
-	$sql = 'UPDATE `'.DB_PREFIX.'bsl_utilisateur` 
+	$sql = 'UPDATE `'.DB_PREFIX.'utilisateur` 
 			SET `motdepasse` = ?, reinitialisation_mdp = NULL 
 			WHERE `reinitialisation_mdp` = ? AND `actif_utilisateur`= 1';
 
