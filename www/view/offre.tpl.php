@@ -3,6 +3,17 @@
 <head>
 	<?php include('view/inc.head-min.php'); ?>
 	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
+	<script type="text/javascript" language="javascript">
+	function afficheId(id) {
+		var x = document.getElementById(id);
+		if (x.style.display === 'none') {
+			x.style.display = 'block';
+		} else {
+			x.style.display = 'none';
+		}
+	}
+	</script>
+} 
 </head>
 <body><div id="main" class="body-color">
 	<?php include('view/inc.header.php'); ?>
@@ -130,6 +141,7 @@
 							<p class="adresse-offre-titre">Proposée par l'organisme</p>
 							<h3><?php xecho($row['nom_pro']) ?></h3>
 							<p class="adresse-offre-adresse"><?php xecho($adresse) ?></p>
+							<p><span id="description_pro" style="display:none"><?php xbbecho($row['description_pro']) ?><br/></span> <a href="#" onclick="afficheId('description_pro');">en savoir plus</a></p>	
 						</div>
 					</div>
 					<div class="row">

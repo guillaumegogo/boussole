@@ -97,7 +97,7 @@ $regions = null;
 $departements = null;
 $territoires = null;
 if (secu_check_role(ROLE_ADMIN)) {
-	$competences_geo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
+	$competences_geo += array('departemental' => 'Départemental', 'regional' => 'Régional', 'national' => 'National');
 	$regions = get_liste_regions();
 	$departements = get_liste_departements();
 }

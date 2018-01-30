@@ -245,7 +245,7 @@
 							if ($pro['delai_pro'] == $i) {
 								echo "selected";
 							}
-						} ?>><?= $i ?> jours
+						} ?>><?= $i ?> jour<?= ($i>1)?'s':'' ?>
 						</option>
 					<?php } ?>
 					</select>
