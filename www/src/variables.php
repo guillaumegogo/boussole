@@ -16,28 +16,28 @@ switch (ENVIRONMENT)
 		define('DB_USERNAME', 'apache');
 		define('DB_PASSWD', 'cpvaprplf');
 		define('DB_NAME', 'boussole');
-		define('DB_PREFIX', '');
+		define('DB_PREFIX', 'bsl_');
 		break;
 	case ENV_GUILLAUME :
 		define('DB_HOST', 'localhost');
 		define('DB_USERNAME', 'root');
 		define('DB_PASSWD', '');
 		define('DB_NAME', 'boussole');
-		define('DB_PREFIX', '');
+		define('DB_PREFIX', '_');
 		break;
 	case ENV_TEST :
 		define('DB_HOST', '???');
 		define('DB_USERNAME', '???');
 		define('DB_PASSWD', '???');
 		define('DB_NAME', '???');
-		define('DB_PREFIX', 'test__');
+		define('DB_PREFIX', '_test_');
 		break;
 	case ENV_BETA :
 		define('DB_HOST', '???');
 		define('DB_USERNAME', '???');
 		define('DB_PASSWD', '???');
 		define('DB_NAME', '???');
-		define('DB_PREFIX', '');
+		define('DB_PREFIX', '_beta_');
 		break;
 	case ENV_PROD :
 		define('DB_HOST', '???');

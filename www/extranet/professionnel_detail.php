@@ -23,13 +23,19 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	$zone = 0;
 	$liste_villes = null;
 	$check_editeur = null;
+	
 	if (isset($_POST['theme'])) $themes=$_POST['theme'];
 	if (isset($_POST['check_zone'])) $zone=$_POST['check_zone'];
 	if (isset($_POST['list2'])) $liste_villes=$_POST['list2'];
 	if (isset($_POST['check_editeur'])) $check_editeur=$_POST['check_editeur'];
+	
+	$url = (substr($_POST['site'],0,4)=="http") ? $_POST['site'] : "http://".$_POST['site'];
+	$url = (filter_var($url, FILTER_VALIDATE_URL)) ? $url : null;
+
 	$code_postal = substr($_POST['commune'], -5);
 	$ville = substr($_POST['commune'], 0, -6);
 	$code_insee = get_code_insee($code_postal, $ville);
+	
 
 	//si choix d'une compétence région/département/territoire, récupération de l'id correspondant (région/département/territoire)
 	$id_competence_geo = "NULL";
@@ -47,7 +53,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	//requête d'ajout
 	if (!$_POST["maj_id"]) {
-		$created = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
+		$created = create_pro($_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $url, (int)$_POST['delai'], $_POST['competence_geo'], (int)$id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
 		
 		if ($created[0]){
 			$last_id = $created[1];
@@ -58,7 +64,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 
 	//requête de modification
 	} else {
-		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $_POST['site'], $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
+		$updated = update_pro((int)$_POST['maj_id'], $_POST['nom'], $_POST['type_id'], $_POST['statut_id'], html2bbcode($_POST['desc']), $_POST['adresse'], $code_postal, $ville, $code_insee, $_POST['courriel'], $_POST['tel'], (int)$visibilite, $_POST['courriel_ref'], $_POST['tel_ref'], $url, $_POST['delai'], $_POST['competence_geo'], $id_competence_geo, (int)$check_editeur, $themes, $zone, $liste_villes);
 		$last_id = $_POST['maj_id'];
 		if (isset($updated)) $msg = 'Modification bien enregistrée.';
 	}
@@ -97,7 +103,7 @@ $regions = null;
 $departements = null;
 $territoires = null;
 if (secu_check_role(ROLE_ADMIN)) {
-	$competences_geo += array('national' => 'National', 'regional' => 'Régional', 'departemental' => 'Départemental');
+	$competences_geo += array('departemental' => 'Départemental', 'regional' => 'Régional', 'national' => 'National');
 	$regions = get_liste_regions();
 	$departements = get_liste_departements();
 }

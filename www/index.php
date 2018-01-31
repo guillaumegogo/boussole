@@ -2,13 +2,30 @@
 include('src/web/bootstrap.php');
 
 if(isset($_SESSION['web']['erreur'])) {
+	
 	if ($_SESSION['web']['erreur'] == 1) {
-		$message = "Nous ne trouvons pas de ville correspondante. Une faute de frappe ?";
+		$message_bas = "Nous ne trouvons pas de ville correspondante. Une faute de frappe ?";
 	} else if ($_SESSION['web']['erreur'] == 2) {
-		$message = "Plusieurs villes correspondent à ta saisie. Peux-tu préciser s'il te plaît ?";
+		$message_bas = "Plusieurs villes correspondent à ta saisie. Peux-tu préciser s'il te plaît ?";
+		
 	} else if ($_SESSION['web']['erreur'] == 3) {
-		$message = "Aucune offre de service n'est encore répertoriée dans la Boussole pour ta ville, probablement car elle n'appartient pas à un des territoires actuellement ouverts.<br/>Nous t'invitons à <a href=\"https://www.cidj.com/nous-rencontrer\" target=\"_blank\">te rapprocher du réseau information jeunesse près de chez toi</a> qui saura certainement répondre à ton besoin.";
+		$message_haut = "Oups, ta ville n'appartient pas encore à un territoire de la Boussole !<br/>En attendant que ce soit le cas, contacte le CRIJ le plus près de chez toi :";
+	} else if ($_SESSION['web']['erreur'] == 4) {
+		$message_haut = "Oups, aucune offre de service n'est encore répertoriée dans la Boussole sur ta ville !<br/>En attendant que ce soit le cas, contacte le CRIJ le plus près de chez toi :";
 	}
+	
+	$liste_crij = (in_array($_SESSION['web']['erreur'], array(3,4))) ? get_pro_by_ville($_SESSION['web']['code_insee'], "CRIJ") : null;
+	foreach($liste_crij as &$crij){ 
+		$crij['url'] = null;
+		if (substr($crij['site_web_pro'],0,4)!="http") {
+			$crij['site_web_pro'] = "http://".$crij['site_web_pro'];
+		}
+		if($crij['site_web_pro'] && filter_var($crij['site_web_pro'], FILTER_VALIDATE_URL)){ 
+			$crij['url'] = '<a href="'.$crij['site_web_pro'].'" target="_blank">' ;
+		}
+		unset($crij);
+	}
+
 	unset($_SESSION['web']['erreur']);
 }
 

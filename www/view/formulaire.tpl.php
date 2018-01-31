@@ -82,7 +82,12 @@
 										<?php
 									}
 									?>
-									<div style="margin-top:2em;"><button type="submit" style="float:right">Je continue</button></div>
+									<div style="clear:both; text-align:center">
+									* Champs obligatoires
+									</div>
+									<div style="margin-top:2em;">
+										<button type="submit" style="float:right">Je continue</button>
+									</div>
                                     <?php if($etape == 1) { ?>
                                         <a href="jesouhaite.php" style="float:left">Précédent</a>
                                     <?php }else if($etape == 2){ ?>

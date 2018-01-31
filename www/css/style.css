@@ -237,6 +237,7 @@ p.message{
 	color: #15488E;
 	font-weight: 500;
 }
+
 p.message:before{
 	content: '';
 	background-image: url('../img/ico-attention.svg');
@@ -246,6 +247,11 @@ p.message:before{
 	width: 15px;
 	height: 15px;
 	margin: 3px 7px 0 0;
+}
+p.message_haut{
+	font-size: 16px;
+	color: #15488E;
+	font-weight: 500;
 }
 
 .soustitre {
