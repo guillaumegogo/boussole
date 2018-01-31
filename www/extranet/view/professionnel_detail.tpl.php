@@ -203,6 +203,9 @@
 					<input type="text" name="site" value="<?php if ($id_professionnel) {
 						echo $pro['site_web_pro'];
 					} ?>"/>
+					<?php if (isset($pro['site_web_pro']) && filter_var($pro['site_web_pro'], FILTER_VALIDATE_URL)) { ?> 
+						<a href="<?= $pro['site_web_pro'] ?>" target="_blank">Vérifier</a>
+					<?php } ?>
 				</div>
 			</div>
 			<div class="deux_colonnes">

@@ -13,7 +13,6 @@
 		}
 	}
 	</script>
-} 
 </head>
 <body><div id="main" class="body-color">
 	<?php include('view/inc.header.php'); ?>

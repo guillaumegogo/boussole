@@ -111,6 +111,33 @@ function get_ville($saisie){
 	return $row;
 }
 
+//********* récupération des pros sur un territoire (pour l'instant pour le CRIJ uniquement)
+function get_pro_by_ville($code_insee, $type=null){
+
+	global $conn;
+	$villes=null;
+	
+	if($type=="CRIJ"){
+		$query = 'SELECT `pr`.`id_professionnel`, `pr`.`nom_pro`, `pr`.`description_pro`, `pr`.`adresse_pro`, `pr`.`code_postal_pro`, `pr`.`ville_pro`, `pr`.`courriel_pro`, `pr`.`telephone_pro`, `pr`.`visibilite_coordonnees`, `pr`.`site_web_pro`, `re`.`nom_region`
+			FROM `'.DB_PREFIX.'professionnel` as `pr` 
+			LEFT JOIN `'.DB_PREFIX.'_parametres` as pa ON pa.id=pr.type_id AND pa.liste="type_pro" 
+			LEFT JOIN `'.DB_PREFIX.'_region` as re ON re.id_region=pr.id_competence_geo AND pr.competence_geo="regional"
+			LEFT JOIN `'.DB_PREFIX.'_departement` as de ON de.id_region=re.id_region
+			WHERE pr.actif_pro=1 AND pa.libelle="CRIJ" ';
+		if(!is_null($code_insee)){
+			$query .= ' AND `de`.`id_departement` = SUBSTR(?,1,2)';
+		}
+		
+		$stmt = mysqli_prepare($conn, $query);
+		if(!is_null($code_insee)){
+			mysqli_stmt_bind_param($stmt, 's', $code_insee);
+		}
+		$villes = query_get($stmt);
+	}
+	
+	return $villes;
+}
+
 //************ récupération des éléments de la page du formulaire 
 function get_formulaire($besoin, $etape, $id_territoire=0){
 	

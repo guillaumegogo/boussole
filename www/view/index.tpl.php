@@ -58,6 +58,19 @@
 				<img src="img/marianne.png" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
 				<a  href="index.php"><img src="img/logo-boussole.svg" alt="logo la boussole des jeunes" class="logo-boussole-homepage"></a>
 
+<?php if (isset($message_haut)){ ?>
+				<div class="row">
+					<p class="message_haut"><?= $message_haut ?></p>
+	<?php if(isset($liste_crij)){ ?>
+					<p> 
+		<?php foreach($liste_crij as $crij){ ?>
+			<b><?= ($crij['url']) ? $crij['url'] : '' ?><?= $crij['nom_pro'] ?><?= ($crij['url']) ? '</a>' : '' ?></b>, <?= $crij['adresse_pro'].' '.$crij['code_postal_pro'].' '.$crij['ville_pro'] ?><?= ($crij['visibilite_coordonnees']) ? ', '.$crij['telephone_pro'] : '' ?><br/>
+		<?php } ?>
+					</p>
+	<?php } ?>
+				</div>
+<?php } ?>
+
 				<div class="container bonhomme-section-header">
 					<div class="row">
 						<div class="col-md-4 col-sm-4 col-xs-4">
@@ -77,7 +90,7 @@
 			</div>
 		</div>
 	</header>
-		<!-- new form not working -->
+
 		<div class="wrapper container accueil-recherche">
 			<div class="row">
 				<form action="jesouhaite.php" class="joli accueil" method="post" id="searchForm">
@@ -91,8 +104,8 @@
 						<div class="wrapper-input-ville">
 							<input type="text" id="villes" name="ville_selectionnee" class="input-villes" placeholder="ville ou code postal">
 						</div>
-                        <?php if (isset($message)) { ?>
-                            <p class="message"><?= $message ?></p>
+                        <?php if (isset($message_bas)) { ?>
+                            <p class="message"><?= $message_bas ?> </p>
                         <?php } ?>
 					</div>
 					<div class="col-md-3 col-sm-4 col-xs-12">
