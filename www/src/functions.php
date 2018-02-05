@@ -163,7 +163,7 @@ function bbcode2html($s) {
 		'<i>$1</i>',
 		'<u>$1</u>',
 		'<img src="$1"/>',
-		'<a href="$1">$2</a>',
+		'<a href="$1" target="_blank">$2</a>',
 		'<br />'
 	);
 	$t = preg_replace($bbtags,$htmltags,$s);

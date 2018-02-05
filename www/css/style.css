@@ -94,12 +94,18 @@ footer a:focus{
 	float: left;
 	margin-top: 4.5em;
     height: 70px;
-	margin-right: -70px;
+	/*margin-right: -70px;*/
+}
+
+.logo-jeunesse-homepage{
+	float: right;
+	margin-top: 4.5em;
+    height: 55px;
+	/*margin-left: -70px;*/
 }
 
 .logo-boussole-homepage{
 	padding: 2em 0;
-	margin-left: -70px;
 }
 
 .bonhomme-section-header{
@@ -373,7 +379,12 @@ footer .footer-after{
 	    margin-right: 3em;
    		margin-bottom: 4em;
 	}
-
+	.logo-jeunesse-homepage{
+	    float: none; 
+	    margin-left: 3em;
+   		margin-bottom: 4em;
+	}
+	
 	.soustitre {
 	    max-width: 100%;
 	    padding: 0 2em;
@@ -395,6 +406,14 @@ footer .footer-after{
 	    left: 0em; 
 	    top: -0.5em;
 	    margin-right: 3em;
+	}
+	.logo-jeunesse-homepage{
+	    float: none; 
+	    padding-top: 0em; 
+	    position: relative;
+	    left: 0em; 
+	    top: -0.5em;
+	    margin-left: 3em;
 	}
 
 	.accueil-recherche {
@@ -482,6 +501,9 @@ footer .footer-after{
 @media screen and (max-width:400px){
 
 	.logo-ministere-homepage {
+	    display: none;
+	}
+	.logo-jeunesse-homepage{
 	    display: none;
 	}
 	

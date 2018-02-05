@@ -343,11 +343,11 @@ function create_recherche($nb){
 
 	global $conn;
 	
-	$query = 'INSERT INTO `'.DB_PREFIX.'recherche`(`date_recherche`, `code_insee`, `besoin`, `criteres`, `nb_offres`)
+	$query = 'INSERT INTO `'.DB_PREFIX.'recherche`(`date_recherche`, `code_insee`, `id_territoire`, `besoin`, `criteres`, `nb_offres`)
 		VALUES (NOW(), ?, ?, ?, ?)';
 	$criteres = json_encode($_SESSION['web']['critere'], JSON_UNESCAPED_SLASHES); //façon de charger le tableau simplement en base de données
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'sssi', $_SESSION['web']['code_insee'], $_SESSION['web']['besoin'], $criteres, $nb);
+	mysqli_stmt_bind_param($stmt, 'sssi', $_SESSION['web']['code_insee'], $_SESSION['web']['id_territoire'], $_SESSION['web']['besoin'], $criteres, $nb);
 	check_mysql_error($conn);
 
 	if (mysqli_stmt_execute($stmt)) {

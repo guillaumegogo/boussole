@@ -19,9 +19,9 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="statistiques.php">Statistiques</a> ></small> 
 		Liste des recherches</h2>
-
+		
 	<?php
 	if (count($recherches) > 0) {
 	?>

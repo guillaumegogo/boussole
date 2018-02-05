@@ -56,6 +56,7 @@
 			<div class="wrapper-bandeau-homepage">
 
 				<img src="img/marianne.png" alt="Ministère de l'éducation nationale" class="logo-ministere-homepage">
+				<img src="img/logo-jeunesse.png" alt="DJEPVA" class="logo-jeunesse-homepage">
 				<a  href="index.php"><img src="img/logo-boussole.svg" alt="logo la boussole des jeunes" class="logo-boussole-homepage"></a>
 
 <?php if (isset($message_haut)){ ?>

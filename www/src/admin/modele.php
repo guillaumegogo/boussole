@@ -2115,3 +2115,51 @@ function update_reponse($reponse_id, $libelle, $id_v, $libelle_v, $valeur_v, $or
 	
 	return $updated;
 }
+
+/**** stats ***/
+
+function get_stat_nb_recherches_par_mois(){
+
+	global $conn;
+
+	$nb_recherches = null;
+	$query = 'SELECT DATE_FORMAT(`date_recherche`, "%Y-%m") as `mois`, `nom_territoire`, COUNT(`id_recherche`) as `nb` 
+		FROM `'.DB_PREFIX.'recherche` as r
+		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`r`.`id_territoire`
+		WHERE `date_recherche` > CURDATE() - INTERVAL 1 YEAR 
+		GROUP BY `mois`, `nom_territoire` 
+		ORDER BY `mois`, `nom_territoire` ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$libelle_t = ($row['nom_territoire']) ? $row['nom_territoire'] : "Hors territoire";
+		$nb_recherches[$row['mois']][$libelle_t] = $row['nb'];
+	}
+	return $nb_recherches;
+}
+
+function get_stat_nb_demandes_par_mois($etat='toutes', $ventilation='territoire'){
+
+	global $conn;
+
+	$nb_demandes = null;
+	$d = ($etat=='traitees') ? 'date_traitement' : 'date_demande';
+	$v = ($ventilation=='pro') ? 'nom_pro' : 'nom_territoire';
+	
+	$query = 'SELECT DATE_FORMAT(`'.$d.'`, "%Y-%m") as `mois`, `'.$v.'`, COUNT(`id_demande`) as `nb` 
+		FROM `'.DB_PREFIX.'demande` as d
+		JOIN `'.DB_PREFIX.'offre` as o ON o.id_offre=d.`id_offre`
+		JOIN `'.DB_PREFIX.'professionnel` as p ON p.id_professionnel=o.`id_professionnel`
+		JOIN `'.DB_PREFIX.'theme` as sth ON `sth`.id_theme=o.`id_sous_theme`
+		JOIN `'.DB_PREFIX.'theme` as th ON `th`.id_theme=`sth`.`id_theme_pere`
+		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`th`.`id_territoire` AND actif_territoire=1
+		WHERE `'.$d.'` > CURDATE() - INTERVAL 1 YEAR 
+		GROUP BY `mois`, `'.$v.'` 
+		ORDER BY `mois`, `'.$v.'` ';
+	$result = mysqli_query($conn, $query);
+	while($row = mysqli_fetch_assoc($result)) {
+		$libelle_t = $row[$v];
+		if ($v=='nom_territoire' && !$libelle_t) $libelle_t = "Hors territoire";
+		$nb_demandes[$row['mois']][$libelle_t] = $row['nb'];
+	}
+	return $nb_demandes;
+}

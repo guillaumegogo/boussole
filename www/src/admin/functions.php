@@ -48,6 +48,13 @@ function lien($row){
 	return '<a href="' . $row[0] .'"'. ((substr($row[0],0,4)=="http")?' target="_blank" ':'') .'>'. $row[1] .'</a> '. $row[2];
 }
 
+function format_mois($saisie){
+	//$mois_fr = Array("", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
+	$mois_fr = Array("", "jan", "fév", "mar", "avr", "mai", "juin", "juil", "août", "sep", "oct", "nov", "déc");
+	list($annee, $mois) = explode('-', $saisie);
+	return $mois_fr[intval($mois)].' '.$annee;
+}
+
 /*
 $timestamp_debut = microtime(true);
 ...

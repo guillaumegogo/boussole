@@ -49,8 +49,6 @@
 		</tr>
 	</table>
 	
-	<div class="centre" style="margin-top:3em"><a href="accueil_nv.php">Proposition de nouvel accueil</a></div>
-	
 </div>
 </body>
 </html>
