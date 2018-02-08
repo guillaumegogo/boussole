@@ -2,7 +2,7 @@
 <html>
 <head>
 	<?php include('view/inc.head-min.php'); ?>
-	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
+	<!--<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>-->
 </head>
 <body><div id="main">
 	<?php include('view/inc.header.php'); ?>

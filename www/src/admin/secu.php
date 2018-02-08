@@ -430,7 +430,7 @@ function secu_check_role($role)
 function secu_send_pass_email($email, $origine='reset')
 {
 	global $conn;
-	global $path_from_extranet_to_web;
+	global $path_extranet;
 	$sent = false;
 	$token = hash('sha256', $email . time() . rand(0, 1000000));
 
@@ -446,14 +446,14 @@ function secu_send_pass_email($email, $origine='reset')
 			if ($origine=='reset') {
 				$subject = mb_encode_mimeheader('Réinitialisation de votre mot de passe', 'UTF-8');
 				$message = "<html><p>Vous avez demandé la réinitialisation de votre mot de passe.</p> "
-				. "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php?t=" . $token . "</a></p>"
+				. "<p>Pour saisir votre nouveau mot de passe, merci de cliquer sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php?t=" . $token . "</a></p>"
 				. "<p>Ce lien est valide trois jours, après quoi il vous faudra refaire une demande.</p>"
 				. "<p>Cordialement. L'équipe de la Boussole des jeunes.</p></html>";
 			}else if ($origine=='init') {
 				$subject = mb_encode_mimeheader('Création de votre compte Boussole des jeunes et initialisation de votre mot de passe', 'UTF-8');
 				$message = "<html><p>Un compte a été créé à votre nom sur la Boussole des jeunes.</p> "
-				. "<p>Avant de pouvoir vous connecter, vous devez initialiser votre mot de passe en cliquant sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php?t=" . $token . "</a></p>"
-				. "<p>Ce lien est valide trois jours, après quoi il faudra demander une réinitialisation du mot de passe sur <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php\">" . $_SERVER['SERVER_NAME'] . $path_from_extranet_to_web . "/motdepasseoublie.php</a>.</p>"
+				. "<p>Avant de pouvoir vous connecter, vous devez initialiser votre mot de passe en cliquant sur le lien suivant : <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php?t=" . $token . "\">" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php?t=" . $token . "</a></p>"
+				. "<p>Ce lien est valide trois jours, après quoi il faudra demander une réinitialisation du mot de passe sur <a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php\">" . $_SERVER['SERVER_NAME'] . $path_extranet . "/motdepasseoublie.php</a>.</p>"
 				. "<p>Cordialement. L'équipe de la Boussole des jeunes.</p></html>";
 			}
 			$headers = 'MIME-Version: 1.0' . "\r\n";

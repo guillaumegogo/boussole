@@ -131,7 +131,10 @@
 		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
 
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
-			<legend>Description de l'offre de service <?= ($id_offre && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'<a href="'.$path_from_extranet_to_web.'/offre.php?id='.$id_offre.'" target="_blank"><img src="img/ex-link-b.png" width="32px"></a>' ?></legend>
+			<legend>Description de l'offre de service 
+				<?= (isset($row['actif_offre']) && $row['actif_offre'] == 0) ? '<span style="color:red">(archivée)</span>':'' ?>
+				<?= (isset($id_offre)) ? '<a href="'.$path_from_extranet_to_web.'/offre.php?id='.$id_offre.'" target="_blank"><img src="img/ex-link-b.png" width="32px"></a>':'' ?>
+			</legend>
 
 			<div class="deux_colonnes">
 				<div class="lab">
@@ -188,7 +191,7 @@
 						</select>
 						<?php 
 						//************* le temps de redresser les données pré-v1
-						if(!$test_data_prev1){
+						if(!$test_data_prev1 && $row['libelle_theme_pere']){
 							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.$row['libelle_theme_pere'].'/national)</span></br>';
 						}
 						//*****************/
@@ -214,7 +217,7 @@
 						</select>
 						<?php 
 						//************* le temps de redresser les données pré-v1
-						if(!$test_data_prev1){
+						if(!$test_data_prev1 && $row['libelle_sous_theme']){
 							echo '<br/><span style="font-size:smaller; margin-left:10em; color:red;">(anciennement : '.$row['libelle_sous_theme'].')</span></br>';
 						}
 						//*****************/

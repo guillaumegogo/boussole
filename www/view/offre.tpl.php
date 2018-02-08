@@ -2,7 +2,7 @@
 <html>
 <head>
 	<?php include('view/inc.head-min.php'); ?>
-	<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>
+	<!--<script type="text/javascript" language="javascript" src="js/fix-ie.js"></script>-->
 	<script type="text/javascript" language="javascript">
 	function afficheId(id) {
 		var x = document.getElementById(id);
@@ -107,15 +107,21 @@
 					<div class="row">
 						<div class="wrapper-offre-service-from">
 								<?php
-								if(isset($_POST['coordonnees'])){
-									echo $msg_depot;
+								if(isset($_POST['coordonnees'])){ ?>
+									<p class='msg'><?= $msg; ?></p>
+								<?php 
 								} else {
 									?>
 									<form method="post">
 										<div class="col-md-6 col-sm-12 col-xs-12">
 											<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
-											<input type="text" required name="coordonnees" class="input-adresse-mail" placeholder="Mon adresse courriel ou n° de téléphone"
-												<?= (isset($_SESSION['web']['coordonnees'])) ? 'value="'.$_SESSION['web']['coordonnees'].'"':'' ?> />
+											<input type="text" name="coordonnees" class="input-adresse-mail" 
+												placeholder="Mon adresse courriel ou n° de téléphone" 
+												required 
+												pattern="^(([-\w\d]+)(\.[-\w\d]+)*@([-\w\d]+)(\.[-\w\d]+)*(\.([a-zA-Z]{2,5}|[\d]{1,3})){1,2}|(0[67]([[\d -\.]){8,12}))$" 
+												title="un n° de téléphone commençant par 06 ou 07, ou une adresse email valide."
+												<?= (isset($_SESSION['web']['coordonnees'])) ? 'value="'.$_SESSION['web']['coordonnees'].'"':'' ?> /> 
+												<!-- + aria-required="true" ? -->
 										</div>
 										<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
 											<button type="submit" class="submit-connexion-offre">Je demande à être contacté(e)</button>

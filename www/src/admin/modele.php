@@ -1110,9 +1110,9 @@ function get_liste_users($flag, $territoire_id, $user_pro_id = null) { //tous le
 	$types = 'i';
 
 	if (isset($territoire_id) && $territoire_id > 0) {
-		$query .= 'AND (`u`.`id_statut`=2 AND `id_metier`= ?)
+		$query .= 'AND ((`u`.`id_statut`=2 AND `id_metier`= ?)
 			OR (`u`.`id_statut`=3 AND `p`.`competence_geo`="territoire"
-				AND `id_competence_geo`= ?) ';
+				AND `id_competence_geo`= ?)) ';
 		$params[] = (int) $territoire_id;
 		$params[] = (int) $territoire_id;
 		$types .= 'ii';
@@ -1123,6 +1123,15 @@ function get_liste_users($flag, $territoire_id, $user_pro_id = null) { //tous le
 		$types .= 'i';
 	}
 	$query .= ' ORDER BY `u`.`id_statut` ASC,`id_metier` ASC';
+	
+	if(DEBUG){
+		$print_sql = $query;
+		foreach($params as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
+	
 	$stmt = query_prepare($query,$params,$types);
 	$users = query_get($stmt);
 	
