@@ -7,25 +7,9 @@
 	<script type="text/javascript" language="javascript" src="src/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" language="javascript" src="src/js/bootstrap.min.js"></script>
 	<script>$( function() {
-			var listeVilles = [<?php include('src/villes_index.inc');?>];
-			//adaptation pour correspondance avec données insee : pas d'accent, de tiret, d'apostrophe, etc.
-			var accentMap = { "á": "a", "â": "a", "ç": "c", "é": "e", "è": "e", "ê": "e", "ë": "e", "î": "i", "ï": "i", "ö": "o", "ô": "o", "ü": "u", "û": "u", "-": " ", "'": " " };
-			var normalize = function( term ) {
-				var ret = "";
-				term = term.replace(/\bsaint/gi, "st");
-				for ( var i = 0; i < term.length; i++ ) {
-					ret += accentMap[ term.charAt(i) ] || term.charAt(i);
-				}
-				return ret;
-			};
 			$( "#villes" ).autocomplete({
 				minLength: 2,
-				source: function( request, response ) {
-					var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( normalize(request.term) ) + ".*$|^.* " + $.ui.autocomplete.escapeRegex( request.term ) + "[0-9]*$", "i" );
-					response( $.grep( listeVilles, function( item ){
-						return (matcher.test( item ));
-					}) );
-				},
+				source: 'ville.php',
 				select: function(event, ui) {
 					$("#villes").val(ui.item.label);
 					$("#searchForm").submit();
