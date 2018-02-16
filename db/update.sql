@@ -1,4 +1,6 @@
-/*v1.1*/
+
+/*v1.01*/
+/*
 ALTER TABLE `recherche` 
 ADD `id_territoire` INT NULL DEFAULT NULL AFTER `code_insee`;
 
@@ -6,7 +8,7 @@ UPDATE `recherche` as r
 LEFT JOIN `territoire_villes` as tv on tv.code_insee=r.code_insee
 LEFT JOIN `territoire` as te on te.id_territoire=tv.id_territoire AND te.actif_territoire=1
 SET r.id_territoire=te.id_territoire 
-WHERE te.actif_territoire=1 ;
+WHERE te.actif_territoire=1 ;*/
 
 /*v1.00
 RENAME TABLE `bsl_demande` TO `demande`;

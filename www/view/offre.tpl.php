@@ -25,11 +25,11 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-6">
-				<div class="localisation-wrapper">						
+				<div class="localisation-wrapper">
 					<img src="img/localisation.svg" alt=""><span><?php if(isset($_SESSION['web']['ville_habitee'])) xecho($_SESSION['web']['ville_habitee']); ?>, <?php if(isset($_SESSION['web']['code_postal'])) xecho($_SESSION['web']['code_postal']); ?>
 					<?php if(isset($_SESSION['web']['nom_territoire']) && $_SESSION['web']['nom_territoire']) { ?> <br/><?php xecho($_SESSION['web']['nom_territoire']); } ?></span>
 				</div>
-			</div>				
+			</div>
 		</div>
 	</div>
 	<div class="wrapper container btn-modifier-demande">
@@ -80,95 +80,101 @@
 
 	<?php
 	if($row['nom_offre']) { //si on a une offre
-		?>
+		if(isset($_POST['coordonnees'])){ 
+	?>
+	<div class="wrapper container message-offre">
+		<div class="row">
+			<div class="col-md-12">
+				<p><?= $msg; ?></p>
+			</div>
+		</div>
+	</div>
+	<?php
+		}	
+	?>
 
-		<div class="wrapper container detail-contenu bg-white bg-shadow">
-			<div class="row">
-				<div class="col-md-8 col-sm-8 col-xs-12 wrapper-titre-offre">
-					<div class="row">
-						<div class="col-md-9 col-sm-8 col-xs-12">
-							<p class="titre-offre"><?php xecho($row['nom_offre']) ?></p>
-						</div>
-						<div class="col-md-3 col-sm-4 col-xs-12 texte-validite-align">
-							<div class="bloc-validite">
-								<span class="bloc-validite-titre">Validité jusqu’au</span>
-								<span class="bloc-validite-date"><?php xecho($row['date_fin']) ?></span>
-							</div>					
-						</div>
+	<div class="wrapper container detail-contenu bg-white bg-shadow">
+		<div class="row">
+			<div class="col-md-8 col-sm-8 col-xs-12 wrapper-titre-offre">
+				<div class="row">
+					<div class="col-md-9 col-sm-8 col-xs-12">
+						<p class="titre-offre"><?php xecho($row['nom_offre']) ?></p>
 					</div>
-					<div class="row">
-						<div class="wrapper-offre-desc">
-							<p class="offre-desc"><?php xbbecho($row['description_offre']) ?></p>
-						</div>
-					</div>
-					<div class="row">
-						<p class="offre-service-titre">Je suis intéressé(e) par ce service</p>
-					</div>
-					<div class="row">
-						<div class="wrapper-offre-service-from">
-								<?php
-								if(isset($_POST['coordonnees'])){ ?>
-									<p class='msg'><?= $msg; ?></p>
-								<?php 
-								} else {
-									?>
-									<form method="post">
-										<div class="col-md-6 col-sm-12 col-xs-12">
-											<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
-											<input type="text" name="coordonnees" class="input-adresse-mail" 
-												placeholder="Mon adresse courriel ou n° de téléphone" 
-												required 
-												pattern="^(([-\w\d]+)(\.[-\w\d]+)*@([-\w\d]+)(\.[-\w\d]+)*(\.([a-zA-Z]{2,5}|[\d]{1,3})){1,2}|(0[67]([[\d -\.]){8,12}))$" 
-												title="un n° de téléphone commençant par 06 ou 07, ou une adresse email valide."
-												<?= (isset($_SESSION['web']['coordonnees'])) ? 'value="'.$_SESSION['web']['coordonnees'].'"':'' ?> /> 
-												<!-- + aria-required="true" ? -->
-										</div>
-										<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
-											<button type="submit" class="submit-connexion-offre">Je demande à être contacté(e)</button>
-										</div>
-									</form>
-									<?php
-								}
-								?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="offre-service-bloc-desc">
-							<p>Si je suis intéressé(e) par ce service, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté(e) par un professionnel <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
-							<em class="legend">Les informations recueillies à partir de ce formulaire sont nécessaires au traitement de votre demande. Elles seront enregistrées et transmises au(x) professionnel(s) auprès du(es)quel(s) vous prendrez un rendez-vous. Vous disposez d'un droit d'accès, de rectification et d'opposition aux données vous concernant, que vous pouvez exercer en adressant une demande par ce formulaire (à créer). En cas d’abandon de la recherche, les données personnelles ne sont pas conservées.</em>
-						</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 texte-validite-align">
+						<div class="bloc-validite">
+							<span class="bloc-validite-titre">Validité jusqu’au</span>
+							<span class="bloc-validite-date"><?php xecho($row['date_fin']) ?></span>
+						</div>					
 					</div>
 				</div>
-
-				<div class="col-md-4 col-sm-4 col-xs-12">
-					<div class="row">
-						<div class="adresse-offre">
-							<p class="adresse-offre-titre">Proposée par l'organisme</p>
-							<h3><?php xecho($row['nom_pro']) ?></h3>
-							<p class="adresse-offre-adresse"><?php xecho($adresse) ?></p>
-							<p><span id="description_pro" style="display:none"><?php xbbecho($row['description_pro']) ?><br/></span> <a href="#" onclick="afficheId('description_pro');">en savoir plus</a></p>	
-						</div>
+				<div class="row">
+					<div class="wrapper-offre-desc">
+						<p class="offre-desc"><?php xbbecho($row['description_offre']) ?></p>
 					</div>
-					<div class="row">
-						<div class="wrapper-map">
-							<iframe src="https://maps.google.it/maps?q=<?= $adresse ?>&output=embed" width="100%" height="213" frameborder="0" style="border:0" allowfullscreen></iframe>
-						</div>
-					</div>
-					<div class="row google-bloc">
-						<div class="col-md-12 col-sm-12 col-xs-12">
-							<a href="https://maps.google.it/maps?q=<?= $adresse ?>" class="lien-google" target="_blank">Ouvrir dans Google Map</a>
-						</div>
-                        <?php if($url && $url != ''){ ?>
-						<div class="col-md-12 col-sm-12 col-xs-12">
-							<div class="lien-google-http">Voir le site internet <br>
-							<?php echo($url) ?>
+				</div>
+				<?php 
+				if(!isset($_POST['coordonnees'])){ 
+				?>
+				<div class="row">
+					<p class="offre-service-titre">Je suis intéressé(e) par ce service</p>
+				</div>
+				<div class="row">
+					<div class="wrapper-offre-service-from">
+						<form method="post">
+							<div class="col-md-6 col-sm-12 col-xs-12">
+								<input type="hidden" name="id_offre" value="<?php xecho($id_offre) ?>">
+								<input type="text" name="coordonnees" class="input-adresse-mail" 
+									placeholder="Mon adresse courriel ou n° de téléphone" 
+									required 
+									pattern="^(([-\w\d]+)(\.[-\w\d]+)*@([-\w\d]+)(\.[-\w\d]+)*(\.([a-zA-Z]{2,5}|[\d]{1,3})){1,2}|(0[67]([[\d]){8}))$" 
+									title="un n° de téléphone à 10 chiffres commençant par 06 ou 07, ou une adresse email valide."
+									<?= (isset($_SESSION['web']['coordonnees'])) ? 'value="'.$_SESSION['web']['coordonnees'].'"':'' ?> /> 
+									<!-- + aria-required="true" ? -->
 							</div>
-						</div>
-                        <?php } ?>
+							<div class="col-md-6 col-sm-12 col-xs-12 submit-connexion-align">
+								<button type="submit" class="submit-connexion-offre">Je demande à être contacté(e)</button>
+							</div>
+						</form>
 					</div>
+				</div>
+				<div class="row">
+					<div class="offre-service-bloc-desc">
+						<p>Si je suis intéressé(e) par ce service, je laisse mon adresse de courriel ou mon numéro de téléphone portable pour être contacté(e) par un professionnel <mark>d'ici <?php xecho($row['delai_offre']); ?> jours maximum.</mark></p>
+						<em class="legend">Les informations recueillies à partir de ce formulaire sont nécessaires au traitement de votre demande. Elles seront enregistrées et transmises au(x) professionnel(s) auprès du(es)quel(s) vous prendrez un rendez-vous. Vous disposez d'un droit d'accès, de rectification et d'opposition aux données vous concernant, que vous pouvez exercer en adressant une demande par ce formulaire (à créer). En cas d’abandon de la recherche, les données personnelles ne sont pas conservées.</em>
+					</div>
+				</div>
+				<?php }	?>
+			</div>
+
+			<div class="col-md-4 col-sm-4 col-xs-12">
+				<div class="row">
+					<div class="adresse-offre">
+						<p class="adresse-offre-titre">Proposée par l'organisme</p>
+						<h3><?php xecho($row['nom_pro']) ?></h3>
+						<p class="adresse-offre-adresse"><?php xecho($adresse) ?></p>
+						<p><span id="description_pro" style="display:none"><?php xbbecho($row['description_pro']) ?><br/></span> <a href="#" onclick="afficheId('description_pro');">en savoir plus</a></p>	
+					</div>
+				</div>
+				<div class="row">
+					<div class="wrapper-map">
+						<iframe src="https://maps.google.it/maps?q=<?= $adresse ?>&output=embed" width="100%" height="213" frameborder="0" style="border:0" allowfullscreen></iframe>
+					</div>
+				</div>
+				<div class="row google-bloc">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<a href="https://maps.google.it/maps?q=<?= $adresse ?>" class="lien-google" target="_blank">Ouvrir dans Google Map</a>
+					</div>
+					<?php if($url && $url != ''){ ?>
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="lien-google-http">Voir le site internet <br>
+						<?php echo($url) ?>
+						</div>
+					</div>
+					<?php } ?>
 				</div>
 			</div>
 		</div>
+	</div>
 		
 		<?php
 	}else{ //pas d'offre

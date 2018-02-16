@@ -5,26 +5,11 @@
 	<link rel="stylesheet" href="src/js/jquery-ui.min.css">
 	<script type="text/javascript" language="javascript" src="src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="src/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" language="javascript" src="src/js/bootstrap.min.js"></script>
 	<script>$( function() {
 			var listeVilles = [<?php include('src/villes_index.inc');?>];
-			//adaptation fichier insee : pas d'accent, de tiret, d'apostrophe, etc.
-			var accentMap = {
-				"á": "a",
-				"â": "a",
-				"ç": "c",
-				"é": "e",
-				"è": "e",
-				"ê": "e",
-				"ë": "e",
-				"î": "i",
-				"ï": "i",
-				"ö": "o",
-				"ô": "o",
-				"ü": "u",
-				"û": "u",
-				"-": " ",
-				"'": " "
-			};
+			//adaptation pour correspondance avec données insee : pas d'accent, de tiret, d'apostrophe, etc.
+			var accentMap = { "á": "a", "â": "a", "ç": "c", "é": "e", "è": "e", "ê": "e", "ë": "e", "î": "i", "ï": "i", "ö": "o", "ô": "o", "ü": "u", "û": "u", "-": " ", "'": " " };
 			var normalize = function( term ) {
 				var ret = "";
 				term = term.replace(/\bsaint/gi, "st");
@@ -36,11 +21,9 @@
 			$( "#villes" ).autocomplete({
 				minLength: 2,
 				source: function( request, response ) {
-					//recherche sur les premiers caractères de la ville ou sur le code postal
-					var matcher1 = new RegExp( "^" + $.ui.autocomplete.escapeRegex( normalize(request.term) ), "i" );
-					var matcher2 = new RegExp( " " + $.ui.autocomplete.escapeRegex( request.term ) + "[0-9]*$", "i" );
+					var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( normalize(request.term) ) + ".*$|^.* " + $.ui.autocomplete.escapeRegex( request.term ) + "[0-9]*$", "i" );
 					response( $.grep( listeVilles, function( item ){
-						return (matcher1.test( item ) || matcher2.test( item ));
+						return (matcher.test( item ));
 					}) );
 				},
 				select: function(event, ui) {
@@ -48,9 +31,41 @@
 					$("#searchForm").submit();
 				}
 			});
-		} );</script>
+<?php if ($redirection_prod) { ?>
+			$( "#myModal").modal('show');
+<?php } ?>
+		} );
+	</script>
+<?php if ($redirection_prod) { ?>
+	<style>
+	.modal-backdrop.in { opacity: 0.8; }
+	</style>
+	<meta http-equiv="Refresh" content="10;url=https://boussole.jeunes.gouv.fr">
+<?php } ?>
 </head>
-<body><div id="main">
+<body>
+	
+<?php if ($redirection_prod) { ?>
+<!-- Modal jeunes.gouv -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+        <h4 class="modal-title">La <b>Boussole des Jeunes</b> est en ligne depuis le 31 janvier !</h4>
+      </div>
+      <div class="modal-body">
+        <p>L'adresse du service est dorénavant <b><a href="https://boussole.jeunes.gouv.fr">boussole.jeunes.gouv.fr</a></b>. Pense à mettre à jour tes favoris ! &#128521;</p>
+		<p>Tu vas être redirigé(e) dans un instant (sinon, <a href="https://boussole.jeunes.gouv.fr">clique ici</a>).</p> 
+		<p>A très bientôt</p>
+		<p>L'équipe de la Boussole des Jeunes</p>
+      </div>
+    </div>
+  </div>
+</div>
+<?php } ?>
+
+<div id="main">
 	<header id="bandeau-home-page">
 		<div class="wrapper">
 			<div class="wrapper-bandeau-homepage">
@@ -91,7 +106,6 @@
 			</div>
 		</div>
 	</header>
-
 		<div class="wrapper container accueil-recherche">
 			<div class="row">
 				<form action="jesouhaite.php" class="joli accueil" method="post" id="searchForm">
@@ -124,23 +138,23 @@
 	</div>
 	
 	<div class="wrapper div123">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
-				<img src="img/icon-clock.svg">
-				<p>En 5 minutes je trouve le bon professionnel.</p>
-			</div>
-			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
-				<img src="img/icon-contact.svg">
-				<p>Je suis contacté(e) dans les jours qui suivent.</p>
-			</div>
-			<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
-				<img src="img/icon-calendar.svg">
-				<p>J'obtiens une réponse à ma demande et un rendez vous si nécessaire.</p>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+					<img src="img/icon-clock.svg">
+					<p>En 5 minutes je trouve le bon professionnel.</p>
+				</div>
+				<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+					<img src="img/icon-contact.svg">
+					<p>Je suis contacté(e) dans les jours qui suivent.</p>
+				</div>
+				<div class="col-md-4 col-sm-4 col-xs-12 block123 ">
+					<img src="img/icon-calendar.svg">
+					<p>J'obtiens une réponse à ma demande et un rendez vous si nécessaire.</p>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 	<?php include('view/inc.footer.php'); ?>
 </div>
 </body>

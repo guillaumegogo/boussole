@@ -80,8 +80,7 @@ function get_ville($saisie){
 			FROM `'.DB_PREFIX.'_ville` as `v`
 			LEFT JOIN `'.DB_PREFIX.'territoire_villes` AS `tv` ON `tv`.`code_insee` = `v`.`code_insee`
 			LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `actif_territoire`=1
-			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ?
-			GROUP BY `nom_ville`, `v`.`code_insee`';
+			WHERE `nom_ville` LIKE ? AND `code_postal` LIKE ? '; //GROUP BY `nom_ville`, `v`.`code_insee`
 		$stmt = mysqli_prepare($conn, $query);
 		$ville = substr($saisie, 0, -6);
 		$cp = substr($saisie, -5);
@@ -100,8 +99,7 @@ function get_ville($saisie){
 			FROM `'.DB_PREFIX.'_ville` as `v`
 			LEFT JOIN `'.DB_PREFIX.'territoire_villes` AS `tv` ON `tv`.`code_insee` = `v`.`code_insee`
 			LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `actif_territoire`=1
-			WHERE `nom_ville` LIKE ? 
-			GROUP BY `nom_ville`, `v`.`code_insee`';
+			WHERE `nom_ville` LIKE ? '; // GROUP BY `nom_ville`, `v`.`code_insee`
 		$stmt = mysqli_prepare($conn, $query);
 		$saisie_insee = format_insee($saisie) . '%';
 		mysqli_stmt_bind_param($stmt, 's', $saisie_insee);

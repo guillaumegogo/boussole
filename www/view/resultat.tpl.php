@@ -57,11 +57,11 @@
 		<a href="jesouhaite.php" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte ">
-				<p class="btn-texte-1">modifier ma demande</p>
+				<p class="btn-texte-1">modifier mon besoin</p>
                 <!--<p class="btn-texte-2">trouver un emploi</p>-->
 			</div>				
 		</a>
-		<a href="formulaire.php?etape=3" class="btn-block-inline">
+		<a href="formulaire.php?etape=<?= (isset($_SESSION['web']['nb_pages'])) ? $_SESSION['web']['nb_pages'] : 1 ?>" class="btn-block-inline">
 			<img src="img/edit-pen.svg" alt="" >
 			<div class="wrapper-modif-btn-texte">
 				<p class="btn-texte-1">modifier ma situation</p>
@@ -71,10 +71,10 @@
 		<h1><?= (isset($msg)) ? $msg : '' ?></h1>
 	</div>
 	
+<div class="joli wrapper container marge-inf">
 <?php
 if ($nb_offres) { 
 ?>
-<div class="joli wrapper container marge-inf">
     <?php
 	foreach ($sous_themes as $sous_theme_id=>$titre) {
 		$nb_offres_sous_theme = count($offres[$sous_theme_id]);
@@ -90,7 +90,7 @@ if ($nb_offres) {
 			</div>
 		</div>
 	</div>
-	<div class="wrapper-liste-details-catg">	
+	<div class="wrapper-liste-details-catg">
 		<?php
 			$i = 0;
 			foreach ($offres[$sous_theme_id] as $offre) {
@@ -109,12 +109,19 @@ if ($nb_offres) {
         </div>
     <?php } ?>
     </div>
-<?php } ?>
-<?php } ?>
+<?php } 
+}else{ ?>
 
-	<div style="font-weight: bold; text-align:center;">Si tu ne trouves pas ici de réponse à ton besoin,<br/> nous t'invitons à contacter le <a href="https://www.cidj.com/nous-rencontrer" target="_blank">point d'information jeunesse le plus proche de chez toi</a>,<br/>il saura certainement t'aider.</div>
+	<div class="wrapper-liste-details-catg">
+		<div class="row">
+            <div class="wrapper-detail-catg">
+                <a href="https://www.cidj.com/nous-rencontrer#map" target="_blank">Contacte le <b>point d'information jeunesse le plus proche de chez toi</b>, il saura certainement t'aider.</a>
+            </div>
+        </div>
+	</div>
+
+<?php } ?>
 </div>
-
 
 <?php include('view/inc.footer.php'); ?>
 </body>

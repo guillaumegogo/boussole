@@ -408,12 +408,7 @@ footer .footer-after{
 	    margin-right: 3em;
 	}
 	.logo-jeunesse-homepage{
-	    float: none; 
-	    padding-top: 0em; 
-	    position: relative;
-	    left: 0em; 
-	    top: -0.5em;
-	    margin-left: 3em;
+		display:none;
 	}
 
 	.accueil-recherche {
@@ -1669,6 +1664,10 @@ label.label_long{
 	padding: 0;
 }
 
+.message-offre{
+	margin: 40px 0 -30px 0;
+	text-align:center;
+}
 .detail-contenu{
 	margin-top: 50px;
 }

@@ -9,8 +9,12 @@ if (!isset($_SESSION['web']['code_insee']) || !isset($_SESSION['web']['besoin'])
 
 //************ gestion de l'étape en cours (le formulaire est en plusieurs pages)
 $etape = 1;
-if (isset($_GET['etape'])) {
-	$etape = $_GET['etape'];
+if (isset($_GET['etape']) && $_GET['etape']>1) {
+	if(isset($_SESSION['web']['nb_pages'])) {
+		$etape = min($_GET['etape'],$_SESSION['web']['nb_pages']); //ne peut pas dépasser le nombre de pages connues du formulaire
+	}else{
+		$etape = $_GET['etape']; 
+	}
 }
 if (isset($_POST['etape'])) {
 	$etape = $_POST['etape'];
@@ -31,6 +35,7 @@ if ($etape=='fin') {
 //************ récupération des éléments de la page du formulaire
 $t = get_formulaire($_SESSION['web']['besoin'], $etape, $_SESSION['web']['id_territoire']);
 $meta = $t[0];
+$_SESSION['web']['nb_pages'] = $meta['nb'];
 $questions = $t[1];
 $reponses = $t[2];
 $liste_pages = $t[3];

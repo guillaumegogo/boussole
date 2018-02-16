@@ -115,7 +115,7 @@ function cloture_ligne($ele)
 	}
 	
 	//une fois le critère affiché (avec la préselection), on vide la session du critere correspondant
-	unset($_SESSION['web']['critere'][$ele['name']]);
+	//unset($_SESSION['web']['critere'][$ele['name']]);
 	
 	return $t;
 }
@@ -171,7 +171,10 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
             $headers .= 'Cc: guillaume.gogo@jeunesse-sports.gouv.fr' . "\r\n";
         }
         $envoi_accuse = mail($to, $subject, $message, $headers);
-    }
+		
+    }else if (preg_match('/^(0[67]([[\d -\.]){8,12})$/', $_POST['coordonnees'])) {
+		//todo : send a sms
+	}
 
     if ($envoi_mail) {
         $resultat = true;

@@ -23,7 +23,7 @@ foreach($offres as $offres_par_theme){
 
 switch($nb_offres){
 	case 0:
-		$msg = 'Aucune offre ne correspond à ma recherche.'; break;
+		$msg = 'Aucune offre ne correspond à ta recherche.<br/><small>Tu peux modifier ta demande, ou bien contacter directement un professionnel.</small>'; break;
 	case 1:
 		$msg = 'Une offre correspond à ma recherche.'; break;
 	default:
