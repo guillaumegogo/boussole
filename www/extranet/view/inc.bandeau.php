@@ -1,6 +1,6 @@
 <a href="<?=$path_from_extranet_to_web?>/index.php" target="_blank"><img src="img/ex-link-w.png" class="retour_boussole"></a>
 
-<h1 class="bandeau"><img src="img/marianne.png" width="93px"> Administration de la boussole 
+<h1 class="bandeau"><img src="img/marianne.png" width="93px"> Extranet de la Boussole des Jeunes
 	<?= (ENVIRONMENT === ENV_BETA) ? '<span style="color:red; background:white; padding:0 0.2em;">BETA</span>' : '' ?>
 	<?= (ENVIRONMENT === ENV_TEST) ? '<span style="color:red; background:white; padding:0 0.2em;">TEST</span>' : '' ?></h1>
 

@@ -260,6 +260,14 @@ function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id ) {
 		$created = mysqli_stmt_affected_rows($stmt) > 0;
 		mysqli_stmt_close($stmt);
 	}
+	
+	if(DEBUG){
+		$print_sql = $query;
+		foreach(array( $nom, $desc, $date_d, $date_f, $pro_id, $user_id, $pro_id) as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
 
 	return $created;
 }
@@ -626,7 +634,7 @@ function get_territoires($id = null, $actif = null, $duplicated_theme = null) {
 	global $conn;
 	$t = null;
 
-	$query = 'SELECT `t`.`id_territoire`, `nom_territoire`, `actif_territoire` AS `actif`, COUNT(`code_insee`) as `c`, GROUP_CONCAT(DISTINCT(LEFT(`code_insee`,2)) SEPARATOR ", ") AS `dep`
+	$query = 'SELECT `t`.`id_territoire`, `nom_territoire`, `description_territoire`, `actif_territoire` AS `actif`, COUNT(`code_insee`) as `c`, GROUP_CONCAT(DISTINCT(LEFT(`code_insee`,2)) SEPARATOR ", ") AS `dep`
 		FROM `'.DB_PREFIX.'territoire` AS `t`
 		LEFT JOIN `'.DB_PREFIX.'territoire_villes` AS `tv` ON `tv`.`id_territoire`=`t`.`id_territoire`
 		WHERE `nom_territoire` != "" ';
@@ -1405,14 +1413,16 @@ function get_reponses() {
 }
 
 /* Territoires */
-function update_territoire($id, $libelle){
+function update_territoire($id, $libelle, $description){
 
 	global $conn;
 	$updated = false;
 
-	$query = 'UPDATE `'.DB_PREFIX.'territoire` SET `nom_territoire`= ? WHERE `id_territoire`= ?';
+	$query = 'UPDATE `'.DB_PREFIX.'territoire` 
+		SET `nom_territoire`= ? , `description_territoire` = ? 
+		WHERE `id_territoire`= ?';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'si', $libelle, $id);
+	mysqli_stmt_bind_param($stmt, 'ssi', $libelle, $description, $id);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$updated = mysqli_stmt_affected_rows($stmt) > 0;
@@ -1421,13 +1431,13 @@ function update_territoire($id, $libelle){
 	return $updated;
 }
 
-function create_territoire($libelle) {
+function create_territoire($libelle, $description) {
 
 	global $conn;
 	$created = false;
-	$query = 'INSERT INTO `'.DB_PREFIX.'territoire`(`nom_territoire`) VALUES ( ? )';
+	$query = 'INSERT INTO `'.DB_PREFIX.'territoire`(`nom_territoire`, `description_territoire`) VALUES ( ?, ? )';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 's', $libelle);
+	mysqli_stmt_bind_param($stmt, 'ss', $libelle, $description);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$created = mysqli_stmt_affected_rows($stmt) > 0;
@@ -1765,12 +1775,13 @@ function archive($objet, $id, $etat = 0){
 
 	global $conn;
 	$updated = false;
-
-	$table = '';
+	$table = null;
+	
 	switch($objet){
 		case 'offre':
 		case 'mesure':
 		case 'utilisateur':
+		case 'territoire':
 			$table = $objet;
 			$champ_a = 'actif_'.$objet;
 			$champ_i = 'id_'.$objet;
@@ -1803,13 +1814,19 @@ function archive($objet, $id, $etat = 0){
 	return $updated;
 }
 
-function get_liste_parametres($liste) {
+function get_liste_parametres($liste = null) {
 
 	global $conn;
 	$rows = null;
-	$query = 'SELECT `id`, `libelle` FROM `'.DB_PREFIX.'_parametres` WHERE liste = ? ';
+	$query = 'SELECT `id`, `libelle`, `liste` FROM `'.DB_PREFIX.'_parametres` WHERE 1 ';
+	if(!is_null($liste)) {
+		$query .= ' AND `liste` = ? ';
+	}
+	$query .= ' ORDER BY `liste`, `libelle`';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 's', $liste);
+	if(!is_null($liste)) {
+		mysqli_stmt_bind_param($stmt, 's', $liste);
+	}
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);
@@ -1818,6 +1835,55 @@ function get_liste_parametres($liste) {
 		}
 	}
 	return $rows;
+}
+
+function get_parametre_by_id($id) {
+
+	global $conn;
+	$row = null;
+	$query = 'SELECT `id`, `libelle`, `liste` FROM `'.DB_PREFIX.'_parametres` WHERE `id` = ? ';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'i', $id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$result = mysqli_stmt_get_result($stmt);
+		if (mysqli_num_rows($result) === 1) {
+			$row = mysqli_fetch_assoc($result);
+		}
+		mysqli_stmt_close($stmt);
+	}
+	return $row;
+}
+
+function create_parametre($liste, $libelle) {
+
+	global $conn;
+	$created = false;
+	$query = 'INSERT INTO `'.DB_PREFIX.'_parametres` (`liste`, `libelle`) VALUES ( ?, ? )';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ss', $liste, $libelle);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$created = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+	return $created;
+}
+
+function update_parametre($id, $liste, $libelle) {
+
+	global $conn;
+	$updated = false;
+
+	$query = 'UPDATE `'.DB_PREFIX.'_parametres` SET `liste`= ? , `libelle`= ? WHERE `id`= ?';
+	$stmt = mysqli_prepare($conn, $query);
+	mysqli_stmt_bind_param($stmt, 'ssi', $liste, $libelle, $id);
+	check_mysql_error($conn);
+	if (mysqli_stmt_execute($stmt)) {
+		$updated = mysqli_stmt_affected_rows($stmt) > 0;
+		mysqli_stmt_close($stmt);
+	}
+	return $updated;
 }
 
 function get_liste_droits() {

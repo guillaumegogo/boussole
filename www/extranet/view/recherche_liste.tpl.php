@@ -20,7 +20,7 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> > <a href="statistiques.php">Statistiques</a> ></small> 
-		Liste des recherches</h2>
+		Recherches</h2>
 		
 	<?php
 	if (count($recherches) > 0) {
@@ -31,7 +31,7 @@
 				<th>Date de la recherche</th>
 				<th>Code INSEE du demandeur</th>
 				<th>Besoin</th>
-				<th>Liste des critères</th>
+				<th>Critères saisis</th>
 				<th>Nombre d'offres présentées</th>
 				<th>Demandes déposées</th>
 			</thead>

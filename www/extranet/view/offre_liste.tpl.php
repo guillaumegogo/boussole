@@ -21,7 +21,7 @@
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des offres de service <?php if (!$flag_actif) echo "archivées"; ?></h2>
+		Offres de service <?php if (!$flag_actif) echo "archivées"; ?></h2>
 
 	<?php
 	if (count($offres) > 0) {

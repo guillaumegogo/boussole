@@ -1,3 +1,4 @@
+<!--<?php @print_r($_POST); ?>-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +14,35 @@
 		$('#list1').filterByText($('#textbox'));
 	});
 
+	/*editeur de texte*/
+	function commande(nom, argument)
+	{
+		if (typeof argument === 'undefined')
+		{
+			argument = '';
+		}
+		switch (nom)
+		{
+			case "createLink":
+				argument = prompt("Quelle est l'adresse du lien ?", "http://");
+				break;
+			case "insertImage":
+				argument = prompt("Quelle est l'adresse de l'image ?");
+				break;
+		}
+		// Exécuter la commande
+		document.execCommand(nom, false, argument);
+		if (nom == "createLink")
+		{
+			var selection = document.getSelection();
+			selection.anchorNode.parentElement.target = '_blank';
+		}
+	}
+	function htmleditor()
+	{
+		document.getElementById("resultat").value = document.getElementById("editeur").innerHTML;
+	}
+		
 	function checkall()
 	{
 		var sel = document.getElementById('list2')
@@ -33,23 +63,36 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="territoire_liste.php">Liste des territoires</a> ></small> 
-		<?= ($id_territoire) ? 'Détail' : 'Création'; ?> d'un territoire</h2>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="territoire_liste.php">Territoires</a> ></small> 
+		<?= ($id_territoire) ? 'Détail' : 'Création'; ?> d'un territoire 
+		<?= (isset($territoire['actif']) && $territoire['actif'] == 0) ? '<span style="color:red">(archivé)</span>':'' ?></h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
 
-	<form method="post" class="detail" onsubmit='checkall()'>
-		<fieldset class="centre" <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
-			<legend>Description du territoire  <?= ($id_territoire && $territoire['actif'] == 0) ? '<span style="color:red">(désactivé)</span>':'' ?> </legend>
-			<label for="libelle_territoire" class="court">Libellé :</label>
-			<input type="text" required name="libelle_territoire" value="<?= (isset($territoire)) ? $territoire['nom_territoire']:'' ?>">
+	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
+		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>> <!--class="centre"--> 
+			<div class="une_colonne">
+				<div class="lab">
+					<label for="libelle_territoire">Libellé :</label>
+					<input type="text" required name="libelle_territoire" value="<?= (isset($territoire['nom_territoire'])) ? $territoire['nom_territoire']:'' ?>">
+				</div>
+				<div class="lab">
+					<label for="desc">Description du territoire :</label>
+					<div style="display:inline-block;" id="div-editeur">
+						<input type="button" value="G" style="font-weight: bold;" onclick="commande('bold');"/>
+						<input type="button" value="I" style="font-style: italic;" onclick="commande('italic');"/>
+						<input type="button" value="S" style="text-decoration: underline;" onclick="commande('underline');"/>
+						<input type="button" value="Lien" onclick="commande('createLink');"/>
+						<input type="button" value="Image" onclick="commande('insertImage');"/>
+						<div id="editeur" contentEditable ><?= (isset($territoire['description_territoire'])) ? bbcode2html($territoire['description_territoire']) : '' ?></div>
+						<input id="resultat" type="hidden" name="desc"/>
+					</div>
+				</div>
+			</div>
 			<input type="hidden" name="maj_id_territoire" value="<?php echo $id_territoire; ?>">
-				<?php if($droit_ecriture) { ?>
-			<input type="submit" name="submit_meta" value="Valider">
-				<?php } ?>
 		</fieldset>
 
-		<?php if ($id_territoire) { ?>
+		<?php //if ($id_territoire) { ?>
 
 		<fieldset class="centre" <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>
 			<legend>Sélection des villes du territoire</legend>
@@ -89,14 +132,23 @@
 					</select>
 				</div>
 
-				<?php if($droit_ecriture) { ?>
-				<input style="display:block; margin:2em auto 0 auto;" type="submit" name="submit_villes"
-					   value="Enregistrer le périmètre du territoire">
-				<?php } ?>
 			</div>
 		</fieldset>
 
+		<?php //} ?>
+		
+		<div class="button">
+			<input type="button" value="Retour" onclick="javascript:location.href='territoire_liste.php'">
+		<?php if(isset($territoire['actif'])) {
+			if ($territoire['actif'] == 0){ ?>
+			<input type="submit" name="restaurer" value="Restaurer">
+		<?php }else{ ?>
+			<input type="submit" name="archiver" value="Archiver">
+		<?php } } ?>
+		<?php if($droit_ecriture) { ?>
+			<input type="submit" name="submit" value="Enregistrer">
 		<?php } ?>
+		</div>
 
 	</form>
 </div>

@@ -20,7 +20,7 @@
 <div class="container">
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des formulaires <?= ($flag_actif) ? '' : 'inactifs'; ?></h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Formulaires <?= ($flag_actif) ? '' : 'inactifs'; ?></h2>
 	
 	<?php
 	if (count($formulaires) > 0) {
@@ -58,7 +58,7 @@
 	}
 	?>
 
-	<div class="notice italic centre" style="margin-bottom:1em">Pour initialiser un nouveau formulaire, choisissez un des formulaires existants et utilisez la fonction [décliner sur un territoire].</div>
+	<div class="notice centre" style="margin-bottom:1em">Pour initialiser un nouveau formulaire, choisissez un des formulaires existants et utilisez la fonction [décliner sur un territoire].</div>
 
 	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des formulaires inactifs' : '"?actif=oui">Liste des formulaires actifs'; ?></a></div>
 

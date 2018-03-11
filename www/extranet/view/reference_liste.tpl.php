@@ -20,28 +20,26 @@
 <div class="container">
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des territoires <?php if (!$flag_actif) echo "inactifs"; ?></h2>
+		Listes de références</h2>
 
 	<?php
-	if (count($territoires) > 0) {
+	if (count($rows) > 0) {
 		?>
 		<table id="sortable" class="display compact">
 			<thead>
 			<tr>
-				<th>Nom</th>
-				<th>Département(s)</th>
-				<th>Nombre de villes</th>
+				<th>Liste</th>
+				<th>Libellé</th>
 			</tr>
 			</thead>
 			<tbody>
 
 			<?php
-			foreach ($territoires as $row) {
+			foreach ($rows as $row) {
 				?>
 				<tr>
-					<td><a href="territoire_detail.php?id=<?= $row['id_territoire'] ?>"><?= $row['nom_territoire'] ?></a></td>
-					<td><?= $row['dep'] ?></td>
-					<td><?= $row['c'] ?></td>
+					<td><?= $row['liste'] ?></td>
+					<td><?= $row['libelle'] ?> <!--<?= $row['id'] ?>--></td>
 				</tr>
 				<?php
 			}
@@ -57,13 +55,10 @@
 	}
 	?>
 
-	<div style="text-align:left"><a href=<?= ($flag_actif) ? '"?actif=non">Liste des territoires désactivés' : '"?actif=oui">Liste des territoires actifs' ?></a></div>
 </div>
 
-<?php if($check_ajout){ ?>
 <div class="button">
-	<input type="button" value="Ouvrir un nouveau territoire" onclick="javascript:location.href='territoire_detail.php'">
+	<input type="button" value="Ajouter une valeur aux listes de référence" onclick="javascript:location.href='reference_detail.php'">
 </div>
-<?php } ?>
 </body>
 </html>

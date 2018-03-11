@@ -6,7 +6,7 @@
 </head>
 <body><div id="main">
 	<?php include('view/inc.header.php'); ?>
-
+	<pre><?php if(DEBUG && isset($_SESSION['web']['critere'])){ print_r($_SESSION['web']['critere']); } ?></pre>
 	<main>
 		<div class="wrapper container">
 			<div class="row bordure-bas">

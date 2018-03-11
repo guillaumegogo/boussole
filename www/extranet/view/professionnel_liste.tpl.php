@@ -21,7 +21,7 @@
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des organismes <?php if (!$flag_actif) echo "inactifs"; ?></h2>
+		Organismes <?php if (!$flag_actif) echo "inactifs"; ?></h2>
 
 	<?php
 	if (count($pros) > 0) {

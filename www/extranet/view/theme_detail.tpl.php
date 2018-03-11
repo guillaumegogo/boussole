@@ -27,7 +27,7 @@
 
 <div class="container">
 	
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="theme_liste.php">Liste des thèmes</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="theme_liste.php">Thèmes</a> ></small> 
 		<?= ($flag_duplicate ? 'Déclinaison': ($id_theme_choisi ? 'Détail' : 'Création' )) ?>  du thème</h2>
 		
 	<div class="soustitre"><?php echo $msg; ?></div>
@@ -79,7 +79,7 @@
 		</fieldset>
 
 		<fieldset style="margin-bottom:1em;">
-			<legend>Liste des sous-thèmes</legend>
+			<legend>Catégories d'offres de service</legend>
 			
 				<table id="tableau" class="dataTable display compact">
 					<thead>

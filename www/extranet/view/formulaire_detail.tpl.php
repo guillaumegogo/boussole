@@ -12,7 +12,7 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Liste des formulaires</a> ></small>
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="formulaire_liste.php">Formulaires</a> ></small>
 		<?= ($flag_duplicate ? 'Déclinaison': ($id_formulaire ? 'Détail' : 'Création' )) ?>  du formulaire</h2>
 
 	<div class="soustitre"><?php echo $msg; ?></div>
@@ -45,7 +45,7 @@
 				<th>Libellé</th>
 				<th>Identifiant</th>
 				<th>Réponses</th>
-				<th>Affichage <img src="img/help.png" height="16px" title="Conseils : option pour choix unique avec nombre limité de choix | liste déroulante pour choix unique avec de nombreux choix | coche pour choix multiple avec nombre limité de choix..."></th>
+				<th>Affichage</th>
 				<th>Requis ?</th>
 				<th>&nbsp;</th>
 			</thead>
@@ -104,6 +104,8 @@
 			?>
 			</tbody>
 		</table>
+		
+		<div class="notice centre" style="margin-bottom:1em">Conseils sur le choix de la colonne affichage : choisir "option" pour un choix unique avec nombre limité de choix (<4), "liste déroulante" pour un choix unique avec de nombreux choix, "coche" pour choix multiple avec nombre limité de choix.</div>
 		<?php } ?>
 	</fieldset>
 	

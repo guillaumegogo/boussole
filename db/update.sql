@@ -1,3 +1,12 @@
+/*v1.03*/
+
+ALTER TABLE `territoire` ADD `description_territoire` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER `nom_territoire`;
+ALTER TABLE `professionnel` CHANGE `site_web_pro` `site_web_pro` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+/*v1.02
+
+ALTER TABLE `_offre` CHANGE `courriel_offre` `courriel_offre` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+*/
 
 /*v1.01*/
 /*

@@ -20,7 +20,7 @@
 <div class="container">
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
-	<h2><small><a href="accueil.php">Accueil</a> ></small> Liste des thèmes</h2>
+	<h2><small><a href="accueil.php">Accueil</a> ></small> Thèmes</h2>
 	
 	<?php
 	if (count($themes) > 0) {
@@ -30,7 +30,7 @@
 			<thead>
 			<tr>
 				<th>#</th>
-				<th>Thème</th>
+				<!--<th>Thème</th>-->
 				<th>Territoire</th>
 				<th>Libellé</th>
 				<th>Actif</th>
@@ -40,8 +40,8 @@
 			<?php
 			foreach ($themes as $row) { ?>
 				<tr>
-					<td><a href="theme_detail.php?id=<?= (int) $row['id_theme'] ?>">Thème <?= (int) $row['id_theme'] ?></a></td>
-					<td><?php xecho($row['libelle_theme_court']) ?></td>
+					<td><a href="theme_detail.php?id=<?= (int) $row['id_theme'] ?>"><?php xecho($row['libelle_theme_court']) ?>/<?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></a></td>
+					<!--<td><?php xecho($row['libelle_theme_court']) ?></td>-->
 					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
 					<td><?php xecho($row['libelle_theme']) ?></td>
 					<td><?php xecho($row['actif_theme']?'oui':'non') ?></td>
@@ -50,6 +50,8 @@
 			</tbody>
 		</table>
 
+		<div class="notice centre">Pour ouvrir un nouveau thème sur un territoire, ouvrez un thème existant et cliquez sur [décliner sur un territoire].</div>
+
 	<?php
 	} else {
 	?>
@@ -57,8 +59,6 @@
 	<?php
 	}
 	?>
-
-		<div class="notice italic centre">Pour ouvrir un thème sur un nouveau territoire, choisissez un des thèmes existants et utilisez la fonction [décliner sur un territoire].</div>
 </div>
 
 <!--<div class="button">

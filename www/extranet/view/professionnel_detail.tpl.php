@@ -130,7 +130,7 @@
 <?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Liste des organismes</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="professionnel_liste.php">Organismes</a> ></small> 
 		<?= ($id_professionnel) ? 'Détail' : 'Création'; ?> d'un organisme </h2>
 
 	<div class="soustitre"><?= $msg ?></div>

@@ -39,7 +39,7 @@
 <?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Liste des utilisateurs</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="utilisateur_liste.php">Utilisateurs</a> ></small> 
 		<?= ($id_utilisateur) ? "Détail" : "Ajout" ?> d'un utilisateur</h2>
 
 	<div class="soustitre"><?= $msg ?></div>

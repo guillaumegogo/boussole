@@ -7,7 +7,7 @@ if (!isset($_SESSION['web']['ville_habitee']) || !isset($_SESSION['web']['besoin
 	exit();
 }
 
-//********* on va chercher les offres et les sous-thèmes
+//********* on va chercher les offres et les catégories (ex "sous-thèmes")
 $t = get_offres_demande($_SESSION['web']['critere'], $_SESSION['web']['type'], $_SESSION['web']['besoin'], $_SESSION['web']['code_insee']);
 $sous_themes = $t[0];
 $offres = $t[1];

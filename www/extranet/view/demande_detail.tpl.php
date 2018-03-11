@@ -9,7 +9,7 @@
 <?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="demande_liste.php">Liste de demandes</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="demande_liste.php">Demandes</a> ></small> 
 		Détail d'une demande</h2>
 	<?php echo $msg; ?>
 

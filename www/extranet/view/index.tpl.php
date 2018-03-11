@@ -6,7 +6,9 @@
 
 <body>
 <a href="<?=$path_from_extranet_to_web?>/index.php" target="_blank"><img src="img/ex-link-w.png" class="retour_boussole"></a>
-<h1 class="bandeau"><img src="img/marianne.png" width="93px"> Administration de la boussole</h1>
+<h1 class="bandeau"><img src="img/marianne.png" width="93px"> Extranet de la boussole
+	<?= (ENVIRONMENT === ENV_BETA) ? '<span style="color:red; background:white; padding:0 0.2em;">Attention, version BETA !</span>' : '' ?></h1>
+	<?= (ENVIRONMENT === ENV_BETA) ? '<h2 style="text-align:center;">Pour accéder à la version publique c\'est par là &rArr; <a href="https://boussole.jeunes.gouv.fr/extranet">boussole.jeunes.gouv.fr/extranet</a></h2>' : '' ?>
 
 <div class="container">
 

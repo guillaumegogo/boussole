@@ -35,7 +35,7 @@
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des demandes <?= ($flag_traite) ? 'traitées' : 'à traiter' ?></h2>
+		Demandes <?= ($flag_traite) ? 'traitées' : 'à traiter' ?></h2>
 
 	<?php
 	if (count($demandes) > 0) {

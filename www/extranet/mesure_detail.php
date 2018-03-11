@@ -60,7 +60,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	}
 
 	if (!$msg) {
-		$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";
+		$msg = "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème persiste.";
 	}
 }
 

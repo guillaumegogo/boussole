@@ -159,7 +159,7 @@
 <?php include('view/inc.bandeau.php'); ?>
 
 <div class="container">
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="mesure_liste.php">Liste des mesures</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="mesure_liste.php">Mesures</a> ></small> 
 		<?= ($id_mesure) ? 'Détail' : 'Création' ?> d'une mesure  </h2>
 
 	<div class="soustitre"><?= $msg ?></div>
@@ -209,7 +209,7 @@
 						</select>
 					</div>
 					<div class="lab">
-						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème(s)</abbr>
+						<label for="sous_theme"><abbr title="La liste des catégories dépend du thème choisi.">Catégorie</abbr>
 							:</label>
 						<select id="select_sous_themes" name="sous_theme">
 							<?php echo $select_sous_theme; ?>

@@ -39,7 +39,7 @@ if (isset($_POST["enregistrer"])) {
 	if ($created+$updated+$updated_st == true) 
 		$msg = "Modification bien enregistrée.";
 	else if ($created+$updated+$updated_st == false) 
-		$msg = $msg ? $msg : "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème perdure.";
+		$msg = $msg ? $msg : "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème persiste.";
 }
 
 if (isset($_GET['act'])) {

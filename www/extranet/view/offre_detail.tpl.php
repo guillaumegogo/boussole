@@ -1,4 +1,4 @@
-<?php if (DEBUG) { echo '<!--'; print_r($themes); print_r($row); echo '-->'; } ?>
+<?php if (DEBUG) { echo '<!--'; @print_r($themes); @print_r($row); echo '-->'; } ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -121,7 +121,7 @@
 
 <div class="container">
 
-	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Liste des offres de service</a> ></small> 
+	<h2><small><a href="accueil.php">Accueil</a> > <a href="offre_liste.php">Offres de service</a> ></small> 
 		<?= ($id_offre) ? 'Détail' : 'Création' ?> d'une offre</h2>
 
 	<div class="soustitre"><?= $msg ?></div>
@@ -155,11 +155,11 @@
 				</div>
 				<div class="lab">
 					<label for="du">Dates de validité :</label>
-					<input type="text" name="du" size="10" class="datepick" value="<?php if ($id_offre) {
+					<input type="text" name="du" required size="10" class="datepick" value="<?php if ($id_offre) {
 						echo $row['date_debut'];
 					} else echo date("d/m/Y"); ?>"/>
 					au 
-					<input type="text" name="au" size="10" class="datepick" value="<?php if ($id_offre) {
+					<input type="text" name="au" required size="10" class="datepick" value="<?php if ($id_offre) {
 						echo $row['date_fin'];
 					} else echo date("d/m/Y", strtotime("+1 year")); ?>"/>
 				</div>
@@ -168,7 +168,7 @@
 					?>
 					<div class="lab">
 						<label for="theme">Thème :</label>
-						<select id="select_themes" name="theme" onchange="choixTheme(this)">
+						<select id="select_themes" name="theme" required onchange="choixTheme(this)">
 						<?php 
 						//************* le temps de redresser les données pré-v1
 						$test_data_prev1 = false;
@@ -198,9 +198,9 @@
 						?>
 					</div>
 					<div class="lab">
-						<label for="sous_theme"><abbr title="La liste des sous-thèmes dépend du thème choisi.">Sous-thème</abbr>
+						<label for="sous_theme"><abbr title="La liste des catégories dépend du thème choisi.">Catégorie</abbr>
 							:</label>
-						<select id="select_sous_themes" name="sous_theme">
+						<select id="select_sous_themes" name="sous_theme" required>
 						<?php 
 						if (!$row['id_sous_theme']) { ?>
 							<option value="">A choisir</option>
@@ -238,19 +238,19 @@
 				<?php if ($id_offre) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. ?>
 				<div class="lab">
 					<label for="adresse">Adresse :</label>
-					<input type="text" name="adresse" value="<?php if ($id_offre) {
+					<input type="text" name="adresse" required value="<?php if ($id_offre) {
 						echo $row['adresse_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="code_postal">Code postal (& commune) :</label>
-					<input type="text" name="commune" id="villes" value="<?php if ($id_offre) {
+					<input type="text" name="commune" required id="villes" value="<?php if ($id_offre) {
 						echo $row['ville_offre'] . " " . $row['code_postal_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel :</label>
-					<input type="text" name="courriel" value="<?php if ($id_offre) {
+					<input type="text" name="courriel" required value="<?php if ($id_offre) {
 						echo $row['courriel_offre'];
 					} ?>"/>
 				</div>

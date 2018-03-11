@@ -21,7 +21,7 @@
 	<?php include($path_from_extranet_to_web.'/src/admin/select_perimetre.inc.php'); ?>
 
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des utilisateurs <?php if (!$flag_actif) echo "inactifs"; ?></h2>
+		Utilisateurs <?php if (!$flag_actif) echo "inactifs"; ?></h2>
 
 	<?php
 	if (count($users) > 0) {

@@ -19,7 +19,7 @@
 
 <div class="container">
 	<h2><small><a href="accueil.php">Accueil</a> ></small> 
-		Liste des mesures <?php if (!$flag_actif) echo "désactivées"; ?></h2>
+		Mesures <?php if (!$flag_actif) echo "désactivées"; ?></h2>
 
 	<form method="post">
 		<table class="filtres"><tr>
