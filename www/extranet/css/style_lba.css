@@ -439,7 +439,8 @@ form input[type="submit"]{
 	transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
 	-webkit-transition: background 0.3s ease 0s, box-shadow 0.3s ease 0s;
 }
-form .button input[value*="Retour"]{
+form .button input[value*="Retour"],
+form .button input.gris{
 	background: #aaa;
 	box-shadow: 0px 8px 0px 0px rgb(145, 145, 145) !important;
 }

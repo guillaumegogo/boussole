@@ -115,7 +115,8 @@
 	
 	<?php if($droit_ecriture) { 
 		if ($id_formulaire && !$flag_duplicate) {?>
-		<input type="button" value="Décliner sur un territoire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">
+		<input type="submit" name="decliner" value="Décliner sur un territoire">
+		<!--<input type="button" value="Décliner sur un territoire" onclick="javascript:location.href='formulaire_detail.php?id=<?= (int) $id_formulaire ?>&act=dup'">-->
 	<?php 
 		if($meta['actif'] == 0){ 
 	?>

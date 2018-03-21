@@ -23,15 +23,15 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 		$msg = 'L\'adresse email saisie ne paraît pas valide.';
 	
 	}else{	
+		$maj_attache = NULL;
+		if (isset($_POST["statut"])) {
+			if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
+				$maj_attache = $_POST["attache"];
+			else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) 
+				$maj_attache = $_POST["attache_p"];
+		}
+		
 		if (!$_POST["maj_id"]) { //requête d'ajout
-
-			$maj_attache = NULL;
-			if (isset($_POST["statut"])) {
-				if ($_POST["statut"] == ROLE_ANIMATEUR && isset($_POST["attache"])) 
-					$maj_attache = $_POST["attache"];
-				else if ($_POST["statut"] == ROLE_PRO && isset($_POST["attache_p"])) 
-					$maj_attache = $_POST["attache_p"];
-			}
 			
 			$created = create_user($_POST["nom_pouet"], $_POST["courriel"], $_POST["statut"], $maj_attache);
 			if ($created) {
@@ -45,7 +45,7 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 
 		} else { //requête de modification
 			if (!isset($_POST["nouveaumotdepasse"])) { //modif normale
-				$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"]);
+				$updated = update_user((int)$_POST['maj_id'], $_POST["nom_pouet"], $_POST["courriel"], $_POST["statut"], $maj_attache);
 
 				if ($updated) {
 					$msg = 'Modification bien enregistrée.';
@@ -128,6 +128,10 @@ if (isset($_GET['do']) && $_GET['do'] == 'mdp') {
 } else {
 	$vue = 'creation';
 }
+
+$affiche_statut = ($vue == 'modif' && !secu_check_role(ROLE_ADMIN) ) ? 'disabled' : '';
+$affiche_territoire = ($id_utilisateur && $user['id_statut'] == ROLE_ANIMATEUR) ? '' : 'style="display:none"';
+$affiche_pro = ($id_utilisateur && $user['id_statut'] == ROLE_PRO) ? '' : 'style="display:none"';
 
 //view
 require 'view/utilisateur_detail.tpl.php';

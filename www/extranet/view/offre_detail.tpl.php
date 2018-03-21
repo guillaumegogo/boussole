@@ -279,11 +279,11 @@
 					<label for="zone">Zone concernée :</label>
 					<div style="display:inline-block;">
 						<input type="radio" name="zone" value="0" <?= ($id_offre && $row['zone_offre']) ? '':'checked' ?> 
-							onchange="document.getElementById('div_liste_villes').style.display = 'none';"> 
-							<?= $geo ?> <small>(compétence géographique du professionnel)</small><br/>
+							onchange="document.getElementById('div_liste_villes').style.display = 'none';"> Compétence de l'organisme
+							<small>(<?= $geo ?>)</small><br/>
 						<input type="radio" name="zone" value="1" <?= ($id_offre && $row['zone_offre']) ? 'checked':'' ?> 
 							onchange="document.getElementById('div_liste_villes').style.display = 'block';"> 
-							Sélection de villes 
+							Sélection de villes <small>(parmi celles de l'organisme)</small>
 					</div>
 				</div>
 				<div class="lab" id="div_liste_villes" style="display:<?= ($id_offre && $row['zone_offre']) ? "block" : "none" ?>">

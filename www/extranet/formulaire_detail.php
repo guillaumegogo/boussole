@@ -47,6 +47,11 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"])) {
 	}
 }
 
+if (isset($_POST["decliner"])) {
+	$flag_duplicate = true;
+	$droit_ecriture = true;
+}
+
 if (isset($_GET['act'])) {
 	//action suppression de page
 	if($_GET['act']=='dp' && isset($_GET['id']) && isset($_GET['i'])){
@@ -57,11 +62,6 @@ if (isset($_GET['act'])) {
 	if($_GET['act']=='dq' && isset($_GET['id']) && isset($_GET['i'])){
 		$updated = delete_question_formulaire($_GET['i'], $_GET['id']);
 		if ($updated) $msg = 'Le formulaire a été mis à jour.';
-	}
-	//action duplication de formulaire
-	if($_GET['act']=='dup'){
-		$flag_duplicate = true;
-		$droit_ecriture = true;
 	}
 }
 

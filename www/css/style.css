@@ -1488,6 +1488,11 @@ label.label_long{
 
 }
 
+.wrapper-detail-catg a span{
+	color:#abaeb6;
+	font-size:smaller;
+}
+
 .spacing-top{
 	margin-top: 76px;
 }

@@ -320,18 +320,26 @@ function update_offre($id_offre, $nom, $desc, $date_debut, $date_fin, $sous_them
 	}
 
 	if (isset($tab_villes)) {
+
+		$query1 = 'DELETE FROM `'.DB_PREFIX.'offre_criteres` WHERE `id_offre` = ? AND `nom_critere`="villes" ';
+		$stmt = mysqli_prepare($conn, $query1);
+		mysqli_stmt_bind_param($stmt, 'i', $id_offre);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+		check_mysql_error($conn);
+
 		$params = [];
 		$types = '';
-		$req2 = 'INSERT INTO `'.DB_PREFIX.'offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) 
+		$query2 = 'INSERT INTO `'.DB_PREFIX.'offre_criteres` (`id_offre`, `nom_critere`, `valeur_critere`) 
 			VALUES ';
 		foreach ($tab_villes as $selected_option) {
-			$req2 .= '( ?, "villes", ? ), ';
+			$query2 .= '( ?, "villes", ? ), ';
 			$params[] = (int) $id_offre;
 			$params[] = $selected_option;
 			$types .= 'is';
 		}
-		$req2 = substr($req2, 0, -2); //on enlève ", " à la fin de la requête
-		$stmt = query_prepare($req2,$params,$types);
+		$query2 = substr($query2, 0, -2); //on enlève ", " à la fin de la requête
+		$stmt = query_prepare($query2,$params,$types);
 		$updated_v = query_do($stmt);
 	}
 
@@ -1300,12 +1308,18 @@ function get_liste_themes($statut = null) {
 	$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `libelle_theme_court`, `actif_theme`, `nom_territoire` 
 		FROM `'.DB_PREFIX.'theme` AS `t` 
 		LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `t`.`id_territoire`=`tr`.`id_territoire` 
+		LEFT JOIN `'.DB_PREFIX.'formulaire` AS `f` ON `f`.`id_theme`=`t`.`id_theme` 
 		WHERE `id_theme_pere` IS NULL ';
 	if($statut=="actif") {
 		$query .= 'AND `actif_theme`= 1 ';
 	}else if($statut=="disponible") {
-		$query .= 'AND `actif_theme`= 1 AND `t`.`id_territoire` IS NULL ';
+		$query .= 'AND `actif_theme`= 1 AND `f`.`id_formulaire` IS NULL ';
 	}
+	
+	if(DEBUG){
+		echo "<!--<pre>".$query."</pre>-->";
+	}
+	
 	$stmt = query_prepare($query,$params,$types);
 	$themes = query_get($stmt);
 
@@ -1317,10 +1331,11 @@ function get_theme_et_sous_themes_by_id($id) {
 	global $conn;
 	$themes = null;
 	if (isset($id)) {
-		$query = 'SELECT `id_theme`, `libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`, `t`.`id_territoire`, `nom_territoire` 
+		$query = 'SELECT `t`.`id_theme`, `libelle_theme`, `id_theme_pere`, `ordre_theme`, `actif_theme`, `libelle_theme_court`, `t`.`id_territoire`, `nom_territoire`,`f`.`id_formulaire` 
 			FROM `'.DB_PREFIX.'theme` AS `t`
 			LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` 
-			WHERE `id_theme`= ? OR `id_theme_pere`= ? 
+			LEFT JOIN `'.DB_PREFIX.'formulaire` AS `f` ON `f`.`id_theme`=`t`.`id_theme` 
+			WHERE `t`.`id_theme`= ? OR `id_theme_pere`= ? 
 			ORDER BY id_theme_pere, ordre_theme';
 		$stmt = mysqli_prepare($conn, $query);
 		mysqli_stmt_bind_param($stmt, 'ii', $id, $id);
@@ -1358,11 +1373,21 @@ function get_themes_by_pro($pro_id, $actif = null, $theme_pere_only = null) {
 		$params[] = (int) $actif;
 		$types .= 'i';
 	}
+	/* todo : requête à revoir... 
 	if(isset($theme_pere_only) && $theme_pere_only=="pere") {
 		$query .= 'AND `id_theme_pere` IS NULL ';
 	}
+	*/
 	$stmt = query_prepare($query,$params,$types);
 	$themes = query_get($stmt);
+	
+	if(DEBUG){
+		$print_sql = $query;
+		foreach($params as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
 	return $themes;
 }
 
@@ -1373,10 +1398,11 @@ function get_themes_by_territoire($territoire_id = null, $theme_pere_only = null
 	$params = [];
 	$types = '';
 
-	$query = 'SELECT `t`.`id_theme`, `t`.`libelle_theme`, `t`.`libelle_theme_court`, `t`.`actif_theme`, `t`.`id_territoire`, `t`.`id_theme_pere`, `tr`.`nom_territoire` 
+	$query = 'SELECT `t`.`id_theme`, `t`.`libelle_theme`, `t`.`libelle_theme_court`, `t`.`actif_theme`, `t`.`id_territoire`, `t`.`id_theme_pere`, `tr`.`nom_territoire`,`f`.`id_formulaire`
 		FROM `'.DB_PREFIX.'theme` AS `t`
 		LEFT JOIN `'.DB_PREFIX.'theme` AS `pere` ON `pere`.`id_theme`=`t`.`id_theme_pere` 
 		LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `tr`.`id_territoire`=`t`.`id_territoire` 
+		LEFT JOIN `'.DB_PREFIX.'formulaire` AS `f` ON `f`.`id_theme`=`t`.`id_theme` 
 		WHERE 1 ';
 	if(!is_null($territoire_id)) {
 		$query .= ' AND `t`.`id_territoire`= ? OR `pere`.`id_territoire`= ? ';
@@ -1392,9 +1418,19 @@ function get_themes_by_territoire($territoire_id = null, $theme_pere_only = null
 		$params[] = (int) $actif;
 		$types .= 'i';
 	}*/
+	$query .= ' ORDER BY `t`.`id_territoire`, `t`.`id_theme` ';
+	
 	$stmt = query_prepare($query,$params,$types);
 	$themes = query_get($stmt);
 
+	if(DEBUG){
+		$print_sql = $query;
+		foreach($params as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
+				
 	return $themes;
 }
 
@@ -1632,6 +1668,14 @@ function create_user($nom_utilisateur, $courriel, $statut, $attache) {
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'sssssi', $nom_utilisateur, $courriel, $mdp, $statut, $attache, $user_id);
 	
+	if(DEBUG){
+		$print_sql = $query;
+		foreach(array($nom_utilisateur, $courriel, $mdp, $statut, $attache, $user_id) as $term){
+			$print_sql = preg_replace('/\?/', '"'.$term.'"', $print_sql, 1);
+		}
+		echo "<!--<pre>".$print_sql."</pre>-->";
+	}
+				
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$created = mysqli_stmt_affected_rows($stmt) > 0;
@@ -1641,17 +1685,17 @@ function create_user($nom_utilisateur, $courriel, $statut, $attache) {
 	return $created;
 }
 
-function update_user($id, $nom, $courriel){
+function update_user($id, $nom, $courriel, $statut, $attache) {
 
 	global $conn;
 	$updated = false;
 	$user_id= secu_get_current_user_id();
 	
 	$query = 'UPDATE `'.DB_PREFIX.'utilisateur` 
-		SET `nom_utilisateur` = ?, `email` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
+		SET `nom_utilisateur` = ?, `email` = ?, `id_statut` = ?, `id_metier` = ?, `last_edit_date` = NOW(), `last_edit_user_id` = ? 
 		WHERE `id_utilisateur` = ?';
 	$stmt = mysqli_prepare($conn, $query);
-	mysqli_stmt_bind_param($stmt, 'ssii', $nom, $courriel, $user_id, $id);
+	mysqli_stmt_bind_param($stmt, 'ssssii', $nom, $courriel, $statut, $attache, $user_id, $id);
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$updated = mysqli_stmt_affected_rows($stmt) > 0;

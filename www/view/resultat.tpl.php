@@ -95,16 +95,16 @@ if ($nb_offres) {
 			$i = 0;
 			foreach ($offres[$sous_theme_id] as $offre) {
 				// découpage des titres trop longs
-				$titre = ((strlen($offre["titre"]) > 80 ) && (strpos($offre["titre"]," ",80))) ? 
-					substr($offre["titre"],0,strpos($offre["titre"]," ",80))."…" : $offre["titre"];
-				$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre["description"]);
-				$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte," ",1500))) ? 
-					substr($description_courte,0,strpos($description_courte," ",1500))."…" : $description_courte;
+				$titre = ((strlen($offre['titre']) > 70 ) && (strpos($offre['titre'],' ', 70))) ? 
+					substr($offre['titre'],0,strpos($offre['titre'],' ', 70)).'…' : $offre['titre'];
+				$description_courte = preg_replace(array('/\[br\]\[br\]/is','/\[img\](.*?)\[\/img\]/is'),array('[br]',''),$offre['description']);
+				$description_courte = ((strlen($description_courte) > 1500 ) && (strpos($description_courte,' ',1500))) ? 
+					substr($description_courte,0,strpos($description_courte,' ',1500)).'…' : $description_courte;
 
 		        ?>
         <div class="row">
             <div class="wrapper-detail-catg">
-                <a href="offre.php?id=<?= (int) $offre['id'] ?>" ><?php xecho($titre) ?></a>
+                <a href="offre.php?id=<?= (int) $offre['id'] ?>" ><?php xecho($titre) ?> <span>(<?php xecho($offre['ville']) ?>)</span></a>
             </div>
         </div>
     <?php } ?>

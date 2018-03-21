@@ -1,8 +1,8 @@
-/*v1.03*/
+/*v1.03
 
 ALTER TABLE `territoire` ADD `description_territoire` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER `nom_territoire`;
 ALTER TABLE `professionnel` CHANGE `site_web_pro` `site_web_pro` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
-
+*/
 /*v1.02
 
 ALTER TABLE `_offre` CHANGE `courriel_offre` `courriel_offre` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
@@ -10,8 +10,7 @@ ALTER TABLE `_offre` CHANGE `courriel_offre` `courriel_offre` VARCHAR(100) CHARA
 
 /*v1.01*/
 /*
-ALTER TABLE `recherche` 
-ADD `id_territoire` INT NULL DEFAULT NULL AFTER `code_insee`;
+ALTER TABLE `recherche` ADD `id_territoire` INT NULL DEFAULT NULL AFTER `code_insee`;
 
 UPDATE `recherche` as r
 LEFT JOIN `territoire_villes` as tv on tv.code_insee=r.code_insee

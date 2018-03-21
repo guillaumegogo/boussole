@@ -67,19 +67,23 @@ if (isset($id_offre)) {
 	if ($row){
 		//affichage de la compétence géo du pro
 		$geo = "";
-		switch ($row['competence_geo']) {
-			case "territoire":
-				$geo = $row['competence_geo'] . " " . $row['nom_territoire'];
-				break;
-			case "departemental":
-				$geo = $row['competence_geo'] . " " . $row['nom_departement'];
-				break;
-			case "regional":
-				$geo = $row['competence_geo'] . " " . $row['nom_region'];
-				break;
-			case "national":
-				$geo = $row['competence_geo'];
-				break;
+		if($row['zone_pro']){
+			$geo = "<abbr title=\"sélection de villes\">sv</abbr>";
+		}else{
+			switch ($row['competence_geo']) {
+				case "territoire":
+					$geo = $row['competence_geo'] . " " . $row['nom_territoire'];
+					break;
+				case "departemental":
+					$geo = $row['competence_geo'] . " " . $row['nom_departement'];
+					break;
+				case "regional":
+					$geo = $row['competence_geo'] . " " . $row['nom_region'];
+					break;
+				case "national":
+					$geo = $row['competence_geo'];
+					break;
+			}
 		}
 
 		//récup du formulaire dynamique
@@ -102,16 +106,14 @@ if (isset($id_offre)) {
 			$themes = get_themes_by_territoire(0); //national
 		}
 		foreach($themes as $rowt){
-			if (!isset($rowt['id_theme_pere'])) {
-				$tab_js_soustheme[$rowt['id_theme']] = '';
-			} else {
-				//tableau des listes pour fonction javascript 
-				if (isset($tab_js_soustheme[$rowt['id_theme_pere']])) {
-					$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
+			if (isset($rowt['id_theme_pere']) && $rowt['id_theme_pere']) {
+				if (!isset($tab_js_soustheme[$rowt['id_theme_pere']])){
+					$tab_js_soustheme[$rowt['id_theme_pere']] = '';
 				}
+				$tab_js_soustheme[$rowt['id_theme_pere']] .= '<option value=\'' . $rowt['id_theme'] . '\'>' . $rowt['libelle_theme'] . '</option>';
 			}
 		}
-
+		
 		//*********** liste des villes accessibles au pro
 		if ($row['zone_pro'] == 0) { //la liste des villes du territoire
 			$villes = get_villes_by_competence_geo($row['competence_geo'], (int)$row['id_competence_geo']);

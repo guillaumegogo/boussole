@@ -211,7 +211,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 
 	global $conn;
 	
-	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `t`.`id_sous_theme`, `theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro`, `ville_offre`, `delai_offre` /*`t`.*, `theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
+	$query = 'SELECT `id_offre`, `nom_offre`, `description_offre`, `ods`.`id_sous_theme`, `theme`.`libelle_theme` AS `sous_theme_offre`, `nom_pro`, `ville_offre`, `delai_offre` /*`ods`.*, `theme`.`libelle_theme` AS `sous_theme_offre`, `theme_pere`.`libelle_theme` AS `theme_offre` */
 	FROM ( SELECT `o`.*,   /* on construit ici la liste des critères */
 		GROUP_CONCAT( if(nom_critere= "age_min", valeur_critere, NULL ) SEPARATOR "|") `age_min`, 
 		GROUP_CONCAT( if(nom_critere= "age_max", valeur_critere, NULL ) SEPARATOR "|") `age_max`, 
@@ -224,24 +224,24 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 		JOIN `'.DB_PREFIX.'offre` AS `o` ON `o`.`id_offre`=`oc`.`id_offre`
 		WHERE `o`.`actif_offre` = 1 
 		GROUP BY `oc`.`id_offre`
-		) as `t`
-	JOIN `'.DB_PREFIX.'theme` AS `theme` ON `theme`.`id_theme`=`t`.`id_sous_theme`
+		) as `ods`
+	JOIN `'.DB_PREFIX.'theme` AS `theme` ON `theme`.`id_theme`=`ods`.`id_sous_theme`
 	JOIN `'.DB_PREFIX.'theme` AS `theme_pere` ON `theme_pere`.`id_theme`=`theme`.`id_theme_pere`
-	JOIN `'.DB_PREFIX.'professionnel` AS `pro` ON `pro`.id_professionnel=`t`.`id_professionnel` /* s il n y a pas une liste de villes propre à l offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d où les jointures en dessous ↓ */
+	JOIN `'.DB_PREFIX.'professionnel` AS `pro` ON `pro`.id_professionnel=`ods`.`id_professionnel` /* s il n y a pas une liste de villes propre à l offre (zone_selection_villes=0), alors il faut aller chercher celles du pro, d où les jointures en dessous ↓ */
 	LEFT JOIN `'.DB_PREFIX.'professionnel_villes` AS `pv` ON `pro`.`id_professionnel`=`pv`.`id_professionnel` AND `pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?
-	LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `t`.`zone_selection_villes`=0 AND `pro`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`pro`.`id_competence_geo` 
+	LEFT JOIN `'.DB_PREFIX.'territoire` AS `tr` ON `ods`.`zone_selection_villes`=0 AND `pro`.`competence_geo`="territoire" AND `tr`.`id_territoire`=`pro`.`id_competence_geo` 
 	LEFT JOIN `'.DB_PREFIX.'territoire_villes` AS `tv` ON `tv`.`id_territoire`=`tr`.`id_territoire` AND `tv`.`code_insee` = ?
 	LEFT JOIN `'.DB_PREFIX.'_departement` AS `dep` ON `pro`.`competence_geo`="departemental" AND `dep`.`id_departement`=`pro`.`id_competence_geo`
 	LEFT JOIN `'.DB_PREFIX.'_region` AS `reg` ON `pro`.`competence_geo`="regional" AND `reg`.`id_region`=`pro`.`id_competence_geo`
 	LEFT JOIN `'.DB_PREFIX.'_departement` as `depreg` ON `depreg`.`id_region`=`reg`.`id_region`
 
-	WHERE `t`.`debut_offre` <= CURDATE() AND `t`.`fin_offre` >= CURDATE() 
+	WHERE `ods`.`debut_offre` <= CURDATE() AND `ods`.`fin_offre` >= CURDATE() 
 	AND `pro`.`actif_pro` = 1
 	AND `theme_pere`.`libelle_theme` = ? 
 	/* recherche géographique ! */
-	AND ((`t`.`zone_selection_villes`=1 AND `t`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
-		OR (`pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
-		OR (`t`.`zone_selection_villes`=0 AND ( /* sinon il faut chercher dans la zone de compétence du pro */
+	AND ((`ods`.`zone_selection_villes`=1 AND `ods`.`villes` LIKE ?) /* si l offre a une liste de villes personnalisée */
+		OR (`ods`.`zone_selection_villes`=0 AND `pro`.`zone_selection_villes`=1 AND `pv`.`code_insee` = ?) /* si le pro a une liste de villes personnalisée */
+		OR (`ods`.`zone_selection_villes`=0 AND `pro`.`zone_selection_villes`=0 AND ( /* sinon il faut chercher dans la zone de compétence du pro */
 			`pro`.`competence_geo` = "national"
 			OR `tv`.`code_insee` = ?
 			OR `dep`.`id_departement` = SUBSTR(?,1,2) 
@@ -257,7 +257,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 			switch ($types[$cle]) {
 				case 'select':
 				case 'radio':
-					$query .= ' AND `t`.`'.$c_cle.'` LIKE ? ';
+					$query .= ' AND `ods`.`'.$c_cle.'` LIKE ? ';
 					$terms[] = '%' . $valeur . '%';
 					$terms_type .= "s";
 					break;
@@ -265,7 +265,7 @@ function get_offres_demande($criteres, $types, $besoin, $code_insee){
 				case 'checkbox':
 					$sql = '';
 					foreach ($criteres[$cle] as $selected_option) {
-						$sql .= ' `t`.`'.$c_cle.'` LIKE ? OR';
+						$sql .= ' `ods`.`'.$c_cle.'` LIKE ? OR';
 						$terms[] = '%' . $selected_option . '%';
 						$terms_type .= "s";
 					}

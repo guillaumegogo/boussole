@@ -10,11 +10,12 @@ $id_theme_choisi = null;
 $flag_duplicate = false;
 $msg = '';
 
+if (DEBUG) { 
+	echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
+}
+
 if (isset($_POST["enregistrer"])) {
 	
-	if (DEBUG) { 
-		echo "<!--<pre>"; echo ' '.$droit_ecriture.' '; print_r($_POST); echo "</pre>-->";
-	}
 	$created = $updated = $updated_st = null;
 	
 	//********** mise à jour thème/sous themes
@@ -27,9 +28,7 @@ if (isset($_POST["enregistrer"])) {
 		$retour = create_theme($_POST['theme'], $_POST['territoire'], $_POST['libelle_theme'], $_POST['actif']);
 		$created = $retour[0];
 		if(!is_null($retour[1])) $msg = $retour[1];
-		if ($created) {
-			$id_theme_choisi = mysqli_insert_id($conn);
-		}
+		if ($created) $id_theme_choisi = mysqli_insert_id($conn);
 	}
 	
 	if ($id_theme_choisi && isset($_POST['sthemes'])) {
@@ -42,12 +41,9 @@ if (isset($_POST["enregistrer"])) {
 		$msg = $msg ? $msg : "Il y a eu un problème à l'enregistrement. Contactez l'administration centrale si le problème persiste.";
 }
 
-if (isset($_GET['act'])) {
-	//action duplication de thème
-	if($_GET['act']=='dup'){
-		$flag_duplicate = true;
-		$droit_ecriture = true;
-	}
+if (isset($_POST["decliner"])) {
+	$flag_duplicate = true;
+	$droit_ecriture = true;
 }
 
 if (isset($_GET['id']) && !$id_theme_choisi) {
@@ -66,7 +62,7 @@ if ($id_theme_choisi) {
 }
 
 $liste_themes = get_liste_parametres('theme');
-$duplicated_theme = ($flag_duplicate)?$theme['libelle_theme_court']:null;
+$duplicated_theme = ($flag_duplicate) ? $theme['libelle_theme_court'] : null;
 
 if (secu_check_role(ROLE_ANIMATEUR)) {
 	$territoires = get_territoires($_SESSION['admin']['territoire_id'],1,$duplicated_theme);

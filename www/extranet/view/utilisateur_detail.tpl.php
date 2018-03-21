@@ -67,27 +67,28 @@
 					</div>
 					<div class="lab">
 						<label for="statut">Statut :</label>
-						<select name="statut" <?= ($vue == 'modif') ? 'disabled':''; ?> onchange="displayAttache(this);">
+						<select name="statut" <?= $affiche_statut ?> onchange="displayAttache(this);">
 							<option value="">A choisir</option>
 						<?php foreach($liste_statuts as $key=>$statut) { ?>
 							<option value="<?= $key ?>" <?= ($id_utilisateur && ($user['id_statut'] == $key)) ? 'selected':'' ?>>
 								<?= $statut ?></option>
 						<?php } ?>
 						</select>
+						<?php if($affiche_statut=='disabled'){ ?>
+							<input type="hidden" name="statut" value="<?= $user['id_statut'] ?>" />
+						<?php } ?>
 					</div>
 					<div class="lab" style="display:block;">
 						<label for="attache">Attache :</label>
 						<div style="display:inline-block;">
-							<select name="attache" id="liste_territoires" 
-								<?= ($id_utilisateur && $user['id_statut'] == ROLE_ANIMATEUR) ? 'disabled' : 'style="display:none"' ?>>
+							<select name="attache" id="liste_territoires" <?= $affiche_territoire ?>>
 							<option value="">A choisir</option>
 						<?php foreach($liste_territoires as $user2) { ?>
 							<option value="<?= $user2['id_territoire'] ?>" <?= (isset($user['id_territoire']) && ($user2['id_territoire'] == $user['id_territoire'])) ? 'selected':'' ?>><?= $user2['nom_territoire'] ?></option>
 						<?php } ?>
 							</select>
 							
-							<select name="attache_p" id="liste_professionnels" 
-								<?= ($id_utilisateur && $user['id_statut'] == ROLE_PRO) ? 'disabled' : 'style="display:none"'; ?>>
+							<select name="attache_p" id="liste_professionnels" <?= $affiche_pro ?>>
 							<option value="">A choisir</option>
 						<?php foreach($liste_pro as $user3) { ?>
 							<option value="<?= $user3['id_professionnel'] ?>" <?= (isset($user['id_professionnel']) && ($user3['id_professionnel'] == $user['id_professionnel'])) ? 'selected':'' ?>><?= $user3['nom_pro'] ?></option>

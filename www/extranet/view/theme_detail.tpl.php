@@ -136,10 +136,16 @@
 			<?php } ?>
 			
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='theme_liste.php'"> 
+			<?php if($theme['id_formulaire']) { ?>
+				<input type="button" value="Accéder au formulaire" class="gris" onclick="javascript:location.href='formulaire_detail.php?id=<?=$theme['id_formulaire']?>'"> 
+			<?php }else if($droit_ecriture) { ?>
+				<input type="button" value="Créer un formulaire" class="gris" onclick="javascript:location.href='formulaire_liste.php'"> 
+			<?php } ?>
 			
 			<?php if ($id_theme_choisi && $theme['actif_theme'] == 1 && !$flag_duplicate) { ?>
-				<input type="button" value="Décliner sur un territoire" onclick="javascript:location.href='theme_detail.php?id=<?= (int) $id_theme_choisi ?>&act=dup'">
+				<input type="submit" name="decliner" value="Décliner sur un territoire">
 			<?php } ?>
+			
 			<!--
 			<?php if($theme['actif_theme'] == 0){ ?>
 				<input type="submit" name="restaurer" value="Restaurer">
@@ -147,6 +153,7 @@
 				<input type="submit" name="archiver" value="Archiver">
 			<?php } ?>
 			-->
+			
 			<?php if($droit_ecriture) { ?>
 				<input type="submit" name="enregistrer" value="Enregistrer">
 			<?php } ?>

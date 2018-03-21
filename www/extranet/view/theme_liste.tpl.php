@@ -34,6 +34,7 @@
 				<th>Territoire</th>
 				<th>Libellé</th>
 				<th>Actif</th>
+				<th>Formulaire</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -45,12 +46,15 @@
 					<td><?php xecho(isset($row['nom_territoire'])?$row['nom_territoire']:'national') ?></td>
 					<td><?php xecho($row['libelle_theme']) ?></td>
 					<td><?php xecho($row['actif_theme']?'oui':'non') ?></td>
+					<td><?= ($row['id_formulaire']?'<a href="formulaire_detail.php?id='.$row['id_formulaire'].'">oui</a>':($row['actif_theme']?'<span style="color:red">non</span>':'non')) ?></td>
 				</tr>
 			<?php } ?>
 			</tbody>
 		</table>
 
-		<div class="notice centre">Pour ouvrir un nouveau thème sur un territoire, ouvrez un thème existant et cliquez sur [décliner sur un territoire].</div>
+		<div class="notice centre">
+			Pour ouvrir un nouveau thème sur un territoire, ouvrez un thème existant et cliquez sur [décliner sur un territoire].<br/>
+			Vous devrez ensuite créer le formulaire correspondant.</div>
 
 	<?php
 	} else {
