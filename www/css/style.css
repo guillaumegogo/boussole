@@ -619,6 +619,13 @@ footer .footer-after{
 	text-align: center;
 	padding-right: 1.5em;
 }
+.wrapper-submit-besoins:before{
+	background-repeat: no-repeat;
+	background-size: 100%;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
 
 .bonhomme-droite img:hover , .bonhomme-droite input:hover{
 	cursor: not-allowed;
@@ -660,38 +667,51 @@ footer .footer-after{
 .wrapper-submit-besoins.emploi:before{
 	content: '';
 	background-image: url('../img/femme-small.png');
-	background-repeat: no-repeat;
-	background-size: 100%;
-	position: absolute;
 	bottom: 75px;
-	left: 50%;
-	transform: translateX(-50%);
 	width: 145px;
 	height: 250px;
 }
 .wrapper-submit-besoins.logement:before{
 	content: '';
 	background-image: url('../img/homme-small-1.png');
-	background-repeat: no-repeat;
-	background-size: 100%;
-	position: absolute;
 	bottom: 82px;
-	left: 50%;
-	transform: translateX(-50%);
 	width: 200px;
 	height: 256px;
 }
 .wrapper-submit-besoins.sante:before{
 	content: '';
 	background-image: url('../img/homme-small-2.png');
-	background-repeat: no-repeat;
-	background-size: 100%;
-	position: absolute;
 	bottom: 80px;
-	left: 50%;
-	transform: translateX(-50%);
 	width: 160px;
 	height: 260px;
+}
+.wrapper-submit-besoins.formation:before{
+	content: '';
+	background-image: url('../img/homme-formation.png');
+	bottom: 70px;
+	width: 170px;
+	height: 280px;
+}
+.wrapper-submit-besoins.engagement:before{
+	content: '';
+	background-image: url('../img/femme-engagement.png');
+	bottom: 80px;
+	width: 165px;
+	height: 255px;
+}
+.wrapper-submit-besoins.loisirs:before{
+	content: '';
+	background-image: url('../img/homme-loisirs.png');
+	bottom: 80px;
+	width: 205px;
+	height: 255px;
+}
+.wrapper-submit-besoins.international:before{
+	content: '';
+	background-image: url('../img/femme-international.png');
+	bottom: 55px;
+	width: 185px;
+	height: 285px;
 }
 .wrapper-submit-besoins.disabled:before{
 	filter: grayscale(100%);
@@ -704,6 +724,10 @@ footer .footer-after{
 	.wrapper-submit-besoins.logement:before{width: 100px; height: 128px; bottom: 102px;}
 	.wrapper-submit-besoins.emploi:before{width: 73px; height: 125px; bottom: 95px;}
 	.wrapper-submit-besoins.sante:before{width: 80px; height: 130px; bottom: 100px;}
+	.wrapper-submit-besoins.formation:before{width: 80px; height: 130px; bottom: 100px;}
+	.wrapper-submit-besoins.engagement:before{width: 80px; height: 130px; bottom: 100px;}
+	.wrapper-submit-besoins.loisirs:before{width: 80px; height: 130px; bottom: 100px;}
+	.wrapper-submit-besoins.international:before{width: 80px; height: 130px; bottom: 100px;}
 	.submit-besoins{
 		font-size: 1.4em;
 		height: 52px;

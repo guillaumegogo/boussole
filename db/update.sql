@@ -1,3 +1,7 @@
+/*v1.0.5*/
+
+INSERT INTO `__parametres` (`id`, `libelle`, `liste`) VALUES (NULL, 'formation', 'theme'), (NULL, 'engament', 'theme'), (NULL, 'international', 'theme'), (NULL, 'loisirs', 'theme');
+
 /*v1.03
 
 ALTER TABLE `territoire` ADD `description_territoire` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER `nom_territoire`;

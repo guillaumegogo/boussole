@@ -136,7 +136,7 @@
 			<?php } ?>
 			
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='theme_liste.php'"> 
-			<?php if($theme['id_formulaire']) { ?>
+			<?php if(isset($theme['id_formulaire']) && $theme['id_formulaire']) { ?>
 				<input type="button" value="Accéder au formulaire" class="gris" onclick="javascript:location.href='formulaire_detail.php?id=<?=$theme['id_formulaire']?>'"> 
 			<?php }else if($droit_ecriture) { ?>
 				<input type="button" value="Créer un formulaire" class="gris" onclick="javascript:location.href='formulaire_liste.php'"> 

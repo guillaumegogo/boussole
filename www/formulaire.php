@@ -45,5 +45,9 @@ foreach ($questions as $question) {
 	$_SESSION['web']['type'][$question['name']] = $question['type'];
 }
 
+if(DEBUG && isset($_SESSION['web']['critere'])){ 
+	echo "<pre>"; print_r($_SESSION['web']['critere']); echo "</pre>";
+}
+
 //view
 require 'view/formulaire.tpl.php';
