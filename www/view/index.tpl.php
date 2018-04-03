@@ -15,12 +15,12 @@
 					$("#searchForm").submit();
 				}
 			});
-<?php if ($redirection_prod) { ?>
+<?php if ($_SESSION['web']['redir_prod']) { ?>
 			$( "#myModal").modal('show');
 <?php } ?>
 		} );
 	</script>
-<?php if ($redirection_prod) { ?>
+<?php if ($_SESSION['web']['redir_prod']) { ?>
 	<style>
 	.modal-backdrop.in { opacity: 0.8; }
 	</style>
@@ -29,7 +29,7 @@
 </head>
 <body>
 	
-<?php if ($redirection_prod) { ?>
+<?php if ($_SESSION['web']['redir_prod']) { ?>
 <!-- Modal jeunes.gouv -->
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">

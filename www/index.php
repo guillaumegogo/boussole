@@ -30,7 +30,19 @@ if(isset($_SESSION['web']['erreur'])) {
 }
 
 //si on arrive sur la beta et qu'on ne met pas un "?beta" en URL, alors on est redirigé vers la prod
-$redirection_prod = (ENVIRONMENT === ENV_BETA) ? ((isset($_GET['beta'])) ? false : true) : false;
+if(ENVIRONMENT === ENV_BETA){
+	if(isset($_GET['beta']) || $_SESSION['web']['redir_prod'] === false) {
+		$_SESSION['web']['redir_prod'] = false;
+	}else {
+		$_SESSION['web']['redir_prod'] = true;
+	}
+}else{
+	$_SESSION['web']['redir_prod'] = false;
+}
+/*
+if(!isset($_SESSION['web']['redir_prod']) || $_SESSION['web']['redir_prod']==true){
+	$_SESSION['web']['redir_prod'] = (ENVIRONMENT === ENV_BETA) ? ((isset($_GET['beta'])) ? false : true) : false;
+}*/
 
 //view
 require 'view/index.tpl.php';

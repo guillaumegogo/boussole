@@ -124,7 +124,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
 {
 	global $path_extranet;
 	$resultat = null;
-		
+
     //au professionnel
     $to = 'boussole@yopmail.fr';
     if (ENVIRONMENT === ENV_PROD || ENVIRONMENT === ENV_BETA) {
@@ -150,7 +150,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
     $envoi_mail = mail($to, $subject, $message, $headers);
 	//todo : check http://foundationphp.com/tutorials/email.php 
 
-    //accusé d'envoi au demandeur
+    //accusé d'envoi au demandeur par mail
     if (filter_var($coordonnees, FILTER_VALIDATE_EMAIL)) {
 
         $to = $coordonnees;
@@ -172,8 +172,34 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
         }
         $envoi_accuse = mail($to, $subject, $message, $headers);
 		
-    }else if (preg_match('/^(0[67]([[\d -\.]){8,12})$/', $_POST['coordonnees'])) {
-		//todo : send a sms
+    //accusé d'envoi au demandeur par sms (réservé à la beta en attendant compte de prod)
+    }else if (preg_match('/^(0[67]([[\d]){8})$/', $_POST['coordonnees']) && ENVIRONMENT === ENV_BETA) {
+		
+		$soapclient = new SoapClient($sms_wsdl);
+		
+		$message = "Bonjour! Ta demande de contact a bien été enregistrée par la Boussole pour l'offre " . substr($nom_offre,0,50);
+		$num_tel = preg_replace('/^0/', '33', $_POST['coordonnees']);
+
+		$params = array(
+			'correlationId' => '#NULL#', 
+			'originatingAddress' => '#NULL#',
+			'originatorTON' => '-1', 
+			'destinationAddress' => $num_tel, 
+			'messageText' => $message,
+			'maxConcatenatedMessages' => '-1',
+			'PID' => '-1', 
+			'relativeValidityTime' => '-1',
+			'deliveryTime' => '#NULL#', 
+			'statusReportFlags' => '-1',
+			'accountName' => '#NULL#',
+			'referenceId' => '#NULL#', 
+			'serviceMetaData' => '#NULL#',
+			'campaignName' => '#NULL#', 
+			'username' => SMS_USERNAME,
+			'password' => SMS_PASSWORD
+			);
+
+		$response = $soapclient->sendText($params);
 	}
 
     if ($envoi_mail) {
@@ -183,8 +209,8 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
 }
 
 
-function envoi_mail_contact($nom, $sujet, $email, $message) 
-{
+function envoi_mail_contact($nom, $sujet, $email, $message) {
+	
 	$resultat = null;
 
     $to = 'boussole@jeunesse-sports.gouv.fr';

@@ -8,14 +8,14 @@ $stats = array();
 $ecrans = null;
 
 /*
-si $perimetre_lecture = PERIMETRE_NATIONAL, alors on fait deux pages : une par territoire, l'autre par organisme
-si $perimetre_lecture = PERIMETRE_ZONE, alors on fait une page : recherche + par organisme, limité au territoire
-si $perimetre_lecture = PERIMETRE_PRO, alors on fait une page : par organisme, limité à l'organisme
+si $perimetre_lecture = PERIMETRE_NATIONAL, alors on fait 3 pages : une par territoire, une par organisme, une par offre
+si $perimetre_lecture = PERIMETRE_ZONE, 2 pages : recherche + par organisme, par offre, limité au territoire
+si $perimetre_lecture = PERIMETRE_PRO, 2 pages : par organisme, par offre, limité à l'organisme
 */
 switch($perimetre_lecture){
 	
 	case PERIMETRE_NATIONAL :
-		$ecrans = array('Par territoire'=>'pt','Par organisme'=>'po');
+		$ecrans = array('Par territoire'=>'pt','Par organisme'=>'po','Par offre de service'=>'ps');
 		$ecran = (isset($_GET['e']) && in_array($_GET['e'], $ecrans)) ? $_GET['e'] : 'pt'; //on affiche l'écran indiqué si GET valide. sinon par territoire.
 		if($ecran == 'pt'){
 			$stats[] = ['caption' => 'Nombre de recherches par mois (<a href="recherche_liste.php">détail</a>)', 'data' => get_stat_nb_recherches_par_mois()];
@@ -24,18 +24,31 @@ switch($perimetre_lecture){
 		}else if($ecran == 'po'){
 			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
 			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
+		}else if($ecran == 'ps'){
+			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('toutes', 'offre')];
+			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('traitees', 'offre')];
 		}
 		break;
 	
 	case PERIMETRE_ZONE :
-		$stats[] = ['caption' => 'Nombre de recherches par mois (<a href="recherche_liste.php">détail</a>)', 'data' => get_stat_nb_recherches_par_mois()];
-		$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
-		$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
+		if($ecran == 'po'){
+			$stats[] = ['caption' => 'Nombre de recherches par mois (<a href="recherche_liste.php">détail</a>)', 'data' => get_stat_nb_recherches_par_mois()];
+			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
+			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
+		}else if($ecran == 'ps'){
+			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('toutes', 'offre')];
+			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('traitees', 'offre')];
+		}
 		break;
 	
 	case PERIMETRE_PRO :
-		$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
-		$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
+		if($ecran == 'po'){
+			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
+			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
+		}else if($ecran == 'ps'){
+			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('toutes', 'offre')];
+			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('traitees', 'offre')];
+		}
 		break;
 
 }

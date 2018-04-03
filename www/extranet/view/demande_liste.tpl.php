@@ -3,7 +3,6 @@
 <head>
 	<?php include('view/inc.head.php'); ?>
 	
-	<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css"/>
 	<script type="text/javascript" language="javascript" src="../src/js/external/jquery/jquery.js"></script>
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" language="javascript" src="js/dataTables.buttons.min.js"></script>
@@ -26,6 +25,7 @@
 		});
 	</script>
 	<style>div.dt-buttons { clear: both; float:none; margin: 0 auto !important; width: 20em;  }</style>
+	<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css"/>
 </head>
 
 <body>

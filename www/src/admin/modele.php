@@ -2262,7 +2262,11 @@ function get_stat_nb_demandes_par_mois($etat='toutes', $ventilation='territoire'
 
 	$nb_demandes = null;
 	$d = ($etat=='traitees') ? 'date_traitement' : 'date_demande';
-	$v = ($ventilation=='pro') ? 'nom_pro' : 'nom_territoire';
+	switch($ventilation){
+		case 'pro' : $v = 'nom_pro'; break;
+		case 'offre' : $v = 'nom_offre'; break;
+		case 'territoire' : $v = 'nom_territoire'; break;
+	}
 	
 	$query = 'SELECT DATE_FORMAT(`'.$d.'`, "%Y-%m") as `mois`, `'.$v.'`, COUNT(`id_demande`) as `nb` 
 		FROM `'.DB_PREFIX.'demande` as d
