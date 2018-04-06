@@ -18,6 +18,13 @@ function sans_accent($str)
     $url = preg_replace('#ç#', 'c', $url);
     return ($url);
 }
+
+//********** raccourcit un texte
+function raccourci($str, $taille){
+	$txt = ((strlen($str) > $taille ) && (strpos($str,' ', $taille))) ? substr($str,0,strpos($str,' ', $taille)).'…' : $str;
+    return ($txt);
+}
+
 //********* fonction de présentation (un peu crado) des critères du jeune
 function liste_criteres($tab_criteres, $separateur = ", ")
 {
@@ -127,7 +134,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
 
     //au professionnel
     $to = 'boussole@yopmail.fr';
-    if (ENVIRONMENT === ENV_PROD || ENVIRONMENT === ENV_BETA) {
+    if (ENVIRONMENT === ENV_PROD) {
         $to = $courriel_offre;
     }
     $subject = mb_encode_mimeheader('Une demande a été déposée sur la Boussole des jeunes');
@@ -173,13 +180,12 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
         $envoi_accuse = mail($to, $subject, $message, $headers);
 		
     //accusé d'envoi au demandeur par sms (réservé à la beta en attendant compte de prod)
-    }else if (preg_match('/^(0[67]([[\d]){8})$/', $_POST['coordonnees']) && ENVIRONMENT === ENV_BETA) {
+    }else if (preg_match('/^(0[67]([[\d]){8})$/', $coordonnees) && ENVIRONMENT === ENV_BETA) {
 		
-		$soapclient = new SoapClient($sms_wsdl);
+		$soapclient = new SoapClient(SMS_WSDL);
 		
-		$message = "Bonjour! Ta demande de contact a bien été enregistrée par la Boussole pour l'offre " . substr($nom_offre,0,50);
+		$message = "Bonjour! Ta demande pour \"" . raccourci($nom_offre,50). "\" a bien été reçue par la Boussole. A bientôt!";
 		$num_tel = preg_replace('/^0/', '33', $_POST['coordonnees']);
-
 		$params = array(
 			'correlationId' => '#NULL#', 
 			'originatingAddress' => '#NULL#',

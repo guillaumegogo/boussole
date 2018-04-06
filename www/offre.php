@@ -61,13 +61,14 @@ if (isset($_POST['coordonnees']) && $_POST['coordonnees']) {
 
 		//*********** envoi des mails
 		if ($id_demande){
-			$msg = "Ta demande de contact pour l'offre <strong>&nbsp;".$row['nom_offre']."&nbsp;</strong> a bien été enregistrée.";
+			$msg = "Ta demande de contact pour l'offre <strong>&nbsp;".$row['nom_offre']."&nbsp;</strong> a bien été enregistrée.<br/>";
 			
 			$criteres = isset($_SESSION['web']['critere']) ? $_SESSION['web']['critere'] : null;
 			$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['coordonnees'], $criteres, $token);
 			if ($resultat){
-				$msg .= " Un courriel contenant ta recherche à été transmis à l'organisme proposant l'offre de service.";
+				$msg .= " Un courriel contenant ta recherche à été transmis à l'organisme proposant ce service.";
 			}
+			$msg .= " Ce professionnel prendra contact avec toi dans le délai qu'il a garanti.";
 			
 		} else {
 			$msg = "L'application a rencontré un problème, ta demande n'a pas pu être enregistrée. Merci de contacter l'administrateur du site si le problème persiste.";
