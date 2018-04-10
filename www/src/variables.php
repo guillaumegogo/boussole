@@ -12,10 +12,10 @@ define('DEBUG', true);
 switch (ENVIRONMENT)
 {
 	case ENV_LBA :
-		define('DB_HOST', 'srv-sql');
-		define('DB_USERNAME', 'apache');
-		define('DB_PASSWD', 'cpvaprplf');
-		define('DB_NAME', 'boussole');
+		define('DB_HOST', '???');
+		define('DB_USERNAME', '???');
+		define('DB_PASSWD', '???');
+		define('DB_NAME', '???');
 		define('DB_PREFIX', 'bsl_');
 		break;
 	case ENV_GUILLAUME :
@@ -50,9 +50,9 @@ switch (ENVIRONMENT)
 }
 
 //variables de connexion au serveur de SMS
-define('SMS_USERNAME', 'MAffSocTestM-fr');
-define('SMS_PASSWORD', 'KFR8BVE3');
-define('SMS_WSDL', 'https://europe.ipx.com/api/services2/SmsMessagingApi10?wsdl');
+define('SMS_USERNAME', '???');
+define('SMS_PASSWORD', '???');
+define('SMS_WSDL', '???');
 
 $path_extranet = "/extranet";
 $path_from_extranet_to_web = "..";
