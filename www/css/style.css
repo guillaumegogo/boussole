@@ -1694,8 +1694,11 @@ label.label_long{
 }
 
 .message-offre{
-	margin: 40px 0 -30px 0;
+	margin-top: 40px;
+	margin-bottom: -30px;
 	text-align:center;
+	font-size: 1.5em;
+	padding-top:0.5em;
 }
 .detail-contenu{
 	margin-top: 50px;

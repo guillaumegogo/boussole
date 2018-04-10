@@ -55,7 +55,7 @@ if (isset($_POST['coordonnees']) && $_POST['coordonnees']) {
 		//*********** création de la demande
 		$_SESSION['web']['coordonnees'] = $_POST['coordonnees'];
 		$recherche_associee = (isset($_SESSION['web']['recherche_id']) && (int)$_SESSION['web']['recherche_id']>0 ) ? $_SESSION['web']['recherche_id'] : null;
-		$demande = create_demande($id_offre, $_POST['coordonnees'], $recherche_associee);
+		$demande = create_demande($id_offre, $_POST['delai_offre'], $_POST['coordonnees'], $recherche_associee);
 		$id_demande = $demande[0];
 		$token = $demande[1];
 

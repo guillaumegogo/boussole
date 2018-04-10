@@ -3,15 +3,19 @@
 include('../src/admin/bootstrap.php');
 secu_check_login();
 
-//******** calcul du nb de demandes à traiter
-$nb = get_nb_nouvelles_demandes();
 
 if($is_authorized = secu_is_authorized('accueil')){
 	//******* construction des listes de lien
 	if (isset($is_authorized[DROIT_DEMANDE]) && $is_authorized[DROIT_DEMANDE]) {
-		$activites[] = array('demande_liste.php', 'Demandes à traiter', '('.$nb.')');
+		
+		//******** calcul du nb de demandes à traiter
+		$nb_dmd = get_nb_nouvelles_demandes();
+		$nb2 = get_nb_nouvelles_demandes('hors-delai');
+		$nb_dmd .= ($nb2) ? ', <span style="color:red">dont '.$nb2.' hors-délai</span>' : '';
+		
+		$activites[] = array('demande_liste.php', 'Demandes à traiter', '('.$nb_dmd.')');
 		$activites[] = array('demande_liste.php?etat=traite', 'Demandes traitées');
-		$activites[] = array('statistiques.php', 'Statistiques <img src="img/pickaxe.png">');
+		$activites[] = array('statistiques.php', 'Statistiques');
 		//$activites[] = array('http://statsbeta.mtsfp-vm-djepva-boussole.accelance.net/dashboard/db/boussole_beta?orgId=1&from=1507912332742&to=1515691932742&var-serverurl=beta.boussoledesdroits.fr&var-nombdd=Boussol%20Integ', 'Statistiques', '<img src="img/help.png" height="16px" title="Grafana extérieur.">');
 	}
 	

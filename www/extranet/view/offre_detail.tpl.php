@@ -128,7 +128,7 @@
 
 	<form method="post" class="detail" onsubmit='htmleditor(); checkall();'>
 
-		<input type="hidden" name="maj_id" value="<?= $id_offre; ?>">
+		<input type="hidden" name="maj_id" value="<?= ($flag_duplicate) ? 'duplicate' : $id_offre ?>">
 
 		<fieldset <?= (!$droit_ecriture) ? 'disabled="disabled"':'' ?>>	
 			<legend>Description de l'offre de service 
@@ -227,42 +227,42 @@
 			</div>
 			<div class="deux_colonnes">
 				<div class="lab">
-					<label for="pro">Professionnel :</label>
+					<label for="pro">Organisme :</label>
 					<?php //si création d'une offre de service -> liste déroulante. si modification -> juste le nom (on ne peut plus changer).
-					if (isset($id_offre)) { ?>
+					if ($id_offre && !$flag_duplicate) { ?>
 						<input type="text" name="pro" value="<?= $row['nom_pro'] ?>" readonly />
 					<?php } else { ?>
 						<select name="pro" required ><?= $liste_pro ?></select>
 					<?php } ?>
 				</div>
-				<?php if ($id_offre) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. ?>
+				<?php if ($id_offre && !$flag_duplicate) { //si création d'une offre de service -> on n'affiche pas. si modification -> on affiche. ?>
 				<div class="lab">
 					<label for="adresse">Adresse :</label>
-					<input type="text" name="adresse" required value="<?php if ($id_offre) {
+					<input type="text" name="adresse" required value="<?php if (isset($id_offre) && !$flag_duplicate) {
 						echo $row['adresse_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="code_postal">Code postal (& commune) :</label>
-					<input type="text" name="commune" required id="villes" value="<?php if ($id_offre) {
+					<input type="text" name="commune" required id="villes" value="<?php if (isset($id_offre) && !$flag_duplicate) {
 						echo $row['ville_offre'] . " " . $row['code_postal_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="courriel">Courriel :</label>
-					<input type="text" name="courriel" required value="<?php if ($id_offre) {
+					<input type="text" name="courriel" required value="<?php if (isset($id_offre) && !$flag_duplicate) {
 						echo $row['courriel_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="tel">Téléphone :</label>
-					<input type="text" name="tel" value="<?php if ($id_offre) {
+					<input type="text" name="tel" value="<?php if (isset($id_offre) && !$flag_duplicate) {
 						echo $row['telephone_offre'];
 					} ?>"/>
 				</div>
 				<div class="lab">
 					<label for="site">Site internet :</label>
-					<input type="text" name="site" value="<?php if ($id_offre) {
+					<input type="text" name="site" value="<?php if (isset($id_offre) && !$flag_duplicate) {
 						echo $row['site_web_offre'];
 					} ?>"/>
 				</div>
@@ -386,10 +386,17 @@
 		?>
 
 		<div class="button">
+		<?php if (isset($_GET['from_id_pro'])) { ?>
+			<input type="button" value="Retour à l'organisme" onclick="javascript:location.href='professionnel_detail.php?id=<?= $user_pro_id ?>'">
+		<?php }else{ ?>
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
+		<?php } ?>
 		<?php if($droit_ecriture) {
-			if ($id_offre) {
-				if($row['actif_offre'] == 0){ ?>
+			if ($id_offre) { 
+				if (!$flag_duplicate) { ?>
+			<input type="submit" name="dupliquer" value="Dupliquer">
+		<?php }
+			if($row['actif_offre'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>
 			<input type="submit" name="archiver" value="Archiver">

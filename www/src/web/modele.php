@@ -355,14 +355,14 @@ function create_recherche($nb){
 	return $id;
 }
 
-function create_demande($id_offre, $coordonnees, $id_recherche=null){
+function create_demande($id_offre, $delai_offre, $coordonnees, $id_recherche=null){
 
 	global $conn;
 	$id = null;
 	$token = hash('sha256', $coordonnees . time() . rand(0, 1000000));
 	
-	$query = 'INSERT INTO `'.DB_PREFIX.'demande`(`date_demande`, `id_offre`, `contact_jeune`, `id_recherche`, `id_hashe`) 
-		VALUES (NOW(), ?, ?, ?, ?)';
+	$query = 'INSERT INTO `'.DB_PREFIX.'demande`(`date_demande`, `id_offre`, `contact_jeune`, `id_recherche`, `id_hashe`, `date_delai`) 
+		VALUES (NOW(), ?, ?, ?, ?, ADDDATE(NOW(), INTERVAL '.$delai_offre.' DAY))';
 	
 	$stmt = mysqli_prepare($conn, $query);
 	mysqli_stmt_bind_param($stmt, 'isis', $id_offre, $coordonnees, $id_recherche, $token);

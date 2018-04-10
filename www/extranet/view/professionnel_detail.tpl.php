@@ -447,6 +447,12 @@ if(count($offres)>0){ ?>
 		</fieldset>
 <?php } ?>
 
+		<div class="button">
+		<?php if($droit_ecriture && $id_professionnel) { ?>
+			<input type="button" value="Ajouter une offre de service" onclick="javascript:location.href='offre_detail.php?from_id_pro=<?= $id_professionnel ?>'">
+		<?php } ?>
+		</div>
+
 	</form>
 	<?php
 	} else {

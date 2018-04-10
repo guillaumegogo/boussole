@@ -6,9 +6,14 @@ $droit_ecriture = (isset($_GET['id'])) ? secu_check_level(DROIT_OFFRE, $_GET['id
 
 //********* variables
 $id_offre = null;
+$flag_duplicate = false;
 $msg = "";
 $user_pro_id = null;
-if (isset($_SESSION['admin']['user_pro_id'])) $user_pro_id=$_SESSION['admin']['user_pro_id'];
+if (isset($_SESSION['admin']['user_pro_id'])) {
+	$user_pro_id=$_SESSION['admin']['user_pro_id'];
+} else if (isset($_GET['from_id_pro'])) {
+	$user_pro_id=$_GET['from_id_pro'];
+}
 
 //********** si post du formulaire interne
 if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
@@ -20,14 +25,27 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	$archived = archive('offre', (int)$_POST["maj_id"]);
  
 } elseif (isset($_POST['enregistrer'])) {
+	
 
 	if (!$_POST["maj_id"]) { //requête d'ajout
 		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro']);
 		$id_offre = mysqli_insert_id($conn);
 		
 		if ($created) $msg = "Création bien enregistrée.";
-
+		
+	} else if ($_POST["maj_id"]=='duplicate') { //requête de "duplication" 
+		
+		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro'], $_POST['sous_theme']);
+		$id_offre = mysqli_insert_id($conn);
+		
+		if ($created) $msg = "Création bien enregistrée.";
+		
+		$liste_criteres=null;
+		if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];	
+		$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres);
+		
 	} else { //requête de modification
+	
 		$id_offre = $_POST['maj_id'];
 		$code_postal = substr($_POST['commune'], -5);
 		$ville = substr($_POST['commune'], 0, -6);
@@ -55,8 +73,13 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	}
 }
 
+if (isset($_POST["dupliquer"])) {
+	$flag_duplicate = true;
+	$droit_ecriture = true;
+}
+
 //********** récupération de l'id de l'offre (soit celle en paramètre, soit celle qui vient d'être créée/mise à jour)
-if (isset($_GET['id'])) {
+if (isset($_GET['id']) && !$id_offre) {
 	$id_offre = $_GET['id'];
 }
 
@@ -127,9 +150,10 @@ if (isset($id_offre)) {
 			$willes = get_villes_by_offre((int)$id_offre);
 		}
 	}
+}
 
-//********** sinon écran de création simple : récupération de la liste des professionnels (avec thème) en fonction des droits du user
-} else {
+//********** si écran de création simple ou duplicate : récupération de la liste des professionnels (avec thème) en fonction des droits du user
+if (!isset($id_offre) || $flag_duplicate) {
 	$liste_pro = "<option value=\"\" >A choisir</option>";
 	$result = get_liste_pros_select("pro", "territoire",$_SESSION['admin']['territoire_id'], $user_pro_id);
 	if (count($result) > 0) {

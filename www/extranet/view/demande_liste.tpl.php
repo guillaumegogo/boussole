@@ -46,11 +46,14 @@
 				<th>Date de la demande</th>
 				<th>Coordonnées</th>
 				<th>Offre de service</th>
-				<th>Professionnel</th><?php echo ($flag_traite) ? "<th>Date de traitement</th>" : ""; ?></tr>
+				<th>Professionnel</th>
+				<th><?= ($flag_traite) ? 'Date de traitement' : 'Date de délai'; ?></th>
+			</tr>
 			</thead>
 			<tbody>
 			<?php
 			foreach ($demandes as $demande) {
+				$date_der = ($flag_traite) ? $demande['date_traitement'] : $demande['date_delai'];
 				?>
 				<tr>
 					<td>
@@ -60,7 +63,10 @@
 					<td><?php xecho($demande['contact_jeune']) ?></td>
 					<td><?php xecho($demande['nom_offre']) ?></td>
 					<td><?php xecho($demande['nom_pro']) ?></td>
-					<?php echo ($flag_traite) ? "<td>" . date_format(date_create($demande['date_traitement']), 'd/m/Y à H\hi') . "</td>" : ""; ?>
+					<td <?= (!$flag_traite && time()>strtotime($date_der)) ? 'style="color:red"' : '' ?> >
+						<span style="display:none"><?=strtotime($date_der) ?></span><!--clé de tri-->
+						<?= date_format(date_create($date_der), 'd/m/Y') ?>
+					</td>
 				</tr>
 				<?php
 			}

@@ -1,6 +1,6 @@
 <?php
 
-function get_nb_nouvelles_demandes() {
+function get_nb_nouvelles_demandes($etat = null) {
 
 	global $conn;
 	$nb = 0;
@@ -8,25 +8,23 @@ function get_nb_nouvelles_demandes() {
 	$query = 'SELECT COUNT(`id_demande`) AS `nb`
 		FROM `'.DB_PREFIX.'demande` AS `d`
 		JOIN `'.DB_PREFIX.'offre` AS `o` ON `o`.id_offre=`d`.id_offre ';
-	
-	if($pro_id = secu_get_user_pro_id()) {
-		$query .= 'AND `o`.id_professionnel = ? 
-		WHERE date_traitement IS NULL ';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'i', $pro_id);
-	
-	}else if($territoire_id = secu_get_territoire_id()) {
+	if(isset($pro_id) && $pro_id == secu_get_user_pro_id()) {
+		$query .= 'AND `o`.id_professionnel = ? ';
+	}else if(isset($territoire_id) && $territoire_id == secu_get_territoire_id()) {
 		$query .= 'JOIN `'.DB_PREFIX.'professionnel` as p ON `p`.id_professionnel=`o`.id_professionnel 
-		AND `p`.competence_geo = "territoire" AND `p`.id_competence_geo = ? 
-		WHERE date_traitement IS NULL ';
-		$stmt = mysqli_prepare($conn, $query);
-		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
-	
-	}else {
-		$query .= 'WHERE date_traitement IS NULL ';
-		$stmt = mysqli_prepare($conn, $query);	
+		AND `p`.competence_geo = "territoire" AND `p`.id_competence_geo = ? ';
 	}
-		
+	$query .= 'WHERE date_traitement IS NULL ';
+	if ($etat == 'hors-delai') { $query .= 'AND CURDATE() > date_delai '; }
+	
+	$stmt = mysqli_prepare($conn, $query);
+	
+	if($pro_id == secu_get_user_pro_id()) {
+		mysqli_stmt_bind_param($stmt, 'i', $pro_id);
+	}else if($territoire_id == secu_get_territoire_id()) {
+		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
+	}
+	
 	check_mysql_error($conn);
 	if (mysqli_stmt_execute($stmt)) {
 		$result = mysqli_stmt_get_result($stmt);
@@ -36,7 +34,6 @@ function get_nb_nouvelles_demandes() {
 		}
 		mysqli_stmt_close($stmt);
 	}
-
 	return $nb;
 }
 
@@ -169,7 +166,7 @@ function get_liste_demandes($flag_traite = 1, $territoire_id = null, $user_pro_i
 	$demandes = null;
 	$params = [];
 	$types = '';
-	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `criteres` AS `profil`, `o`.nom_offre,
+	$query = 'SELECT `id_demande`, `date_demande`, `date_delai`, `date_traitement`, `contact_jeune`, `criteres` AS `profil`, `o`.nom_offre,
 		`o`.id_professionnel, `p`.nom_pro
 		FROM `'.DB_PREFIX.'demande` AS `d`
 		LEFT JOIN `'.DB_PREFIX.'recherche` AS `r` ON `r`.id_recherche=`d`.id_recherche
@@ -235,16 +232,16 @@ function update_demande($id, $commentaire){
 }
 
 /* Offres */
-function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id ) {
+function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id, $sous_theme=null) {
 
 	global $conn;
 	$created = false;
 	$user_id= secu_get_current_user_id();
 
-	$query = 'INSERT INTO `'.DB_PREFIX.'offre`(`nom_offre`, `description_offre`, `debut_offre`, `fin_offre`, `id_professionnel`,
-		`adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`,
+	$query = 'INSERT INTO `'.DB_PREFIX.'offre`(`nom_offre`, `description_offre`, `debut_offre`, `fin_offre`, `id_sous_theme`, 
+		`id_professionnel`, `adresse_offre`, `code_postal_offre`, `ville_offre`, `code_insee_offre`, `courriel_offre`,
 		`telephone_offre`, `site_web_offre`, `delai_offre`, `creation_date`, `creation_user_id`)
-		SELECT ?, ?, ?, ?, ?,`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`,
+		SELECT ?, ?, ?, ?, ?, ?,`adresse_pro`, `code_postal_pro`, `ville_pro`, `code_insee_pro`,`courriel_pro`,
 		`telephone_pro`, `site_web_pro`, `delai_pro`, NOW(), ?
 		FROM `'.DB_PREFIX.'professionnel` AS `p`
 		WHERE `p`.id_professionnel = ? ';
@@ -252,7 +249,7 @@ function create_offre($nom, $desc, $date_debut, $date_fin, $pro_id ) {
 	$stmt = mysqli_prepare($conn, $query);
 	$date_d = date('Y-m-d', strtotime(str_replace('/', '-', $date_debut)));
 	$date_f = date('Y-m-d', strtotime(str_replace('/', '-', $date_fin)));
-	mysqli_stmt_bind_param($stmt, 'ssssiii', $nom, $desc, $date_d, $date_f, $pro_id, $user_id, $pro_id);
+	mysqli_stmt_bind_param($stmt, 'ssssiiii', $nom, $desc, $date_d, $date_f, $sous_theme, $pro_id, $user_id, $pro_id);
 	
 	check_mysql_error($conn);
 
@@ -2261,28 +2258,27 @@ function get_stat_nb_demandes_par_mois($etat='toutes', $ventilation='territoire'
 	global $conn;
 
 	$nb_demandes = null;
-	$d = ($etat=='traitees') ? 'date_traitement' : 'date_demande';
 	switch($ventilation){
 		case 'pro' : $v = 'nom_pro'; break;
 		case 'offre' : $v = 'nom_offre'; break;
 		case 'territoire' : $v = 'nom_territoire'; break;
 	}
-	
-	$query = 'SELECT DATE_FORMAT(`'.$d.'`, "%Y-%m") as `mois`, `'.$v.'`, COUNT(`id_demande`) as `nb` 
+	$query = 'SELECT DATE_FORMAT(`date_demande`, "%Y-%m") as `mois`, `'.$v.'`, COUNT(`date_demande`) as `nb`, COUNT(`date_traitement`) as `nb_traitees` 
 		FROM `'.DB_PREFIX.'demande` as d
 		JOIN `'.DB_PREFIX.'offre` as o ON o.id_offre=d.`id_offre`
 		JOIN `'.DB_PREFIX.'professionnel` as p ON p.id_professionnel=o.`id_professionnel`
 		JOIN `'.DB_PREFIX.'theme` as sth ON `sth`.id_theme=o.`id_sous_theme`
 		JOIN `'.DB_PREFIX.'theme` as th ON `th`.id_theme=`sth`.`id_theme_pere`
 		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`th`.`id_territoire` AND actif_territoire=1
-		WHERE `'.$d.'` > CURDATE() - INTERVAL 1 YEAR 
+		WHERE `date_demande` > CURDATE() - INTERVAL 1 YEAR 
 		GROUP BY `mois`, `'.$v.'` 
 		ORDER BY `mois`, `'.$v.'` ';
 	$result = mysqli_query($conn, $query);
 	while($row = mysqli_fetch_assoc($result)) {
 		$libelle_t = $row[$v];
-		if ($v=='nom_territoire' && !$libelle_t) $libelle_t = "Hors territoire";
-		$nb_demandes[$row['mois']][$libelle_t] = $row['nb'];
+		if ($v=='nom_territoire' && !$libelle_t) $libelle_t = 'Hors territoire';
+		if ($etat=='toutes') $nb_demandes[$row['mois']][$libelle_t] = $row['nb'];
+		else if ($etat=='traitees') $nb_demandes[$row['mois']][$libelle_t] = $row['nb_traitees'];
 	}
 	return $nb_demandes;
 }

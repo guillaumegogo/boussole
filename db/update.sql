@@ -1,6 +1,8 @@
 /*v1.0.5*/
 
-INSERT INTO `__parametres` (`id`, `libelle`, `liste`) VALUES (NULL, 'formation', 'theme'), (NULL, 'engament', 'theme'), (NULL, 'international', 'theme'), (NULL, 'loisirs', 'theme');
+INSERT INTO `_parametres` (`id`, `libelle`, `liste`) VALUES (NULL, 'formation', 'theme'), (NULL, 'engament', 'theme'), (NULL, 'international', 'theme'), (NULL, 'loisirs', 'theme');
+ALTER TABLE `demande` ADD `date_delai` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `profil`;
+UPDATE `demande` SET `date_delai` = DATE_ADD(`date_demande`, INTERVAL 1 WEEK);
 
 /*v1.03
 
