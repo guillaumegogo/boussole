@@ -1,9 +1,8 @@
 <?php
 
 include('../src/admin/bootstrap.php');
-if (!secu_check_role(ROLE_ADMIN)) {
-	header('Location: accueil.php');
-}
+$check = secu_check_login(DROIT_DEMANDE);
+$perimetre_lecture = $check['lecture'];
 
 $recherches = get_liste_recherches();
 

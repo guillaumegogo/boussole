@@ -5,7 +5,6 @@ $check = secu_check_login(DROIT_DEMANDE);
 $perimetre_lecture = $check['lecture'];
 
 $stats = array();
-$ecrans = null;
 
 /*
 si $perimetre_lecture = PERIMETRE_NATIONAL, alors on fait 3 pages : une par territoire, une par organisme, une par offre
@@ -17,6 +16,7 @@ switch($perimetre_lecture){
 	case PERIMETRE_NATIONAL :
 		$ecrans = array('Par territoire'=>'pt','Par organisme'=>'po','Par offre de service'=>'ps');
 		$ecran = (isset($_GET['e']) && in_array($_GET['e'], $ecrans)) ? $_GET['e'] : 'pt'; //on affiche l'écran indiqué si GET valide. sinon par territoire.
+		
 		if($ecran == 'pt'){
 			$stats[] = ['caption' => 'Nombre de recherches par mois (<a href="recherche_liste.php">détail</a>)', 'data' => get_stat_nb_recherches_par_mois()];
 			$stats[] = ['caption' => 'Nombre de demandes déposées par mois', 'data' => get_stat_nb_demandes_par_mois('toutes', 'territoire')];
@@ -31,6 +31,10 @@ switch($perimetre_lecture){
 		break;
 	
 	case PERIMETRE_ZONE :
+	case PERIMETRE_PRO :
+		$ecrans = array('Par organisme'=>'po','Par offre de service'=>'ps');
+		$ecran = (isset($_GET['e']) && in_array($_GET['e'], $ecrans)) ? $_GET['e'] : 'po'; //on affiche l'écran indiqué si GET valide. sinon par territoire.
+		
 		if($ecran == 'po'){
 			$stats[] = ['caption' => 'Nombre de recherches par mois (<a href="recherche_liste.php">détail</a>)', 'data' => get_stat_nb_recherches_par_mois()];
 			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
@@ -40,17 +44,6 @@ switch($perimetre_lecture){
 			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('traitees', 'offre')];
 		}
 		break;
-	
-	case PERIMETRE_PRO :
-		if($ecran == 'po'){
-			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('toutes', 'pro')];
-			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par organisme', 'data' => get_stat_nb_demandes_par_mois('traitees', 'pro')];
-		}else if($ecran == 'ps'){
-			$stats[] = ['caption' => 'Nombre de demandes déposées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('toutes', 'offre')];
-			$stats[] = ['caption' => 'Nombre de demandes traitées par mois et par offre', 'data' => get_stat_nb_demandes_par_mois('traitees', 'offre')];
-		}
-		break;
-
 }
 
 foreach($stats as &$tableau){

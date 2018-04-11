@@ -4,13 +4,15 @@ function get_nb_nouvelles_demandes($etat = null) {
 
 	global $conn;
 	$nb = 0;
+	$territoire_id = secu_get_territoire_id();
+	$pro_id = secu_get_user_pro_id();
 
 	$query = 'SELECT COUNT(`id_demande`) AS `nb`
 		FROM `'.DB_PREFIX.'demande` AS `d`
 		JOIN `'.DB_PREFIX.'offre` AS `o` ON `o`.id_offre=`d`.id_offre ';
-	if(isset($pro_id) && $pro_id == secu_get_user_pro_id()) {
+	if($pro_id) {
 		$query .= 'AND `o`.id_professionnel = ? ';
-	}else if(isset($territoire_id) && $territoire_id == secu_get_territoire_id()) {
+	}else if($territoire_id) {
 		$query .= 'JOIN `'.DB_PREFIX.'professionnel` as p ON `p`.id_professionnel=`o`.id_professionnel 
 		AND `p`.competence_geo = "territoire" AND `p`.id_competence_geo = ? ';
 	}
@@ -19,9 +21,9 @@ function get_nb_nouvelles_demandes($etat = null) {
 	
 	$stmt = mysqli_prepare($conn, $query);
 	
-	if($pro_id == secu_get_user_pro_id()) {
+	if($pro_id) {
 		mysqli_stmt_bind_param($stmt, 'i', $pro_id);
-	}else if($territoire_id == secu_get_territoire_id()) {
+	}else if($territoire_id) {
 		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
 	}
 	
@@ -2239,13 +2241,25 @@ function get_stat_nb_recherches_par_mois(){
 	global $conn;
 
 	$nb_recherches = null;
+	$territoire_id = secu_get_territoire_id();
+	
 	$query = 'SELECT DATE_FORMAT(`date_recherche`, "%Y-%m") as `mois`, `nom_territoire`, COUNT(`id_recherche`) as `nb` 
-		FROM `'.DB_PREFIX.'recherche` as r
-		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`r`.`id_territoire`
-		WHERE `date_recherche` > CURDATE() - INTERVAL 1 YEAR 
-		GROUP BY `mois`, `nom_territoire` 
+		FROM `'.DB_PREFIX.'recherche` as r 
+		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`r`.`id_territoire` 
+		WHERE `date_recherche` > CURDATE() - INTERVAL 1 YEAR ';
+	if($territoire_id) {
+		$query .= ' AND `r`.`id_territoire` = ? ';
+	}
+	$query .= 'GROUP BY `mois`, `nom_territoire` 
 		ORDER BY `mois`, `nom_territoire` ';
-	$result = mysqli_query($conn, $query);
+	
+	$stmt = mysqli_prepare($conn, $query);
+	if($territoire_id) {
+		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
+	}
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+	
 	while($row = mysqli_fetch_assoc($result)) {
 		$libelle_t = ($row['nom_territoire']) ? $row['nom_territoire'] : "Hors territoire";
 		$nb_recherches[$row['mois']][$libelle_t] = $row['nb'];
@@ -2258,6 +2272,9 @@ function get_stat_nb_demandes_par_mois($etat='toutes', $ventilation='territoire'
 	global $conn;
 
 	$nb_demandes = null;
+	$territoire_id = secu_get_territoire_id();
+	$pro_id = secu_get_user_pro_id();
+	
 	switch($ventilation){
 		case 'pro' : $v = 'nom_pro'; break;
 		case 'offre' : $v = 'nom_offre'; break;
@@ -2270,10 +2287,24 @@ function get_stat_nb_demandes_par_mois($etat='toutes', $ventilation='territoire'
 		JOIN `'.DB_PREFIX.'theme` as sth ON `sth`.id_theme=o.`id_sous_theme`
 		JOIN `'.DB_PREFIX.'theme` as th ON `th`.id_theme=`sth`.`id_theme_pere`
 		LEFT JOIN `'.DB_PREFIX.'territoire` as te ON te.id_territoire=`th`.`id_territoire` AND actif_territoire=1
-		WHERE `date_demande` > CURDATE() - INTERVAL 1 YEAR 
-		GROUP BY `mois`, `'.$v.'` 
+		WHERE `date_demande` > CURDATE() - INTERVAL 1 YEAR ';
+	if($pro_id) {
+		$query .= ' AND o.`id_professionnel` = ? ';
+	}else if($territoire_id) {
+		$query .= ' AND `th`.`id_territoire` = ? ';
+	}
+	$query .= 'GROUP BY `mois`, `'.$v.'` 
 		ORDER BY `mois`, `'.$v.'` ';
-	$result = mysqli_query($conn, $query);
+		
+	$stmt = mysqli_prepare($conn, $query);
+	if($pro_id) {
+		mysqli_stmt_bind_param($stmt, 'i', $pro_id);
+	}else if($territoire_id) {
+		mysqli_stmt_bind_param($stmt, 'i', $territoire_id);
+	}
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+	
 	while($row = mysqli_fetch_assoc($result)) {
 		$libelle_t = $row[$v];
 		if ($v=='nom_territoire' && !$libelle_t) $libelle_t = 'Hors territoire';
