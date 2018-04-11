@@ -127,7 +127,7 @@ function cloture_ligne($ele)
 	return $t;
 }
 
-function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $criteres=null, $token)
+function envoi_mails_demande($courriel_offre, $nom_offre, $delai, $coordonnees, $criteres=null, $token)
 {
 	global $path_extranet;
 	$resultat = null;
@@ -146,6 +146,7 @@ function envoi_mails_demande($courriel_offre, $nom_offre, $coordonnees, $critere
 		$message .= "<p>Il n'a pas indiqué son profil (accès direct à l'offre).</p>";
 	}
     $message .= "<p>Les coordonnées indiquées sont les suivantes : <b>" . $coordonnees . "</b></p>"
+        . "<p>Votre organisme s'est engagé à répondre sous <b>" . $delai . " jours</b>.</p>"
         . "<p>Merci d'indiquer la suite donnée à la demande dans l'<a href=\"http://" . $_SERVER['SERVER_NAME'] . $path_extranet . "/demande_detail.php?hash=".$token."\">espace de gestion de la Boussole</a></p></html>";
     $headers = 'MIME-Version: 1.0' . "\r\n";
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
