@@ -66,7 +66,7 @@ if (isset($_POST['coordonnees']) && $_POST['coordonnees']) {
 			$criteres = isset($_SESSION['web']['critere']) ? $_SESSION['web']['critere'] : null;
 			$resultat = envoi_mails_demande( $row['courriel_offre'], $row['nom_offre'], $_POST['delai_offre'], $_POST['coordonnees'], $criteres, $token);
 			if ($resultat){
-				$msg .= " Un courriel contenant ta recherche à été transmis à l'organisme proposant ce service.";
+				$msg .= " Un courriel contenant ta recherche à été transmis à l'organisme proposant ce service.<br/>";
 			}
 			$msg .= " Ce professionnel prendra contact avec toi dans le délai qu'il a garanti.";
 			
