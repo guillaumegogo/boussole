@@ -391,11 +391,11 @@
 		<?php }else{ ?>
 			<input type="button" value="Retour à la liste" onclick="javascript:location.href='offre_liste.php'">
 		<?php } ?>
-		<?php if($droit_ecriture) {
-			if ($id_offre) { 
+		<?php if ($id_offre) { 
 				if (!$flag_duplicate) { ?>
 			<input type="submit" name="dupliquer" value="Dupliquer">
 		<?php }
+			if($droit_ecriture) {
 			if($row['actif_offre'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
 		<?php }else{ ?>

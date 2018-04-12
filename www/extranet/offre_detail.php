@@ -25,7 +25,6 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 	$archived = archive('offre', (int)$_POST["maj_id"]);
  
 } elseif (isset($_POST['enregistrer'])) {
-	
 
 	if (!$_POST["maj_id"]) { //requête d'ajout
 		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro']);
@@ -38,11 +37,11 @@ if (isset($_POST['restaurer']) && isset($_POST["maj_id"]) && $_POST["maj_id"]) {
 		$created = create_offre($_POST['nom'], html2bbcode($_POST['desc']), $_POST['du'], $_POST['au'], (int)$_POST['pro'], $_POST['sous_theme']);
 		$id_offre = mysqli_insert_id($conn);
 		
-		if ($created) $msg = "Création bien enregistrée.";
-		
 		$liste_criteres=null;
 		if(isset($_POST['critere'])) $liste_criteres=$_POST['critere'];	
 		$updated2 = update_criteres_offre((int)$id_offre, $liste_criteres);
+		
+		header('Location: ?id='.$id_offre);
 		
 	} else { //requête de modification
 	
