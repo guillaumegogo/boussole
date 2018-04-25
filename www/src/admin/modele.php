@@ -138,7 +138,7 @@ function get_demande_by_id($id, $type_id=null){
 	global $conn;
 	$demande = null;
 
-	$query = 'SELECT `id_demande`, `date_demande`, `date_traitement`, `contact_jeune`, `criteres` AS `profil`, `commentaire`,
+	$query = 'SELECT `id_demande`, `date_demande`,  `date_delai`,`date_traitement`, `contact_jeune`, `criteres` AS `profil`, `commentaire`,
 		`o`.nom_offre, `p`.nom_pro
 		FROM `'.DB_PREFIX.'demande` AS `d`
 		LEFT JOIN `'.DB_PREFIX.'recherche` AS `r` ON `r`.id_recherche=`d`.id_recherche

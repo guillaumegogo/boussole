@@ -47,13 +47,17 @@
 				<th>Coordonnées</th>
 				<th>Offre de service</th>
 				<th>Professionnel</th>
-				<th><?= ($flag_traite) ? 'Date de traitement' : 'Date de délai'; ?></th>
+				<th>Date de délai</th>
+				<?php if($flag_traite){ ?>
+					<th>Date de traitement</th>
+				<?php } ?>
 			</tr>
 			</thead>
 			<tbody>
 			<?php
 			foreach ($demandes as $demande) {
-				$date_der = ($flag_traite) ? $demande['date_traitement'] : $demande['date_delai'];
+				$horsdelai = false;
+				if( (isset($demande['date_traitement']) && $demande['date_traitement']>$demande['date_delai']) || (!isset($demande['date_traitement']) && date("Y-m-d H:i:s")>$demande['date_delai']) ) $horsdelai = true;
 				?>
 				<tr>
 					<td>
@@ -63,10 +67,16 @@
 					<td><?php xecho($demande['contact_jeune']) ?></td>
 					<td><?php xecho($demande['nom_offre']) ?></td>
 					<td><?php xecho($demande['nom_pro']) ?></td>
-					<td <?= (!$flag_traite && time()>strtotime($date_der)) ? 'style="color:red"' : '' ?> >
-						<span style="display:none"><?=strtotime($date_der) ?></span><!--clé de tri-->
-						<?= date_format(date_create($date_der), 'd/m/Y') ?>
-					</td>
+					
+					<td <?= ($horsdelai) ? 'style="color:red"' : '' ?> >
+						<span style="display:none"><?=strtotime($demande['date_delai']) ?></span><!--clé de tri-->
+						<?= date_format(date_create($demande['date_delai']), 'd/m/Y') ?></td>
+					
+					<?php if($flag_traite){ ?>
+					<td>
+						<span style="display:none"><?=strtotime($demande['date_traitement']) ?></span><!--clé de tri-->
+						<?= date_format(date_create($demande['date_traitement']), 'd/m/Y') ?></td>
+					<?php } ?>
 				</tr>
 				<?php
 			}

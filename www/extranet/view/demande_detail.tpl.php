@@ -19,12 +19,16 @@
 
 		<table class="detail" >
 			<tr>
-				<th>N° demande</th>
+				<th>N° de la demande</th>
 				<td><?php xecho($demande['id_demande']); ?></td>
 			</tr>
 			<tr>
-				<th>Date demande</th>
+				<th>Date de la demande</th>
 				<td><?php xecho(date_format(date_create($demande['date_demande']), 'd/m/Y à H\hi')); ?></td>
+			</tr>
+			<tr>
+				<th>Date de délai prévue</th>
+				<td><?php xecho(date_format(date_create($demande['date_delai']), 'd/m/Y à H\hi')); ?></td>
 			</tr>
 			<tr>
 				<th>Coordonnées du demandeur</th>

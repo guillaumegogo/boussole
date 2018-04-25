@@ -394,13 +394,15 @@
 		<?php if ($id_offre) { 
 				if (!$flag_duplicate) { ?>
 			<input type="submit" name="dupliquer" value="Dupliquer">
-		<?php }
+		<?php } }
 			if($droit_ecriture) {
-			if($row['actif_offre'] == 0){ ?>
+				if ($id_offre) {
+					if($row['actif_offre'] == 0){ ?>
 			<input type="submit" name="restaurer" value="Restaurer">
-		<?php }else{ ?>
+		<?php 		}else{ ?>
 			<input type="submit" name="archiver" value="Archiver">
-		<?php } } ?>
+		<?php 		} 
+				} ?>
 			<input type="submit" name="enregistrer" value="Enregistrer">
 		<?php } ?>
 		</div>
